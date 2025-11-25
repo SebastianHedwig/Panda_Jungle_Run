@@ -1,0 +1,26 @@
+body {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-image: url(./assets/img/body-main_BG.jpg);
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+h1 {
+    text-align: center;
+    color: whitesmoke;
+    font-size: 5rem;
+    margin-top: 5rem;
+}
+
+.canvas {
+    position: absolute;
+    top: 25%;
+    left: 5%;
+    width: 1280px;
+    height: 720px;
+    margin: 0 auto;
+    background: rgb(47, 79, 79);
+}
