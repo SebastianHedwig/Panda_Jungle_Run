@@ -16,7 +16,10 @@ export function initGame() {
   ctx = canvas.getContext("2d");
 
   input = new Input();
-  world = new World(canvas);
+
+  const WORLD_WIDTH = 6000
+  world = new World(canvas, WORLD_WIDTH);
+  camera = new Camera(canvas, WORLD_WIDTH);
 
   background = new Background(canvas);
 
@@ -43,7 +46,6 @@ export function initGame() {
     background.addLayer(images[3], 1.0, 0.1);
 
     player = new Player(25, 550, images[4]);
-    camera = new Camera(canvas, 6000);
 
     requestAnimationFrame(loop);
   });

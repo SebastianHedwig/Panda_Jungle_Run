@@ -14,8 +14,8 @@ export class Player extends MovableObject {
     this.coyoteTimer = 0;
     this.jumpBufferTime = 0.1;
     this.jumpBufferTimer = 0;
-    this.jumpHeld = false;
     this.jumpCutMultiplier = 0.5;
+    this.jumpHeld = false;
   }
 
   applyApexGravity(dt) {

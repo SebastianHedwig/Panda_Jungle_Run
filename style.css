@@ -23,4 +23,7 @@ h1 {
     height: 720px;
     margin: 0 auto;
     background: rgb(47, 79, 79);
+    border: 0.3rem solid rgb(0, 139, 139);
+    border-radius: 0.5rem;
+    /* box-shadow: ; kommt dann am schluss noch mit dazu */
 }
