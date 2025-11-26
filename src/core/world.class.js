@@ -1,7 +1,10 @@
+import { WORLD_WIDTH } from "../config.js";
+
 export class World {
-  constructor(canvas, width) {
+  constructor(canvas) {
     this.canvas = canvas;
-    this.width = width;
+
+    this.width = WORLD_WIDTH;
     this.left = 0;
     this.right = this.width;
     this.ground = this.canvas.height - 170;
