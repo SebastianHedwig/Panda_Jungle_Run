@@ -5,7 +5,7 @@ export class MovableObject {
     this.width = width;
     this.height = height;
 
-    this.speed = 100;
+    this.speed = 150;
     this.vx = 0;
     this.vy = 0;
 

@@ -39,14 +39,34 @@ export function initGame() {
     10
   );
 
+  const runFrames = loadFrames(
+  "/assets/img/Character/Character_Sprites/run/",
+  "Run",
+  8
+  );
+
   const jumpFrames = loadFrames(
     "/assets/img/Character/Character_Sprites/jump/",
     "Jump",
     5
   );
 
-  Promise.all([...bgImages, ...idleFrames, ...walkFrames, ...jumpFrames].map(img => img.decode()))
+  const slideFrames = loadFrames(
+  "/assets/img/Character/Character_Sprites/slide/",
+  "Sliding",
+  4
+  );
+
+  const throwFrames = loadFrames(
+  "/assets/img/Character/Character_Sprites/throw/",
+  "Throw_Attack",
+  5
+  );
+
+
+  Promise.all([...bgImages, ...idleFrames, ...walkFrames, ...runFrames, ...jumpFrames, ...slideFrames, ...throwFrames].map(img => img.decode()))
     .then(() => {
+      // bg1 = sky, bg2 = far trees, bg3 = mid trees, bg4 = front, cloud1/2 = variations
       const [bg1, bg2, bg3, bg4, cloud1, cloud2] = bgImages;
 
       background.addLayer(bg1, 0.1, 0.01);
@@ -55,8 +75,7 @@ export function initGame() {
       background.addLayer(bg3, 0.6, 0.06);
       background.addLayer(bg4, 1.0, 0.1);
 
-      player = new Player(25, 550, idleFrames, walkFrames, jumpFrames);
-
+      player = new Player(25, 550, idleFrames, walkFrames, runFrames, jumpFrames, slideFrames, throwFrames);
       requestAnimationFrame(loop);
     });
 }
@@ -76,6 +95,7 @@ function update(dt) {
   camera.follow(player, 0.08);
   background.update(camera.x, camera.y, dt);
   world.applyWorldBounds(player);
+  input.endFrame();
 }
 
 function draw() {
