@@ -208,7 +208,6 @@ export class Player extends MovableObject {
     else this.setAnimation(this.idleFrames);
 
     /** ----- ADVANCED JUMP ----- */
-
     if (input.isPressed(" ")) {
       this.jumpBufferTimer = this.jumpBufferTime;
       this.jumpHeld = true;
