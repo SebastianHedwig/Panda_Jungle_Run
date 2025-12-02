@@ -22,36 +22,36 @@ export function initGame() {
 
   /** ---------- BACKGROUND IMAGES ---------- */
   const bgImages = [
-    loadImage("/assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-1.png"),
-    loadImage("/assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-2.png"),
-    loadImage("/assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-3.png"),
-    loadImage("/assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-4.png"),
-    loadImage("/assets/img/Game_BG_Image_Layers/clouds/clouds-1.png"),
-    loadImage("/assets/img/Game_BG_Image_Layers/clouds/clouds-2.png")
+    loadImage("./assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-1.png"),
+    loadImage("./assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-2.png"),
+    loadImage("./assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-3.png"),
+    loadImage("./assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-4.png"),
+    loadImage("./assets/img/Game_BG_Image_Layers/clouds/clouds-1.png"),
+    loadImage("./assets/img/Game_BG_Image_Layers/clouds/clouds-2.png")
   ];
 
   /** ---------- PLATFORM SPRITES ---------- */
   const platformSprites = {
-    startLong:   loadImage("/assets/img/Platforms/platform-start-long.png"),
-    middleLong:  loadImage("/assets/img/Platforms/platform-middle-long.png"),
-    endLong:     loadImage("/assets/img/Platforms/platform-end-long.png"),
-    startShort:  loadImage("/assets/img/Platforms/platform-start-short.png"),
-    middleShort: loadImage("/assets/img/Platforms/platform-middle-short.png"),
-    endShort:    loadImage("/assets/img/Platforms/platform-end-short.png"),
-    small:       loadImage("/assets/img/Platforms/platform-small.png"),
-    middleHigh:  loadImage("/assets/img/Platforms/platform-middle-high.png"),
-    filler:      loadImage("/assets/img/Platforms/platform-filler.png"),
+    startLong:   loadImage("./assets/img/Platforms/platform-start-long.png"),
+    middleLong:  loadImage("./assets/img/Platforms/platform-middle-long.png"),
+    endLong:     loadImage("./assets/img/Platforms/platform-end-long.png"),
+    startShort:  loadImage("./assets/img/Platforms/platform-start-short.png"),
+    middleShort: loadImage("./assets/img/Platforms/platform-middle-short.png"),
+    endShort:    loadImage("./assets/img/Platforms/platform-end-short.png"),
+    small:       loadImage("./assets/img/Platforms/platform-small.png"),
+    middleHigh:  loadImage("./assets/img/Platforms/platform-middle-high.png"),
+    filler:      loadImage("./assets/img/Platforms/platform-filler.png"),
   };
 
   const platformImages = Object.values(platformSprites);
 
   /** ---------- PLAYER FRAMES ---------- */
-  const idleFrames  = loadFrames("/assets/img/Character/Character_Sprites/idle/",  "Idle",  10);
-  const walkFrames  = loadFrames("/assets/img/Character/Character_Sprites/walk/",  "walk",  10);
-  const runFrames   = loadFrames("/assets/img/Character/Character_Sprites/run/",   "Run",   8);
-  const jumpFrames  = loadFrames("/assets/img/Character/Character_Sprites/jump/",  "Jump",  5);
-  const slideFrames = loadFrames("/assets/img/Character/Character_Sprites/slide/", "Sliding", 4);
-  const throwFrames = loadFrames("/assets/img/Character/Character_Sprites/throw/","Throw_Attack", 5);
+  const idleFrames  = loadFrames("./assets/img/Character/Character_Sprites/idle/",  "Idle",  10);
+  const walkFrames  = loadFrames("./assets/img/Character/Character_Sprites/walk/",  "walk",  10);
+  const runFrames   = loadFrames("./assets/img/Character/Character_Sprites/run/",   "Run",   8);
+  const jumpFrames  = loadFrames("./assets/img/Character/Character_Sprites/jump/",  "Jump",  5);
+  const slideFrames = loadFrames("./assets/img/Character/Character_Sprites/slide/", "Sliding", 4);
+  const throwFrames = loadFrames("./assets/img/Character/Character_Sprites/throw/","Throw_Attack", 5);
 
   /** ---------- LOAD EVERYTHING ---------- */
   Promise.all([
