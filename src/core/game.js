@@ -10,6 +10,11 @@ let canvas, ctx;
 let background, camera, player, input, world;
 let lastTime = 0;
 
+/** ---------- HUD ---------- */
+let hudCoinImg;          // icon image
+let hudDisplayValue = 0; // smooth animated HUD value
+
+
 /** ---------- INIT GAME ---------- */
 export function initGame() {
   canvas = document.getElementById("game");
@@ -57,6 +62,9 @@ export function initGame() {
   const slideFrames = loadFrames("./assets/img/Character/Character_Sprites/slide/", "Sliding", 4);
   const throwFrames = loadFrames("./assets/img/Character/Character_Sprites/throw/","Throw_Attack", 5);
 
+  /** ---------- HUD COIN IMAGE ---------- */
+  hudCoinImg = loadImage("./assets/img/Coin/Coin_0000000.png");
+
   /** ---------- LOAD EVERYTHING ---------- */
   Promise.all([
     ...bgImages,
@@ -86,9 +94,8 @@ export function initGame() {
     const collectables = [
       ...createLevel1Collectables(),
       ...generateCoinsMixed(world, 20, 0.5),
-      ...generateCoinArcs(world, 6), 
+      ...generateCoinArcs(world, 6),
     ];
-
     world.addCollectables(collectables);
 
     /** ----- PLAYER ----- */
@@ -98,17 +105,16 @@ export function initGame() {
 
     player = new Player(
       spawnX, Math.max(0, spawnY),
-      idleFrames,
-      walkFrames,
-      runFrames,
-      jumpFrames,
-      slideFrames,
-      throwFrames
+      idleFrames, walkFrames, runFrames, jumpFrames, slideFrames, throwFrames
     );
+    player.coins = 0;
+    player.world = world;
+
 
     requestAnimationFrame(loop);
   });
 }
+
 
 /** ---------- GAME LOOP ---------- */
 function loop(timestamp) {
@@ -128,49 +134,95 @@ function loop(timestamp) {
   requestAnimationFrame(loop);
 }
 
+
 /** ---------- UPDATE ---------- */
 function update(dt) {
   player.update(dt, input);
   camera.follow(player, 0.08);
   background.update(camera.x, camera.y, dt);
+
   world.playerSpeed = Math.abs(player.vx);
   world.applyPlatformCollisions(player);
   world.collectables.forEach(c => c.update(dt));
   checkCollectables();
+
+  /** Smooth HUD coin animation */
+  hudDisplayValue += (player.coins - hudDisplayValue) * dt * 10;
+
+  // HUD Bounce Animation
+  if (player.hudPulse > 0) {
+    player.hudPulse -= dt * 4; // Geschwindigkeit des Zurückschnurrens
+  if (player.hudPulse < 0) player.hudPulse = 0;
+  }; 
+
+  world.hudPopups = world.hudPopups.filter(p => {
+    p.update(dt);
+    return p.alpha > 0;
+  });
+
 }
+
 
 /** ---------- CHECK COLLECTABLES ---------- */
 function checkCollectables() {
-  if (!world.collectables) return;
-
   world.collectables = world.collectables.filter(item => {
     if (!item.collected && item.isColliding(player)) {
       item.collect(player);
-      return false;
+      return true;
     }
-    return true;
+    return !item.pickupAnimating || item.alpha > 0;
   });
 }
+
 
 /** ---------- DRAW ---------- */
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   background.render(ctx, camera);
-
-  if (world.platforms.length) {
-    world.platforms.forEach(p => p.render(ctx, camera));
-  }
-
-  /** ----- RENDER COLLECTABLES ----- */
-  if (world.collectables.length) {
-    world.collectables.forEach(item => item.draw(ctx, camera));
-  }
+  world.platforms.forEach(p => p.render(ctx, camera));
+  world.collectables.forEach(c => c.draw(ctx, camera));
+  world.hudPopups.forEach(p => p.draw(ctx, camera));
 
   player.render(ctx, camera);
+  drawHUD();
 }
 
 
-/** ---------- LOAD IMAGE HELPERS ---------- */
+/** ---------- DRAW HUD (Canvas-Based) ---------- */
+function drawHUD() {
+  const padding = 20;
+  const iconSize = 40;
+
+  const baseX = canvas.width - iconSize - padding - 80;
+  const baseY = padding;
+
+  ctx.drawImage(
+    hudCoinImg,
+    baseX,
+    baseY,
+    iconSize,
+    iconSize
+  );
+
+  const bounceScale = 1 + (player.hudPulse || 0) * 0.3;
+
+  ctx.save();
+  ctx.translate(baseX + iconSize + 10, baseY + 28);
+  ctx.scale(bounceScale, bounceScale);
+  ctx.font = "1.2rem ComixLoud";
+  ctx.fillStyle = "rgba(255, 255, 2, 0.9)";
+  ctx.strokeStyle = "rgba(0, 0, 0, 1)";
+  ctx.lineWidth = 3;
+  ctx.lineJoin = "round";
+
+  const text = Math.round(hudDisplayValue).toString();
+  ctx.strokeText(text, 0, 0);
+  ctx.fillText(text, 0, 0);
+  ctx.restore();
+}
+
+/** ---------- HELPERS ---------- */
 export function loadImage(src) {
   const img = new Image();
   img.src = src;

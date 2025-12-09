@@ -13,6 +13,8 @@ export class World {
     /** ----- LEVEL OBJECTS ----- */
     this.platforms = [];
     this.collectables = [];
+    this.hudPopups = [];
+
   }
 
   /** ---------- ADD PLATFORMS ---------- */
@@ -107,6 +109,11 @@ coinPositionIsValid(x, y, width = 50, height = 50) {
     const overlapsY = coinBottom > platformTop && coinTop < platformBottom;
     return overlapsX && overlapsY;
   });
+}
+
+  /** ---------- ADD HUD POPUP ---------- */
+addPopup(popup) {
+  this.hudPopups.push(popup);
 }
 
 }

@@ -269,4 +269,10 @@ export class Player extends MovableObject {
     }
     ctx.restore();
   }
+
+  addCoins(amount) {
+    this.coins = (this.coins || 0) + amount;
+    this.hudPulse = 1.0;
+  }
+
 }
