@@ -93,7 +93,9 @@ export class Enemy1 extends MovableObject {
       return;
     }
 
-    this.hitStun = 0.2;
+    this.hitStun = Math.max(this.hitStun, 1.5);
+    this.vx = 0;
+    this.vy = 0;
     this.setAnimation(this.idleFrames);
     this.currentFrame = 0;
     this.frameTime = 0;
@@ -129,8 +131,10 @@ export class Enemy1 extends MovableObject {
 
     if (this.hitStun > 0) {
       this.hitStun = Math.max(0, this.hitStun - dt);
+      // freeze on first idle frame (no animation) for clear feedback
       this.setAnimation(this.idleFrames);
-      this.animate(dt);
+      this.currentFrame = 0;
+      this.sprite = this.idleFrames[0];
       return;
     }
 
