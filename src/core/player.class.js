@@ -11,7 +11,9 @@ export class Player extends MovableObject {
     jumpFrames,
     slideFrames,
     throwFrames,
-    shootFrames
+    shootFrames,
+    hurtFrames,
+    dieFrames
   ) {
     super(x, y, 120, 140);
 
@@ -23,6 +25,8 @@ export class Player extends MovableObject {
     this.slideFrames = slideFrames;
     this.throwFrames = throwFrames;
     this.shootFrames = shootFrames;
+    this.hurtFrames = hurtFrames;
+    this.dieFrames = dieFrames;
 
     this.currentAnimation = this.idleFrames;
     this.currentFrame = 0;
@@ -60,6 +64,16 @@ export class Player extends MovableObject {
     this.bulletAmmo = 0;
     this.gunPulse = 0;
 
+    /** ----- HURT / DEATH ----- */
+    this.isHurt = false;
+    this.hurtDuration = 0.5;
+    this.hurtTimer = 0;
+    this.isDead = false;
+    this.invulnerableTimer = 0;
+    this.invulnerableBlinkInterval = 0.15;
+    this.lastSafeX = x;
+    this.lastSafeY = y;
+
     /** ----- JUMP PHYSICS ----- */
     this.jumpForce = 1200;
     this.gravityUp = 2500;
@@ -87,9 +101,6 @@ export class Player extends MovableObject {
     /** ----- COINS ----- */
     this.coins = 0;
     this.hudPulse = 0;
-
-    /** ----- DEATH ----- */
-    this.isDead = false;
   }
 
   /** ----- HEART STATES FOR HUD ----- */
@@ -122,7 +133,8 @@ export class Player extends MovableObject {
       );
     }
 
-    if (this.healthPoints <= 0) this.isDead = true;
+    if (this.healthPoints <= 0) this.startDeath();
+    else this.startHurt();
   }
 
   /** ----- HEAL ----- */
@@ -161,6 +173,59 @@ export class Player extends MovableObject {
     this.gunPulse = 1.0;
   }
 
+  markSafePosition() {
+    this.lastSafeX = this.x;
+    this.lastSafeY = this.y;
+  }
+
+  startHurt() {
+    if (this.isDead) return;
+    this.isHurt = true;
+    this.hurtTimer = this.hurtDuration;
+    this.isAttacking = false;
+    this.isShooting = false;
+    this.setAnimation(this.hurtFrames);
+    this.currentFrame = 0;
+  }
+
+  startDeath() {
+    if (this.isDead) return;
+    this.isDead = true;
+    this.isHurt = false;
+    this.isAttacking = false;
+    this.isShooting = false;
+    this.vx = 0;
+    this.setAnimation(this.dieFrames);
+    this.currentFrame = 0;
+  }
+
+  respawnFromFall() {
+    if (this.isDead) return;
+
+    this.healthPoints = Math.max(0, this.healthPoints - 1);
+    this.healthPulse = 1.0;
+
+    if (this.healthPoints <= 0) {
+      this.startDeath();
+      return;
+    }
+
+    // reset to last safe spot
+    this.x = this.lastSafeX ?? this.x;
+    this.y = (this.lastSafeY ?? this.y) - 5;
+    this.vx = 0;
+    this.vy = 0;
+    this.onGround = true;
+
+    // brief invulnerability + blink
+    this.invulnerableTimer = 1.0;
+    this.isHurt = false;
+    this.isAttacking = false;
+    this.isShooting = false;
+    this.setAnimation(this.idleFrames);
+    this.currentFrame = 0;
+  }
+
   /** ----- ANIMATION ----- */
   setAnimation(frames) {
     if (this.currentAnimation !== frames) {
@@ -185,7 +250,7 @@ export class Player extends MovableObject {
   startAttack() {
     // block melee while ammo is available
     if (this.bulletAmmo > 0) return;
-    if (this.isAttacking || this.isShooting || !this.onGround) return;
+    if (this.isAttacking || this.isShooting || this.isHurt || this.isDead || !this.onGround) return;
 
     this.isAttacking = true;
     this.attackTimer = this.attackDuration;
@@ -199,9 +264,15 @@ export class Player extends MovableObject {
     if (this.attackTimer <= 0) this.isAttacking = false;
   }
 
+  updateHurt(dt) {
+    if (!this.isHurt) return;
+    this.hurtTimer -= dt;
+    if (this.hurtTimer <= 0) this.isHurt = false;
+  }
+
   /** ----- SHOOT ----- */
   startShoot() {
-    if (this.isShooting || this.isAttacking || this.shootCooldown > 0)
+    if (this.isShooting || this.isAttacking || this.isHurt || this.isDead || this.shootCooldown > 0)
       return false;
     if (this.bulletAmmo <= 0) return false;
 
@@ -254,11 +325,10 @@ export class Player extends MovableObject {
 
   /** ----- WORLD FALL DEATH ----- */
   handleFallOffWorld(grounded, bottom, canvasHeight) {
+    if (this.invulnerableTimer > 0) return;
     if (grounded) return;
     if (this.vy >= 0 && bottom >= canvasHeight + this.height) {
-      this.isDead = true;
-      this.vx = 0;
-      this.vy = 0;
+      this.respawnFromFall();
     }
   }
 
@@ -268,6 +338,25 @@ export class Player extends MovableObject {
     if (this.shootCooldown > 0)
       this.shootCooldown = Math.max(0, this.shootCooldown - dt);
     if (this.gunPulse > 0) this.gunPulse = Math.max(0, this.gunPulse - dt * 4);
+    if (this.invulnerableTimer > 0)
+      this.invulnerableTimer = Math.max(0, this.invulnerableTimer - dt);
+
+    /** DEATH OVERRIDE */
+    if (this.isDead) {
+      this.setAnimation(this.dieFrames);
+      this.applyApexGravity(dt);
+      this.animate(dt);
+      return;
+    }
+
+    /** HURT OVERRIDE */
+    this.updateHurt(dt);
+    if (this.isHurt) {
+      this.setAnimation(this.hurtFrames);
+      this.applyApexGravity(dt);
+      this.animate(dt);
+      return;
+    }
 
     /** ATTACK / SHOOT INPUT (Enter only, bullets take priority) */
     if (input.isPressed("Enter")) {
@@ -374,6 +463,12 @@ export class Player extends MovableObject {
 
   /** ----- RENDER ----- */
   render(ctx, camera) {
+    // blink when invulnerable
+    if (this.invulnerableTimer > 0) {
+      const phase = Math.floor(this.invulnerableTimer / this.invulnerableBlinkInterval);
+      if (phase % 2 === 0) return;
+    }
+
     ctx.save();
     if (this.facing === -1) {
       ctx.scale(-1, 1);

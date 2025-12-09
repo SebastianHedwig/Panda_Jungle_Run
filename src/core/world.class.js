@@ -84,6 +84,7 @@ export class World {
     }
 
     /** ----- FALL OFF WORLD ----- */
+    if (grounded && player.markSafePosition) player.markSafePosition();
     player.handleFallOffWorld(grounded, currBottom, this.canvas.height);
 
     /** ----- WORLD HORIZONTAL LIMITS ----- */

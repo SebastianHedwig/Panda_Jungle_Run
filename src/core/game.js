@@ -99,6 +99,16 @@ export function initGame() {
     "Shoot",
     6
   );
+  const hurt = loadFrames(
+    "./assets/img/Character/Character_Sprites/hurt/",
+    "hurt",
+    2
+  );
+  const die = loadFrames(
+    "./assets/img/Character/Character_Sprites/die/",
+    "Die",
+    10
+  );
 
   hudCoinImg = loadImage("./assets/img/Coin/Coin_0000000.png");
   hudGunImg = loadImage("./assets/img/Character/Spriter_files/gun.png");
@@ -114,6 +124,8 @@ export function initGame() {
       ...slide,
       ...attack,
       ...shoot,
+      ...hurt,
+      ...die,
       hudGunImg,
     ].map(waitForImage)
   ).then(() =>
@@ -126,12 +138,26 @@ export function initGame() {
       jump,
       slide,
       attack,
-      shoot
+      shoot,
+      hurt,
+      die
     )
   );
 }
 
-function start(bg, sprites, idle, walk, run, jump, slide, attack, shoot) {
+function start(
+  bg,
+  sprites,
+  idle,
+  walk,
+  run,
+  jump,
+  slide,
+  attack,
+  shoot,
+  hurt,
+  die
+) {
   const [bg1, bg2, bg3, bg4, cloud1, cloud2] = bg;
 
   background.addLayer(bg1, 0.1, 0.01);
@@ -165,7 +191,9 @@ function start(bg, sprites, idle, walk, run, jump, slide, attack, shoot) {
     jump,
     slide,
     attack,
-    shoot
+    shoot,
+    hurt,
+    die
   );
   player.world = world;
   world.hudPopups = [];
@@ -288,15 +316,15 @@ function drawHeartShape(state, size) {
     h = size;
 
   ctx.moveTo(0, h * 0.35);
-  ctx.bezierCurveTo(-w * 0.5, -h * 0.1, -w * 0.5, h * 0.6, 0, h);
-  ctx.bezierCurveTo(w * 0.5, h * 0.6, w * 0.5, -h * 0.1, 0, h * 0.35);
+  ctx.bezierCurveTo(-w * 0.6, -h * 0.1, -w * 0.6, h * 0.6, 0, h);
+  ctx.bezierCurveTo(w * 0.6, h * 0.6, w * 0.6, -h * 0.1, 0, h * 0.35);
 
   ctx.lineWidth = 3;
   ctx.strokeStyle = "#000";
 
-  if (state === 2) ctx.fillStyle = "#b60000ff";
-  else if (state === 1) ctx.fillStyle = "#c04545ff";
-  else ctx.fillStyle = "#3a3a3a";
+  if (state === 2) ctx.fillStyle = "rgba(182, 0, 0, 1)";
+  else if (state === 1) ctx.fillStyle = "rgba(192, 69, 69, 0.6)";
+  else ctx.fillStyle = "rgba(58, 58, 58, 0.2)";
 
   ctx.fill();
   ctx.stroke();
