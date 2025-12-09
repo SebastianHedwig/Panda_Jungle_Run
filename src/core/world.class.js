@@ -79,12 +79,7 @@ export class World {
     }
 
     // ----- FALLBACK / TOD BEI STURZ -----
-    if (!grounded) {
-      player.onGround = false;
-      if (currBottom >= this.canvas.height) {
-        player.isDead = true; // mark death when leaving canvas bottom
-      }
-    }
+    player.handleFallOffWorld(grounded, currBottom, this.canvas.height);
 
     // ----- HORIZONTAL BOUNDS -----
     if (player.x < this.left) player.x = this.left;

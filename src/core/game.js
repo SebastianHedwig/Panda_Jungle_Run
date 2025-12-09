@@ -4,7 +4,7 @@ import { Camera } from "../engine/camera.class.js";
 import { World } from "./world.class.js";
 import { Player } from "./player.class.js";
 import { createLevel1Platforms } from "../game/level1.js";
-import { WORLD_WIDTH } from "../config.js";
+import { WORLD_WIDTH, GAME_WIDTH, GAME_HEIGHT } from "../config.js";
 
 let canvas, ctx;
 let background, camera, player, input, world;
@@ -14,6 +14,10 @@ let lastTime = 0;
 export function initGame() {
   canvas = document.getElementById("game");
   ctx = canvas.getContext("2d");
+  canvas.width = GAME_WIDTH;
+  canvas.height = GAME_HEIGHT;
+  canvas.style.width = `${GAME_WIDTH}px`;
+  canvas.style.height = `${GAME_HEIGHT}px`;
 
   input = new Input();
   world = new World(canvas, WORLD_WIDTH);

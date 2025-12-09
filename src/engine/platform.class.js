@@ -18,9 +18,9 @@
       middleLong:  { left: 0.045, right: 0.045 },
       endLong:     { left: 0.10, right: 0.10 },
       startShort:  { left: 0.08, right: 0.04 },
-      middleShort: { left: 0.06, right: 0.06 },
+      middleShort: { left: 0.12, right: 0.12 },
       endShort:    { left: 0.04, right: 0.08 },
-      filler:      { left: 0.045, right: 0.045 }
+      filler:      { left: 0.08, right: 0.08 }
     };
     const trims = typeSideTrims[type] || { left: 0.045, right: 0.045 };
     this.sideTrimLeft = trims.left;

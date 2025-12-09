@@ -17,7 +17,7 @@ export class PlatformBuilder {
   }
 
   /* ============================================================
-     PRIMITIVE PLATTFORM TEILE (Manuelles Levelbuilding)
+     PLATTFORM TEILE (Manuelles Levelbuilding)
      ============================================================ */
 
   startLong(x, y)  { return this.add("startLong", x + 40, y); }

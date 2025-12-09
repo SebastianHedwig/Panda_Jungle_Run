@@ -4,14 +4,18 @@ export class Input {
     this.keysPressed = new Set();
 
     window.addEventListener("keydown", (event) => {
-      if (!this.keysDown.has(event.key)) {
-        this.keysPressed.add(event.key);
+      const key =
+        event.key.length === 1 ? event.key.toLowerCase() : event.key;
+      if (!this.keysDown.has(key)) {
+        this.keysPressed.add(key);
       }
-      this.keysDown.add(event.key);
+      this.keysDown.add(key);
     });
 
     window.addEventListener("keyup", (event) => {
-      this.keysDown.delete(event.key);
+      const key =
+        event.key.length === 1 ? event.key.toLowerCase() : event.key;
+      this.keysDown.delete(key);
     });
   }
 

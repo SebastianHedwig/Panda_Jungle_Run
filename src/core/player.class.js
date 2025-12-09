@@ -61,6 +61,9 @@ export class Player extends MovableObject {
 
     /** ----- DIRECTION ----- */
     this.facing = 1;
+
+    /** ----- LIFE-STATE ----- */
+    this.isDead = false;
   }
 
   /** ----- ANIMATION CONTROL ----- */
@@ -89,6 +92,7 @@ export class Player extends MovableObject {
     this.onGround = false;
   }
 
+  /** ----- GRAVITY WITH APEX BOOST ----- */
   applyApexGravity(dt) {
     const goingUp = this.vy < 0;
     const nearApex = Math.abs(this.vy) < this.apexThreshold;
@@ -132,10 +136,18 @@ export class Player extends MovableObject {
     if (this.attackTimer <= 0) this.isAttacking = false;
   }
 
+  /** ----- OFFSCREEN DEATH CHECK ----- */
+  handleFallOffWorld(grounded, currBottom, canvasHeight) {
+    if (!grounded) {
+      this.onGround = false;
+      if (currBottom >= canvasHeight) this.isDead = true;   //MUSS NOCHMAL ÜBERARBEITET WERDEN!!!!
+    }
+  }
+
   /** ----- UPDATE LOOP ----- */
   update(dt, input) {
     /** ATTACK INPUT */
-    if (input.isPressed("a")) this.startAttack();
+    if (input.isPressed("Enter")) this.startAttack();
 
     this.updateAttack(dt);
 
@@ -150,7 +162,7 @@ export class Player extends MovableObject {
     /** SLIDE KEYS */
     const slideKeysDown =
       input.isDown("Shift") &&
-      (input.isDown("S") || input.isDown("ArrowDown"));
+      (input.isDown("s") || input.isDown("ArrowDown"));
 
     /** ACTIVE SLIDE */
     if (this.isSliding) {
@@ -170,9 +182,12 @@ export class Player extends MovableObject {
     /** START SLIDE */
     if (
       this.onGround &&
-      (input.isDown("ArrowLeft") || input.isDown("ArrowRight")) &&
       slideKeysDown &&
-      this.slideReady
+      this.slideReady &&
+      (input.isDown("ArrowLeft") ||
+        input.isDown("ArrowRight") ||
+        input.isDown("a") ||
+        input.isDown("d"))
     ) {
       this.startSlide();
       this.slideReady = false;
@@ -184,12 +199,12 @@ export class Player extends MovableObject {
     let moving = false;
     let running = false;
 
-    if (input.isDown("ArrowLeft")) {
+    if (input.isDown("ArrowLeft") || input.isDown("a")) {
       this.moveLeft(dt);
       this.facing = -1;
       moving = true;
     }
-    if (input.isDown("ArrowRight")) {
+    if (input.isDown("ArrowRight") || input.isDown("d")) {
       this.moveRight(dt);
       this.facing = 1;
       moving = true;
