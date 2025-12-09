@@ -65,11 +65,12 @@ export class Bullet {
 
   collidesWith(obj) {
     const bounds = this.getBounds();
+    const target = obj.getHitbox ? obj.getHitbox() : obj;
     return (
-      bounds.x < obj.x + obj.width &&
-      bounds.x + bounds.width > obj.x &&
-      bounds.y < obj.y + obj.height &&
-      bounds.y + bounds.height > obj.y
+      bounds.x < target.x + target.width &&
+      bounds.x + bounds.width > target.x &&
+      bounds.y < target.y + target.height &&
+      bounds.y + bounds.height > target.y
     );
   }
 

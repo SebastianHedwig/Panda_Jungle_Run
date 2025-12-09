@@ -3,6 +3,7 @@
     this.img = image;
     this.x = x;
     this.y = y;
+    this.type = type;
 
     this.width = image.width;
     this.height = image.height;

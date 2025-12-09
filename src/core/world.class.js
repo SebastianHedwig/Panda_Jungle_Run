@@ -15,6 +15,7 @@ export class World {
     this.platforms = [];
     this.collectables = [];
     this.hudPopups = [];
+    this.enemies = [];
 
     /** ----- PROJECTILES & FX ----- */
     this.bullets = [];
@@ -33,8 +34,14 @@ export class World {
     this.collectables.push(...items);
   }
 
+  /** ---------- ADD ENEMIES ---------- */
+  addEnemies(enemies) {
+    this.enemies.push(...enemies);
+  }
+
   /** ---------- PLATFORM COLLISION LOGIC ---------- */
   applyPlatformCollisions(player) {
+    if (player?.isDead || player?.collisionDisabled) return;
     let grounded = false;
 
     const prevBottom = player.y + player.height - player.vy;
@@ -140,5 +147,17 @@ export class World {
   renderProjectiles(ctx, camera) {
     this.bullets.forEach((b) => b.render(ctx, camera));
     this.explosions.forEach((e) => e.render(ctx, camera));
+  }
+
+  /** ---------- UPDATE & RENDER ENEMIES ---------- */
+  updateEnemies(dt, player) {
+    this.enemies = this.enemies.filter((e) => {
+      e.update(dt, player);
+      return !e.remove;
+    });
+  }
+
+  renderEnemies(ctx, camera) {
+    this.enemies.forEach((e) => e.render(ctx, camera));
   }
 }

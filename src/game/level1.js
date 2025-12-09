@@ -1,5 +1,6 @@
 import { PlatformBuilder } from "../engine/platformBuilder.class.js";
 import { CollectableItem } from "../core/collectableItems.class.js";
+import { Enemy1 } from "../core/enemy1.class.js";
 import { WORLD_WIDTH } from "../config.js";
 
 /** ---------- PLATFORM SETUP ---------- */
@@ -195,6 +196,30 @@ export function placeGuns(world, count = 4) {
   });
 
   world.addCollectables(guns);
+}
+
+export function placeEnemies(world, enemySprites, count = 5) {
+  if (!enemySprites) return;
+
+  const platforms = world.platforms
+    .filter((p) => p.width > 80 && p.top <= world.baseGround)
+    .filter((p) => p.supportsLanding)
+    .filter((p) => p.left > 200);
+
+  for (let i = platforms.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [platforms[i], platforms[j]] = [platforms[j], platforms[i]];
+  }
+
+  const enemies = [];
+  for (let i = 0; i < Math.min(count, platforms.length); i++) {
+    const p = platforms[i];
+    const ex = Math.min(Math.max(p.left + 60, p.left + 20), p.right - 120);
+    const ey = p.top - 110;
+    enemies.push(new Enemy1(ex, ey, enemySprites, world));
+  }
+
+  if (enemies.length) world.addEnemies(enemies);
 }
 
 export function placeHearts(world, count = 3) {

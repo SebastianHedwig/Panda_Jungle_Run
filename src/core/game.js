@@ -10,8 +10,10 @@ import {
   generateCoinArcs,
   placeHearts,
   placeGuns,
+  placeEnemies,
 } from "../game/level1.js";
 import { WORLD_WIDTH, GAME_WIDTH, GAME_HEIGHT } from "../config.js";
+import { Enemy1, loadEnemy1Sprites } from "./enemy1.class.js";
 
 let canvas, ctx;
 let background, camera, player, input, world;
@@ -109,6 +111,7 @@ export function initGame() {
     "Die",
     10
   );
+  const enemy1Sprites = loadEnemy1Sprites();
 
   hudCoinImg = loadImage("./assets/img/Coin/Coin_0000000.png");
   hudGunImg = loadImage("./assets/img/Character/Spriter_files/gun.png");
@@ -126,6 +129,10 @@ export function initGame() {
       ...shoot,
       ...hurt,
       ...die,
+      ...enemy1Sprites.idle,
+      ...enemy1Sprites.walk,
+      ...enemy1Sprites.attack,
+      ...enemy1Sprites.die,
       hudGunImg,
     ].map(waitForImage)
   ).then(() =>
@@ -139,6 +146,7 @@ export function initGame() {
       slide,
       attack,
       shoot,
+      enemy1Sprites,
       hurt,
       die
     )
@@ -155,6 +163,7 @@ function start(
   slide,
   attack,
   shoot,
+  enemy1Sprites,
   hurt,
   die
 ) {
@@ -177,6 +186,7 @@ function start(
   world.addCollectables(collectables);
   placeHearts(world);
   placeGuns(world);
+  placeEnemies(world, enemy1Sprites, 5);
 
   const spawnX = 25;
   const groundTop = world.baseGround ?? canvas.height;
@@ -221,6 +231,7 @@ function update(dt) {
 
   world.applyPlatformCollisions(player);
   world.collectables.forEach((c) => c.update(dt));
+  world.updateEnemies(dt, player);
   world.updateProjectiles(dt, world.enemies ?? []);
 
   checkCollectables();
@@ -260,6 +271,7 @@ function draw() {
   world.collectables.forEach((c) => c.draw(ctx, camera));
   world.hudPopups.forEach((p) => p.draw(ctx, camera));
   world.renderProjectiles(ctx, camera);
+  world.renderEnemies(ctx, camera);
   player.render(ctx, camera);
 
   drawHUD();

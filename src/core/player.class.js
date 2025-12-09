@@ -1,6 +1,8 @@
 import { MovableObject } from "./movableObject.class.js";
 import { HudPopup } from "./hudPopup.class.js";
 
+const DEBUG_HITBOX = false;
+
 export class Player extends MovableObject {
   constructor(
     x,
@@ -50,6 +52,9 @@ export class Player extends MovableObject {
     this.isAttacking = false;
     this.attackDuration = 0.4;
     this.attackTimer = 0;
+    this.attackHitDone = false;
+    this.attackRange = 160;
+    this.attackHeightTolerance = 100;
 
     /** ----- SHOOT ----- */
     this.isShooting = false;
@@ -73,6 +78,7 @@ export class Player extends MovableObject {
     this.invulnerableBlinkInterval = 0.15;
     this.lastSafeX = x;
     this.lastSafeY = y;
+    this.collisionDisabled = false;
 
     /** ----- ADVANCED JUMP ----- */
     this.coyoteTime = 0.1;
@@ -190,6 +196,17 @@ export class Player extends MovableObject {
     this.vx = 0;
     this.setAnimation(this.dieFrames);
     this.currentFrame = 0;
+    this.invulnerableTimer = 0;
+    this.collisionDisabled = true;
+    this.deathDone = false;
+  }
+
+  startSlide() {
+    if (this.isSliding || !this.onGround) return;
+    this.isSliding = true;
+    this.slideStartX = this.x;
+    this.slideDir = this.facing;
+    this.vy = 0;
   }
 
   respawnFromFall() {
@@ -247,6 +264,7 @@ export class Player extends MovableObject {
 
     this.isAttacking = true;
     this.attackTimer = this.attackDuration;
+    this.attackHitDone = false;
     this.setAnimation(this.throwFrames);
     this.currentFrame = 0;
   }
@@ -254,6 +272,26 @@ export class Player extends MovableObject {
   updateAttack(dt) {
     if (!this.isAttacking) return;
     this.attackTimer -= dt;
+    if (!this.attackHitDone && this.world?.enemies) {
+      const px = this.x + this.width / 2;
+      const py = this.y + this.height / 2;
+      for (const enemy of this.world.enemies) {
+        if (enemy.isDead) continue;
+        const ex = enemy.x + enemy.width / 2;
+        const ey = enemy.y + enemy.height / 2;
+        const dx = ex - px;
+        const dy = Math.abs(ey - py);
+        if (
+          Math.abs(dx) <= this.attackRange &&
+          dy <= this.attackHeightTolerance &&
+          Math.sign(dx || 1) === this.facing
+        ) {
+          enemy.takeDamage?.(1);
+          this.attackHitDone = true;
+          break;
+        }
+      }
+    }
     if (this.attackTimer <= 0) this.isAttacking = false;
   }
 
@@ -322,7 +360,20 @@ export class Player extends MovableObject {
     if (this.isDead) {
       this.setAnimation(this.dieFrames);
       this.applyApexGravity(dt);
-      this.animate(dt);
+      if (!this.deathDone) {
+        this.frameTime += dt;
+        if (this.frameTime >= this.frameSpeed) {
+          this.frameTime = 0;
+          this.currentFrame = Math.min(
+            this.currentFrame + 1,
+            this.currentAnimation.length - 1
+          );
+          this.sprite = this.currentAnimation[this.currentFrame];
+          if (this.currentFrame === this.currentAnimation.length - 1) {
+            this.deathDone = true;
+          }
+        }
+      }
       return;
     }
 
@@ -440,8 +491,7 @@ export class Player extends MovableObject {
 
   /** ----- RENDER ----- */
   render(ctx, camera) {
-    // blink when invulnerable
-    if (this.invulnerableTimer > 0) {
+    if (!this.isDead && this.invulnerableTimer > 0) {
       const phase = Math.floor(this.invulnerableTimer / this.invulnerableBlinkInterval);
       if (phase % 2 === 0) return;
     }
@@ -465,6 +515,29 @@ export class Player extends MovableObject {
         this.height
       );
     }
+
+    if (DEBUG_HITBOX) {
+      const box = this.getHitbox();
+      ctx.strokeStyle = "rgba(0,120,255,0.6)";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(
+        box.x - camera.x,
+        box.y - camera.y,
+        box.width,
+        box.height
+      );
+    }
     ctx.restore();
+  }
+
+  getHitbox() {
+    const shrinkX = this.width * 0.5;
+    const shrinkY = this.height * 0.2;
+    return {
+      x: this.x + shrinkX / 2,
+      y: this.y + shrinkY,
+      width: this.width - shrinkX,
+      height: this.height - shrinkY,
+    };
   }
 }
