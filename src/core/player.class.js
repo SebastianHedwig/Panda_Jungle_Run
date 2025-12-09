@@ -146,7 +146,6 @@ export class Player extends MovableObject {
 
   /** ----- UPDATE LOOP ----- */
   update(dt, input) {
-    /** ATTACK INPUT */
     if (input.isPressed("Enter")) this.startAttack();
 
     this.updateAttack(dt);

@@ -3,7 +3,7 @@ import { Background } from "../engine/background.class.js";
 import { Camera } from "../engine/camera.class.js";
 import { World } from "./world.class.js";
 import { Player } from "./player.class.js";
-import { createLevel1Platforms } from "../game/level1.js";
+import { createLevel1Platforms, createLevel1Collectables, generateCoinsMixed, generateCoinArcs } from "../game/level1.js";
 import { WORLD_WIDTH, GAME_WIDTH, GAME_HEIGHT } from "../config.js";
 
 let canvas, ctx;
@@ -20,11 +20,11 @@ export function initGame() {
   canvas.style.height = `${GAME_HEIGHT}px`;
 
   input = new Input();
-  world = new World(canvas, WORLD_WIDTH);
+  world = new World(canvas);
   camera = new Camera(canvas, WORLD_WIDTH);
   background = new Background(canvas);
 
-  /** ---------- BACKGROUND IMAGES ---------- */
+  /** ---------- LOAD ASSETS ---------- */
   const bgImages = [
     loadImage("./assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-1.png"),
     loadImage("./assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-2.png"),
@@ -71,21 +71,31 @@ export function initGame() {
   .then(() => {
     const [bg1, bg2, bg3, bg4, cloud1, cloud2] = bgImages;
 
-    /** ----- BACKGROUND ----- */
+    /** ----- BACKGROUND LAYERS ----- */
     background.addLayer(bg1, 0.1, 0.01);
     background.spawnClouds(cloud1, cloud2);
     background.addLayer(bg2, 0.3, 0.03);
     background.addLayer(bg3, 0.6, 0.06);
     background.addLayer(bg4, 1.0, 0.1);
 
-    /** ----- LEVEL PLATFORMS ----- */
+    /** ----- PLATFORMS ----- */
     const platforms = createLevel1Platforms(platformSprites);
     world.addPlatforms(platforms);
+
+    /** ----- COLLECTABLES ----- */
+    const collectables = [
+      ...createLevel1Collectables(),
+      ...generateCoinsMixed(world, 20, 0.5),
+      ...generateCoinArcs(world, 6), 
+    ];
+
+    world.addCollectables(collectables);
 
     /** ----- PLAYER ----- */
     const spawnX = 25;
     const groundTop = Number.isFinite(world.baseGround) ? world.baseGround : canvas.height;
     const spawnY = Math.min(canvas.height * 0.5, groundTop - 200);
+
     player = new Player(
       spawnX, Math.max(0, spawnY),
       idleFrames,
@@ -113,8 +123,8 @@ function loop(timestamp) {
 
   update(dt);
   draw();
-
   input.endFrame();
+
   requestAnimationFrame(loop);
 }
 
@@ -123,8 +133,23 @@ function update(dt) {
   player.update(dt, input);
   camera.follow(player, 0.08);
   background.update(camera.x, camera.y, dt);
-
+  world.playerSpeed = Math.abs(player.vx);
   world.applyPlatformCollisions(player);
+  world.collectables.forEach(c => c.update(dt));
+  checkCollectables();
+}
+
+/** ---------- CHECK COLLECTABLES ---------- */
+function checkCollectables() {
+  if (!world.collectables) return;
+
+  world.collectables = world.collectables.filter(item => {
+    if (!item.collected && item.isColliding(player)) {
+      item.collect(player);
+      return false;
+    }
+    return true;
+  });
 }
 
 /** ---------- DRAW ---------- */
@@ -132,14 +157,20 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   background.render(ctx, camera);
 
-  if (world.platforms) {
+  if (world.platforms.length) {
     world.platforms.forEach(p => p.render(ctx, camera));
+  }
+
+  /** ----- RENDER COLLECTABLES ----- */
+  if (world.collectables.length) {
+    world.collectables.forEach(item => item.draw(ctx, camera));
   }
 
   player.render(ctx, camera);
 }
 
-/** ---------- HELPERS ---------- */
+
+/** ---------- LOAD IMAGE HELPERS ---------- */
 export function loadImage(src) {
   const img = new Image();
   img.src = src;
@@ -168,4 +199,3 @@ function waitForImage(img) {
     img.onerror = reject;
   });
 }
-

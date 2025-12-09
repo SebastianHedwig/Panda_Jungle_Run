@@ -9,15 +9,25 @@ export class World {
     this.right = this.width;
 
     this.baseGround = canvas.height;
+
+    /** ----- LEVEL OBJECTS ----- */
     this.platforms = [];
+    this.collectables = [];
   }
 
+  /** ---------- ADD PLATFORMS ---------- */
   addPlatforms(platforms) {
     this.platforms.push(...platforms);
     const floorTop = Math.max(...this.platforms.map(p => p.top));
     if (Number.isFinite(floorTop)) this.baseGround = floorTop;
   }
 
+  /** ---------- ADD COLLECTABLES ---------- */
+  addCollectables(items) {
+    this.collectables.push(...items);
+  }
+
+  /** ---------- PLATFORM COLLISION LOGIC ---------- */
   applyPlatformCollisions(player) {
     let grounded = false;
 
@@ -29,9 +39,9 @@ export class World {
       const overlapsY = currBottom > p.top && currTop < p.bottom;
       const overlapsX = player.x + player.width > p.left && player.x < p.right;
 
-      // ----- VERTIKALE KOLLISIONEN -----
+      /** ----- LANDING / VERTICAL COLLISION ----- */
       if (p.supportsLanding && overlapsY && overlapsX) {
-        // ----- LANDEN -----
+        // LANDING FROM ABOVE
         if (
           player.vy > 0 &&
           prevBottom <= p.top &&
@@ -44,7 +54,7 @@ export class World {
           continue;
         }
 
-        // ----- KOPFSTOSS -----
+        // HEAD BUMP FROM BELOW
         if (
           player.vy < 0 &&
           currTop <= p.bottom &&
@@ -56,10 +66,9 @@ export class World {
         }
       }
 
-      // ----- SEITENWÄNDE -----
-
+      /** ----- SIDE WALLS ----- */
       if (p.hasSideWalls && overlapsY && currBottom > p.top + p.sideWallGap && player.vy >= 0) {
-        // von links kommend
+        // WALL FROM LEFT
         if (
           player.x + player.width > p.left &&
           player.x <= p.left &&
@@ -67,7 +76,7 @@ export class World {
         ) {
           player.x = p.left - player.width;
         }
-        // von rechts kommend
+        // WALL FROM RIGHT
         if (
           player.x < p.right &&
           player.x + player.width >= p.right &&
@@ -78,12 +87,26 @@ export class World {
       }
     }
 
-    // ----- FALLBACK / TOD BEI STURZ -----
+    /** ----- FALLBACK: WORLD LIMIT / DEATH ----- */
     player.handleFallOffWorld(grounded, currBottom, this.canvas.height);
 
-    // ----- HORIZONTAL BOUNDS -----
+    /** ----- HORIZONTAL BOUNDS ----- */
     if (player.x < this.left) player.x = this.left;
     if (player.x > this.right - player.width)
       player.x = this.right - player.width;
   }
+
+  /** ---------- VALID COIN SPAWN CHECK ---------- */
+coinPositionIsValid(x, y, width = 50, height = 50) {
+  return !this.platforms.some(p => {
+    const overlapsX = x + width > p.left && x < p.right;
+    const coinBottom = y + height;
+    const coinTop = y;
+    const platformTop = p.top;
+    const platformBottom = p.bottom;
+    const overlapsY = coinBottom > platformTop && coinTop < platformBottom;
+    return overlapsX && overlapsY;
+  });
+}
+
 }
