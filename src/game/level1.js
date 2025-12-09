@@ -141,12 +141,27 @@ export function createLevel1Collectables() {
   return [];
 }
 
-export function placeGuns(world, count = 3) {
+export function placeGuns(world, count = 4) {
   const guns = [];
+  const minHeartDistance = 300;
+
+  const heartCenters =
+    world.collectables
+      ?.filter((c) => c.type === "heart")
+      .map((c) => ({ x: c.x + c.width / 2, y: c.y + c.height / 2 })) || [];
+
+  const farFromHearts = (x, y) =>
+    heartCenters.every((h) => {
+      const dx = h.x - x;
+      const dy = h.y - y;
+      return Math.hypot(dx, dy) >= minHeartDistance;
+    });
+
   const targets = [
-    WORLD_WIDTH * 0.18,
-    WORLD_WIDTH * 0.55,
-    WORLD_WIDTH * 0.85,
+    WORLD_WIDTH * 0.15,
+    WORLD_WIDTH * 0.38,
+    WORLD_WIDTH * 0.62,
+    WORLD_WIDTH * 0.86,
   ].slice(0, count);
 
   targets.forEach((x) => {
@@ -158,13 +173,31 @@ export function placeGuns(world, count = 3) {
       platform.right - 60
     );
     const y = platform.top - 80;
-    guns.push(new CollectableItem(clampedX, y, "gun"));
+
+    const offsets = [0, 150, -150, 250, -250];
+    let placed = false;
+    for (const off of offsets) {
+      const px = Math.min(
+        Math.max(clampedX + off, platform.left + 10),
+        platform.right - 60
+      );
+      const centerX = px + 25;
+      const centerY = y + 25;
+      if (farFromHearts(centerX, centerY)) {
+        guns.push(new CollectableItem(px, y, "gun"));
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) {
+      guns.push(new CollectableItem(clampedX, y, "gun"));
+    }
   });
 
   world.addCollectables(guns);
 }
 
-export function placeHearts(world, count = 2) {
+export function placeHearts(world, count = 3) {
   const validHearts = [];
 
   const minX = WORLD_WIDTH * 0.25;
@@ -172,6 +205,7 @@ export function placeHearts(world, count = 2) {
   const maxX = WORLD_WIDTH * 0.95;
 
   const positions = [
+    Math.random() * (WORLD_WIDTH * 0.2) + minX,
     Math.random() * (WORLD_WIDTH * 0.25) + midX,
     Math.random() * (WORLD_WIDTH * 0.1) + maxX,
   ];

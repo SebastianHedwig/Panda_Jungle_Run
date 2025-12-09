@@ -13,6 +13,13 @@ export class MovableObject {
     this.onGround = true;
 
     this.facing = 1;
+
+    /** Jump physics defaults */
+    this.jumpForce = 1200;
+    this.gravityUp = 2500;
+    this.gravityDown = 3500;
+    this.apexBoost = 0.6;
+    this.apexThreshold = 120;
   }
 
   moveLeft(dt) {
@@ -27,6 +34,21 @@ export class MovableObject {
 
   applyGravity(dt) {
     this.vy += this.gravity * dt;
+    this.y += this.vy * dt;
+  }
+
+  jump() {
+    this.vy = -this.jumpForce;
+    this.onGround = false;
+  }
+
+  applyApexGravity(dt) {
+    const up = this.vy < 0;
+    const near = Math.abs(this.vy) < this.apexThreshold;
+
+    this.vy += (up ? this.gravityUp : this.gravityDown) * dt;
+    if (up && near) this.vy *= this.apexBoost;
+
     this.y += this.vy * dt;
   }
 }

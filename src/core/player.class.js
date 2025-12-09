@@ -74,13 +74,6 @@ export class Player extends MovableObject {
     this.lastSafeX = x;
     this.lastSafeY = y;
 
-    /** ----- JUMP PHYSICS ----- */
-    this.jumpForce = 1200;
-    this.gravityUp = 2500;
-    this.gravityDown = 3500;
-    this.apexBoost = 0.6;
-    this.apexThreshold = 120;
-
     /** ----- ADVANCED JUMP ----- */
     this.coyoteTime = 0.1;
     this.coyoteTimer = 0;
@@ -305,22 +298,6 @@ export class Player extends MovableObject {
 
     this.shootTimer -= dt;
     if (this.shootTimer <= 0) this.isShooting = false;
-  }
-
-  /** ----- JUMP ----- */
-  jump() {
-    this.vy = -this.jumpForce;
-    this.onGround = false;
-  }
-
-  applyApexGravity(dt) {
-    const up = this.vy < 0;
-    const near = Math.abs(this.vy) < this.apexThreshold;
-
-    this.vy += (up ? this.gravityUp : this.gravityDown) * dt;
-    if (up && near) this.vy *= this.apexBoost;
-
-    this.y += this.vy * dt;
   }
 
   /** ----- WORLD FALL DEATH ----- */
