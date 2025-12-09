@@ -1,4 +1,5 @@
 ﻿import { WORLD_WIDTH } from "../config.js";
+import { Bullet, Explosion } from "./bullet.class.js";
 
 export class World {
   constructor(canvas) {
@@ -15,12 +16,15 @@ export class World {
     this.collectables = [];
     this.hudPopups = [];
 
+    /** ----- PROJECTILES & FX ----- */
+    this.bullets = [];
+    this.explosions = [];
   }
 
   /** ---------- ADD PLATFORMS ---------- */
   addPlatforms(platforms) {
     this.platforms.push(...platforms);
-    const floorTop = Math.max(...this.platforms.map(p => p.top));
+    const floorTop = Math.max(...this.platforms.map((p) => p.top));
     if (Number.isFinite(floorTop)) this.baseGround = floorTop;
   }
 
@@ -41,14 +45,9 @@ export class World {
       const overlapsY = currBottom > p.top && currTop < p.bottom;
       const overlapsX = player.x + player.width > p.left && player.x < p.right;
 
-      /** ----- LANDING / VERTICAL COLLISION ----- */
+      // LANDING FROM ABOVE
       if (p.supportsLanding && overlapsY && overlapsX) {
-        // LANDING FROM ABOVE
-        if (
-          player.vy > 0 &&
-          prevBottom <= p.top &&
-          currBottom >= p.top
-        ) {
+        if (player.vy > 0 && prevBottom <= p.top && currBottom >= p.top) {
           player.y = p.top - player.height;
           player.vy = 0;
           player.onGround = true;
@@ -56,7 +55,7 @@ export class World {
           continue;
         }
 
-        // HEAD BUMP FROM BELOW
+        // HEAD BUMP
         if (
           player.vy < 0 &&
           currTop <= p.bottom &&
@@ -69,51 +68,76 @@ export class World {
       }
 
       /** ----- SIDE WALLS ----- */
-      if (p.hasSideWalls && overlapsY && currBottom > p.top + p.sideWallGap && player.vy >= 0) {
-        // WALL FROM LEFT
-        if (
-          player.x + player.width > p.left &&
-          player.x <= p.left &&
-          currBottom > p.top + p.cornerCutLeft * p.colliderHeight
-        ) {
+      if (
+        p.hasSideWalls &&
+        overlapsY &&
+        currBottom > p.top + p.sideWallGap &&
+        player.vy >= 0
+      ) {
+        if (player.x + player.width > p.left && player.x <= p.left) {
           player.x = p.left - player.width;
         }
-        // WALL FROM RIGHT
-        if (
-          player.x < p.right &&
-          player.x + player.width >= p.right &&
-          currBottom > p.top + p.cornerCutRight * p.colliderHeight
-        ) {
+        if (player.x < p.right && player.x + player.width >= p.right) {
           player.x = p.right;
         }
       }
     }
 
-    /** ----- FALLBACK: WORLD LIMIT / DEATH ----- */
+    /** ----- FALL OFF WORLD ----- */
     player.handleFallOffWorld(grounded, currBottom, this.canvas.height);
 
-    /** ----- HORIZONTAL BOUNDS ----- */
+    /** ----- WORLD HORIZONTAL LIMITS ----- */
     if (player.x < this.left) player.x = this.left;
     if (player.x > this.right - player.width)
       player.x = this.right - player.width;
   }
 
   /** ---------- VALID COIN SPAWN CHECK ---------- */
-coinPositionIsValid(x, y, width = 50, height = 50) {
-  return !this.platforms.some(p => {
-    const overlapsX = x + width > p.left && x < p.right;
-    const coinBottom = y + height;
-    const coinTop = y;
-    const platformTop = p.top;
-    const platformBottom = p.bottom;
-    const overlapsY = coinBottom > platformTop && coinTop < platformBottom;
-    return overlapsX && overlapsY;
-  });
-}
+  coinPositionIsValid(x, y, width = 50, height = 50) {
+    return !this.platforms.some((p) => {
+      const overlapsX = x + width > p.left && x < p.right;
+      const coinBottom = y + height;
+      const coinTop = y;
+      const platformTop = p.top;
+      const platformBottom = p.bottom;
+      const overlapsY = coinBottom > platformTop && coinTop < platformBottom;
+      return overlapsX && overlapsY;
+    });
+  }
 
-  /** ---------- ADD HUD POPUP ---------- */
-addPopup(popup) {
-  this.hudPopups.push(popup);
-}
+  /** ---------- HUD POPUP ---------- */
+  addPopup(popup) {
+    this.hudPopups.push(popup);
+  }
 
+  /* ===========================================================
+     BULLET & FX HANDLING
+     =========================================================== */
+
+  spawnBullet(x, y, direction) {
+    this.bullets.push(new Bullet(x, y, direction, this));
+  }
+
+  spawnExplosion(x, y) {
+    this.explosions.push(new Explosion(x, y));
+  }
+
+  /** ---------- UPDATE BULLETS & EXPLOSIONS ---------- */
+  updateProjectiles(dt, enemies = []) {
+    this.bullets = this.bullets.filter((b) => {
+      b.update(dt, enemies);
+      return !b.remove;
+    });
+
+    this.explosions = this.explosions.filter((e) => {
+      e.update(dt);
+      return !e.finished;
+    });
+  }
+
+  /** ---------- RENDER PROJECTILES & EXPLOSIONS ---------- */
+  renderProjectiles(ctx, camera) {
+    this.bullets.forEach((b) => b.render(ctx, camera));
+    this.explosions.forEach((e) => e.render(ctx, camera));
+  }
 }

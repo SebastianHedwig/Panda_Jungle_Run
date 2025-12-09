@@ -53,13 +53,18 @@ export function getCoinSpacing(playerSpeed) {
 }
 
 /** ---------- RANDOM + PLATFORM COINS ---------- */
-export function generateCoinsMixed(world, totalCount = 20, ratioAbovePlatforms = 0.5) {
+export function generateCoinsMixed(
+  world,
+  totalCount = 20,
+  ratioAbovePlatforms = 0.5
+) {
   const coins = [];
   const coinsAbove = Math.floor(totalCount * ratioAbovePlatforms);
 
   /** ----- COINS ÜBER PLATTFORMEN ----- */
   for (let i = 0; i < coinsAbove; i++) {
-    const platform = world.platforms[Math.floor(Math.random() * world.platforms.length)];
+    const platform =
+      world.platforms[Math.floor(Math.random() * world.platforms.length)];
     const width = platform.right - platform.left;
 
     if (width < 100) continue;
@@ -105,9 +110,7 @@ export function generateCoinArcs(world, maxArcs = 4) {
     const heightDiff = Math.abs(p2.top - p1.top);
 
     /** ----- SPRUNG WIRKLICH NÖTIG? ----- */
-    const mustJump =
-      gap >= 150 && gap <= 700 &&
-      heightDiff > 10;
+    const mustJump = gap >= 150 && gap <= 700 && heightDiff > 10;
 
     if (!mustJump) continue;
 
@@ -120,9 +123,7 @@ export function generateCoinArcs(world, maxArcs = 4) {
 
       const x = p1.right + gap * t - 25;
       const y =
-        p1.top - 110
-        - Math.sin(t * Math.PI) * 160
-        + (p2.top - p1.top) * t;
+        p1.top - 110 - Math.sin(t * Math.PI) * 160 + (p2.top - p1.top) * t;
 
       if (world.coinPositionIsValid(x, y, 50, 50)) {
         arcs.push(new CollectableItem(x, y, "coin"));
@@ -140,29 +141,52 @@ export function createLevel1Collectables() {
   return [];
 }
 
+export function placeGuns(world, count = 3) {
+  const guns = [];
+  const targets = [
+    WORLD_WIDTH * 0.18,
+    WORLD_WIDTH * 0.55,
+    WORLD_WIDTH * 0.85,
+  ].slice(0, count);
+
+  targets.forEach((x) => {
+    const platform = world.platforms.find((p) => x >= p.left && x <= p.right);
+    if (!platform) return;
+
+    const clampedX = Math.min(
+      Math.max(x, platform.left + 10),
+      platform.right - 60
+    );
+    const y = platform.top - 80;
+    guns.push(new CollectableItem(clampedX, y, "gun"));
+  });
+
+  world.addCollectables(guns);
+}
+
 export function placeHearts(world, count = 2) {
   const validHearts = [];
 
-  const minX = WORLD_WIDTH * 0.25;  // kein Herz im ersten Viertel
+  const minX = WORLD_WIDTH * 0.25;
   const midX = WORLD_WIDTH * 0.5;
   const maxX = WORLD_WIDTH * 0.95;
 
   const positions = [
-    Math.random() * (WORLD_WIDTH * 0.25) + midX, // Heart #1 Mitte
-    Math.random() * (WORLD_WIDTH * 0.1) + maxX   // Heart #2 fast am Ende
+    Math.random() * (WORLD_WIDTH * 0.25) + midX,
+    Math.random() * (WORLD_WIDTH * 0.1) + maxX,
   ];
 
   for (let i = 0; i < count; i++) {
     const x = positions[i];
 
-    // Höhe anhand Plattform unter diesem X ermitteln
-    const platform = world.platforms.find(p => x >= p.x && x <= p.x + p.width);
+    const platform = world.platforms.find(
+      (p) => x >= p.x && x <= p.x + p.width
+    );
 
-    if (!platform) continue; // kein spawn ohne referenz
+    if (!platform) continue;
 
-    const y = platform.y - 80; // 80px über der Plattform
+    const y = platform.y - 80;
 
-    // Ensure not colliding with platforms
     if (!isInsidePlatform(world, x, y)) {
       validHearts.push(new CollectableItem(x, y, "heart"));
     }
@@ -171,13 +195,12 @@ export function placeHearts(world, count = 2) {
   world.addCollectables(validHearts);
 }
 
-/** Checks if heart would be inside a platform */
 function isInsidePlatform(world, hx, hy) {
-  return world.platforms.some(p =>
-    hx + 30 > p.x &&
-    hx < p.x + p.width &&
-    hy + 30 > p.y &&
-    hy < p.y + p.height
+  return world.platforms.some(
+    (p) =>
+      hx + 30 > p.x &&
+      hx < p.x + p.width &&
+      hy + 30 > p.y &&
+      hy < p.y + p.height
   );
 }
-

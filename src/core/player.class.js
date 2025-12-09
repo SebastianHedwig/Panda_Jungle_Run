@@ -1,4 +1,5 @@
 import { MovableObject } from "./movableObject.class.js";
+import { HudPopup } from "./hudPopup.class.js";
 
 export class Player extends MovableObject {
   constructor(
@@ -9,7 +10,8 @@ export class Player extends MovableObject {
     runFrames,
     jumpFrames,
     slideFrames,
-    throwFrames
+    throwFrames,
+    shootFrames
   ) {
     super(x, y, 120, 140);
 
@@ -20,6 +22,7 @@ export class Player extends MovableObject {
     this.jumpFrames = jumpFrames;
     this.slideFrames = slideFrames;
     this.throwFrames = throwFrames;
+    this.shootFrames = shootFrames;
 
     this.currentAnimation = this.idleFrames;
     this.currentFrame = 0;
@@ -44,6 +47,19 @@ export class Player extends MovableObject {
     this.attackDuration = 0.4;
     this.attackTimer = 0;
 
+    /** ----- SHOOT ----- */
+    this.isShooting = false;
+    this.shootDuration = 0.35;
+    this.shootTimer = 0;
+    this.shootCooldown = 0;
+    this.shootCooldownDuration = 1.35;
+    this.shootFireDelay = 0.3;
+    this.shootFireTimer = 0;
+    this.shootHasFired = false;
+    this.shootFacing = 1;
+    this.bulletAmmo = 0;
+    this.gunPulse = 0;
+
     /** ----- JUMP PHYSICS ----- */
     this.jumpForce = 1200;
     this.gravityUp = 2500;
@@ -62,73 +78,90 @@ export class Player extends MovableObject {
     /** ----- FACING ----- */
     this.facing = 1;
 
-    /** ----- HEART-BASED HEALTH SYSTEM ----- */
-    this.maxHearts = 3;                   // Anzahl sichtbarer Herzen
-    this.healthPoints = this.maxHearts * 2; // 2 Halbpunkte pro Herz
+    /** ----- HEART SYSTEM ----- */
+    this.maxHearts = 3;
+    this.healthPoints = this.maxHearts * 2;
     this.maxHealthPoints = this.healthPoints;
-    this.healthPulse = 0;                 // Bounce beim Schaden
+    this.healthPulse = 0;
 
-    /** ----- COINS / HUD STATE ----- */
+    /** ----- COINS ----- */
     this.coins = 0;
-    this.hudPulse = 0;                    // Coin-Bounce
+    this.hudPulse = 0;
 
-    /** ----- DEATH STATE ----- */
+    /** ----- DEATH ----- */
     this.isDead = false;
   }
 
-  /** ----- HEART STATE ARRAY FOR HUD ----- */
+  /** ----- HEART STATES FOR HUD ----- */
   get heartStates() {
-    const states = [];
+    const s = [];
     for (let i = 0; i < this.maxHearts; i++) {
       const hp = this.healthPoints - i * 2;
-      if (hp >= 2) states.push(2);
-      else if (hp === 1) states.push(1);
-      else states.push(0);
+      if (hp >= 2) s.push(2);
+      else if (hp === 1) s.push(1);
+      else s.push(0);
     }
-    return states;
+    return s;
   }
 
-  /** ----- DAMAGE: zieht 1 = halbes Herz ab ----- */
+  /** ----- DAMAGE ----- */
   takeDamage(amount = 1) {
     if (this.isDead) return;
 
     this.healthPoints = Math.max(0, this.healthPoints - amount);
     this.healthPulse = 1.0;
 
-    // HUD DAMAGE POPUP
     if (this.world?.hudPopups) {
       this.world.hudPopups.push(
-        new HudPopup(`-${amount} ❤`, this.x + this.width / 2, this.y - 30, "damage")
+        new HudPopup(
+          `-${amount} ❤`,
+          this.x + this.width / 2,
+          this.y - 30,
+          "damage"
+        )
       );
     }
 
     if (this.healthPoints <= 0) this.isDead = true;
   }
 
-  /** ----- HEAL: heilt halbe Herzen ----- */
+  /** ----- HEAL ----- */
   heal(amount = 1) {
     if (this.isDead) return;
 
     const before = this.healthPoints;
-    this.healthPoints = Math.min(this.maxHealthPoints, this.healthPoints + amount);
+    this.healthPoints = Math.min(
+      this.maxHealthPoints,
+      this.healthPoints + amount
+    );
     const gained = this.healthPoints - before;
 
     if (gained > 0 && this.world?.hudPopups) {
       this.world.hudPopups.push(
-        new HudPopup(`+${gained} ❤`, this.x + this.width / 2, this.y - 30, "heal")
+        new HudPopup(
+          `+${gained} ❤`,
+          this.x + this.width / 2,
+          this.y - 30,
+          "heal"
+        )
       );
     }
 
     this.healthPulse = 1.0;
   }
 
-  /** ----- COIN GAIN ----- */
+  /** ----- COINS ----- */
   addCoins(amount) {
     this.coins += amount;
     this.hudPulse = 1.0;
   }
 
-  /** ----- ANIMATION CONTROL ----- */
+  addBullets(amount = 0) {
+    this.bulletAmmo = Math.max(0, this.bulletAmmo + amount);
+    this.gunPulse = 1.0;
+  }
+
+  /** ----- ANIMATION ----- */
   setAnimation(frames) {
     if (this.currentAnimation !== frames) {
       this.currentAnimation = frames;
@@ -142,14 +175,17 @@ export class Player extends MovableObject {
     this.frameTime += dt;
     if (this.frameTime >= this.frameSpeed) {
       this.frameTime = 0;
-      this.currentFrame = (this.currentFrame + 1) % this.currentAnimation.length;
+      this.currentFrame =
+        (this.currentFrame + 1) % this.currentAnimation.length;
       this.sprite = this.currentAnimation[this.currentFrame];
     }
   }
 
   /** ----- ATTACK ----- */
   startAttack() {
-    if (this.isAttacking || !this.onGround) return;
+    // block melee while ammo is available
+    if (this.bulletAmmo > 0) return;
+    if (this.isAttacking || this.isShooting || !this.onGround) return;
 
     this.isAttacking = true;
     this.attackTimer = this.attackDuration;
@@ -163,6 +199,43 @@ export class Player extends MovableObject {
     if (this.attackTimer <= 0) this.isAttacking = false;
   }
 
+  /** ----- SHOOT ----- */
+  startShoot() {
+    if (this.isShooting || this.isAttacking || this.shootCooldown > 0)
+      return false;
+    if (this.bulletAmmo <= 0) return false;
+
+    this.isShooting = true;
+    this.shootTimer = this.shootDuration;
+    this.shootFireTimer = this.shootFireDelay;
+    this.shootHasFired = false;
+    this.shootFacing = this.facing;
+    this.shootCooldown = this.shootCooldownDuration;
+    this.setAnimation(this.shootFrames);
+    this.currentFrame = 0;
+    return true;
+  }
+
+  updateShoot(dt) {
+    if (!this.isShooting) return;
+
+    if (!this.shootHasFired) {
+      this.shootFireTimer -= dt;
+      if (this.shootFireTimer <= 0 && this.world?.spawnBullet) {
+        const dir = this.shootFacing;
+        const muzzleX = this.x + (dir === 1 ? this.width : 0);
+        const muzzleY = this.y + this.height * 0.55;
+        this.world.spawnBullet(muzzleX, muzzleY, dir);
+        if (this.bulletAmmo > 0)
+          this.bulletAmmo = Math.max(0, this.bulletAmmo - 1);
+        this.shootHasFired = true;
+      }
+    }
+
+    this.shootTimer -= dt;
+    if (this.shootTimer <= 0) this.isShooting = false;
+  }
+
   /** ----- JUMP ----- */
   jump() {
     this.vy = -this.jumpForce;
@@ -171,24 +244,18 @@ export class Player extends MovableObject {
 
   applyApexGravity(dt) {
     const up = this.vy < 0;
-    const nearApex = Math.abs(this.vy) < this.apexThreshold;
+    const near = Math.abs(this.vy) < this.apexThreshold;
 
-    if (up) {
-      this.vy += this.gravityUp * dt;
-      if (nearApex) this.vy *= this.apexBoost;
-    } else {
-      this.vy += this.gravityDown * dt;
-    }
+    this.vy += (up ? this.gravityUp : this.gravityDown) * dt;
+    if (up && near) this.vy *= this.apexBoost;
+
     this.y += this.vy * dt;
   }
 
-  /** ----- OFFSCREEN WORLD DEATH ----- */
-  handleFallOffWorld(grounded, currBottom, canvasHeight) {
+  /** ----- WORLD FALL DEATH ----- */
+  handleFallOffWorld(grounded, bottom, canvasHeight) {
     if (grounded) return;
-
-    const deathLine = canvasHeight + this.height;
-
-    if (this.vy >= 0 && currBottom >= deathLine) {
+    if (this.vy >= 0 && bottom >= canvasHeight + this.height) {
       this.isDead = true;
       this.vx = 0;
       this.vy = 0;
@@ -197,11 +264,28 @@ export class Player extends MovableObject {
 
   /** ----- UPDATE LOOP ----- */
   update(dt, input) {
-    if (input.isPressed("Enter")) this.startAttack();
+    /** COOLDOWN TIMERS */
+    if (this.shootCooldown > 0)
+      this.shootCooldown = Math.max(0, this.shootCooldown - dt);
+    if (this.gunPulse > 0) this.gunPulse = Math.max(0, this.gunPulse - dt * 4);
+
+    /** ATTACK / SHOOT INPUT (Enter only, bullets take priority) */
+    if (input.isPressed("Enter")) {
+      if (this.bulletAmmo > 0) this.startShoot();
+      else this.startAttack();
+    }
+
+    this.updateShoot(dt);
+
+    if (this.isShooting) {
+      this.setAnimation(this.shootFrames);
+      this.applyApexGravity(dt);
+      this.animate(dt);
+      return;
+    }
 
     this.updateAttack(dt);
 
-    // Attack Lock
     if (this.isAttacking) {
       this.setAnimation(this.throwFrames);
       this.applyApexGravity(dt);
@@ -209,17 +293,16 @@ export class Player extends MovableObject {
       return;
     }
 
-    /** ----- SLIDE ----- */
+    /** SLIDE INPUT */
     const slideKeysDown =
-      input.isDown("Shift") &&
-      (input.isDown("s") || input.isDown("ArrowDown"));
+      input.isDown("Shift") && (input.isDown("s") || input.isDown("ArrowDown"));
 
     if (this.isSliding) {
       const moved = Math.abs(this.x - this.slideStartX);
       const t = Math.min(moved / this.slideDistance, 1);
-      const currentSlideSpeed = this.slideSpeed * (1 - t * 0.4);
+      const speed = this.slideSpeed * (1 - t * 0.4);
 
-      this.x += this.slideDir * currentSlideSpeed * dt;
+      this.x += this.slideDir * speed * dt;
       if (moved >= this.slideDistance) this.isSliding = false;
 
       this.setAnimation(this.slideFrames);
@@ -233,18 +316,20 @@ export class Player extends MovableObject {
       slideKeysDown &&
       this.slideReady &&
       (input.isDown("ArrowLeft") ||
-       input.isDown("ArrowRight") ||
-       input.isDown("a") ||
-       input.isDown("d"))
+        input.isDown("ArrowRight") ||
+        input.isDown("a") ||
+        input.isDown("d"))
     ) {
       this.startSlide();
       this.slideReady = false;
       return;
     }
+
     if (!slideKeysDown) this.slideReady = true;
 
-    /** ----- HORIZONTAL MOVEMENT ----- */
-    let moving = false, running = false;
+    /** MOVEMENT */
+    let moving = false,
+      running = false;
 
     if (input.isDown("ArrowLeft") || input.isDown("a")) {
       this.moveLeft(dt);
@@ -256,19 +341,17 @@ export class Player extends MovableObject {
       this.facing = 1;
       moving = true;
     }
-
     if (moving && input.isDown("Shift")) {
       this.speed = this.defaultSpeed * this.runMultiplier;
       running = true;
     } else this.speed = this.defaultSpeed;
 
-    /** ----- ANIMATION PRIORITY ----- */
     if (!this.onGround) this.setAnimation(this.jumpFrames);
     else if (running) this.setAnimation(this.runFrames);
     else if (moving) this.setAnimation(this.walkFrames);
     else this.setAnimation(this.idleFrames);
 
-    /** ----- ADVANCED JUMP BUFFER ----- */
+    /** ADVANCED JUMP */
     if (input.isPressed(" ")) {
       this.jumpBufferTimer = this.jumpBufferTime;
       this.jumpHeld = true;
@@ -283,10 +366,8 @@ export class Player extends MovableObject {
     }
 
     if (!this.jumpHeld && this.vy < 0) this.vy *= this.jumpCutMultiplier;
-
     this.jumpBufferTimer -= dt;
 
-    /** ----- PHYSICS & ANIMATION ----- */
     this.applyApexGravity(dt);
     this.animate(dt);
   }

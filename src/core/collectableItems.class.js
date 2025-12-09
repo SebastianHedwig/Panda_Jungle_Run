@@ -4,6 +4,7 @@ export const COLLECTABLE_VALUES = {
   coin: 10,
   enemy: 5,
   heart: 2,
+  gun: 0,
 };
 
 export class CollectableItem {
@@ -31,18 +32,23 @@ export class CollectableItem {
   }
 
   /** ---------- LOAD SPRITES ---------- */
-    loadAssets() {
+  loadAssets() {
     const assetMap = {
-        coin: [
+      coin: [
         "assets/img/Coin/Coin_0000000.png",
         "assets/img/Coin/Coin_0000001.png",
         "assets/img/Coin/Coin_0000002.png",
         "assets/img/Coin/Coin_0000003.png",
-        ],
-        heart: Array.from(
+      ],
+      heart: Array.from(
         { length: 49 },
-        (_, i) => `assets/img/PowerUps/heart/frame-${String(i + 1).padStart(2, "0")}.gif`
-        ),
+        (_, i) =>
+          `assets/img/PowerUps/heart/frame-${String(i + 1).padStart(
+            2,
+            "0"
+          )}.gif`
+      ),
+      gun: ["assets/img/Character/Spriter_files/gun.png"],
     };
 
     const list = assetMap[this.type];
@@ -50,18 +56,17 @@ export class CollectableItem {
 
     // ---- INDIVIDUAL ANIMATION SPEED ----
     if (this.type === "heart") {
-        this.frameDuration = 0.06;
+      this.frameDuration = 0.06;
     } else {
-        this.frameDuration = 0.12;
+      this.frameDuration = 0.12;
     }
 
     list.forEach((path) => {
-        const img = new Image();
-        img.src = path;
-        this.images.push(img);
+      const img = new Image();
+      img.src = path;
+      this.images.push(img);
     });
-    }
-
+  }
 
   /** ---------- UPDATE ANIMATION ---------- */
   update(dt) {
@@ -135,15 +140,24 @@ export class CollectableItem {
     this.pickupAnimating = true;
 
     if (this.type === "coin") {
-        player.addCoins(10);
-        player.world.hudPopups.push(new HudPopup("+10", this.x, this.y, "coin"));
+      player.addCoins(10);
+      player.world.hudPopups.push(new HudPopup("+10", this.x, this.y, "coin"));
     }
 
     if (this.type === "heart") {
-        player.heal(1); // halbes Herz
+      player.heal(2);
+      player.world.hudPopups.push(
+        new HudPopup("+1❤️", this.x, this.y, "heart")
+      );
     }
 
-    this.scale = 1; this.alpha = 1; this.rotation = 0;
-  }
+    if (this.type === "gun") {
+      player.addBullets?.(5);
+      player.world.hudPopups.push(new HudPopup("+5", this.x, this.y, "gun"));
+    }
 
+    this.scale = 1;
+    this.alpha = 1;
+    this.rotation = 0;
+  }
 }
