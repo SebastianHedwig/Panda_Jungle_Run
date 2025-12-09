@@ -1,21 +1,25 @@
 export class HudPopup {
-  constructor(x, y, text = "+10") {
+  constructor(text = "+10", x, y, type = "coin") {
+    this.text = text;
     this.x = x;
     this.y = y;
-    this.text = text;
+    this.type = type; // "coin" | "damage" | "heal"
 
     this.alpha = 1;
-    this.lift = 0;     // wie weit Popup nach oben fliegt
-    this.scale = 1.2;  // leicht größer starten für Punch
+    this.lift = 0;
+    this.scale = 1.25;
+    this.shake = 0;
   }
 
   update(dt) {
-    this.lift += dt * 40;     // Geschwindigkeit nach oben
-    this.alpha -= dt * 1.6;   // verblasst
-    this.scale -= dt * 0.4;   // schrumpft sanft zurück
+    this.lift += dt * 40;
+    this.alpha -= dt * 1.4;
+    this.scale -= dt * 0.3;
+    if (this.scale < 1) this.scale = 1;
+
+    if (this.type === "damage") this.shake = Math.sin(Date.now() * 0.04) * 3;
 
     if (this.alpha < 0) this.alpha = 0;
-    if (this.scale < 1) this.scale = 1; // nicht kleiner als Basis
   }
 
   draw(ctx, camera) {
@@ -24,21 +28,28 @@ export class HudPopup {
     ctx.save();
     ctx.globalAlpha = this.alpha;
 
-    ctx.font = "1.2rem ComixLoud";
-    ctx.fillStyle = "rgb(255,255,2)";
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 3;
-    ctx.textAlign = "center";
+    const sx = this.x - camera.x + this.shake;
+    const sy = this.y - camera.y - this.lift;
 
-    const screenX = this.x - camera.x;
-    const screenY = this.y - camera.y - this.lift;
-
-    ctx.translate(screenX, screenY);
+    ctx.translate(sx, sy);
     ctx.scale(this.scale, this.scale);
+    ctx.textAlign = "center";
+    ctx.lineWidth = 3;
+    ctx.font = "1.2rem ComixLoud";
+
+    if (this.type === "coin") {
+      ctx.strokeStyle = "#000";
+      ctx.fillStyle = "rgb(255,255,2)";
+    } else if (this.type === "damage") {
+      ctx.strokeStyle = "#000";
+      ctx.fillStyle = "#ff4444";
+    } else if (this.type === "heal") {
+      ctx.strokeStyle = "#000";
+      ctx.fillStyle = "#5CFF63";
+    }
 
     ctx.strokeText(this.text, 0, 0);
     ctx.fillText(this.text, 0, 0);
-
     ctx.restore();
   }
 }

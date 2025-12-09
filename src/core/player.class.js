@@ -27,7 +27,7 @@ export class Player extends MovableObject {
     this.frameSpeed = 0.065;
     this.sprite = this.currentAnimation[0];
 
-    /** ----- MOVEMENT / RUNNING ----- */
+    /** ----- MOVEMENT ----- */
     this.defaultSpeed = this.speed;
     this.runMultiplier = 2;
 
@@ -39,7 +39,7 @@ export class Player extends MovableObject {
     this.slideDir = 1;
     this.slideSpeed = this.defaultSpeed * 2;
 
-    /** ----- ATTACK / THROW ----- */
+    /** ----- ATTACK ----- */
     this.isAttacking = false;
     this.attackDuration = 0.4;
     this.attackTimer = 0;
@@ -59,11 +59,73 @@ export class Player extends MovableObject {
     this.jumpCutMultiplier = 0.5;
     this.jumpHeld = false;
 
-    /** ----- DIRECTION ----- */
+    /** ----- FACING ----- */
     this.facing = 1;
 
-    /** ----- LIFE-STATE ----- */
+    /** ----- HEART-BASED HEALTH SYSTEM ----- */
+    this.maxHearts = 3;                   // Anzahl sichtbarer Herzen
+    this.healthPoints = this.maxHearts * 2; // 2 Halbpunkte pro Herz
+    this.maxHealthPoints = this.healthPoints;
+    this.healthPulse = 0;                 // Bounce beim Schaden
+
+    /** ----- COINS / HUD STATE ----- */
+    this.coins = 0;
+    this.hudPulse = 0;                    // Coin-Bounce
+
+    /** ----- DEATH STATE ----- */
     this.isDead = false;
+  }
+
+  /** ----- HEART STATE ARRAY FOR HUD ----- */
+  get heartStates() {
+    const states = [];
+    for (let i = 0; i < this.maxHearts; i++) {
+      const hp = this.healthPoints - i * 2;
+      if (hp >= 2) states.push(2);
+      else if (hp === 1) states.push(1);
+      else states.push(0);
+    }
+    return states;
+  }
+
+  /** ----- DAMAGE: zieht 1 = halbes Herz ab ----- */
+  takeDamage(amount = 1) {
+    if (this.isDead) return;
+
+    this.healthPoints = Math.max(0, this.healthPoints - amount);
+    this.healthPulse = 1.0;
+
+    // HUD DAMAGE POPUP
+    if (this.world?.hudPopups) {
+      this.world.hudPopups.push(
+        new HudPopup(`-${amount} ❤`, this.x + this.width / 2, this.y - 30, "damage")
+      );
+    }
+
+    if (this.healthPoints <= 0) this.isDead = true;
+  }
+
+  /** ----- HEAL: heilt halbe Herzen ----- */
+  heal(amount = 1) {
+    if (this.isDead) return;
+
+    const before = this.healthPoints;
+    this.healthPoints = Math.min(this.maxHealthPoints, this.healthPoints + amount);
+    const gained = this.healthPoints - before;
+
+    if (gained > 0 && this.world?.hudPopups) {
+      this.world.hudPopups.push(
+        new HudPopup(`+${gained} ❤`, this.x + this.width / 2, this.y - 30, "heal")
+      );
+    }
+
+    this.healthPulse = 1.0;
+  }
+
+  /** ----- COIN GAIN ----- */
+  addCoins(amount) {
+    this.coins += amount;
+    this.hudPulse = 1.0;
   }
 
   /** ----- ANIMATION CONTROL ----- */
@@ -80,44 +142,9 @@ export class Player extends MovableObject {
     this.frameTime += dt;
     if (this.frameTime >= this.frameSpeed) {
       this.frameTime = 0;
-      this.currentFrame =
-        (this.currentFrame + 1) % this.currentAnimation.length;
+      this.currentFrame = (this.currentFrame + 1) % this.currentAnimation.length;
       this.sprite = this.currentAnimation[this.currentFrame];
     }
-  }
-
-  /** ----- JUMP ----- */
-  jump() {
-    this.vy = -this.jumpForce;
-    this.onGround = false;
-  }
-
-  /** ----- GRAVITY WITH APEX BOOST ----- */
-  applyApexGravity(dt) {
-    const goingUp = this.vy < 0;
-    const nearApex = Math.abs(this.vy) < this.apexThreshold;
-
-    if (goingUp) {
-      this.vy += this.gravityUp * dt;
-      if (nearApex) this.vy *= this.apexBoost;
-    } else {
-      this.vy += this.gravityDown * dt;
-    }
-
-    this.y += this.vy * dt;
-  }
-
-  /** ----- SLIDE ----- */
-  startSlide() {
-    if (this.isSliding || !this.onGround) return;
-    this.isSliding = true;
-    this.slideStartX = this.x;
-    this.slideDir = this.facing;
-    this.setAnimation(this.slideFrames);
-  }
-
-  stopSlide() {
-    this.isSliding = false;
   }
 
   /** ----- ATTACK ----- */
@@ -136,11 +163,35 @@ export class Player extends MovableObject {
     if (this.attackTimer <= 0) this.isAttacking = false;
   }
 
-  /** ----- OFFSCREEN DEATH CHECK ----- */
+  /** ----- JUMP ----- */
+  jump() {
+    this.vy = -this.jumpForce;
+    this.onGround = false;
+  }
+
+  applyApexGravity(dt) {
+    const up = this.vy < 0;
+    const nearApex = Math.abs(this.vy) < this.apexThreshold;
+
+    if (up) {
+      this.vy += this.gravityUp * dt;
+      if (nearApex) this.vy *= this.apexBoost;
+    } else {
+      this.vy += this.gravityDown * dt;
+    }
+    this.y += this.vy * dt;
+  }
+
+  /** ----- OFFSCREEN WORLD DEATH ----- */
   handleFallOffWorld(grounded, currBottom, canvasHeight) {
-    if (!grounded) {
-      this.onGround = false;
-      if (currBottom >= canvasHeight) this.isDead = true;   //MUSS NOCHMAL ÜBERARBEITET WERDEN!!!!
+    if (grounded) return;
+
+    const deathLine = canvasHeight + this.height;
+
+    if (this.vy >= 0 && currBottom >= deathLine) {
+      this.isDead = true;
+      this.vx = 0;
+      this.vy = 0;
     }
   }
 
@@ -150,7 +201,7 @@ export class Player extends MovableObject {
 
     this.updateAttack(dt);
 
-    /** ATTACK LOCK */
+    // Attack Lock
     if (this.isAttacking) {
       this.setAnimation(this.throwFrames);
       this.applyApexGravity(dt);
@@ -158,19 +209,18 @@ export class Player extends MovableObject {
       return;
     }
 
-    /** SLIDE KEYS */
+    /** ----- SLIDE ----- */
     const slideKeysDown =
       input.isDown("Shift") &&
       (input.isDown("s") || input.isDown("ArrowDown"));
 
-    /** ACTIVE SLIDE */
     if (this.isSliding) {
-      const slid = Math.abs(this.x - this.slideStartX);
-      const t = Math.min(slid / this.slideDistance, 1);
-      const currentSlideSpeed = this.slideSpeed * (1 - 0.4 * t);
+      const moved = Math.abs(this.x - this.slideStartX);
+      const t = Math.min(moved / this.slideDistance, 1);
+      const currentSlideSpeed = this.slideSpeed * (1 - t * 0.4);
 
       this.x += this.slideDir * currentSlideSpeed * dt;
-      if (slid >= this.slideDistance) this.stopSlide();
+      if (moved >= this.slideDistance) this.isSliding = false;
 
       this.setAnimation(this.slideFrames);
       this.applyApexGravity(dt);
@@ -178,15 +228,14 @@ export class Player extends MovableObject {
       return;
     }
 
-    /** START SLIDE */
     if (
       this.onGround &&
       slideKeysDown &&
       this.slideReady &&
       (input.isDown("ArrowLeft") ||
-        input.isDown("ArrowRight") ||
-        input.isDown("a") ||
-        input.isDown("d"))
+       input.isDown("ArrowRight") ||
+       input.isDown("a") ||
+       input.isDown("d"))
     ) {
       this.startSlide();
       this.slideReady = false;
@@ -194,9 +243,8 @@ export class Player extends MovableObject {
     }
     if (!slideKeysDown) this.slideReady = true;
 
-    /** MOVEMENT */
-    let moving = false;
-    let running = false;
+    /** ----- HORIZONTAL MOVEMENT ----- */
+    let moving = false, running = false;
 
     if (input.isDown("ArrowLeft") || input.isDown("a")) {
       this.moveLeft(dt);
@@ -209,25 +257,22 @@ export class Player extends MovableObject {
       moving = true;
     }
 
-    /** RUNNING */
     if (moving && input.isDown("Shift")) {
       this.speed = this.defaultSpeed * this.runMultiplier;
       running = true;
     } else this.speed = this.defaultSpeed;
 
-    /** ANIMATION PRIORITY */
+    /** ----- ANIMATION PRIORITY ----- */
     if (!this.onGround) this.setAnimation(this.jumpFrames);
     else if (running) this.setAnimation(this.runFrames);
     else if (moving) this.setAnimation(this.walkFrames);
     else this.setAnimation(this.idleFrames);
 
-    /** ----- ADVANCED JUMP ----- */
+    /** ----- ADVANCED JUMP BUFFER ----- */
     if (input.isPressed(" ")) {
       this.jumpBufferTimer = this.jumpBufferTime;
       this.jumpHeld = true;
-    } else if (!input.isDown(" ")) {
-      this.jumpHeld = false;
-    }
+    } else if (!input.isDown(" ")) this.jumpHeld = false;
 
     if (this.onGround) this.coyoteTimer = this.coyoteTime;
     else this.coyoteTimer -= dt;
@@ -241,7 +286,7 @@ export class Player extends MovableObject {
 
     this.jumpBufferTimer -= dt;
 
-    /** PHYSICS & ANIMATION */
+    /** ----- PHYSICS & ANIMATION ----- */
     this.applyApexGravity(dt);
     this.animate(dt);
   }
@@ -269,10 +314,4 @@ export class Player extends MovableObject {
     }
     ctx.restore();
   }
-
-  addCoins(amount) {
-    this.coins = (this.coins || 0) + amount;
-    this.hudPulse = 1.0;
-  }
-
 }

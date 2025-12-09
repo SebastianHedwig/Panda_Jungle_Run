@@ -1,5 +1,6 @@
 import { PlatformBuilder } from "../engine/platformBuilder.class.js";
 import { CollectableItem } from "../core/collectableItems.class.js";
+import { WORLD_WIDTH } from "../config.js";
 
 /** ---------- PLATFORM SETUP ---------- */
 export function createLevel1Platforms(sprites) {
@@ -138,3 +139,45 @@ export function generateCoinArcs(world, maxArcs = 4) {
 export function createLevel1Collectables() {
   return [];
 }
+
+export function placeHearts(world, count = 2) {
+  const validHearts = [];
+
+  const minX = WORLD_WIDTH * 0.25;  // kein Herz im ersten Viertel
+  const midX = WORLD_WIDTH * 0.5;
+  const maxX = WORLD_WIDTH * 0.95;
+
+  const positions = [
+    Math.random() * (WORLD_WIDTH * 0.25) + midX, // Heart #1 Mitte
+    Math.random() * (WORLD_WIDTH * 0.1) + maxX   // Heart #2 fast am Ende
+  ];
+
+  for (let i = 0; i < count; i++) {
+    const x = positions[i];
+
+    // Höhe anhand Plattform unter diesem X ermitteln
+    const platform = world.platforms.find(p => x >= p.x && x <= p.x + p.width);
+
+    if (!platform) continue; // kein spawn ohne referenz
+
+    const y = platform.y - 80; // 80px über der Plattform
+
+    // Ensure not colliding with platforms
+    if (!isInsidePlatform(world, x, y)) {
+      validHearts.push(new CollectableItem(x, y, "heart"));
+    }
+  }
+
+  world.addCollectables(validHearts);
+}
+
+/** Checks if heart would be inside a platform */
+function isInsidePlatform(world, hx, hy) {
+  return world.platforms.some(p =>
+    hx + 30 > p.x &&
+    hx < p.x + p.width &&
+    hy + 30 > p.y &&
+    hy < p.y + p.height
+  );
+}
+
