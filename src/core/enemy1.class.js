@@ -49,8 +49,8 @@ export class Enemy1 extends MovableObject {
     this.lastGroundY = y;
     this.hitStun = 0;
     this.hasHitDuringAttack = false;
-    this.attackRange = 220;
-    this.attackHeightTolerance = 120;
+    this.attackRange = 60;
+    this.attackHeightTolerance = 20;
   }
   
   setAnimation(frames) {
@@ -144,19 +144,27 @@ export class Enemy1 extends MovableObject {
       this.setAnimation(this.attackFrames);
       this.animate(dt);
 
-      if (
-        player &&
-        !player.isDead &&
-        !this.hasHitDuringAttack &&
-        this.attackTimer <= this.attackDuration * 0.5 &&
-        this.collidesWith(player) &&
-        player.invulnerableTimer <= 0
-      ) {
-        player.takeDamage?.(this.damage);
-        if (typeof player.invulnerableTimer === "number") {
-          player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);
+      if (player && !player.isDead && !this.hasHitDuringAttack && this.attackTimer <= this.attackDuration * 0.5) {
+        const ex = this.x + this.width / 2;
+        const ey = this.y + this.height / 2;
+        const px = player.x + player.width / 2;
+        const py = player.y + player.height / 2;
+        const dx = px - ex;
+        const dy = Math.abs(py - ey);
+        const facingMatches = Math.sign(dx || 1) === this.facing;
+
+        if (
+          facingMatches &&
+          Math.abs(dx) <= this.attackRange &&
+          dy <= this.attackHeightTolerance &&
+          player.invulnerableTimer <= 0
+        ) {
+          player.takeDamage?.(this.damage);
+          if (typeof player.invulnerableTimer === "number") {
+            player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);
+          }
+          this.hasHitDuringAttack = true;
         }
-        this.hasHitDuringAttack = true;
       }
 
       if (this.attackTimer <= 0) {
@@ -177,7 +185,7 @@ export class Enemy1 extends MovableObject {
       }
     }
 
-    // START ATTACK if player in range
+    // START ATTACK if player in range - NOCHMAL DRUEBER SCHAUEN
     if (player && !player.isDead) {
       const dx = player.x + player.width / 2 - (this.x + this.width / 2);
       const dy = Math.abs(player.y - this.y);
@@ -201,7 +209,7 @@ export class Enemy1 extends MovableObject {
     this.handlePlatformLanding(prevBottom, currBottom);
 
     if (player && !player.isDead && this.collidesWith(player) && player.invulnerableTimer <= 0) {
-      player.takeDamage?.(this.damage);
+      player.takeDamage?.(this.damage, { useDizzy: false });
       if (typeof player.invulnerableTimer === "number") {
         player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);
       }

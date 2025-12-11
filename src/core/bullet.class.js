@@ -59,6 +59,14 @@ export class Bullet {
         this.remove = true;
         this.world.spawnExplosion(this.x, this.y);
         enemy.takeDamage?.(1);
+        if (!enemy.isDead && enemy.health > 0) {
+          this.world.spawnHitEffect?.(
+            enemy.x,
+            enemy.y,
+            enemy.width,
+            enemy.height
+          );
+        }
       }
     });
   }

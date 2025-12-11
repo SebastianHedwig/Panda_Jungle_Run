@@ -1,5 +1,6 @@
-﻿import { WORLD_WIDTH } from "../config.js";
+import { WORLD_WIDTH } from "../config.js";
 import { Bullet, Explosion } from "./bullet.class.js";
+import { DizzyEffect } from "./hitEffect.class.js";
 
 export class World {
   constructor(canvas) {
@@ -16,6 +17,8 @@ export class World {
     this.collectables = [];
     this.hudPopups = [];
     this.enemies = [];
+    this.hitEffects = [];
+    this.hitEffectFrames = null;
 
     /** ----- PROJECTILES & FX ----- */
     this.bullets = [];
@@ -122,12 +125,23 @@ export class World {
      BULLET & FX HANDLING
      =========================================================== */
 
+  setHitEffectFrames(frames) {
+    this.hitEffectFrames = frames;
+  }
+
   spawnBullet(x, y, direction) {
     this.bullets.push(new Bullet(x, y, direction, this));
   }
 
   spawnExplosion(x, y) {
     this.explosions.push(new Explosion(x, y));
+  }
+
+  spawnHitEffect(x, y, width = 0, height = 0) {
+    if (!this.hitEffectFrames?.length) return;
+    const headX = x + width / 2;
+    const headY = y + height * 0.05; // closer to head height
+    this.hitEffects.push(new DizzyEffect(headX, headY, this.hitEffectFrames));
   }
 
   /** ---------- UPDATE BULLETS & EXPLOSIONS ---------- */
@@ -143,10 +157,23 @@ export class World {
     });
   }
 
+  /** ---------- UPDATE HIT FX ---------- */
+  updateHitEffects(dt) {
+    this.hitEffects = this.hitEffects.filter((fx) => {
+      fx.update(dt);
+      return !fx.finished;
+    });
+  }
+
   /** ---------- RENDER PROJECTILES & EXPLOSIONS ---------- */
   renderProjectiles(ctx, camera) {
     this.bullets.forEach((b) => b.render(ctx, camera));
     this.explosions.forEach((e) => e.render(ctx, camera));
+  }
+
+  /** ---------- RENDER HIT FX ---------- */
+  renderHitEffects(ctx, camera) {
+    this.hitEffects.forEach((fx) => fx.render(ctx, camera));
   }
 
   /** ---------- UPDATE & RENDER ENEMIES ---------- */

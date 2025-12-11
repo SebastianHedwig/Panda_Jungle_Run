@@ -101,6 +101,11 @@ export function initGame() {
     "Shoot",
     6
   );
+  const dizzy = loadFrames(
+    "./assets/img/Character/Character_Sprites/dizzy/",
+    "Dizzy",
+    3
+  );
   const hurt = loadFrames(
     "./assets/img/Character/Character_Sprites/hurt/",
     "hurt",
@@ -110,6 +115,11 @@ export function initGame() {
     "./assets/img/Character/Character_Sprites/die/",
     "Die",
     10
+  );
+  const hitStars = loadFrames(
+    "./assets/img/Character/Spriter_files/",
+    "Star",
+    3
   );
   const enemy1Sprites = loadEnemy1Sprites();
 
@@ -127,8 +137,10 @@ export function initGame() {
       ...slide,
       ...attack,
       ...shoot,
+      ...dizzy,
       ...hurt,
       ...die,
+      ...hitStars,
       ...enemy1Sprites.idle,
       ...enemy1Sprites.walk,
       ...enemy1Sprites.attack,
@@ -146,9 +158,11 @@ export function initGame() {
       slide,
       attack,
       shoot,
+      dizzy,
       enemy1Sprites,
       hurt,
-      die
+      die,
+      hitStars
     )
   );
 }
@@ -163,9 +177,11 @@ function start(
   slide,
   attack,
   shoot,
+  dizzy,
   enemy1Sprites,
   hurt,
-  die
+  die,
+  hitStars
 ) {
   const [bg1, bg2, bg3, bg4, cloud1, cloud2] = bg;
 
@@ -202,10 +218,12 @@ function start(
     slide,
     attack,
     shoot,
+    dizzy,
     hurt,
     die
   );
   player.world = world;
+  world.setHitEffectFrames(hitStars);
   world.hudPopups = [];
 
   requestAnimationFrame(loop);
@@ -233,6 +251,7 @@ function update(dt) {
   world.collectables.forEach((c) => c.update(dt));
   world.updateEnemies(dt, player);
   world.updateProjectiles(dt, world.enemies ?? []);
+  world.updateHitEffects(dt);
 
   checkCollectables();
 
@@ -273,6 +292,7 @@ function draw() {
   world.renderProjectiles(ctx, camera);
   world.renderEnemies(ctx, camera);
   player.render(ctx, camera);
+  world.renderHitEffects(ctx, camera);
 
   drawHUD();
 }

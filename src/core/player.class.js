@@ -14,6 +14,7 @@ export class Player extends MovableObject {
     slideFrames,
     throwFrames,
     shootFrames,
+    dizzyFrames,
     hurtFrames,
     dieFrames
   ) {
@@ -27,6 +28,7 @@ export class Player extends MovableObject {
     this.slideFrames = slideFrames;
     this.throwFrames = throwFrames;
     this.shootFrames = shootFrames;
+    this.dizzyFrames = dizzyFrames;
     this.hurtFrames = hurtFrames;
     this.dieFrames = dieFrames;
 
@@ -53,8 +55,8 @@ export class Player extends MovableObject {
     this.attackDuration = 0.4;
     this.attackTimer = 0;
     this.attackHitDone = false;
-    this.attackRange = 160;
-    this.attackHeightTolerance = 100;
+    this.attackRange = 65;
+    this.attackHeightTolerance = 15;
 
     /** ----- SHOOT ----- */
     this.isShooting = false;
@@ -73,9 +75,13 @@ export class Player extends MovableObject {
     this.isHurt = false;
     this.hurtDuration = 0.5;
     this.hurtTimer = 0;
+    this.hurtUseDizzy = true;
+    this.hurtPhase = null;
+    this.hurtPhaseTimer = 0;
     this.isDead = false;
     this.invulnerableTimer = 0;
     this.invulnerableBlinkInterval = 0.15;
+    this.invulnerableBlinkWindow = 0.6;
     this.lastSafeX = x;
     this.lastSafeY = y;
     this.collisionDisabled = false;
@@ -115,7 +121,7 @@ export class Player extends MovableObject {
   }
 
   /** ----- DAMAGE ----- */
-  takeDamage(amount = 1) {
+  takeDamage(amount = 1, opts = {}) {
     if (this.isDead) return;
 
     this.healthPoints = Math.max(0, this.healthPoints - amount);
@@ -133,7 +139,7 @@ export class Player extends MovableObject {
     }
 
     if (this.healthPoints <= 0) this.startDeath();
-    else this.startHurt();
+    else this.startHurt(opts?.useDizzy ?? true);
   }
 
   /** ----- HEAL ----- */
@@ -177,14 +183,37 @@ export class Player extends MovableObject {
     this.lastSafeY = this.y;
   }
 
-  startHurt() {
+  startHurt(useDizzy = true) {
     if (this.isDead) return;
+    this.hurtUseDizzy = !!useDizzy;
+    if (!this.hurtUseDizzy) {
+      // simple contact: only blink, no hit animation or movement freeze
+      this.invulnerableTimer = Math.max(
+        this.invulnerableTimer,
+        this.invulnerableBlinkWindow
+      );
+      this.isHurt = false;
+      return;
+    }
+
     this.isHurt = true;
-    this.hurtTimer = this.hurtDuration;
+    const hurtDuration =
+      (this.hurtFrames?.length || 1) * this.frameSpeed;
+    const dizzyDuration = this.hurtUseDizzy && this.dizzyFrames
+      ? this.dizzyFrames.length * this.frameSpeed * 2
+      : 0;
+
+    this.hurtPhase = "hurt";
+    this.hurtPhaseTimer = hurtDuration;
+    this.invulnerableTimer =
+      hurtDuration + dizzyDuration + this.invulnerableBlinkWindow;
+
     this.isAttacking = false;
     this.isShooting = false;
-    this.setAnimation(this.hurtFrames);
-    this.currentFrame = 0;
+    if (this.hurtUseDizzy) {
+      this.setAnimation(this.hurtFrames || this.dizzyFrames);
+      this.currentFrame = 0;
+    }
   }
 
   startDeath() {
@@ -194,6 +223,8 @@ export class Player extends MovableObject {
     this.isAttacking = false;
     this.isShooting = false;
     this.vx = 0;
+    this.vy = 0;
+    this.onGround = true;
     this.setAnimation(this.dieFrames);
     this.currentFrame = 0;
     this.invulnerableTimer = 0;
@@ -287,6 +318,14 @@ export class Player extends MovableObject {
           Math.sign(dx || 1) === this.facing
         ) {
           enemy.takeDamage?.(1);
+          if (!enemy.isDead && enemy.health > 0) {
+            this.world?.spawnHitEffect?.(
+              enemy.x,
+              enemy.y,
+              enemy.width,
+              enemy.height
+            );
+          }
           this.attackHitDone = true;
           break;
         }
@@ -297,8 +336,20 @@ export class Player extends MovableObject {
 
   updateHurt(dt) {
     if (!this.isHurt) return;
-    this.hurtTimer -= dt;
-    if (this.hurtTimer <= 0) this.isHurt = false;
+    this.hurtPhaseTimer -= dt;
+    if (this.hurtPhaseTimer > 0) return;
+
+    if (this.hurtUseDizzy && this.hurtPhase === "hurt" && this.dizzyFrames) {
+      this.hurtPhase = "dizzy";
+      this.hurtPhaseTimer =
+        this.dizzyFrames.length * this.frameSpeed * 2 || this.hurtDuration;
+      this.setAnimation(this.dizzyFrames);
+      this.currentFrame = 0;
+      return;
+    }
+
+    this.isHurt = false;
+    this.hurtPhase = null;
   }
 
   /** ----- SHOOT ----- */
@@ -359,7 +410,6 @@ export class Player extends MovableObject {
     /** DEATH OVERRIDE */
     if (this.isDead) {
       this.setAnimation(this.dieFrames);
-      this.applyApexGravity(dt);
       if (!this.deathDone) {
         this.frameTime += dt;
         if (this.frameTime >= this.frameSpeed) {
@@ -377,12 +427,18 @@ export class Player extends MovableObject {
       return;
     }
 
-    /** HURT OVERRIDE */
+    /** HURT */
     this.updateHurt(dt);
     if (this.isHurt) {
-      this.setAnimation(this.hurtFrames);
+      if (this.hurtUseDizzy) {
+        const hurtAnim =
+          this.hurtPhase === "hurt"
+            ? this.hurtFrames
+            : this.dizzyFrames || this.hurtFrames;
+        this.setAnimation(hurtAnim);
+        this.animate(dt);
+      }
       this.applyApexGravity(dt);
-      this.animate(dt);
       return;
     }
 
@@ -492,7 +548,9 @@ export class Player extends MovableObject {
   /** ----- RENDER ----- */
   render(ctx, camera) {
     if (!this.isDead && this.invulnerableTimer > 0) {
-      const phase = Math.floor(this.invulnerableTimer / this.invulnerableBlinkInterval);
+      const phase = Math.floor(
+        this.invulnerableTimer / this.invulnerableBlinkInterval
+      );
       if (phase % 2 === 0) return;
     }
 
