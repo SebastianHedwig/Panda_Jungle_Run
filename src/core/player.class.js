@@ -135,7 +135,7 @@ export class Player extends MovableObject {
       if (this.world?.hudPopups) {
         this.world.hudPopups.push(
           new HudPopup(
-            `-${amount} ❤`,
+            `-${amount}❤️`,
             this.x + this.width / 2,
             this.y - 30,
             "damage"
@@ -164,7 +164,7 @@ export class Player extends MovableObject {
     if (gained > 0 && this.world?.hudPopups) {
       this.world.hudPopups.push(
         new HudPopup(
-          `+${gained} ❤`,
+          `+${gained}❤️`,
           this.x + this.width / 2,
           this.y - 30,
           "heal"

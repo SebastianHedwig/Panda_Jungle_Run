@@ -1,9 +1,18 @@
+const POPUP_STYLES = {
+  coin: { stroke: "#000", fill: "rgb(255,255,2)", fontSize: "1.2rem" },
+  damage: { stroke: "#000", fill: "#ff4444", fontSize: "1.2rem" },
+  heal: { stroke: "#053016", fill: "#5CFF63", fontSize: "1.2rem" },
+  miss: { stroke: "#053016", fill: "#5CFF63", fontSize: "1.2rem" },
+  heart: { stroke: "#000", fill: "#ff2d55", fontSize: "1.9rem" },
+  gun: { stroke: "#000", fill: "#fff", fontSize: "1.2rem" },
+};
+
 export class HudPopup {
   constructor(text = "+10", x, y, type = "coin") {
     this.text = text;
     this.x = x;
     this.y = y;
-    this.type = type; // "coin" | "damage" | "heal" | "miss" | "heart"
+    this.type = type; // "coin" | "damage" | "heal" | "miss" | "heart" | "gun"
 
     this.alpha = 1;
     this.lift = 0;
@@ -17,7 +26,9 @@ export class HudPopup {
     this.scale -= dt * 0.3;
     if (this.scale < 1) this.scale = 1;
 
-    if (this.type === "damage") this.shake = Math.sin(Date.now() * 0.04) * 3;
+    if (this.type === "damage") {
+      this.shake = Math.sin(Date.now() * 0.04) * 3;
+    }
 
     if (this.alpha < 0) this.alpha = 0;
   }
@@ -35,25 +46,11 @@ export class HudPopup {
     ctx.scale(this.scale, this.scale);
     ctx.textAlign = "center";
     ctx.lineWidth = 3;
-    const fontSize = this.type === "heart" ? "1.8rem" : "1.2rem";
-    ctx.font = `${fontSize} ComixLoud`;
 
-    if (this.type === "coin") {
-      ctx.strokeStyle = "#000";
-      ctx.fillStyle = "rgb(255,255,2)";
-    } else if (this.type === "damage") {
-      ctx.strokeStyle = "#000";
-      ctx.fillStyle = "#ff4444";
-    } else if (this.type === "heal") {
-      ctx.strokeStyle = "#053016";
-      ctx.fillStyle = "#5CFF63";
-    } else if (this.type === "miss") {
-      ctx.strokeStyle = "#053016";
-      ctx.fillStyle = "#5CFF63";
-    } else if (this.type === "heart") {
-      ctx.strokeStyle = "#000";
-      ctx.fillStyle = "#ff2d55";
-    }
+    const style = POPUP_STYLES[this.type] ?? POPUP_STYLES.coin;
+    ctx.font = `${style.fontSize} ComixLoud`;
+    ctx.strokeStyle = style.stroke;
+    ctx.fillStyle = style.fill;
 
     ctx.strokeText(this.text, 0, 0);
     ctx.fillText(this.text, 0, 0);
