@@ -49,6 +49,8 @@ export class Enemy1 extends MovableObject {
     this.lastGroundY = y;
     this.hitStun = 0;
     this.hasHitDuringAttack = false;
+    this.hasShownMissDuringAttack = false;
+    this.recentSlideHit = 0;
     this.attackRange = 60;
     this.attackHeightTolerance = 20;
   }
@@ -71,13 +73,17 @@ export class Enemy1 extends MovableObject {
     }
   }
 
-  takeDamage(amount = 1) {
+  takeDamage(amount = 1, opts = {}) {
     if (this.isDead) return;
     this.health -= amount;
 
+    if (opts?.source === "slide") {
+      this.recentSlideHit = Math.max(this.recentSlideHit, 0.4);
+    }
+
     if (this.world?.hudPopups) {
       this.world.hudPopups.push(
-        new HudPopup("-1", this.x + this.width / 2, this.y - 20, "damage")
+        new HudPopup(`-${amount}`, this.x + this.width / 2, this.y - 20, "damage")
       );
     }
 
@@ -93,12 +99,14 @@ export class Enemy1 extends MovableObject {
       return;
     }
 
-    this.hitStun = Math.max(this.hitStun, 1.5);
-    this.vx = 0;
-    this.vy = 0;
-    this.setAnimation(this.idleFrames);
-    this.currentFrame = 0;
-    this.frameTime = 0;
+    if (!opts.skipStun) {
+      this.hitStun = Math.max(this.hitStun, 1.5);
+      this.vx = 0;
+      this.vy = 0;
+      this.setAnimation(this.idleFrames);
+      this.currentFrame = 0;
+      this.frameTime = 0;
+    }
   }
 
   update(dt, player) {
@@ -129,6 +137,10 @@ export class Enemy1 extends MovableObject {
       return;
     }
 
+    if (this.recentSlideHit > 0) {
+      this.recentSlideHit = Math.max(0, this.recentSlideHit - dt);
+    }
+
     if (this.hitStun > 0) {
       this.hitStun = Math.max(0, this.hitStun - dt);
       // freeze on first idle frame (no animation) for clear feedback
@@ -149,6 +161,7 @@ export class Enemy1 extends MovableObject {
       if (this.attackTimer <= 0) {
         this.isAttacking = false;
         this.hasHitDuringAttack = false;
+        this.hasShownMissDuringAttack = false;
       }
 
       return;
@@ -176,6 +189,7 @@ export class Enemy1 extends MovableObject {
         this.isAttacking = true;
         this.attackTimer = this.attackDuration;
         this.hasHitDuringAttack = false;
+        this.hasShownMissDuringAttack = false;
         this.facing = dx >= 0 ? 1 : -1;
         this.vx = 0;
         this.setAnimation(this.attackFrames);
@@ -192,7 +206,7 @@ export class Enemy1 extends MovableObject {
     const currBottom = this.y + this.height;
     this.handlePlatformLanding(prevBottom, currBottom);
 
-    if (player && !player.isDead && this.collidesWith(player) && player.invulnerableTimer <= 0) {
+    if (player && !player.isDead && !player.isSliding && this.collidesWith(player) && player.invulnerableTimer <= 0) {
       player.takeDamage?.(this.damage, { useDizzy: false });
       if (typeof player.invulnerableTimer === "number") {
         player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);
@@ -239,7 +253,8 @@ export class Enemy1 extends MovableObject {
   }
 
   tryDealAttackDamage(player, popupDelay = 0) {
-    if (!player || player.isDead || this.hasHitDuringAttack) return false;
+    if (!player || player.isDead || this.isDead || this.hasHitDuringAttack)
+      return false;
 
     const ex = this.x + this.width / 2;
     const ey = this.y + this.height / 2;
@@ -255,6 +270,22 @@ export class Enemy1 extends MovableObject {
       dy <= this.attackHeightTolerance &&
       player.invulnerableTimer <= 0
     ) {
+      if (player.isSliding) {
+        if (
+          !this.hasShownMissDuringAttack &&
+          !this.isDead &&
+          this.health > 0 &&
+          this.recentSlideHit <= 0 &&
+          this.world?.hudPopups
+        ) {
+          this.world.hudPopups.push(
+            new HudPopup("MISS", px, py - player.height * 0.4, "miss")
+          );
+          this.hasShownMissDuringAttack = true;
+        }
+        return false;
+      }
+
       player.takeDamage?.(this.damage, { popupDelay });
       if (typeof player.invulnerableTimer === "number") {
         player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);

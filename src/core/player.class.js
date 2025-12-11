@@ -49,6 +49,8 @@ export class Player extends MovableObject {
     this.slideStartX = 0;
     this.slideDir = 1;
     this.slideSpeed = this.defaultSpeed * 2;
+    this.slideBlockGrace = 0;
+    this.slideHitEnemies = new Set();
 
     /** ----- ATTACK ----- */
     this.isAttacking = false;
@@ -243,6 +245,8 @@ export class Player extends MovableObject {
     this.slideStartX = this.x;
     this.slideDir = this.facing;
     this.vy = 0;
+    this.slideBlockGrace = 0.12;
+    this.slideHitEnemies.clear();
   }
 
   respawnFromFall() {
@@ -405,6 +409,12 @@ export class Player extends MovableObject {
 
   /** ----- UPDATE LOOP ----- */
   update(dt, input) {
+    // store position before collisions to detect blocking (e.g., wall during slide)
+    this._preCollisionX = this.x;
+    if (this.slideBlockGrace > 0) {
+      this.slideBlockGrace = Math.max(0, this.slideBlockGrace - dt);
+    }
+
     /** COOLDOWN TIMERS */
     if (this.shootCooldown > 0)
       this.shootCooldown = Math.max(0, this.shootCooldown - dt);
@@ -483,6 +493,7 @@ export class Player extends MovableObject {
       this.x += this.slideDir * speed * dt;
       if (moved >= this.slideDistance) this.isSliding = false;
 
+      this.checkSlideHits();
       this.setAnimation(this.slideFrames);
       this.applyApexGravity(dt);
       this.animate(dt);
@@ -602,5 +613,33 @@ export class Player extends MovableObject {
       width: this.width - shrinkX,
       height: this.height - shrinkY,
     };
+  }
+
+  checkSlideHits() {
+    if (!this.world?.enemies?.length) return;
+    const selfBox = this.getHitbox();
+
+    for (const enemy of this.world.enemies) {
+      if (enemy.isDead || this.slideHitEnemies.has(enemy)) continue;
+      const enemyBox = enemy.getHitbox ? enemy.getHitbox() : null;
+      if (!enemyBox) continue;
+      const overlaps =
+        selfBox.x < enemyBox.x + enemyBox.width &&
+        selfBox.x + selfBox.width > enemyBox.x &&
+        selfBox.y < enemyBox.y + enemyBox.height &&
+        selfBox.y + selfBox.height > enemyBox.y;
+      if (overlaps) {
+        enemy.takeDamage?.(2, { skipStun: true, source: "slide" });
+        if (!enemy.isDead && enemy.health > 0) {
+          this.world?.spawnHitEffect?.(
+            enemy.x,
+            enemy.y,
+            enemy.width,
+            enemy.height
+          );
+        }
+        this.slideHitEnemies.add(enemy);
+      }
+    }
   }
 }
