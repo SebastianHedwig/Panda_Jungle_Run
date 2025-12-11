@@ -271,6 +271,9 @@ export class Enemy1 extends MovableObject {
       player.invulnerableTimer <= 0
     ) {
       if (player.isSliding) {
+        const slideDmg = player.slideDamage ?? 2;
+        if (this.health - slideDmg <= 0) return false;
+
         if (
           !this.hasShownMissDuringAttack &&
           !this.isDead &&

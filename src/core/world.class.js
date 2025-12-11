@@ -46,6 +46,7 @@ export class World {
   applyPlatformCollisions(player) {
     if (player?.isDead || player?.collisionDisabled) return;
     let grounded = false;
+    const prevX = player?._preCollisionX ?? player.x;
 
     const prevBottom = player.y + player.height - player.vy;
     const currBottom = player.y + player.height;
@@ -101,6 +102,12 @@ export class World {
     if (player.x < this.left) player.x = this.left;
     if (player.x > this.right - player.width)
       player.x = this.right - player.width;
+
+    // stop slide if horizontal movement was blocked (e.g., wall/edge)
+    const movedX = Math.abs(player.x - prevX);
+    if (player.isSliding && player.slideBlockGrace <= 0 && movedX < 0.5) {
+      player.isSliding = false;
+    }
   }
 
   /** ---------- VALID COIN SPAWN CHECK ---------- */

@@ -3,7 +3,7 @@ export class HudPopup {
     this.text = text;
     this.x = x;
     this.y = y;
-    this.type = type; // "coin" | "damage" | "heal"
+    this.type = type; // "coin" | "damage" | "heal" | "miss"
 
     this.alpha = 1;
     this.lift = 0;
@@ -44,7 +44,10 @@ export class HudPopup {
       ctx.strokeStyle = "#000";
       ctx.fillStyle = "#ff4444";
     } else if (this.type === "heal") {
-      ctx.strokeStyle = "#000";
+      ctx.strokeStyle = "#053016";
+      ctx.fillStyle = "#5CFF63";
+    } else if (this.type === "miss") {
+      ctx.strokeStyle = "#053016";
       ctx.fillStyle = "#5CFF63";
     }
 

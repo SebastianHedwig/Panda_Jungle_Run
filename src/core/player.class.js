@@ -51,6 +51,7 @@ export class Player extends MovableObject {
     this.slideSpeed = this.defaultSpeed * 2;
     this.slideBlockGrace = 0;
     this.slideHitEnemies = new Set();
+    this.slideDamage = 2;
 
     /** ----- ATTACK ----- */
     this.isAttacking = false;
@@ -629,7 +630,8 @@ export class Player extends MovableObject {
         selfBox.y < enemyBox.y + enemyBox.height &&
         selfBox.y + selfBox.height > enemyBox.y;
       if (overlaps) {
-        enemy.takeDamage?.(2, { skipStun: true, source: "slide" });
+        const dmg = this.slideDamage ?? 2;
+        enemy.takeDamage?.(dmg, { skipStun: true, source: "slide" });
         if (!enemy.isDead && enemy.health > 0) {
           this.world?.spawnHitEffect?.(
             enemy.x,
