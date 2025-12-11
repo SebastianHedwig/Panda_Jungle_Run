@@ -146,9 +146,7 @@ export class CollectableItem {
 
     if (this.type === "heart") {
       player.heal(2);
-      player.world.hudPopups.push(
-        new HudPopup("+1❤️", this.x, this.y, "heart")
-      );
+      player.world.hudPopups.push(new HudPopup("❤️", this.x, this.y, "heart"));
     }
 
     if (this.type === "gun") {

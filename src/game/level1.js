@@ -3,6 +3,8 @@ import { CollectableItem } from "../core/collectableItems.class.js";
 import { Enemy1 } from "../core/enemy1.class.js";
 import { WORLD_WIDTH } from "../config.js";
 
+const MIN_COIN_X = 75;
+
 /** ---------- PLATFORM SETUP ---------- */
 export function createLevel1Platforms(sprites) {
   const platforms = [];
@@ -62,7 +64,7 @@ export function generateCoinsMixed(
   const coins = [];
   const coinsAbove = Math.floor(totalCount * ratioAbovePlatforms);
 
-  /** ----- COINS ÜBER PLATTFORMEN ----- */
+  /** ----- COINS ----- */
   for (let i = 0; i < coinsAbove; i++) {
     const platform =
       world.platforms[Math.floor(Math.random() * world.platforms.length)];
@@ -70,18 +72,26 @@ export function generateCoinsMixed(
 
     if (width < 100) continue;
 
-    const x = platform.left + Math.random() * (width - 60);
-    const y = platform.top - 70;
+    const minX = Math.max(platform.left, MIN_COIN_X);
+    const maxX = platform.right - 60;
+    if (maxX <= minX) continue;
+
+    const x = minX + Math.random() * (maxX - minX);
+    const y = platform.y - 80;
 
     if (world.coinPositionIsValid(x, y, 50, 50)) {
       coins.push(new CollectableItem(x, y, "coin"));
     }
   }
 
-  /** ----- RANDOM COINS, ABER NIE IN PLATFORMEN ----- */
+  /** ----- RANDOM COINS ----- */
   let tries = 0;
   while (coins.length < totalCount && tries < totalCount * 40) {
-    const x = Math.random() * (world.width - 200) + 100;
+    const xMin = MIN_COIN_X;
+    const xMax = world.width - 100;
+    if (xMax <= xMin) break;
+
+    const x = xMin + Math.random() * (xMax - xMin);
     const y = 220 + Math.random() * 380;
 
     if (world.coinPositionIsValid(x, y, 50, 50)) {
@@ -94,7 +104,7 @@ export function generateCoinsMixed(
   return coins;
 }
 
-/** ---------- COIN ARCS NUR BEI ECHTEN SPRÜNGEN ---------- */
+/** ---------- COIN ARCS ---------- */
 export function generateCoinArcs(world, maxArcs = 4) {
   const arcs = [];
   let created = 0;
@@ -110,7 +120,6 @@ export function generateCoinArcs(world, maxArcs = 4) {
     const gap = p2.left - p1.right;
     const heightDiff = Math.abs(p2.top - p1.top);
 
-    /** ----- SPRUNG WIRKLICH NÖTIG? ----- */
     const mustJump = gap >= 150 && gap <= 700 && heightDiff > 10;
 
     if (!mustJump) continue;
@@ -126,6 +135,8 @@ export function generateCoinArcs(world, maxArcs = 4) {
       const y =
         p1.top - 110 - Math.sin(t * Math.PI) * 160 + (p2.top - p1.top) * t;
 
+      if (x < MIN_COIN_X) continue;
+
       if (world.coinPositionIsValid(x, y, 50, 50)) {
         arcs.push(new CollectableItem(x, y, "coin"));
       }
@@ -137,7 +148,7 @@ export function generateCoinArcs(world, maxArcs = 4) {
   return arcs;
 }
 
-/** ---------- FIXED COINS OPTIONAL ---------- */
+/** ---------- FIXED COINS ---------- */
 export function createLevel1Collectables() {
   return [];
 }
@@ -228,6 +239,7 @@ export function placeHearts(world, count = 3) {
   const minX = WORLD_WIDTH * 0.25;
   const midX = WORLD_WIDTH * 0.5;
   const maxX = WORLD_WIDTH * 0.95;
+  const maxHeartX = WORLD_WIDTH - 50;
 
   const positions = [
     Math.random() * (WORLD_WIDTH * 0.2) + minX,
@@ -236,7 +248,7 @@ export function placeHearts(world, count = 3) {
   ];
 
   for (let i = 0; i < count; i++) {
-    const x = positions[i];
+    const x = Math.min(positions[i], maxHeartX);
 
     const platform = world.platforms.find(
       (p) => x >= p.x && x <= p.x + p.width

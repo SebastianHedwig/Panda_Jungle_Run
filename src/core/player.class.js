@@ -58,7 +58,7 @@ export class Player extends MovableObject {
     this.attackDuration = 0.4;
     this.attackTimer = 0;
     this.attackHitDone = false;
-    this.attackRange = 65;
+    this.attackRange = 70;
     this.attackHeightTolerance = 15;
 
     /** ----- SHOOT ----- */

@@ -3,7 +3,7 @@ export class HudPopup {
     this.text = text;
     this.x = x;
     this.y = y;
-    this.type = type; // "coin" | "damage" | "heal" | "miss"
+    this.type = type; // "coin" | "damage" | "heal" | "miss" | "heart"
 
     this.alpha = 1;
     this.lift = 0;
@@ -35,7 +35,8 @@ export class HudPopup {
     ctx.scale(this.scale, this.scale);
     ctx.textAlign = "center";
     ctx.lineWidth = 3;
-    ctx.font = "1.2rem ComixLoud";
+    const fontSize = this.type === "heart" ? "1.8rem" : "1.2rem";
+    ctx.font = `${fontSize} ComixLoud`;
 
     if (this.type === "coin") {
       ctx.strokeStyle = "#000";
@@ -49,6 +50,9 @@ export class HudPopup {
     } else if (this.type === "miss") {
       ctx.strokeStyle = "#053016";
       ctx.fillStyle = "#5CFF63";
+    } else if (this.type === "heart") {
+      ctx.strokeStyle = "#000";
+      ctx.fillStyle = "#ff2d55";
     }
 
     ctx.strokeText(this.text, 0, 0);

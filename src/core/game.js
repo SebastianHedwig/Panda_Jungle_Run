@@ -196,7 +196,7 @@ function start(
 
   const collectables = [
     ...createLevel1Collectables(),
-    ...generateCoinsMixed(world, 20, 0.5),
+    ...generateCoinsMixed(world, 30, 0.5),
     ...generateCoinArcs(world, 6),
   ];
   world.addCollectables(collectables);

@@ -113,11 +113,13 @@ export class World {
   /** ---------- VALID COIN SPAWN CHECK ---------- */
   coinPositionIsValid(x, y, width = 50, height = 50) {
     return !this.platforms.some((p) => {
-      const overlapsX = x + width > p.left && x < p.right;
+      const platformLeft = p.x;
+      const platformRight = p.x + p.width;
+      const platformTop = p.y;
+      const platformBottom = p.y + p.height;
+      const overlapsX = x + width > platformLeft && x < platformRight;
       const coinBottom = y + height;
       const coinTop = y;
-      const platformTop = p.top;
-      const platformBottom = p.bottom;
       const overlapsY = coinBottom > platformTop && coinTop < platformBottom;
       return overlapsX && overlapsY;
     });
