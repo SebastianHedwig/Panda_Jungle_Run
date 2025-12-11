@@ -144,28 +144,7 @@ export class Enemy1 extends MovableObject {
       this.setAnimation(this.attackFrames);
       this.animate(dt);
 
-      if (player && !player.isDead && !this.hasHitDuringAttack && this.attackTimer <= this.attackDuration * 0.5) {
-        const ex = this.x + this.width / 2;
-        const ey = this.y + this.height / 2;
-        const px = player.x + player.width / 2;
-        const py = player.y + player.height / 2;
-        const dx = px - ex;
-        const dy = Math.abs(py - ey);
-        const facingMatches = Math.sign(dx || 1) === this.facing;
-
-        if (
-          facingMatches &&
-          Math.abs(dx) <= this.attackRange &&
-          dy <= this.attackHeightTolerance &&
-          player.invulnerableTimer <= 0
-        ) {
-          player.takeDamage?.(this.damage);
-          if (typeof player.invulnerableTimer === "number") {
-            player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);
-          }
-          this.hasHitDuringAttack = true;
-        }
-      }
+      this.tryDealAttackDamage(player, 0.2);
 
       if (this.attackTimer <= 0) {
         this.isAttacking = false;
@@ -187,8 +166,12 @@ export class Enemy1 extends MovableObject {
 
     // START ATTACK if player in range - NOCHMAL DRUEBER SCHAUEN
     if (player && !player.isDead) {
-      const dx = player.x + player.width / 2 - (this.x + this.width / 2);
-      const dy = Math.abs(player.y - this.y);
+      const ex = this.x + this.width / 2;
+      const ey = this.y + this.height / 2;
+      const px = player.x + player.width / 2;
+      const py = player.y + player.height / 2;
+      const dx = px - ex;
+      const dy = Math.abs(py - ey);
       if (Math.abs(dx) <= this.attackRange && dy <= this.attackHeightTolerance) {
         this.isAttacking = true;
         this.attackTimer = this.attackDuration;
@@ -196,6 +179,7 @@ export class Enemy1 extends MovableObject {
         this.facing = dx >= 0 ? 1 : -1;
         this.vx = 0;
         this.setAnimation(this.attackFrames);
+        this.tryDealAttackDamage(player, 0.2);
         return;
       }
     }
@@ -252,6 +236,34 @@ export class Enemy1 extends MovableObject {
       width: this.width - shrinkX,
       height: this.height - shrinkY,
     };
+  }
+
+  tryDealAttackDamage(player, popupDelay = 0) {
+    if (!player || player.isDead || this.hasHitDuringAttack) return false;
+
+    const ex = this.x + this.width / 2;
+    const ey = this.y + this.height / 2;
+    const px = player.x + player.width / 2;
+    const py = player.y + player.height / 2;
+    const dx = px - ex;
+    const dy = Math.abs(py - ey);
+    const facingMatches = Math.sign(dx || 1) === this.facing;
+
+    if (
+      facingMatches &&
+      Math.abs(dx) <= this.attackRange &&
+      dy <= this.attackHeightTolerance &&
+      player.invulnerableTimer <= 0
+    ) {
+      player.takeDamage?.(this.damage, { popupDelay });
+      if (typeof player.invulnerableTimer === "number") {
+        player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);
+      }
+      this.hasHitDuringAttack = true;
+      return true;
+    }
+
+    return false;
   }
 
   getPlatformUnderfoot() {

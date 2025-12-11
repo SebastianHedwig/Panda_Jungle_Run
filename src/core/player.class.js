@@ -127,16 +127,21 @@ export class Player extends MovableObject {
     this.healthPoints = Math.max(0, this.healthPoints - amount);
     this.healthPulse = 1.0;
 
-    if (this.world?.hudPopups) {
-      this.world.hudPopups.push(
-        new HudPopup(
-          `-${amount} ❤`,
-          this.x + this.width / 2,
-          this.y - 30,
-          "damage"
-        )
-      );
-    }
+    const popupDelay = opts?.popupDelay ?? 0;
+    const addPopup = () => {
+      if (this.world?.hudPopups) {
+        this.world.hudPopups.push(
+          new HudPopup(
+            `-${amount} ❤`,
+            this.x + this.width / 2,
+            this.y - 30,
+            "damage"
+          )
+        );
+      }
+    };
+    if (popupDelay > 0) setTimeout(addPopup, popupDelay * 1000);
+    else addPopup();
 
     if (this.healthPoints <= 0) this.startDeath();
     else this.startHurt(opts?.useDizzy ?? true);
