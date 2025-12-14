@@ -1,9 +1,9 @@
-import { PlatformBuilder } from "../engine/platformBuilder.class.js";
-import { CollectableItem } from "../core/collectableItems.class.js";
-import { Enemy1 } from "../core/enemy1.class.js";
-import { Enemy2 } from "../core/enemy2.class.js";
-import { Enemy3 } from "../core/enemy3.class.js";
-import { WORLD_WIDTH } from "../config.js";
+import { PlatformBuilder } from "../../engine/world/platformBuilder.class.js";
+import { CollectableItem } from "../items/collectableItem.class.js";
+import { Enemy1 } from "../entities/enemies/enemy1.class.js";
+import { Enemy2 } from "../entities/enemies/enemy2.class.js";
+import { Enemy3 } from "../entities/enemies/enemy3.class.js";
+import { WORLD_WIDTH } from "../../config/config.js";
 
 const MIN_COIN_X = 75;
 

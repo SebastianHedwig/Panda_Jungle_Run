@@ -1,6 +1,6 @@
-import { WORLD_WIDTH } from "../config.js";
-import { Bullet, Explosion } from "./bullet.class.js";
-import { DizzyEffect } from "./hitEffect.class.js";
+import { WORLD_WIDTH } from "../config/config.js";
+import { Bullet, Explosion } from "../game/entities/bullet.class.js";
+import { DizzyEffect } from "../game/effects/hitEffect.class.js";
 
 export class World {
   constructor(canvas) {

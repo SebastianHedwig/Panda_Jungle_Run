@@ -1,4 +1,4 @@
-import { MUSIC_LOOP_CUT, MUSIC_VOLUME } from "../config.js";
+import { MUSIC_LOOP_CUT, MUSIC_VOLUME } from "../../config/config.js";
 
 export class GameAudio {
   constructor(src = "./assets/music/wildlife-jungle-background-game-music.mp3") {

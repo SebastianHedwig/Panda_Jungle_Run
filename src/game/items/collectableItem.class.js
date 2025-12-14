@@ -1,4 +1,4 @@
-import { HudPopup } from "./hudPopup.class.js";
+import { HudPopup } from "../effects/hudPopup.class.js";
 
 export const COLLECTABLE_VALUES = {
   coin: 10,

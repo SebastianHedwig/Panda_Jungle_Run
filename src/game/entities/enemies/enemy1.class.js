@@ -1,6 +1,6 @@
 import { EnemyBase } from "./enemyBase.class.js";
-import { HudPopup } from "./hudPopup.class.js";
-import { CollectableItem } from "./collectableItems.class.js";
+import { HudPopup } from "../../effects/hudPopup.class.js";
+import { CollectableItem } from "../../items/collectableItem.class.js";
 
 const DEBUG_HITBOX = false;
 

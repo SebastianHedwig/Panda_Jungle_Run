@@ -1,5 +1,5 @@
-import { MovableObject } from "./movableObject.class.js";
-import { HudPopup } from "./hudPopup.class.js";
+import { MovableObject } from "../../engine/physics/movableObject.class.js";
+import { HudPopup } from "../effects/hudPopup.class.js";
 
 const DEBUG_HITBOX = false;
 

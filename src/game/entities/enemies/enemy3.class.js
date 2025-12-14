@@ -1,6 +1,6 @@
 import { Enemy2 } from "./enemy2.class.js";
 import { EnemyBase } from "./enemyBase.class.js";
-import { CollectableItem } from "./collectableItems.class.js";
+import { CollectableItem } from "../../items/collectableItem.class.js";
 
 export function loadEnemy3Sprites() {
   const base = "assets/img/enemies/Enemy_Sprites/Character-3/";

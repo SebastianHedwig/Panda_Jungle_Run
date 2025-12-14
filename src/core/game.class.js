@@ -1,8 +1,8 @@
-﻿import { Input } from "./input.js";
-import { Background } from "../engine/background.class.js";
-import { Camera } from "../engine/camera.class.js";
+import { Input } from "../engine/input/input.class.js";
+import { Background } from "../engine/rendering/background.class.js";
+import { Camera } from "../engine/world/camera.class.js";
 import { World } from "./world.class.js";
-import { Player } from "./player.class.js";
+import { Player } from "../game/entities/player.class.js";
 import {
   createLevel1Platforms,
   createLevel1Collectables,
@@ -11,12 +11,12 @@ import {
   placeHearts,
   placeGuns,
   placeEnemiesMixed,
-} from "../game/level1.js";
-import { WORLD_WIDTH, GAME_WIDTH, GAME_HEIGHT } from "../config.js";
-import { Enemy1, loadEnemy1Sprites } from "./enemy1.class.js";
-import { loadEnemy2Sprites } from "./enemy2.class.js";
-import { loadEnemy3Sprites } from "./enemy3.class.js";
-import { GameAudio } from "./gameAudio.class.js";
+} from "../game/levels/level1.js";
+import { WORLD_WIDTH, GAME_WIDTH, GAME_HEIGHT } from "../config/config.js";
+import { Enemy1, loadEnemy1Sprites } from "../game/entities/enemies/enemy1.class.js";
+import { loadEnemy2Sprites } from "../game/entities/enemies/enemy2.class.js";
+import { loadEnemy3Sprites } from "../game/entities/enemies/enemy3.class.js";
+import { GameAudio } from "../game/audio/gameAudio.class.js";
 
 let canvas, ctx;
 let background, camera, player, input, world;

@@ -1,6 +1,6 @@
 import { ParallaxLayer } from "./parallaxLayer.class.js";
 import { Cloud } from "./cloud.class.js";
-import { WORLD_WIDTH } from "../config.js";
+import { WORLD_WIDTH } from "../../config/config.js";
 
 export class Background {
   constructor(canvas) {
