@@ -5,5 +5,5 @@ export const WORLD_HEIGHT = 720;
 export const GRAVITY = 2800;
 export const TILE_SIZE = 64;
 export const DEBUG_MODE = false;
-export const MUSIC_LOOP_CUT = 3;
+export const MUSIC_LOOP_CUT = 4;
 export const MUSIC_VOLUME = 0.35;

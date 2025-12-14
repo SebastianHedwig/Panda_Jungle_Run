@@ -8,6 +8,7 @@ export class GameAudio {
     this.readyPromise = null;
     this.loopCut = MUSIC_LOOP_CUT ?? 0;
     this.volume = MUSIC_VOLUME ?? 0.35;
+    this.unlockHandler = null;
   }
 
   init() {
@@ -44,6 +45,7 @@ export class GameAudio {
       this.audio.addEventListener("error", () => resolve(false), { once: true });
 
       this.audio.load();
+      this.bindPlaybackUnlock();
 
       setTimeout(() => resolve(false), 4000);
     });
@@ -57,5 +59,20 @@ export class GameAudio {
       .play()
       .then(() => true)
       .catch(() => false);
+  }
+
+  bindPlaybackUnlock() {
+    if (this.unlockHandler) return;
+    this.unlockHandler = () => {
+      this.play().finally(() => {
+        window.removeEventListener("pointerdown", this.unlockHandler);
+        window.removeEventListener("keydown", this.unlockHandler);
+        window.removeEventListener("touchstart", this.unlockHandler);
+        this.unlockHandler = null;
+      });
+    };
+    window.addEventListener("pointerdown", this.unlockHandler, { once: true });
+    window.addEventListener("keydown", this.unlockHandler, { once: true });
+    window.addEventListener("touchstart", this.unlockHandler, { once: true });
   }
 }

@@ -127,7 +127,24 @@ export class Enemy1 extends EnemyBase {
       const atkFrames = this.activeAttackFrames || this.attackFrames;
       this.setAnimation(atkFrames);
       if (this.attackMoveSpeed) {
-        this.x += this.attackMoveSpeed * this.facing * dt;
+        const platform = this.getPlatformUnderfoot();
+        const nextX = this.x + this.attackMoveSpeed * this.facing * dt;
+        const nextFoot = nextX + this.width / 2;
+        const hitsPlatformEdge =
+          platform &&
+          (nextFoot <= platform.left + this.edgeMargin ||
+            nextFoot >= platform.right - this.edgeMargin);
+        if (hitsPlatformEdge) {
+          // stop sliding attack when reaching the edge
+          this.isAttacking = false;
+          this.attackMoveSpeed = 0;
+          this.hasHitDuringAttack = false;
+          this.hasShownMissDuringAttack = false;
+          this.setAnimation(this.idleFrames);
+          this.currentFrame = 0;
+        } else {
+          this.x = nextX;
+        }
       }
       this.animate(dt);
 

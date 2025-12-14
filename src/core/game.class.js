@@ -406,7 +406,7 @@ function drawCoins() {
   const text = Math.round(hudDisplayValue).toString();
 
   ctx.save();
-  ctx.translate(x + size + 10, y + 30);
+  ctx.translate(x + size + 35, y + 25);
   ctx.scale(scale, scale);
 
   ctx.font = "1.2rem ComixLoud";
@@ -435,7 +435,7 @@ function drawBullets() {
   const text = Math.max(0, Math.floor(player.bulletAmmo)).toString();
 
   ctx.save();
-  ctx.translate(x + size + 10, y + 30);
+  ctx.translate(x + size + 30, y + 25);
   ctx.scale(scale, scale);
 
   ctx.font = "1.2rem ComixLoud";

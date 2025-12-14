@@ -149,7 +149,7 @@ export class World {
   spawnHitEffect(x, y, width = 0, height = 0) {
     if (!this.hitEffectFrames?.length) return;
     const headX = x + width / 2;
-    const headY = y + height * 0.05; // closer to head height
+    const headY = y + height * 0.05;
     this.hitEffects.push(new DizzyEffect(headX, headY, this.hitEffectFrames));
   }
 
