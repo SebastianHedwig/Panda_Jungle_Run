@@ -1,37 +1,38 @@
 @font-face {
-  font-family: 'ComixLoud';
-  src: url('./assets/fonts/Comix_Loud.ttf') format('truetype');
+  font-family: "ComixLoud";
+  src: url("./assets/fonts/Comix_Loud.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
 
 body {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background-image: url(./assets/img/body-main_BG.jpg);
-    margin: 0;
-    width: 100vw;
-    height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-image: url(./assets/img/body-main_BG.jpg);
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
 }
 
 h1 {
-    font-family: 'ComixLoud';
-    font-variant: small-caps;
-    text-align: center;
-    color: whitesmoke;
-    font-size: 5rem;
-    margin-top: 5rem;
+  font-family: "ComixLoud";
+  font-variant: small-caps;
+  text-align: center;
+  color: whitesmoke;
+  font-size: 5rem;
+  margin-top: 5rem;
 }
 
 .canvas {
-    position: absolute;
-    top: 25%;
-    left: 5%;
-    width: 1280px;
-    height: 720px;
-    margin: 0 auto;
-    background: rgb(47, 79, 79);
-    border: 0.3rem solid rgb(0, 139, 139);
-    border-radius: 0.5rem;
+  position: absolute;
+  top: 25%;
+  left: 5%;
+  width: 1280px;
+  height: 720px;
+  margin: 0 auto;
+  background: rgb(47, 79, 79);
+  border: 0.3rem solid rgb(0, 139, 139);
+  border-radius: 0.5rem;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.8), 0 12px 26px rgba(0, 0, 0, 0.65);
 }
