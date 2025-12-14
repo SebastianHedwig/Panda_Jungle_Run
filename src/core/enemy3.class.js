@@ -1,5 +1,5 @@
 import { Enemy2 } from "./enemy2.class.js";
-import { EnemyBase } from "./enemies.class.js";
+import { EnemyBase } from "./enemyBase.class.js";
 import { CollectableItem } from "./collectableItems.class.js";
 
 export function loadEnemy3Sprites() {

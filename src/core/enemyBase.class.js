@@ -54,7 +54,8 @@ export class EnemyBase extends MovableObject {
       this.vx = 0;
       this.vy = 0;
       this.deathTimer = 5;
-      this.blinkTimer = 0.9; // 3 blinks à 0.3s
+      this.blinkTimer = 0.9; // 3 blinks at 0.3s
+      this.onDeath?.();
       return;
     }
 

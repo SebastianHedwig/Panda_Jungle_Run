@@ -16,10 +16,15 @@ import { WORLD_WIDTH, GAME_WIDTH, GAME_HEIGHT } from "../config.js";
 import { Enemy1, loadEnemy1Sprites } from "./enemy1.class.js";
 import { loadEnemy2Sprites } from "./enemy2.class.js";
 import { loadEnemy3Sprites } from "./enemy3.class.js";
+import { GameAudio } from "./gameAudio.class.js";
 
 let canvas, ctx;
 let background, camera, player, input, world;
 let lastTime = 0;
+let audio;
+let isLoading = true;
+let loadingAnimTime = 0;
+let musicReadyPromise;
 
 /** HUD */
 let hudCoinImg;
@@ -38,6 +43,9 @@ export function initGame() {
   world = new World(canvas);
   camera = new Camera(canvas, WORLD_WIDTH);
   background = new Background(canvas);
+  audio = new GameAudio();
+  musicReadyPromise = audio.init().then(() => audio.play());
+  requestAnimationFrame(renderLoading);
 
   const bgImages = [
     loadImage(
@@ -162,7 +170,9 @@ export function initGame() {
     hudGunImg,
   ];
 
-  Promise.allSettled(assets.map(waitForImage)).then(() =>
+  const assetsReady = Promise.allSettled(assets.map(waitForImage));
+
+  Promise.all([assetsReady, musicReadyPromise]).then(() =>
     start(
       bgImages,
       platformSprites,
@@ -244,6 +254,8 @@ function start(
   player.world = world;
   world.setHitEffectFrames(hitStars);
   world.hudPopups = [];
+  audio?.play();
+  isLoading = false;
 
   requestAnimationFrame(loop);
 }
@@ -462,4 +474,34 @@ function waitForImage(img) {
       finish(false);
     };
   });
+}
+
+function renderLoading(t) {
+  if (!isLoading) return;
+  loadingAnimTime = t || 0;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // dim background
+  ctx.fillStyle = "rgba(10, 16, 20, 0.85)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // spinner
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const radius = 40;
+  const angle = ((loadingAnimTime / 500) % (Math.PI * 2));
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = "rgba(0, 200, 200, 0.9)";
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, angle, angle + Math.PI * 1.5);
+  ctx.stroke();
+
+  // text
+  ctx.fillStyle = "#e5f7ff";
+  ctx.font = "32px ComixLoud, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("Loading...", cx, cy + 80);
+
+  requestAnimationFrame(renderLoading);
 }

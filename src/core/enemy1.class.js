@@ -1,4 +1,4 @@
-import { EnemyBase } from "./enemies.class.js";
+import { EnemyBase } from "./enemyBase.class.js";
 import { HudPopup } from "./hudPopup.class.js";
 import { CollectableItem } from "./collectableItems.class.js";
 
