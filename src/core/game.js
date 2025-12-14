@@ -10,10 +10,11 @@ import {
   generateCoinArcs,
   placeHearts,
   placeGuns,
-  placeEnemies,
+  placeEnemiesMixed,
 } from "../game/level1.js";
 import { WORLD_WIDTH, GAME_WIDTH, GAME_HEIGHT } from "../config.js";
 import { Enemy1, loadEnemy1Sprites } from "./enemy1.class.js";
+import { loadEnemy2Sprites } from "./enemy2.class.js";
 
 let canvas, ctx;
 let background, camera, player, input, world;
@@ -122,32 +123,38 @@ export function initGame() {
     3
   );
   const enemy1Sprites = loadEnemy1Sprites();
+  const enemy2Sprites = loadEnemy2Sprites();
 
   hudCoinImg = loadImage("./assets/img/Coin/Coin_0000000.png");
   hudGunImg = loadImage("./assets/img/Character/Spriter_files/gun.png");
 
-  Promise.all(
-    [
-      ...bgImages,
-      ...Object.values(platformSprites),
-      ...idle,
-      ...walk,
-      ...run,
-      ...jump,
-      ...slide,
-      ...attack,
-      ...shoot,
-      ...dizzy,
-      ...hurt,
-      ...die,
-      ...hitStars,
-      ...enemy1Sprites.idle,
-      ...enemy1Sprites.walk,
-      ...enemy1Sprites.attack,
-      ...enemy1Sprites.die,
-      hudGunImg,
-    ].map(waitForImage)
-  ).then(() =>
+  const assets = [
+    ...bgImages,
+    ...Object.values(platformSprites),
+    ...idle,
+    ...walk,
+    ...run,
+    ...jump,
+    ...slide,
+    ...attack,
+    ...shoot,
+    ...dizzy,
+    ...hurt,
+    ...die,
+    ...hitStars,
+    ...enemy1Sprites.idle,
+    ...enemy1Sprites.walk,
+    ...enemy1Sprites.attack,
+    ...enemy1Sprites.die,
+    ...enemy2Sprites.idle,
+    ...enemy2Sprites.run,
+    ...enemy2Sprites.attack1,
+    ...enemy2Sprites.attack2,
+    ...enemy2Sprites.die,
+    hudGunImg,
+  ];
+
+  Promise.allSettled(assets.map(waitForImage)).then(() =>
     start(
       bgImages,
       platformSprites,
@@ -160,6 +167,7 @@ export function initGame() {
       shoot,
       dizzy,
       enemy1Sprites,
+      enemy2Sprites,
       hurt,
       die,
       hitStars
@@ -179,6 +187,7 @@ function start(
   shoot,
   dizzy,
   enemy1Sprites,
+  enemy2Sprites,
   hurt,
   die,
   hitStars
@@ -202,7 +211,7 @@ function start(
   world.addCollectables(collectables);
   placeHearts(world);
   placeGuns(world);
-  placeEnemies(world, enemy1Sprites, 5);
+  placeEnemiesMixed(world, enemy1Sprites, enemy2Sprites, 5, 5);
 
   const spawnX = 25;
   const groundTop = world.baseGround ?? canvas.height;
@@ -431,7 +440,16 @@ function loadFrames(path, prefix, count) {
 }
 
 function waitForImage(img) {
-  return img.decode
-    ? img.decode().catch(() => new Promise((r) => (img.onload = r)))
-    : new Promise((r) => (img.onload = r));
+  return new Promise((resolve) => {
+    const finish = (ok) => resolve({ ok, img });
+    if (img.complete) {
+      finish(img.naturalWidth > 0 && img.naturalHeight > 0);
+      return;
+    }
+    img.onload = () => finish(true);
+    img.onerror = () => {
+      console.warn("Image failed to load", img?.src || img);
+      finish(false);
+    };
+  });
 }

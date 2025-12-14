@@ -27,6 +27,7 @@ export class EnemyBase extends MovableObject {
     this.hasHitDuringAttack = false;
     this.hasShownMissDuringAttack = false;
     this.recentSlideHit = 0;
+    this.attackDamageCurrent = this.damage ?? 1;
   }
 
   /** ----- DAMAGE / HITBOX ----- */
@@ -241,5 +242,35 @@ export class EnemyBase extends MovableObject {
     }
 
     return moveDir;
+  }
+
+  /** ----- ATTACK HANDLERS (DEFAULT) ----- */
+  tryStartAttack(playerInfo, player) {
+    if (!playerInfo || !player || player.isDead) return false;
+    const dx = playerInfo.dx;
+    const dy = playerInfo.absDy;
+    if (
+      Math.abs(dx) <= this.attackRange &&
+      dy <= this.attackHeightTolerance
+    ) {
+      const frames = this.attackFrames;
+      if (frames) {
+        this.startMeleeAttack(dx, frames, this.damage, player);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  startMeleeAttack(dx, frames, damage, player) {
+    this.isAttacking = true;
+    this.attackTimer = this.attackDuration;
+    this.hasHitDuringAttack = false;
+    this.hasShownMissDuringAttack = false;
+    this.attackDamageCurrent = damage;
+    this.facing = dx >= 0 ? 1 : -1;
+    this.vx = 0;
+    this.setAnimation?.(frames);
+    this.tryDealAttackDamage?.(player, 0.2);
   }
 }

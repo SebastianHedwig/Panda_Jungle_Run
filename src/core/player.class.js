@@ -101,7 +101,7 @@ export class Player extends MovableObject {
     this.facing = 1;
 
     /** ----- HEART SYSTEM ----- */
-    this.maxHearts = 3;
+    this.maxHearts = 4;
     this.healthPoints = this.maxHearts * 2;
     this.maxHealthPoints = this.healthPoints;
     this.healthPulse = 0;
@@ -238,6 +238,34 @@ export class Player extends MovableObject {
     this.invulnerableTimer = 0;
     this.collisionDisabled = true;
     this.deathDone = false;
+  }
+
+  handleDeathLanding(prevBottom, currBottom) {
+    const platforms = this.world?.platforms || [];
+    const canvasH = this.world?.canvas?.height ?? 1000;
+    const ground = this.world?.baseGround ?? canvasH;
+
+    for (const p of platforms) {
+      if (!p.supportsLanding) continue;
+      const overlapsX = this.x + this.width > p.left && this.x < p.right;
+      if (
+        overlapsX &&
+        this.vy > 0 &&
+        prevBottom <= p.top &&
+        currBottom >= p.top
+      ) {
+        this.y = p.top - this.height;
+        this.vy = 0;
+        this.onGround = true;
+        return;
+      }
+    }
+
+    if (currBottom >= ground) {
+      this.y = ground - this.height;
+      this.vy = 0;
+      this.onGround = true;
+    }
   }
 
   startSlide() {
@@ -426,6 +454,10 @@ export class Player extends MovableObject {
     /** DEATH OVERRIDE */
     if (this.isDead) {
       this.setAnimation(this.dieFrames);
+      const prevBottom = this.y + this.height;
+      this.applyApexGravity(dt);
+      const currBottom = this.y + this.height;
+      this.handleDeathLanding(prevBottom, currBottom);
       if (!this.deathDone) {
         this.frameTime += dt;
         if (this.frameTime >= this.frameSpeed) {

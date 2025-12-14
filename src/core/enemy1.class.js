@@ -29,8 +29,9 @@ export class Enemy1 extends EnemyBase {
     this.sprite = this.currentAnimation[0];
 
     this.speed = 80;
-    this.health = 3;
+    this.health = 4;
     this.damage = 1;
+    this.attackDamageCurrent = this.damage;
     this.isDead = false;
     this.remove = false;
     this.deathDone = false;
@@ -113,6 +114,10 @@ export class Enemy1 extends EnemyBase {
     }
 
     const playerInfo = this.getPlayerDelta(player);
+    if (player?.isDead) {
+      this.isChasing = false;
+      this.isAttacking = false;
+    }
 
     // ATTACK HANDLING
     if (this.isAttacking) {
@@ -133,28 +138,17 @@ export class Enemy1 extends EnemyBase {
     }
 
     // START ATTACK if player in range
-    if (playerInfo && player && !player.isDead) {
-      const dx = playerInfo.dx;
-      const dy = playerInfo.absDy;
-      if (Math.abs(dx) <= this.attackRange && dy <= this.attackHeightTolerance) {
-        this.isAttacking = true;
-        this.attackTimer = this.attackDuration;
-        this.hasHitDuringAttack = false;
-        this.hasShownMissDuringAttack = false;
-        this.facing = dx >= 0 ? 1 : -1;
-        this.vx = 0;
-        this.setAnimation(this.attackFrames);
-        this.tryDealAttackDamage(player, 0.2);
-        return;
-      }
-    }
+    if (this.tryStartAttack(playerInfo, player)) return;
 
     const platform = this.getPlatformUnderfoot();
     this.currentPlatform = platform || null;
     const onLowestPlatform = this.isOnLowestPlatform();
     const prevChasing = this.isChasing;
     const canChase =
-      this.chaseCooldown <= 0 && this.shouldChasePlayer(playerInfo, prevChasing);
+      this.chaseCooldown <= 0 &&
+      player &&
+      !player.isDead &&
+      this.shouldChasePlayer(playerInfo, prevChasing);
     const enemyCenterX = this.x + this.width / 2;
     const blockedByEdge =
       canChase &&
@@ -256,7 +250,8 @@ export class Enemy1 extends EnemyBase {
         return false;
       }
 
-      player.takeDamage?.(this.damage, { popupDelay });
+      const dmg = this.attackDamageCurrent ?? this.damage;
+      player.takeDamage?.(dmg, { popupDelay });
       if (typeof player.invulnerableTimer === "number") {
         player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);
       }
