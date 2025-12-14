@@ -43,7 +43,7 @@ export class Enemy1 extends MovableObject {
     this.attackTimer = 0;
 
     this.patrolDir = -1;
-    this.patrolRange = 480;
+    this.patrolRange = 800;
     this.originX = x;
     this.currentPlatform = null;
     this.lastGroundY = y;
@@ -53,6 +53,14 @@ export class Enemy1 extends MovableObject {
     this.recentSlideHit = 0;
     this.attackRange = 60;
     this.attackHeightTolerance = 20;
+    this.chaseRangeX = 300;
+    this.chaseRangeXExit = 360;
+    this.chaseRangeY = 200;
+    this.chaseRangeYExit = 260;
+    this.edgeMargin = 5;
+    this.isChasing = false;
+    this.lastMoveDir = -1;
+    this.chaseCooldown = 0;
   }
   
   setAnimation(frames) {
@@ -111,6 +119,7 @@ export class Enemy1 extends MovableObject {
 
   update(dt, player) {
     if (this.isDead) {
+      this.isChasing = false;
       if (!this.deathDone) {
         this.frameTime += dt;
         if (this.frameTime >= this.frameSpeed) {
@@ -140,15 +149,21 @@ export class Enemy1 extends MovableObject {
     if (this.recentSlideHit > 0) {
       this.recentSlideHit = Math.max(0, this.recentSlideHit - dt);
     }
+    if (this.chaseCooldown > 0) {
+      this.chaseCooldown = Math.max(0, this.chaseCooldown - dt);
+    }
 
     if (this.hitStun > 0) {
       this.hitStun = Math.max(0, this.hitStun - dt);
+      this.isChasing = false;
       // freeze on first idle frame (no animation) for clear feedback
       this.setAnimation(this.idleFrames);
       this.currentFrame = 0;
       this.sprite = this.idleFrames[0];
       return;
     }
+
+    const playerInfo = this.getPlayerDelta(player);
 
     // ATTACK HANDLING
     if (this.isAttacking) {
@@ -164,27 +179,14 @@ export class Enemy1 extends MovableObject {
         this.hasShownMissDuringAttack = false;
       }
 
+      this.isChasing = false;
       return;
     }
 
-    const platform = this.getPlatformUnderfoot();
-    if (platform) {
-      this.currentPlatform = platform;
-      const nextX = this.x + this.patrolDir * this.speed * dt;
-      const footX = nextX + this.width / 2;
-      if (footX < platform.left + 5 || footX > platform.right - 5) {
-        this.patrolDir *= -1;
-      }
-    }
-
     // START ATTACK if player in range - NOCHMAL DRUEBER SCHAUEN
-    if (player && !player.isDead) {
-      const ex = this.x + this.width / 2;
-      const ey = this.y + this.height / 2;
-      const px = player.x + player.width / 2;
-      const py = player.y + player.height / 2;
-      const dx = px - ex;
-      const dy = Math.abs(py - ey);
+    if (playerInfo && player && !player.isDead) {
+      const dx = playerInfo.dx;
+      const dy = playerInfo.absDy;
       if (Math.abs(dx) <= this.attackRange && dy <= this.attackHeightTolerance) {
         this.isAttacking = true;
         this.attackTimer = this.attackDuration;
@@ -198,8 +200,66 @@ export class Enemy1 extends MovableObject {
       }
     }
 
-    this.patrol();
-    this.x += this.patrolDir * this.speed * dt;
+    const platform = this.getPlatformUnderfoot();
+    this.currentPlatform = platform || null;
+    const onLowestPlatform = this.isOnLowestPlatform();
+    const prevChasing = this.isChasing;
+    const canChase =
+      this.chaseCooldown <= 0 && this.shouldChasePlayer(playerInfo, prevChasing);
+    const enemyCenterX = this.x + this.width / 2;
+    const blockedByEdge =
+      canChase &&
+      onLowestPlatform &&
+      platform &&
+      ((playerInfo.dx < 0 && enemyCenterX <= platform.left + this.edgeMargin) ||
+        (playerInfo.dx > 0 && enemyCenterX >= platform.right - this.edgeMargin));
+
+    this.isChasing = canChase && !blockedByEdge;
+
+    let moveDir = this.lastMoveDir;
+    if (this.isChasing) {
+      const dx = playerInfo?.dx ?? 0;
+      const targetDir =
+        Math.abs(dx) < 1
+          ? this.lastMoveDir || this.facing || 1
+          : Math.sign(dx) || 1;
+      this.facing = targetDir;
+      moveDir = targetDir;
+    } else {
+      this.patrol();
+      moveDir = this.patrolDir;
+    }
+
+    if (platform) {
+      const platformBelow = this.findPlatformBelow(
+        this.x + this.width / 2,
+        platform.top
+      );
+      const currFootX = this.x + this.width / 2;
+      const nextX = this.x + moveDir * this.speed * dt;
+      const footX = nextX + this.width / 2;
+      const beyondEdge =
+        footX < platform.left + this.edgeMargin ||
+        footX > platform.right - this.edgeMargin;
+      const returningInside =
+        (currFootX >= platform.right - this.edgeMargin && moveDir <= 0) ||
+        (currFootX <= platform.left + this.edgeMargin && moveDir >= 0);
+      const allowDrop = this.isChasing && !onLowestPlatform && !!platformBelow;
+      const hasAdjacentFloor =
+        onLowestPlatform &&
+        this.hasAdjacentPlatform(platform, moveDir, footX);
+
+      if (beyondEdge && !returningInside && !allowDrop && !hasAdjacentFloor) {
+        this.patrolDir = moveDir > 0 ? -1 : 1;
+        this.isChasing = false;
+        if (prevChasing) this.chaseCooldown = Math.max(this.chaseCooldown, 2);
+        moveDir = this.patrolDir;
+        this.facing = moveDir;
+      }
+    }
+
+    this.x += moveDir * this.speed * dt;
+    this.lastMoveDir = moveDir;
 
     const prevBottom = this.y + this.height;
     this.applyApexGravity(dt);
@@ -230,6 +290,38 @@ export class Enemy1 extends MovableObject {
     this.facing = this.patrolDir;
   }
 
+  getPlayerDelta(player) {
+    if (!player) return null;
+    const ex = this.x + this.width / 2;
+    const ey = this.y + this.height / 2;
+    const px = player.x + player.width / 2;
+    const py = player.y + player.height / 2;
+    const dx = px - ex;
+    const dy = py - ey;
+    return {
+      dx,
+      dy,
+      absDx: Math.abs(dx),
+      absDy: Math.abs(dy),
+      px,
+      py,
+      ex,
+      ey,
+      playerWidth: player.width,
+    };
+  }
+
+  shouldChasePlayer(playerInfo, wasChasing = false) {
+    if (!playerInfo) return false;
+    const horizGap = playerInfo.absDx;
+    const maxX = wasChasing ? this.chaseRangeXExit : this.chaseRangeX;
+    const maxY = wasChasing ? this.chaseRangeYExit : this.chaseRangeY;
+    return (
+      horizGap <= maxX &&
+      playerInfo.absDy <= maxY
+    );
+  }
+
   collidesWith(obj) {
     const selfBox = this.getHitbox();
     const targetBox = obj.getHitbox ? obj.getHitbox() : obj;
@@ -250,6 +342,16 @@ export class Enemy1 extends MovableObject {
       width: this.width - shrinkX,
       height: this.height - shrinkY,
     };
+  }
+
+  isOnLowestPlatform() {
+    if (!this.currentPlatform || !this.world?.platforms?.length) return false;
+    const lowestTop = this.world.platforms.reduce((max, p) => {
+      if (!p.supportsLanding) return max;
+      return Math.max(max, p.top);
+    }, -Infinity);
+    if (!Number.isFinite(lowestTop)) return false;
+    return this.currentPlatform.top >= lowestTop - 0.5;
   }
 
   tryDealAttackDamage(player, popupDelay = 0) {
@@ -311,6 +413,36 @@ export class Enemy1 extends MovableObject {
         footX <= p.right &&
         footY >= p.top &&
         footY <= p.bottom + 5
+    );
+  }
+
+  findPlatformBelow(x, currentTop) {
+    if (!this.world?.platforms?.length) return null;
+    let best = null;
+    for (const p of this.world.platforms) {
+      if (!p.supportsLanding) continue;
+      if (x < p.left || x > p.right) continue;
+      if (p.top <= currentTop) continue;
+      if (!best || p.top < best.top) best = p;
+    }
+    return best;
+  }
+
+  hasAdjacentPlatform(currentPlatform, moveDir, footX) {
+    if (!this.world?.platforms?.length) return false;
+    const toleranceY = Math.max(4, this.edgeMargin);
+    const boundary = moveDir > 0 ? currentPlatform.right : currentPlatform.left;
+    const lookStart = boundary - this.edgeMargin;
+    const lookEnd = boundary + this.edgeMargin * 3 * moveDir;
+    const minX = Math.min(lookStart, lookEnd, footX - this.edgeMargin);
+    const maxX = Math.max(lookStart, lookEnd, footX + this.edgeMargin);
+    return this.world.platforms.some(
+      (p) =>
+        p !== currentPlatform &&
+        p.supportsLanding &&
+        Math.abs(p.top - currentPlatform.top) <= toleranceY &&
+        p.right >= minX &&
+        p.left <= maxX
     );
   }
 
