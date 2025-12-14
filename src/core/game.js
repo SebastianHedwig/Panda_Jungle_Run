@@ -15,6 +15,7 @@ import {
 import { WORLD_WIDTH, GAME_WIDTH, GAME_HEIGHT } from "../config.js";
 import { Enemy1, loadEnemy1Sprites } from "./enemy1.class.js";
 import { loadEnemy2Sprites } from "./enemy2.class.js";
+import { loadEnemy3Sprites } from "./enemy3.class.js";
 
 let canvas, ctx;
 let background, camera, player, input, world;
@@ -124,6 +125,7 @@ export function initGame() {
   );
   const enemy1Sprites = loadEnemy1Sprites();
   const enemy2Sprites = loadEnemy2Sprites();
+  const enemy3Sprites = loadEnemy3Sprites();
 
   hudCoinImg = loadImage("./assets/img/Coin/Coin_0000000.png");
   hudGunImg = loadImage("./assets/img/Character/Spriter_files/gun.png");
@@ -151,6 +153,12 @@ export function initGame() {
     ...enemy2Sprites.attack1,
     ...enemy2Sprites.attack2,
     ...enemy2Sprites.die,
+    ...enemy3Sprites.idle,
+    ...enemy3Sprites.run,
+    ...enemy3Sprites.attack1,
+    ...enemy3Sprites.attack2,
+    ...enemy3Sprites.slide,
+    ...enemy3Sprites.die,
     hudGunImg,
   ];
 
@@ -168,6 +176,7 @@ export function initGame() {
       dizzy,
       enemy1Sprites,
       enemy2Sprites,
+      enemy3Sprites,
       hurt,
       die,
       hitStars
@@ -188,6 +197,7 @@ function start(
   dizzy,
   enemy1Sprites,
   enemy2Sprites,
+  enemy3Sprites,
   hurt,
   die,
   hitStars
@@ -211,7 +221,7 @@ function start(
   world.addCollectables(collectables);
   placeHearts(world);
   placeGuns(world);
-  placeEnemiesMixed(world, enemy1Sprites, enemy2Sprites, 5, 5);
+  placeEnemiesMixed(world, enemy1Sprites, enemy2Sprites, enemy3Sprites, 5, 5, 2);
 
   const spawnX = 25;
   const groundTop = world.baseGround ?? canvas.height;

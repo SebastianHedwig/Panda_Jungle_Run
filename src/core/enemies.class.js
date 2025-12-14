@@ -28,6 +28,7 @@ export class EnemyBase extends MovableObject {
     this.hasShownMissDuringAttack = false;
     this.recentSlideHit = 0;
     this.attackDamageCurrent = this.damage ?? 1;
+    this.attackMoveSpeed = 0;
   }
 
   /** ----- DAMAGE / HITBOX ----- */
@@ -262,15 +263,17 @@ export class EnemyBase extends MovableObject {
     return false;
   }
 
-  startMeleeAttack(dx, frames, damage, player) {
+  startMeleeAttack(dx, frames, damage, player, moveSpeed = 0) {
     this.isAttacking = true;
     this.attackTimer = this.attackDuration;
     this.hasHitDuringAttack = false;
     this.hasShownMissDuringAttack = false;
     this.attackDamageCurrent = damage;
+    this.attackMoveSpeed = moveSpeed || 0;
+    this.activeAttackFrames = frames || this.attackFrames;
     this.facing = dx >= 0 ? 1 : -1;
     this.vx = 0;
-    this.setAnimation?.(frames);
+    this.setAnimation?.(this.activeAttackFrames);
     this.tryDealAttackDamage?.(player, 0.2);
   }
 }

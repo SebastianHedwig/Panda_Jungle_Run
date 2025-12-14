@@ -8,10 +8,11 @@ export const COLLECTABLE_VALUES = {
 };
 
 export class CollectableItem {
-  constructor(x, y, type = "coin") {
+  constructor(x, y, type = "coin", world = null) {
     this.x = x;
     this.y = y;
     this.type = type;
+    this.world = world;
 
     this.width = 50;
     this.height = 50;
@@ -22,6 +23,12 @@ export class CollectableItem {
     this.scale = 1;
     this.alpha = 1;
     this.rotation = 0;
+
+    this.dropPhysics = false;
+    this.vx = 0;
+    this.vy = 0;
+    this.gravity = 1800;
+    this.pickupDelay = this.type === "gun" ? 1 : 0;
 
     this.images = [];
     this.currentImage = 0;
@@ -70,6 +77,13 @@ export class CollectableItem {
 
   /** ---------- UPDATE ANIMATION ---------- */
   update(dt) {
+    if (!this.collected && this.dropPhysics) {
+      this.applyDropPhysics(dt);
+    }
+    if (this.pickupDelay > 0) {
+      this.pickupDelay = Math.max(0, this.pickupDelay - dt);
+    }
+
     // Idle Coin Spin
     if (!this.collected && this.images.length > 1) {
       this.frameTime += dt;
@@ -88,6 +102,50 @@ export class CollectableItem {
       if (this.alpha <= 0) {
         this.pickupAnimating = false;
       }
+    }
+  }
+
+  /** ---------- DROP ARC ---------- */
+  startDrop(vx = 0, vy = -300) {
+    this.dropPhysics = true;
+    this.vx = vx;
+    this.vy = vy;
+  }
+
+  applyDropPhysics(dt) {
+    this.vy += this.gravity * dt;
+    this.x += this.vx * dt;
+    this.y += this.vy * dt;
+
+    const world = this.world;
+    const ground = world?.baseGround ?? world?.canvas?.height ?? 1000;
+    const prevBottom = this.y + this.height - this.vy * dt;
+    const currBottom = this.y + this.height;
+
+    if (world?.platforms?.length) {
+      for (const p of world.platforms) {
+        if (!p.supportsLanding) continue;
+        const overlapsX = this.x + this.width > p.left && this.x < p.right;
+        if (
+          overlapsX &&
+          this.vy > 0 &&
+          prevBottom <= p.top &&
+          currBottom >= p.top
+        ) {
+          this.y = p.top - this.height;
+          this.vy = 0;
+          this.vx *= 0.4;
+          this.dropPhysics = false;
+          return;
+        }
+      }
+    }
+
+    if (currBottom >= ground) {
+      this.y = ground - this.height;
+      this.vy = 0;
+      this.vx = 0;
+      this.dropPhysics = false;
     }
   }
 
@@ -124,6 +182,7 @@ export class CollectableItem {
 
   /** ---------- COLLISION CHECK ---------- */
   isColliding(player) {
+    if (this.pickupDelay > 0) return false;
     return !(
       player.x > this.x + this.width ||
       player.x + player.width < this.x ||

@@ -2,6 +2,7 @@ import { PlatformBuilder } from "../engine/platformBuilder.class.js";
 import { CollectableItem } from "../core/collectableItems.class.js";
 import { Enemy1 } from "../core/enemy1.class.js";
 import { Enemy2 } from "../core/enemy2.class.js";
+import { Enemy3 } from "../core/enemy3.class.js";
 import { WORLD_WIDTH } from "../config.js";
 
 const MIN_COIN_X = 75;
@@ -210,64 +211,16 @@ export function placeGuns(world, count = 4) {
   world.addCollectables(guns);
 }
 
-export function placeEnemies(world, enemySprites, count = 5) {
-  if (!enemySprites) return;
-
-  const platforms = world.platforms
-    .filter((p) => p.width > 80 && p.top <= world.baseGround)
-    .filter((p) => p.supportsLanding)
-    .filter((p) => p.left > 200)
-    .filter((p) => p.right <= WORLD_WIDTH - 1000);
-
-  for (let i = platforms.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [platforms[i], platforms[j]] = [platforms[j], platforms[i]];
-  }
-
-  const enemies = [];
-  for (let i = 0; i < Math.min(count, platforms.length); i++) {
-    const p = platforms[i];
-    const ex = Math.min(Math.max(p.left + 60, p.left + 20), p.right - 120);
-    const ey = p.top - 110;
-    enemies.push(new Enemy1(ex, ey, enemySprites, world));
-  }
-
-  if (enemies.length) world.addEnemies(enemies);
-}
-
-export function placeEnemies2(world, enemySprites, count = 5) {
-  if (!enemySprites) return;
-
-  const platforms = world.platforms
-    .filter((p) => p.width > 80 && p.top <= world.baseGround)
-    .filter((p) => p.supportsLanding)
-    .filter((p) => p.left > 200)
-    .filter((p) => p.right <= WORLD_WIDTH - 1000);
-
-  for (let i = platforms.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [platforms[i], platforms[j]] = [platforms[j], platforms[i]];
-  }
-
-  const enemies = [];
-  for (let i = 0; i < Math.min(count, platforms.length); i++) {
-    const p = platforms[(i + 5) % platforms.length]; // offset vs. Enemy1 spawn
-    const ex = Math.min(Math.max(p.left + 60, p.left + 20), p.right - 120);
-    const ey = p.top - 110;
-    enemies.push(new Enemy2(ex, ey, enemySprites, world));
-  }
-
-  if (enemies.length) world.addEnemies(enemies);
-}
-
 export function placeEnemiesMixed(
   world,
   enemy1Sprites,
   enemy2Sprites,
+  enemy3Sprites,
   count1 = 5,
-  count2 = 5
+  count2 = 5,
+  count3 = 2
 ) {
-  const totalRequested = Math.max(0, (count1 || 0) + (count2 || 0));
+  const totalRequested = Math.max(0, (count1 || 0) + (count2 || 0) + (count3 || 0));
   if (totalRequested === 0) return;
 
   const platforms = world.platforms
@@ -284,6 +237,7 @@ export function placeEnemiesMixed(
   const mix = [];
   for (let i = 0; i < count1; i++) mix.push("e1");
   for (let i = 0; i < count2; i++) mix.push("e2");
+  for (let i = 0; i < count3; i++) mix.push("e3");
   for (let i = mix.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [mix[i], mix[j]] = [mix[j], mix[i]];
@@ -298,6 +252,8 @@ export function placeEnemiesMixed(
     const type = mix[i];
     if (type === "e2" && enemy2Sprites) {
       enemies.push(new Enemy2(ex, ey, enemy2Sprites, world));
+    } else if (type === "e3" && enemy3Sprites) {
+      enemies.push(new Enemy3(ex, ey, enemy3Sprites, world));
     } else if (enemy1Sprites) {
       enemies.push(new Enemy1(ex, ey, enemy1Sprites, world));
     }
@@ -306,7 +262,7 @@ export function placeEnemiesMixed(
   if (enemies.length) world.addEnemies(enemies);
 }
 
-export function placeHearts(world, count = 3) {
+export function placeHearts(world, count = 4) {
   const validHearts = [];
 
   const minX = WORLD_WIDTH * 0.25;

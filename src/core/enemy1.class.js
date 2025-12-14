@@ -1,5 +1,6 @@
 import { EnemyBase } from "./enemies.class.js";
 import { HudPopup } from "./hudPopup.class.js";
+import { CollectableItem } from "./collectableItems.class.js";
 
 const DEBUG_HITBOX = false;
 
@@ -47,6 +48,7 @@ export class Enemy1 extends EnemyBase {
     this.chaseRangeXExit = 360;
     this.chaseRangeY = 200;
     this.chaseRangeYExit = 260;
+    this.hasDroppedLoot = false;
   }
   
   setAnimation(frames) {
@@ -122,7 +124,11 @@ export class Enemy1 extends EnemyBase {
     // ATTACK HANDLING
     if (this.isAttacking) {
       this.attackTimer -= dt;
-      this.setAnimation(this.attackFrames);
+      const atkFrames = this.activeAttackFrames || this.attackFrames;
+      this.setAnimation(atkFrames);
+      if (this.attackMoveSpeed) {
+        this.x += this.attackMoveSpeed * this.facing * dt;
+      }
       this.animate(dt);
 
       this.tryDealAttackDamage(player, 0.2);
@@ -131,6 +137,8 @@ export class Enemy1 extends EnemyBase {
         this.isAttacking = false;
         this.hasHitDuringAttack = false;
         this.hasShownMissDuringAttack = false;
+        this.attackMoveSpeed = 0;
+        this.activeAttackFrames = null;
       }
 
       this.isChasing = false;
@@ -300,6 +308,35 @@ export class Enemy1 extends EnemyBase {
       );
     }
     ctx.restore();
+  }
+
+  takeDamage(amount = 1, opts = {}) {
+    const prevDead = this.isDead;
+    super.takeDamage?.(amount, opts);
+    if (!prevDead && this.isDead && !this.hasDroppedLoot) {
+      this.dropCoins(4);
+      this.hasDroppedLoot = true;
+    }
+  }
+
+  dropCoins(count = 2) {
+    if (!this.world?.collectables) return;
+    const coins = [];
+    const baseX = this.x + this.width / 2;
+    const baseY = this.y + this.height * 0.2;
+    for (let i = 0; i < count; i++) {
+      const dir = i % 2 === 0 ? -1 : 1;
+      const radius = 30 + Math.random() * 20;
+      const angle = (Math.random() * Math.PI) / 6 + Math.PI / 3; // 30°..90°
+      const x = baseX + dir * radius * Math.cos(angle);
+      const y = baseY - radius * Math.sin(angle);
+      const vx = dir * (120 + Math.random() * 60);
+      const vy = -(400 + Math.random() * 150);
+      const c = new CollectableItem(x, y, "coin", this.world);
+      c.startDrop(vx, vy);
+      coins.push(c);
+    }
+    this.world.addCollectables ? this.world.addCollectables(coins) : this.world.collectables.push(...coins);
   }
 }
 
