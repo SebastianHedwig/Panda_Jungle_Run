@@ -16,6 +16,7 @@ import { WORLD_WIDTH, GAME_WIDTH, GAME_HEIGHT } from "../config/config.js";
 import { Enemy1, loadEnemy1Sprites } from "../game/entities/enemies/enemy1.class.js";
 import { loadEnemy2Sprites } from "../game/entities/enemies/enemy2.class.js";
 import { loadEnemy3Sprites } from "../game/entities/enemies/enemy3.class.js";
+import { Boss, loadBossSprites } from "../game/entities/enemies/boss.class.js";
 import { GameAudio } from "../game/audio/gameAudio.class.js";
 
 let canvas, ctx;
@@ -25,6 +26,13 @@ let audio;
 let isLoading = true;
 let loadingAnimTime = 0;
 let musicReadyPromise;
+let bossSprites;
+let bossSpawned = false;
+let bossRef = null;
+const BOSS_SPAWN_TRIGGER_X = WORLD_WIDTH - 1600;
+const BOSS_MOVEMENT_WIDTH = 1500;
+const BOSS_SPAWN_OFFSET_X = 500;
+const BOSS_GROUND_OFFSET = 0;
 
 /** HUD */
 let hudCoinImg;
@@ -134,6 +142,7 @@ export function initGame() {
   const enemy1Sprites = loadEnemy1Sprites();
   const enemy2Sprites = loadEnemy2Sprites();
   const enemy3Sprites = loadEnemy3Sprites();
+  bossSprites = loadBossSprites();
 
   hudCoinImg = loadImage("./assets/img/Coin/Coin_0000000.png");
   hudGunImg = loadImage("./assets/img/Character/Spriter_files/gun.png");
@@ -167,6 +176,14 @@ export function initGame() {
     ...enemy3Sprites.attack2,
     ...enemy3Sprites.slide,
     ...enemy3Sprites.die,
+    ...bossSprites.idle,
+    ...bossSprites.walk,
+    ...bossSprites.run,
+    ...bossSprites.attack1,
+    ...bossSprites.attack2,
+    ...bossSprites.hurt,
+    ...bossSprites.die,
+    ...bossSprites.jump,
     hudGunImg,
   ];
 
@@ -222,6 +239,7 @@ function start(
 
   const platforms = createLevel1Platforms(sprites);
   world.addPlatforms(platforms);
+  world.camera = camera;
 
   const collectables = [
     ...createLevel1Collectables(),
@@ -256,6 +274,7 @@ function start(
   world.hudPopups = [];
   audio?.play();
   isLoading = false;
+  bossSpawned = false;
 
   requestAnimationFrame(loop);
 }
@@ -274,8 +293,32 @@ function loop(t) {
 
 /** UPDATE */
 function update(dt) {
+  if (!bossSpawned && player.x >= BOSS_SPAWN_TRIGGER_X) {
+    const minX = WORLD_WIDTH - BOSS_MOVEMENT_WIDTH;
+    const desiredSpawn = player.x + 1000;
+    const spawnX = Math.min(
+      Math.max(desiredSpawn, minX + BOSS_SPAWN_OFFSET_X),
+      WORLD_WIDTH - 300
+    );
+    const bossHeight = 240;
+    const platform = world.platforms?.find(
+      (p) =>
+        p.supportsLanding &&
+        spawnX >= p.left &&
+        spawnX <= p.right
+    );
+    const groundTop = platform?.top ?? world.baseGround ?? canvas.height;
+    const spawnY = Math.max(0, groundTop - bossHeight + BOSS_GROUND_OFFSET + 20);
+    const boss = new Boss(spawnX, spawnY, bossSprites, world);
+    boss.movementMinX = minX;
+    boss.movementMaxX = WORLD_WIDTH;
+    world.addEnemies([boss]);
+    bossRef = boss;
+    bossSpawned = true;
+  }
+
   player.update(dt, input);
-  camera.follow(player, 0.08);
+  camera.follow(player, 0.08, dt);
   background.update(camera.x, camera.y, dt);
 
   world.applyPlatformCollisions(player);
@@ -283,6 +326,8 @@ function update(dt) {
   world.updateEnemies(dt, player);
   world.updateProjectiles(dt, world.enemies ?? []);
   world.updateHitEffects(dt);
+
+  if (bossRef?.remove) bossRef = null;
 
   checkCollectables();
 
@@ -326,6 +371,7 @@ function draw() {
   world.renderHitEffects(ctx, camera);
 
   drawHUD();
+  drawBossIndicator();
 }
 
 /** HUD */
@@ -333,6 +379,93 @@ function drawHUD() {
   drawHearts();
   drawCoins();
   drawBullets();
+}
+
+function drawBossIndicator() {
+  if (!bossRef || bossRef.remove || (bossRef.isDead && bossRef.health <= 0)) {
+    return;
+  }
+
+  const margin = 16;
+  const centerX = bossRef.x + bossRef.width / 2 - camera.x;
+  const topY = bossRef.y - camera.y;
+  const barW = bossRef.width * 0.8;
+  const barH = 12;
+
+  let drawX = centerX;
+  let drawY = topY - 30;
+
+  const offLeft = drawX < margin;
+  const offRight = drawX > canvas.width - margin;
+  const offTop = drawY < margin;
+  const offBottom = drawY > canvas.height - margin;
+  const isOffscreen = offLeft || offRight || offTop || offBottom;
+
+  if (offLeft) drawX = margin;
+  if (offRight) drawX = canvas.width - margin;
+  if (offTop) drawY = margin;
+  if (offBottom) drawY = canvas.height - margin;
+
+  const barX = drawX - barW / 2;
+  const barY = drawY;
+  const ratio = Math.max(0, Math.min(1, bossRef.health / bossRef.maxHealth));
+
+  ctx.save();
+  if (!isOffscreen) {
+    ctx.restore();
+    return;
+  }
+
+  if (isOffscreen) {
+    const arrowSize = 14;
+    const arrowY = barY + barH + 10;
+    const textY = arrowY + 18;
+    const arrowColor = "rgba(235, 145, 0, 1)";
+    ctx.fillStyle = arrowColor;
+
+    if (offLeft || offRight) {
+      const arrowX = offLeft ? margin : canvas.width - margin;
+      const textX = offLeft ? arrowX + arrowSize + 25 : arrowX - arrowSize - 18;
+      const angle = offLeft ? Math.PI : 0;
+
+      ctx.save();
+      ctx.translate(arrowX, arrowY);
+      ctx.rotate(angle);
+      ctx.beginPath();
+      ctx.moveTo(-arrowSize, -arrowSize / 1.5);
+      ctx.lineTo(-arrowSize, arrowSize / 1.5);
+      ctx.lineTo(arrowSize, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = "rgba(255,255,2,0.9)";
+      ctx.font = "1rem ComixLoud, sans-serif";
+      ctx.textAlign = offLeft ? "left" : "right";
+      ctx.textBaseline = "middle";
+      ctx.fillText("BOSS", textX, textY);
+    } else {
+      const angle = offTop ? -Math.PI / 2 : Math.PI / 2;
+      ctx.save();
+      ctx.translate(drawX, arrowY);
+      ctx.rotate(angle);
+      ctx.beginPath();
+      ctx.moveTo(-arrowSize, -arrowSize / 1.5);
+      ctx.lineTo(-arrowSize, arrowSize / 1.5);
+      ctx.lineTo(arrowSize, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      ctx.fillStyle = "rgba(255,255,2,0.9)";
+      ctx.font = "1rem ComixLoud, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("BOSS", drawX, textY);
+    }
+  }
+
+  ctx.restore();
 }
 
 /** HEARTS */
