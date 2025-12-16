@@ -6,4 +6,5 @@ export const GRAVITY = 2800;
 export const TILE_SIZE = 64;
 export const DEBUG_MODE = false;
 export const MUSIC_LOOP_CUT = 4;
-export const MUSIC_VOLUME = 0;
+export const MUSIC_VOLUME = 0.2;
+export const BOSS_MUSIC_LOOP_CUT = 1;

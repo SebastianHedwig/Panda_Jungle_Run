@@ -13,11 +13,12 @@ import {
   placeEnemiesMixed,
 } from "../game/levels/level1.js";
 import { WORLD_WIDTH, GAME_WIDTH, GAME_HEIGHT } from "../config/config.js";
-import { Enemy1, loadEnemy1Sprites } from "../game/entities/enemies/enemy1.class.js";
+import { loadEnemy1Sprites } from "../game/entities/enemies/enemy1.class.js";
 import { loadEnemy2Sprites } from "../game/entities/enemies/enemy2.class.js";
 import { loadEnemy3Sprites } from "../game/entities/enemies/enemy3.class.js";
 import { Boss, loadBossSprites } from "../game/entities/enemies/boss.class.js";
 import { GameAudio } from "../game/audio/gameAudio.class.js";
+import { BossAudio } from "../game/audio/bossAudio.class.js";
 
 let canvas, ctx;
 let background, camera, player, input, world;
@@ -29,10 +30,14 @@ let musicReadyPromise;
 let bossSprites;
 let bossSpawned = false;
 let bossRef = null;
-const BOSS_SPAWN_TRIGGER_X = WORLD_WIDTH - 1600;
-const BOSS_MOVEMENT_WIDTH = 1500;
-const BOSS_SPAWN_OFFSET_X = 500;
-const BOSS_GROUND_OFFSET = 0;
+let bossAudioPlayer = null;
+const BOSS_SPAWN_TRIGGER_X = WORLD_WIDTH - 2500;
+const BOSS_GROUND_OFFSET = 20;
+const BOSS_SPAWN_CLEARANCE = 20;
+const BOSS_MOVE_MIN_X = 8500;
+const BOSS_MOVE_MAX_X = 9950;
+const BOSS_SPAWN_SHAKE_DURATION = 0.5;
+const BOSS_SPAWN_SHAKE_MAGNITUDE = 8;
 
 /** HUD */
 let hudCoinImg;
@@ -294,11 +299,13 @@ function loop(t) {
 /** UPDATE */
 function update(dt) {
   if (!bossSpawned && player.x >= BOSS_SPAWN_TRIGGER_X) {
-    const minX = WORLD_WIDTH - BOSS_MOVEMENT_WIDTH;
-    const desiredSpawn = player.x + 1000;
+    const minX = BOSS_MOVE_MIN_X;
+    const maxX = BOSS_MOVE_MAX_X;
+    const desiredSpawn = player.x + 1500;
+    const bossWidth = 240;
     const spawnX = Math.min(
-      Math.max(desiredSpawn, minX + BOSS_SPAWN_OFFSET_X),
-      WORLD_WIDTH - 300
+      Math.max(desiredSpawn, minX),
+      maxX - bossWidth
     );
     const bossHeight = 240;
     const platform = world.platforms?.find(
@@ -308,13 +315,20 @@ function update(dt) {
         spawnX <= p.right
     );
     const groundTop = platform?.top ?? world.baseGround ?? canvas.height;
-    const spawnY = Math.max(0, groundTop - bossHeight + BOSS_GROUND_OFFSET + 20);
+    const spawnY = Math.max(
+      0,
+      groundTop - bossHeight - BOSS_SPAWN_CLEARANCE + BOSS_GROUND_OFFSET
+    );
     const boss = new Boss(spawnX, spawnY, bossSprites, world);
     boss.movementMinX = minX;
-    boss.movementMaxX = WORLD_WIDTH;
+    boss.movementMaxX = maxX;
     world.addEnemies([boss]);
     bossRef = boss;
     bossSpawned = true;
+    audio?.stop?.();
+    bossAudioPlayer = new BossAudio();
+    bossAudioPlayer.play();
+    camera?.shake?.(BOSS_SPAWN_SHAKE_DURATION, BOSS_SPAWN_SHAKE_MAGNITUDE);
   }
 
   player.update(dt, input);
@@ -327,7 +341,11 @@ function update(dt) {
   world.updateProjectiles(dt, world.enemies ?? []);
   world.updateHitEffects(dt);
 
-  if (bossRef?.remove) bossRef = null;
+  if (bossRef?.remove || (bossRef && bossRef.isDead && bossRef.health <= 0)) {
+    bossAudioPlayer?.stop?.();
+    bossAudioPlayer = null;
+    bossRef = null;
+  }
 
   checkCollectables();
 
@@ -417,15 +435,15 @@ function drawBossIndicator() {
   }
 
   if (isOffscreen) {
-    const arrowSize = 14;
-    const arrowY = barY + barH + 10;
-    const textY = arrowY + 18;
+    const arrowSize = 20;
+    const arrowY = barY + barH + 9.2;
+    const textY = arrowY;
     const arrowColor = "rgba(235, 145, 0, 1)";
     ctx.fillStyle = arrowColor;
 
     if (offLeft || offRight) {
       const arrowX = offLeft ? margin : canvas.width - margin;
-      const textX = offLeft ? arrowX + arrowSize + 25 : arrowX - arrowSize - 18;
+      const textX = offLeft ? arrowX + arrowSize + 16 : arrowX - arrowSize - 16;
       const angle = offLeft ? Math.PI : 0;
 
       ctx.save();
@@ -443,7 +461,7 @@ function drawBossIndicator() {
       ctx.font = "1rem ComixLoud, sans-serif";
       ctx.textAlign = offLeft ? "left" : "right";
       ctx.textBaseline = "middle";
-      ctx.fillText("BOSS", textX, textY);
+      ctx.fillText("LUPO", textX, textY);
     } else {
       const angle = offTop ? -Math.PI / 2 : Math.PI / 2;
       ctx.save();
@@ -461,7 +479,7 @@ function drawBossIndicator() {
       ctx.font = "1rem ComixLoud, sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText("BOSS", drawX, textY);
+      ctx.fillText("LUPO", drawX, textY);
     }
   }
 

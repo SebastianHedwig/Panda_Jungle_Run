@@ -53,6 +53,10 @@ export class Player extends MovableObject {
     this.slideBlockGrace = 0;
     this.slideHitEnemies = new Set();
     this.slideDamage = 2;
+    this.slideInvulnerableAfter = 1;
+    this.slideInvulnerableDuring = 0.2;
+    this.wasSlidingPreviousFrame = false;
+    this.slideInvulWindow = 0;
 
     /** ----- ATTACK ----- */
     this.isAttacking = false;
@@ -290,6 +294,14 @@ export class Player extends MovableObject {
     this.vy = 0;
     this.slideBlockGrace = 0.12;
     this.slideHitEnemies.clear();
+    this.invulnerableTimer = Math.max(
+      this.invulnerableTimer,
+      this.slideInvulnerableDuring
+    );
+    this.slideInvulWindow = Math.max(
+      this.slideInvulWindow,
+      this.slideInvulnerableDuring
+    );
   }
 
   respawnFromFall() {
@@ -341,7 +353,6 @@ export class Player extends MovableObject {
 
   /** ----- ATTACK ----- */
   startAttack() {
-    // block melee while ammo is available
     if (this.bulletAmmo > 0) return;
     if (this.isAttacking || this.isShooting || this.isHurt || this.isDead || !this.onGround) return;
 
@@ -370,7 +381,7 @@ export class Player extends MovableObject {
           Math.sign(dx || 1) === this.facing
         ) {
           enemy.takeDamage?.(1);
-          if (!enemy.isDead && enemy.health > 0) {
+          if (!enemy.isDead && enemy.health > 0 && !enemy.disableHitEffect) {
             this.world?.spawnHitEffect?.(
               enemy.x,
               enemy.y,
@@ -452,8 +463,9 @@ export class Player extends MovableObject {
 
   /** ----- UPDATE LOOP ----- */
   update(dt, input) {
-    // store position before collisions to detect blocking (e.g., wall during slide)
     this._preCollisionX = this.x;
+    const slideEndedLastFrame =
+      this.wasSlidingPreviousFrame && !this.isSliding;
     if (this.slideBlockGrace > 0) {
       this.slideBlockGrace = Math.max(0, this.slideBlockGrace - dt);
     }
@@ -464,6 +476,11 @@ export class Player extends MovableObject {
     if (this.gunPulse > 0) this.gunPulse = Math.max(0, this.gunPulse - dt * 4);
     if (this.invulnerableTimer > 0)
       this.invulnerableTimer = Math.max(0, this.invulnerableTimer - dt);
+    if (this.slideInvulWindow > 0)
+      this.slideInvulWindow = Math.max(0, this.slideInvulWindow - dt);
+    if (slideEndedLastFrame) {
+      this.applyPostSlideInvulnerability();
+    }
 
     /** DEATH OVERRIDE */
     if (this.isDead) {
@@ -486,6 +503,7 @@ export class Player extends MovableObject {
           }
         }
       }
+      this.wasSlidingPreviousFrame = this.isSliding;
       return;
     }
 
@@ -501,6 +519,7 @@ export class Player extends MovableObject {
         this.animate(dt);
       }
       this.applyApexGravity(dt);
+      this.wasSlidingPreviousFrame = this.isSliding;
       return;
     }
 
@@ -516,6 +535,7 @@ export class Player extends MovableObject {
       this.setAnimation(this.shootFrames);
       this.applyApexGravity(dt);
       this.animate(dt);
+      this.wasSlidingPreviousFrame = this.isSliding;
       return;
     }
 
@@ -525,6 +545,7 @@ export class Player extends MovableObject {
       this.setAnimation(this.throwFrames);
       this.applyApexGravity(dt);
       this.animate(dt);
+      this.wasSlidingPreviousFrame = this.isSliding;
       return;
     }
 
@@ -538,12 +559,24 @@ export class Player extends MovableObject {
       const speed = this.slideSpeed * (1 - t * 0.4);
 
       this.x += this.slideDir * speed * dt;
-      if (moved >= this.slideDistance) this.isSliding = false;
+      this.invulnerableTimer = Math.max(
+        this.invulnerableTimer,
+        this.slideInvulnerableDuring
+      );
+      this.slideInvulWindow = Math.max(
+        this.slideInvulWindow,
+        this.slideInvulnerableDuring
+      );
+      if (moved >= this.slideDistance) {
+        this.isSliding = false;
+        this.applyPostSlideInvulnerability();
+      }
 
       this.checkSlideHits();
       this.setAnimation(this.slideFrames);
       this.applyApexGravity(dt);
       this.animate(dt);
+      this.wasSlidingPreviousFrame = this.isSliding;
       return;
     }
 
@@ -558,6 +591,7 @@ export class Player extends MovableObject {
     ) {
       this.startSlide();
       this.slideReady = false;
+      this.wasSlidingPreviousFrame = this.isSliding;
       return;
     }
 
@@ -606,11 +640,12 @@ export class Player extends MovableObject {
 
     this.applyApexGravity(dt);
     this.animate(dt);
+    this.wasSlidingPreviousFrame = this.isSliding;
   }
 
   /** ----- RENDER ----- */
   render(ctx, camera) {
-    if (!this.isDead && this.invulnerableTimer > 0) {
+    if (!this.isDead && this.invulnerableTimer > 0 && this.slideInvulWindow <= 0) {
       const phase = Math.floor(
         this.invulnerableTimer / this.invulnerableBlinkInterval
       );
@@ -627,6 +662,17 @@ export class Player extends MovableObject {
         this.width,
         this.height
       );
+      if (DEBUG_HITBOX) {
+        const box = this.getHitbox();
+        ctx.strokeStyle = "rgba(0,120,255,0.6)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(
+          -(box.x - camera.x + box.width),
+          box.y - camera.y,
+          box.width,
+          box.height
+        );
+      }
     } else {
       ctx.drawImage(
         this.sprite,
@@ -635,18 +681,17 @@ export class Player extends MovableObject {
         this.width,
         this.height
       );
-    }
-
-    if (DEBUG_HITBOX) {
-      const box = this.getHitbox();
-      ctx.strokeStyle = "rgba(0,120,255,0.6)";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(
-        box.x - camera.x,
-        box.y - camera.y,
-        box.width,
-        box.height
-      );
+      if (DEBUG_HITBOX) {
+        const box = this.getHitbox();
+        ctx.strokeStyle = "rgba(0,120,255,0.6)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(
+          box.x - camera.x,
+          box.y - camera.y,
+          box.width,
+          box.height
+        );
+      }
     }
     ctx.restore();
   }
@@ -678,7 +723,7 @@ export class Player extends MovableObject {
       if (overlaps) {
         const dmg = this.slideDamage ?? 2;
         enemy.takeDamage?.(dmg, { skipStun: true, source: "slide" });
-        if (!enemy.isDead && enemy.health > 0) {
+        if (!enemy.isDead && enemy.health > 0 && !enemy.disableHitEffect) {
           this.world?.spawnHitEffect?.(
             enemy.x,
             enemy.y,
@@ -689,5 +734,16 @@ export class Player extends MovableObject {
         this.slideHitEnemies.add(enemy);
       }
     }
+  }
+
+  applyPostSlideInvulnerability() {
+    this.invulnerableTimer = Math.max(
+      this.invulnerableTimer,
+      this.slideInvulnerableAfter
+    );
+    this.slideInvulWindow = Math.max(
+      this.slideInvulWindow,
+      this.slideInvulnerableAfter
+    );
   }
 }

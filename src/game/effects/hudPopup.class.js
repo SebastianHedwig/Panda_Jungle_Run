@@ -2,7 +2,6 @@ const POPUP_STYLES = {
   coin: { stroke: "#000", fill: "rgb(255,255,2)", fontSize: "1.2rem" },
   damage: { stroke: "#000", fill: "rgba(255, 68, 68, 1)", fontSize: "1.2rem" },
   heal: { stroke: "#053016", fill: "rgba(227, 255, 228, 1)", fontSize: "1.2rem" },
-  miss: { stroke: "#053016", fill: "rgba(92, 255, 99, 1)", fontSize: "1.2rem" },
   heart: { stroke: "#000", fill: "rgba(255, 45, 85, 1)", fontSize: "1.9rem" },
   gun: { stroke: "#000", fill: "rgba(235, 145, 0, 1)", fontSize: "1.2rem" },
 };
@@ -12,7 +11,7 @@ export class HudPopup {
     this.text = text;
     this.x = x;
     this.y = y;
-    this.type = type; // "coin" | "damage" | "heal" | "miss" | "heart" | "gun"
+    this.type = type; // "coin" | "damage" | "heal" | "heart" | "gun"
 
     this.alpha = 1;
     this.lift = 0;

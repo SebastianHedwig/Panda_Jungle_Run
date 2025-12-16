@@ -175,4 +175,27 @@ export class GameAudio {
     window.addEventListener("keydown", this.unlockHandler, { once: true });
     window.addEventListener("touchstart", this.unlockHandler, { once: true });
   }
+
+  stop() {
+    this.clearCrossfade();
+    if (this.audio) {
+      const handler = this.loopListeners.get(this.audio);
+      if (handler) {
+        this.audio.removeEventListener("timeupdate", handler);
+        this.loopListeners.delete(this.audio);
+      }
+      this.audio.pause();
+      this.audio.currentTime = 0;
+    }
+    if (this.nextAudio) {
+      const handler = this.loopListeners.get(this.nextAudio);
+      if (handler) {
+        this.nextAudio.removeEventListener("timeupdate", handler);
+        this.loopListeners.delete(this.nextAudio);
+      }
+      this.nextAudio.pause();
+      this.nextAudio.currentTime = 0;
+      this.nextAudio = null;
+    }
+  }
 }

@@ -1,5 +1,4 @@
 import { EnemyBase, DEBUG_ENEMY_HITBOX } from "./enemyBase.class.js";
-import { HudPopup } from "../../effects/hudPopup.class.js";
 import { CollectableItem } from "../../items/collectableItem.class.js";
 
 export function loadEnemy1Sprites() {
@@ -137,7 +136,6 @@ export class Enemy1 extends EnemyBase {
           this.isAttacking = false;
           this.attackMoveSpeed = 0;
           this.hasHitDuringAttack = false;
-          this.hasShownMissDuringAttack = false;
           this.setAnimation(this.idleFrames);
           this.currentFrame = 0;
         } else {
@@ -151,7 +149,6 @@ export class Enemy1 extends EnemyBase {
       if (this.attackTimer <= 0) {
         this.isAttacking = false;
         this.hasHitDuringAttack = false;
-        this.hasShownMissDuringAttack = false;
         this.attackMoveSpeed = 0;
         this.activeAttackFrames = null;
       }
@@ -255,21 +252,6 @@ export class Enemy1 extends EnemyBase {
       player.invulnerableTimer <= 0
     ) {
       if (player.isSliding) {
-        const slideDmg = player.slideDamage ?? 2;
-        if (this.health - slideDmg <= 0) return false;
-
-        if (
-          !this.hasShownMissDuringAttack &&
-          !this.isDead &&
-          this.health > 0 &&
-          this.recentSlideHit <= 0 &&
-          this.world?.hudPopups
-        ) {
-          this.world.hudPopups.push(
-            new HudPopup("MISS", px, py - player.height * 0.4, "miss")
-          );
-          this.hasShownMissDuringAttack = true;
-        }
         return false;
       }
 
@@ -301,6 +283,17 @@ export class Enemy1 extends EnemyBase {
         this.width,
         this.height
       );
+      if (DEBUG_ENEMY_HITBOX) {
+        const box = this.getHitbox();
+        ctx.strokeStyle = "rgba(0,120,255,0.6)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(
+          -(box.x - camera.x + box.width),
+          box.y - camera.y,
+          box.width,
+          box.height
+        );
+      }
     } else {
       ctx.drawImage(
         this.sprite,
@@ -309,9 +302,9 @@ export class Enemy1 extends EnemyBase {
         this.width,
         this.height
       );
+      if (DEBUG_ENEMY_HITBOX) this.renderHitbox(ctx, camera);
     }
 
-    if (DEBUG_ENEMY_HITBOX) this.renderHitbox(ctx, camera);
     ctx.restore();
   }
 

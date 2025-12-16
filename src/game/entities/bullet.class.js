@@ -59,7 +59,7 @@ export class Bullet {
         this.remove = true;
         this.world.spawnExplosion(this.x, this.y);
         enemy.takeDamage?.(2);
-        if (!enemy.isDead && enemy.health > 0) {
+        if (!enemy.isDead && enemy.health > 0 && !enemy.disableHitEffect) {
           this.world.spawnHitEffect?.(
             enemy.x,
             enemy.y,

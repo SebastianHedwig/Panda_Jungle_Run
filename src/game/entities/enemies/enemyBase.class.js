@@ -28,7 +28,6 @@ export class EnemyBase extends MovableObject {
 
     /** Combat helpers */
     this.hasHitDuringAttack = false;
-    this.hasShownMissDuringAttack = false;
     this.recentSlideHit = 0;
     this.attackDamageCurrent = this.damage ?? 1;
     this.attackMoveSpeed = 0;
@@ -283,7 +282,6 @@ export class EnemyBase extends MovableObject {
     this.isAttacking = true;
     this.attackTimer = this.attackDuration;
     this.hasHitDuringAttack = false;
-    this.hasShownMissDuringAttack = false;
     this.attackDamageCurrent = damage;
     this.attackMoveSpeed = moveSpeed || 0;
     this.activeAttackFrames = frames || this.attackFrames;
