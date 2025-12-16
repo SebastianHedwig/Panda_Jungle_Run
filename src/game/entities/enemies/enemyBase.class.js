@@ -1,5 +1,8 @@
 import { MovableObject } from "../../../engine/physics/movableObject.class.js";
 import { HudPopup } from "../../effects/hudPopup.class.js";
+import { DEBUG_MODE } from "../../../config/config.js";
+
+export const DEBUG_ENEMY_HITBOX = DEBUG_MODE;
 
 export class EnemyBase extends MovableObject {
   constructor(x, y, width, height, world = null) {
@@ -78,6 +81,18 @@ export class EnemyBase extends MovableObject {
       width: this.width - shrinkX,
       height: this.height - shrinkY,
     };
+  }
+
+  renderHitbox(ctx, camera) {
+    const box = this.getHitbox();
+    ctx.strokeStyle = "rgba(0,120,255,0.6)";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(
+      box.x - camera.x,
+      box.y - camera.y,
+      box.width,
+      box.height
+    );
   }
 
   /** ----- PLAYER DELTA / CHASE ----- */

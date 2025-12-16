@@ -1,8 +1,6 @@
-import { EnemyBase } from "./enemyBase.class.js";
+import { EnemyBase, DEBUG_ENEMY_HITBOX } from "./enemyBase.class.js";
 import { HudPopup } from "../../effects/hudPopup.class.js";
 import { CollectableItem } from "../../items/collectableItem.class.js";
-
-const DEBUG_HITBOX = false;
 
 export function loadEnemy1Sprites() {
   const base = "assets/img/enemies/Enemy_Sprites/Character-1/";
@@ -313,17 +311,7 @@ export class Enemy1 extends EnemyBase {
       );
     }
 
-    if (DEBUG_HITBOX) {
-      const box = this.getHitbox();
-      ctx.strokeStyle = "rgba(0,120,255,0.6)";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(
-        box.x - camera.x,
-        box.y - camera.y,
-        box.width,
-        box.height
-      );
-    }
+    if (DEBUG_ENEMY_HITBOX) this.renderHitbox(ctx, camera);
     ctx.restore();
   }
 

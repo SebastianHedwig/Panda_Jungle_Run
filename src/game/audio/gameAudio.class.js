@@ -9,7 +9,7 @@ export class GameAudio {
     this.readyPromise = null;
     this.loopCut = MUSIC_LOOP_CUT ?? 0;
     this.volume = MUSIC_VOLUME ?? 0.35;
-    this.overlapDuration = 1; // seconds to crossfade loop start/end
+    this.overlapDuration = 1;
     this.cutoff = 0;
     this.overlapStart = 0;
     this.crossfadeTimer = null;
@@ -19,7 +19,7 @@ export class GameAudio {
 
   createAudioElement() {
     const element = new Audio(this.src);
-    element.loop = false; // manual looping for crossfade
+    element.loop = false;
     element.volume = this.volume;
     element.preload = "auto";
     element.autoplay = true;

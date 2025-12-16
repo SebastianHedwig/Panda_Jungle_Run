@@ -45,6 +45,7 @@ export class World {
   /** ---------- PLATFORM COLLISION LOGIC ---------- */
   applyPlatformCollisions(player) {
     if (player?.isDead || player?.collisionDisabled) return;
+    player.onGround = false;
     let grounded = false;
     const prevX = player?._preCollisionX ?? player.x;
 

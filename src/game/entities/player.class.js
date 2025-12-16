@@ -1,7 +1,8 @@
 import { MovableObject } from "../../engine/physics/movableObject.class.js";
 import { HudPopup } from "../effects/hudPopup.class.js";
+import { DEBUG_MODE } from "../../config/config.js";
 
-const DEBUG_HITBOX = false;
+const DEBUG_HITBOX = DEBUG_MODE;
 
 export class Player extends MovableObject {
   constructor(
@@ -101,7 +102,7 @@ export class Player extends MovableObject {
     this.facing = 1;
 
     /** ----- HEART SYSTEM ----- */
-    this.maxHearts = 4;
+    this.maxHearts = 6;
     this.healthPoints = this.maxHearts * 2;
     this.maxHealthPoints = this.healthPoints;
     this.healthPulse = 0;
@@ -189,6 +190,19 @@ export class Player extends MovableObject {
   markSafePosition() {
     this.lastSafeX = this.x;
     this.lastSafeY = this.y;
+  }
+
+  applyDizzy(duration = 0) {
+    if (this.isDead) return;
+    const base =
+      (this.dizzyFrames?.length || 1) * this.frameSpeed * 2 ||
+      this.hurtDuration;
+    this.hurtPhase = "dizzy";
+    this.isHurt = true;
+    this.hurtUseDizzy = true;
+    this.hurtPhaseTimer = duration > 0 ? duration : base;
+    this.setAnimation(this.dizzyFrames || this.hurtFrames);
+    this.currentFrame = 0;
   }
 
   startHurt(useDizzy = true) {
