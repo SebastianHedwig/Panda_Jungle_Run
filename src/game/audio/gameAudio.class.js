@@ -4,20 +4,31 @@ export class GameAudio {
   constructor(src = "./assets/music/wildlife-jungle-background-game-music.mp3") {
     this.src = src;
     this.audio = null;
+    this.nextAudio = null;
     this.ready = false;
     this.readyPromise = null;
     this.loopCut = MUSIC_LOOP_CUT ?? 0;
     this.volume = MUSIC_VOLUME ?? 0.35;
+    this.overlapDuration = 1; // seconds to crossfade loop start/end
+    this.cutoff = 0;
+    this.overlapStart = 0;
+    this.crossfadeTimer = null;
+    this.loopListeners = new WeakMap();
     this.unlockHandler = null;
+  }
+
+  createAudioElement() {
+    const element = new Audio(this.src);
+    element.loop = false; // manual looping for crossfade
+    element.volume = this.volume;
+    element.preload = "auto";
+    element.autoplay = true;
+    return element;
   }
 
   init() {
     if (this.readyPromise) return this.readyPromise;
-    this.audio = new Audio(this.src);
-    this.audio.loop = true;
-    this.audio.volume = this.volume;
-    this.audio.preload = "auto";
-    this.audio.autoplay = true;
+    this.audio = this.createAudioElement();
 
     this.readyPromise = new Promise((resolve) => {
       const finish = () => {
@@ -29,13 +40,10 @@ export class GameAudio {
       this.audio.addEventListener(
         "loadedmetadata",
         () => {
-          const cutoff = Math.max(0, (this.audio.duration || 0) - this.loopCut);
-          this.audio.addEventListener("timeupdate", () => {
-            if (this.audio.currentTime >= cutoff) {
-              this.audio.currentTime = 0;
-              if (!this.audio.paused) this.audio.play().catch(() => {});
-            }
-          });
+          const duration = this.audio.duration || 0;
+          this.cutoff = Math.max(0.01, duration - this.loopCut);
+          this.overlapStart = Math.max(0, this.cutoff - this.overlapDuration);
+          this.attachLoopWatcher(this.audio);
         },
         { once: true }
       );
@@ -47,10 +55,102 @@ export class GameAudio {
       this.audio.load();
       this.bindPlaybackUnlock();
 
-      setTimeout(() => resolve(false), 4000);
+      setTimeout(() => resolve(false), 3000);
     });
 
     return this.readyPromise;
+  }
+
+  attachLoopWatcher(audioEl) {
+    const onTimeUpdate = () => {
+      if (audioEl !== this.audio) return;
+
+      if (
+        !this.nextAudio &&
+        this.cutoff > 0 &&
+        audioEl.currentTime >= this.overlapStart
+      ) {
+        this.startNextAudio();
+      }
+
+      if (this.cutoff > 0 && audioEl.currentTime >= this.cutoff) {
+        this.completeLoop();
+      }
+    };
+
+    audioEl.addEventListener("timeupdate", onTimeUpdate);
+    this.loopListeners.set(audioEl, onTimeUpdate);
+  }
+
+  startNextAudio() {
+    if (this.nextAudio || !this.audio) return;
+
+    this.nextAudio = this.createAudioElement();
+    const next = this.nextAudio;
+    next.volume = 0;
+    this.attachLoopWatcher(next);
+
+    const playNext = () => next.play().catch(() => {});
+    if (next.readyState >= 2) {
+      playNext();
+    } else {
+      next.addEventListener("canplaythrough", playNext, { once: true });
+      next.addEventListener("loadeddata", playNext, { once: true });
+    }
+
+    next.load();
+    this.beginCrossfade(this.audio, next);
+  }
+
+  beginCrossfade(current, next) {
+    this.clearCrossfade();
+    const durationMs = Math.max(100, this.overlapDuration * 1000);
+    const stepMs = 50;
+    let elapsed = 0;
+
+    this.crossfadeTimer = setInterval(() => {
+      elapsed += stepMs;
+      const t = Math.min(elapsed / durationMs, 1);
+      if (current) current.volume = this.volume * (1 - t);
+      if (next) next.volume = this.volume * t;
+
+      if (t >= 1) this.clearCrossfade();
+    }, stepMs);
+  }
+
+  clearCrossfade() {
+    if (this.crossfadeTimer) {
+      clearInterval(this.crossfadeTimer);
+      this.crossfadeTimer = null;
+    }
+  }
+
+  completeLoop() {
+    this.clearCrossfade();
+
+    const oldAudio = this.audio;
+    const handler = this.loopListeners.get(oldAudio);
+    if (handler) {
+      oldAudio.removeEventListener("timeupdate", handler);
+      this.loopListeners.delete(oldAudio);
+    }
+
+    if (this.nextAudio) {
+      this.audio = this.nextAudio;
+      this.nextAudio = null;
+    } else if (this.audio) {
+      this.audio.currentTime = 0;
+    }
+
+    if (oldAudio && oldAudio !== this.audio) {
+      oldAudio.pause();
+      oldAudio.currentTime = 0;
+    }
+
+    if (this.audio) {
+      this.audio.volume = this.volume;
+      if (this.audio.paused) this.audio.play().catch(() => {});
+    }
   }
 
   play() {
