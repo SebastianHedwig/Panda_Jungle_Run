@@ -1,3 +1,7 @@
+import { BulletAudio } from "../audio/bulletAudio.class.js";
+
+const bulletAudio = new BulletAudio();
+
 export class Bullet {
   constructor(x, y, direction, world) {
     this.x = x;
@@ -39,6 +43,7 @@ export class Bullet {
 
       if (hit) {
         this.remove = true;
+        bulletAudio.playImpact();
         this.world.spawnExplosion(
           this.x + bounds.width / 2,
           this.y + bounds.height / 2
@@ -57,6 +62,7 @@ export class Bullet {
     enemies.forEach((enemy) => {
       if (this.collidesWith(enemy)) {
         this.remove = true;
+        bulletAudio.playImpact();
         this.world.spawnExplosion(this.x, this.y);
         enemy.takeDamage?.(2);
         if (!enemy.isDead && enemy.health > 0 && !enemy.disableHitEffect) {

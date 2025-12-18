@@ -34,10 +34,10 @@ let bossAudioPlayer = null;
 const BOSS_SPAWN_TRIGGER_X = WORLD_WIDTH - 2500;
 const BOSS_GROUND_OFFSET = 20;
 const BOSS_SPAWN_CLEARANCE = 20;
-const BOSS_MOVE_MIN_X = 8500;
-const BOSS_MOVE_MAX_X = 9950;
+const BOSS_MOVE_MIN_X = 8300;
+const BOSS_MOVE_MAX_X = WORLD_WIDTH - 240;
 const BOSS_SPAWN_SHAKE_DURATION = 0.5;
-const BOSS_SPAWN_SHAKE_MAGNITUDE = 8;
+const BOSS_SPAWN_SHAKE_MAGNITUDE = 20;
 
 /** HUD */
 let hudCoinImg;
@@ -336,14 +336,29 @@ function update(dt) {
   background.update(camera.x, camera.y, dt);
 
   world.applyPlatformCollisions(player);
+  player.handleLandingAudio?.();
   world.collectables.forEach((c) => c.update(dt));
   world.updateEnemies(dt, player);
   world.updateProjectiles(dt, world.enemies ?? []);
   world.updateHitEffects(dt);
 
   if (bossRef?.remove || (bossRef && bossRef.isDead && bossRef.health <= 0)) {
-    bossAudioPlayer?.stop?.();
-    bossAudioPlayer = null;
+    if (bossAudioPlayer) {
+      const defeatAudio = bossAudioPlayer.playDefeat?.();
+      if (defeatAudio) {
+        defeatAudio.addEventListener(
+          "ended",
+          () => {
+            if (bossAudioPlayer?.defeatAudio === defeatAudio) {
+              bossAudioPlayer = null;
+            }
+          },
+          { once: true }
+        );
+      } else {
+        bossAudioPlayer = null;
+      }
+    }
     bossRef = null;
   }
 

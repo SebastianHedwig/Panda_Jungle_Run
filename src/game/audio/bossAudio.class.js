@@ -2,11 +2,13 @@ import { BOSS_MUSIC_LOOP_CUT } from "../../config/config.js";
 
 const BOSS_GONG = "./assets/music/boss-gong.mp3";
 const BOSS_MUSIC = "./assets/music/boss-music.mp3";
+const BOSS_DEFEAT = "./assets/music/boss-defeat.mp3";
 
 export class BossAudio {
   constructor({
     gongSrc = BOSS_GONG,
     musicSrc = BOSS_MUSIC,
+    defeatSrc = BOSS_DEFEAT,
     volume = 0.6,
     gongPlayDuration = 3,
     fadeDuration = 1,
@@ -15,6 +17,7 @@ export class BossAudio {
   } = {}) {
     this.gongSrc = gongSrc;
     this.musicSrc = musicSrc;
+    this.defeatSrc = defeatSrc;
     this.volume = volume;
     this.gongPlayDuration = gongPlayDuration;
     this.fadeDuration = fadeDuration;
@@ -23,11 +26,13 @@ export class BossAudio {
 
     this.gongAudio = null;
     this.musicAudio = null;
+    this.defeatAudio = null;
     this.nextMusicAudio = null;
     this.fadeInterval = null;
     this.fadeStartTimer = null;
     this.gongStopTimer = null;
     this.isPlaying = false;
+    this.defeatPlayed = false;
     this.unlockHandler = null;
     this.loopHandlers = new WeakMap();
   }
@@ -127,6 +132,11 @@ export class BossAudio {
       this.musicAudio.currentTime = 0;
       this.musicAudio = null;
     }
+    if (this.defeatAudio) {
+      this.defeatAudio.pause();
+      this.defeatAudio.currentTime = 0;
+      this.defeatAudio = null;
+    }
     this.unbindUnlock();
   }
 
@@ -135,6 +145,7 @@ export class BossAudio {
     this.unlockHandler = () => {
       this.gongAudio?.play().catch(() => {});
       this.musicAudio?.play().catch(() => {});
+      this.defeatAudio?.play().catch(() => {});
       this.unbindUnlock();
     };
     window.addEventListener("pointerdown", this.unlockHandler, { once: true });
@@ -219,6 +230,21 @@ export class BossAudio {
     }
   }
 
+  clearMusicTracks() {
+    if (this.nextMusicAudio) {
+      this.detachLoopWatcher(this.nextMusicAudio);
+      this.nextMusicAudio.pause();
+      this.nextMusicAudio.currentTime = 0;
+      this.nextMusicAudio = null;
+    }
+    if (this.musicAudio) {
+      this.detachLoopWatcher(this.musicAudio);
+      this.musicAudio.pause();
+      this.musicAudio.currentTime = 0;
+      this.musicAudio = null;
+    }
+  }
+
   completeMusicSwitch(prev) {
     this.clearFadeInterval();
     if (prev) {
@@ -231,5 +257,61 @@ export class BossAudio {
       this.nextMusicAudio = null;
       this.musicAudio.volume = this.volume;
     }
+  }
+
+  playDefeat() {
+    if (this.defeatPlayed) return null;
+    this.defeatPlayed = true;
+    this.clearFadeInterval();
+
+    const defeat = this.createAudio(this.defeatSrc, false, 0);
+    this.defeatAudio = defeat;
+    const startDefeat = () => defeat.play().catch(() => {});
+    if (defeat.readyState >= 2) startDefeat();
+    else {
+      defeat.addEventListener("canplaythrough", startDefeat, { once: true });
+      defeat.addEventListener("loadeddata", startDefeat, { once: true });
+    }
+    defeat.load();
+    this.bindUnlock();
+
+    const fadingTracks = [
+      this.musicAudio,
+      this.nextMusicAudio,
+      this.gongAudio,
+    ].filter(Boolean);
+
+    if (!fadingTracks.length) {
+      defeat.volume = this.volume;
+      return defeat;
+    }
+
+    const durationMs = Math.max(100, this.fadeDuration * 1000);
+    const stepMs = 50;
+    let elapsed = 0;
+    this.fadeInterval = setInterval(() => {
+      elapsed += stepMs;
+      const t = Math.min(elapsed / durationMs, 1);
+      const inv = 1 - t;
+      for (const track of fadingTracks) {
+        track.volume = this.volume * inv;
+      }
+      defeat.volume = this.volume * t;
+      if (t >= 1) {
+        this.clearFadeInterval();
+        fadingTracks.forEach((track) => {
+          track.pause();
+          track.currentTime = 0;
+        });
+        this.clearMusicTracks();
+        if (this.gongAudio && !fadingTracks.includes(this.gongAudio)) {
+          this.gongAudio.pause();
+          this.gongAudio.currentTime = 0;
+        }
+        this.gongAudio = null;
+      }
+    }, stepMs);
+
+    return defeat;
   }
 }

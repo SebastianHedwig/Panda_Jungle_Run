@@ -1,8 +1,10 @@
 import { MovableObject } from "../../engine/physics/movableObject.class.js";
 import { HudPopup } from "../effects/hudPopup.class.js";
 import { DEBUG_MODE } from "../../config/config.js";
+import { PlayerAudio } from "../audio/playerAudio.class.js";
 
 const DEBUG_HITBOX = DEBUG_MODE;
+const playerAudio = new PlayerAudio();
 
 export class Player extends MovableObject {
   constructor(
@@ -101,6 +103,8 @@ export class Player extends MovableObject {
     this.jumpBufferTimer = 0;
     this.jumpCutMultiplier = 0.5;
     this.jumpHeld = false;
+    this.justLanded = false;
+    this.landedOnPlatform = false;
 
     /** ----- FACING ----- */
     this.facing = 1;
@@ -114,6 +118,7 @@ export class Player extends MovableObject {
     /** ----- COINS ----- */
     this.coins = 0;
     this.hudPulse = 0;
+
   }
 
   /** ----- HEART STATES FOR HUD ----- */
@@ -245,6 +250,7 @@ export class Player extends MovableObject {
   startDeath() {
     if (this.isDead) return;
     this.isDead = true;
+    playerAudio.playDead();
     this.isHurt = false;
     this.isAttacking = false;
     this.isShooting = false;
@@ -331,6 +337,14 @@ export class Player extends MovableObject {
     this.currentFrame = 0;
   }
 
+  handleLandingAudio() {
+    if (this.justLanded && this.landedOnPlatform && !this.isSliding) {
+      playerAudio.playLanding();
+      this.justLanded = false;
+      this.landedOnPlatform = false;
+    }
+  }
+
   /** ----- ANIMATION ----- */
   setAnimation(frames) {
     if (this.currentAnimation !== frames) {
@@ -359,6 +373,7 @@ export class Player extends MovableObject {
     this.isAttacking = true;
     this.attackTimer = this.attackDuration;
     this.attackHitDone = false;
+    playerAudio.playPunch();
     this.setAnimation(this.throwFrames);
     this.currentFrame = 0;
   }
@@ -429,6 +444,7 @@ export class Player extends MovableObject {
     this.shootCooldown = this.shootCooldownDuration;
     this.setAnimation(this.shootFrames);
     this.currentFrame = 0;
+    playerAudio.playShoot();
     return true;
   }
 
@@ -616,10 +632,16 @@ export class Player extends MovableObject {
       running = true;
     } else this.speed = this.defaultSpeed;
 
-    if (!this.onGround) this.setAnimation(this.jumpFrames);
-    else if (running) this.setAnimation(this.runFrames);
-    else if (moving) this.setAnimation(this.walkFrames);
-    else this.setAnimation(this.idleFrames);
+    if (!this.onGround) {
+      this.setAnimation(this.jumpFrames);
+    } else if (running) {
+      this.setAnimation(this.runFrames);
+    } else if (moving) {
+      this.setAnimation(this.walkFrames);
+    } else {
+      this.setAnimation(this.idleFrames);
+    }
+
 
     /** ADVANCED JUMP */
     if (input.isPressed(" ")) {
@@ -631,6 +653,7 @@ export class Player extends MovableObject {
     else this.coyoteTimer -= dt;
 
     if (this.jumpBufferTimer > 0 && this.coyoteTimer > 0) {
+      playerAudio.playJump();
       this.jump();
       this.jumpBufferTimer = 0;
     }
@@ -641,6 +664,7 @@ export class Player extends MovableObject {
     this.applyApexGravity(dt);
     this.animate(dt);
     this.wasSlidingPreviousFrame = this.isSliding;
+
   }
 
   /** ----- RENDER ----- */

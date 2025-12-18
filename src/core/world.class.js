@@ -45,7 +45,9 @@ export class World {
   /** ---------- PLATFORM COLLISION LOGIC ---------- */
   applyPlatformCollisions(player) {
     if (player?.isDead || player?.collisionDisabled) return;
+    const wasOnGround = player.onGround;
     player.onGround = false;
+    player.landedOnPlatform = false;
     let grounded = false;
     const prevX = player?._preCollisionX ?? player.x;
 
@@ -60,6 +62,19 @@ export class World {
       // LANDING FROM ABOVE
       if (p.supportsLanding && overlapsY && overlapsX) {
         if (player.vy > 0 && prevBottom <= p.top && currBottom >= p.top) {
+          player.y = p.top - player.height;
+          player.vy = 0;
+          player.onGround = true;
+          grounded = true;
+          if (!wasOnGround) {
+            player.justLanded = true;
+            player.landedOnPlatform = true;
+          }
+          continue;
+        }
+
+        // Stay grounded while walking on the platform
+        if (player.vy >= 0 && currBottom >= p.top && currBottom <= p.top + 4) {
           player.y = p.top - player.height;
           player.vy = 0;
           player.onGround = true;

@@ -74,9 +74,9 @@ export class Boss extends EnemyBase {
     this.activeAttackRange = null;
     this.activeHeightTolerance = null;
     this.lastAttackType = null;
-    this.runningBurstDuration = 1.8;
+    this.runningBurstDuration = 2;
     this.runningBurstTimer = 0;
-    this.runningCooldownDuration = 3;
+    this.runningCooldownDuration = 2;
     this.runningCooldown = 0;
     this.isRunning = false;
     this.spriteYOffset = 8;
@@ -89,8 +89,8 @@ export class Boss extends EnemyBase {
     this.animDirection = -1;
     this.facing = -1;
     this.lastMoveDir = -1;
-    this.patrolRange = 1000;
-    this.jumpCooldown = 6;
+    this.patrolRange = 1500;
+    this.jumpCooldown = 5;
     this.jumpCooldownTimer = 0;
     this.wasOnGround = true;
     this.hurtAnimTimer = 0;
@@ -129,8 +129,45 @@ export class Boss extends EnemyBase {
     super.startMeleeAttack(dx, frames, damage, player, moveSpeed);
   }
 
-  startAttack1Run(dx) {
-    // legacy placeholder removed
+  patrol() {
+    if (Number.isFinite(this.movementMinX) && Number.isFinite(this.movementMaxX)) {
+      const minX = this.movementMinX;
+      const maxX = this.movementMaxX;
+      if (this.x <= minX) {
+        this.patrolDir = 1;
+      } else if (this.x >= maxX) {
+        this.patrolDir = -1;
+      }
+      this.facing = this.patrolDir;
+      return;
+    }
+    super.patrol();
+  }
+
+  hasAdjacentPlatform(currentPlatform, moveDir, footX) {
+    if (!this.world?.platforms?.length) return false;
+    const margin = Math.max(this.edgeMargin, 60);
+    const toleranceY = Math.max(4, margin);
+    const boundary = moveDir > 0 ? currentPlatform.right : currentPlatform.left;
+    const lookStart = boundary - margin;
+    const lookEnd = boundary + margin * 6 * moveDir;
+    const minX = Math.min(lookStart, lookEnd, footX - margin);
+    const maxX = Math.max(lookStart, lookEnd, footX + margin);
+    return this.world.platforms.some(
+      (p) =>
+        p !== currentPlatform &&
+        p.supportsLanding &&
+        Math.abs(p.top - currentPlatform.top) <= toleranceY &&
+        p.right >= minX &&
+        p.left <= maxX
+    );
+  }
+
+  adjustForEdges(moveDir, dt, platform, onLowestPlatform, prevChasing) {
+    if (Number.isFinite(this.movementMinX) && Number.isFinite(this.movementMaxX)) {
+      return moveDir;
+    }
+    return super.adjustForEdges(moveDir, dt, platform, onLowestPlatform, prevChasing);
   }
 
   beginAttack1(playerInfo, player) {
@@ -222,8 +259,6 @@ export class Boss extends EnemyBase {
 
       if (this.deathTimer > 0) {
         this.deathTimer = Math.max(0, this.deathTimer - dt);
-      } else if (this.blinkTimer > 0) {
-        this.blinkTimer = Math.max(0, this.blinkTimer - dt);
       }
 
       return;
@@ -231,9 +266,6 @@ export class Boss extends EnemyBase {
 
     if (this.recentSlideHit > 0) {
       this.recentSlideHit = Math.max(0, this.recentSlideHit - dt);
-    }
-    if (this.hurtAnimTimer > 0) {
-      this.hurtAnimTimer = Math.max(0, this.hurtAnimTimer - dt);
     }
     if (this.chaseCooldown > 0) {
       this.chaseCooldown = Math.max(0, this.chaseCooldown - dt);
@@ -261,6 +293,19 @@ export class Boss extends EnemyBase {
       this.setAnimation(this.hurtFrames || this.idleFrames);
       this.currentFrame = 0;
       this.sprite = this.currentAnimation[0];
+      return;
+    }
+
+    if (this.hurtAnimTimer > 0) {
+      this.hurtAnimTimer = Math.max(0, this.hurtAnimTimer - dt);
+      this.isChasing = false;
+      this.isAttacking = false;
+      this.setAnimation(this.hurtFrames || this.idleFrames);
+      this.animate(dt);
+      const prevBottom = this.y + this.height;
+      this.applyApexGravity(dt);
+      const currBottom = this.y + this.height;
+      this.handlePlatformLanding(prevBottom, currBottom);
       return;
     }
 
@@ -321,7 +366,10 @@ export class Boss extends EnemyBase {
       !player.isDead &&
       this.shouldChasePlayer(playerInfo, prevChasing);
     const enemyCenterX = this.x + this.width / 2;
+    const ignoreEdgeBlock =
+      Number.isFinite(this.movementMinX) && Number.isFinite(this.movementMaxX);
     const blockedByEdge =
+      !ignoreEdgeBlock &&
       canChase &&
       onLowestPlatform &&
       platform &&
@@ -407,8 +455,7 @@ export class Boss extends EnemyBase {
       this.x = Math.max(this.x, this.movementMinX);
     }
     if (Number.isFinite(this.movementMaxX)) {
-      const maxX = this.movementMaxX - this.width;
-      this.x = Math.min(this.x, maxX);
+      this.x = Math.min(this.x, this.movementMaxX);
     }
   }
 
@@ -486,7 +533,6 @@ export class Boss extends EnemyBase {
     super.takeDamage?.(amount, { ...opts, skipStun: true });
     if (!prevDead && this.isDead) {
       this.deathTimer = Math.max(this.deathTimer, 5.5);
-      this.blinkTimer = Math.max(this.blinkTimer, 1.2);
     } else if (this.hurtFrames) {
       this.hurtAnimTimer = Math.max(this.hurtAnimTimer, 0.5);
       this.setAnimation(this.hurtFrames);
@@ -507,12 +553,6 @@ export class Boss extends EnemyBase {
   }
 
   render(ctx, camera) {
-    const isBlinking = this.isDead && this.deathTimer === 0 && this.blinkTimer > 0;
-    if (isBlinking) {
-      const blinkPhase = Math.floor(this.blinkTimer / 0.3) % 2;
-      if (blinkPhase === 0) return;
-    }
-
     ctx.save();
     if (this.facing === 1) {
       ctx.scale(-1, 1);
@@ -560,7 +600,7 @@ export class Boss extends EnemyBase {
       const barW = this.width * 0.8;
       const barH = 15;
       const barX = this.x - camera.x + (this.width - barW) / 2;
-      const barY = this.y - camera.y - barH - 16;
+      const barY = this.y - camera.y - barH + 8;
       const ratio = Math.max(0, Math.min(1, this.health / this.maxHealth));
 
       ctx.fillStyle = "rgba(0, 0, 0, 0.4)";

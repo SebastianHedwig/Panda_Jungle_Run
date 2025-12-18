@@ -1,4 +1,7 @@
 import { HudPopup } from "../effects/hudPopup.class.js";
+import { CollectablesAudio } from "../audio/collectablesAudio.class.js";
+
+const collectablesAudio = new CollectablesAudio();
 
 export const COLLECTABLE_VALUES = {
   coin: 10,
@@ -62,11 +65,7 @@ export class CollectableItem {
     if (!list) return;
 
     // ---- INDIVIDUAL ANIMATION SPEED ----
-    if (this.type === "heart") {
-      this.frameDuration = 0.06;
-    } else {
-      this.frameDuration = 0.12;
-    }
+    this.frameDuration = this.type === "heart" ? 0.06 : 0.12;
 
     list.forEach((path) => {
       const img = new Image();
@@ -199,16 +198,19 @@ export class CollectableItem {
     this.pickupAnimating = true;
 
     if (this.type === "coin") {
+      collectablesAudio.playCoin();
       player.addCoins(10);
       player.world.hudPopups.push(new HudPopup("+10", this.x, this.y, "coin"));
     }
 
     if (this.type === "heart") {
+      collectablesAudio.playHeart();
       player.heal(2);
       player.world.hudPopups.push(new HudPopup("❤️", this.x, this.y, "heart"));
     }
 
     if (this.type === "gun") {
+      collectablesAudio.playWeapon();
       player.addBullets?.(5);
       player.world.hudPopups.push(new HudPopup("+5", this.x, this.y, "gun"));
     }
