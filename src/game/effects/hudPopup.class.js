@@ -1,8 +1,8 @@
 const POPUP_STYLES = {
   coin: { stroke: "#000", fill: "rgb(255,255,2)", fontSize: "1.2rem" },
   damage: { stroke: "#000", fill: "rgba(255, 68, 68, 1)", fontSize: "1.2rem" },
-  heal: { stroke: "#053016", fill: "rgba(227, 255, 228, 1)", fontSize: "1.2rem" },
-  heart: { stroke: "#000", fill: "rgba(255, 45, 85, 1)", fontSize: "1.9rem" },
+  heal: { stroke: "#053016", fill: "rgba(3, 149, 8, 1)", fontSize: "1.2rem" },
+  heart: { stroke: "#000", fill: "rgba(255, 45, 85, 1)", fontSize: "2rem" },
   gun: { stroke: "#000", fill: "rgba(235, 145, 0, 1)", fontSize: "1.2rem" },
 };
 

@@ -451,9 +451,9 @@ function drawBossIndicator() {
 
   if (isOffscreen) {
     const arrowSize = 20;
-    const arrowY = barY + barH + 9.2;
+    const arrowY = barY + barH + 9.25;
     const textY = arrowY;
-    const arrowColor = "rgba(235, 145, 0, 1)";
+    const arrowColor = "rgba(0, 0, 0, 0.6)";
     ctx.fillStyle = arrowColor;
 
     if (offLeft || offRight) {
@@ -472,7 +472,7 @@ function drawBossIndicator() {
       ctx.fill();
       ctx.restore();
 
-      ctx.fillStyle = "rgba(255,255,2,0.9)";
+      ctx.fillStyle = "rgba(143, 0, 0, 0.9)";
       ctx.font = "1rem ComixLoud, sans-serif";
       ctx.textAlign = offLeft ? "left" : "right";
       ctx.textBaseline = "middle";
@@ -490,7 +490,7 @@ function drawBossIndicator() {
       ctx.fill();
       ctx.restore();
 
-      ctx.fillStyle = "rgba(255,255,2,0.9)";
+      ctx.fillStyle = "rgba(143, 0, 0, 0.9)";
       ctx.font = "1rem ComixLoud, sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
