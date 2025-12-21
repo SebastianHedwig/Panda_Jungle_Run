@@ -3,7 +3,7 @@ import { CollectableItem } from "../../items/collectableItem.class.js";
 import { ENEMY1_DAMAGE, ENEMY1_HEALTH } from "../../../config/config.js";
 
 export function loadEnemy1Sprites() {
-  const base = "assets/img/enemies/Enemy_Sprites/Character-1/";
+  const base = "assets/img/Enemies/Enemy_Sprites/Character-1/";
   return {
     idle: loadFrames(`${base}idle/`, "Idle_", 12),
     walk: loadFrames(`${base}walk/`, "walk_", 10),

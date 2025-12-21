@@ -7,7 +7,7 @@ import {
 } from "../../../config/config.js";
 
 export function loadEnemy2Sprites() {
-  const base = "assets/img/enemies/Enemy_Sprites/Character-2/";
+  const base = "assets/img/Enemies/Enemy_Sprites/Character-2/";
   return {
     idle: loadFrames(`${base}idle/`, "Idle_", 12),
     run: loadFrames(`${base}run/`, "Run_", 8),
