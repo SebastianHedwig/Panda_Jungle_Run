@@ -1,3 +1,5 @@
+import { SFX_VOLUME } from "../../config/config.js";
+
 const DEFAULT_IMPACT_SRC = "./assets/sfx/weapon/weapon-impact.mp3";
 
 export class BulletAudio {
@@ -5,7 +7,7 @@ export class BulletAudio {
     impactSrc = DEFAULT_IMPACT_SRC,
     impactDurationMs = 900,
     fadeOutMs = 200,
-    volume = 0.6,
+    volume = SFX_VOLUME,
   } = {}) {
     this.impactSrc = impactSrc;
     this.impactDurationMs = impactDurationMs;

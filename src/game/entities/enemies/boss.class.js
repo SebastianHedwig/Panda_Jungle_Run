@@ -1,7 +1,9 @@
 import { EnemyBase } from "./enemyBase.class.js";
 import { DEBUG_MODE } from "../../../config/config.js";
+import { BossAudio } from "../../audio/bossAudio.class.js";
 
 const DEBUG_BOSS_HITBOX = DEBUG_MODE;
+const bossAudio = new BossAudio();
 
 export function loadBossSprites() {
   const base = "assets/img/Boss/Boss_Sprites/";
@@ -217,6 +219,7 @@ export class Boss extends EnemyBase {
       this.attackDuration = this.attack2Duration;
       this.attack2Cooldown = this.attack2CooldownDuration;
       this.lastAttackType = "attack2";
+      bossAudio.playAttack2();
       this.startMeleeAttack(
         dx,
         this.attack2Frames,
@@ -230,6 +233,7 @@ export class Boss extends EnemyBase {
     }
 
     if (choice === "attack1") {
+      bossAudio.playAttack1();
       this.beginAttack1(playerInfo, player);
       this.attack1Cooldown = this.attack1CooldownDuration;
       this.lastAttackType = "attack1";
@@ -518,6 +522,7 @@ export class Boss extends EnemyBase {
 
       const dmg = this.attackDamageCurrent ?? this.damage;
       player.takeDamage?.(dmg, { popupDelay });
+      bossAudio.playHit();
       if (typeof player.invulnerableTimer === "number") {
         player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);
       }
@@ -534,6 +539,7 @@ export class Boss extends EnemyBase {
     if (!prevDead && this.isDead) {
       this.deathTimer = Math.max(this.deathTimer, 5.5);
     } else if (this.hurtFrames) {
+      bossAudio.playWhimper();
       this.hurtAnimTimer = Math.max(this.hurtAnimTimer, 0.5);
       this.setAnimation(this.hurtFrames);
       this.currentFrame = 0;
@@ -542,6 +548,9 @@ export class Boss extends EnemyBase {
   }
 
   getHitbox() {
+    if (this.isDead || this.health <= 0) {
+      return { x: 0, y: 0, width: 0, height: 0 };
+    }
     const shrinkX = this.width * 0.50;
     const shrinkY = this.height * 0.55;
     return {

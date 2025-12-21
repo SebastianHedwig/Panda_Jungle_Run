@@ -1,3 +1,5 @@
+import { SFX_VOLUME } from "../../config/config.js";
+
 const COIN_PICKUP = "./assets/sfx/coin/coin-pickup.mp3";
 const HEART_PICKUP = "./assets/sfx/heart/heart-pickup.mp3";
 const WEAPON_PICKUP = "./assets/sfx/weapon/weapon-pickup.mp3";
@@ -7,7 +9,7 @@ export class CollectablesAudio {
     coinSrc = COIN_PICKUP,
     heartSrc = HEART_PICKUP,
     weaponSrc = WEAPON_PICKUP,
-    volume = 0.6,
+    volume = SFX_VOLUME,
   } = {}) {
     this.coinSrc = coinSrc;
     this.heartSrc = heartSrc;

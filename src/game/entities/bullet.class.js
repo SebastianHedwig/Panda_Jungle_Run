@@ -33,6 +33,7 @@ export class Bullet {
     this.x += this.vx * dt;
 
     const bounds = this.getBounds();
+    const shouldPlayImpactSound = !this.isBeyondCanvasMargin(50);
 
     for (const p of this.world.platforms || []) {
       const hit =
@@ -43,7 +44,7 @@ export class Bullet {
 
       if (hit) {
         this.remove = true;
-        bulletAudio.playImpact();
+        if (shouldPlayImpactSound) bulletAudio.playImpact();
         this.world.spawnExplosion(
           this.x + bounds.width / 2,
           this.y + bounds.height / 2
@@ -62,7 +63,7 @@ export class Bullet {
     enemies.forEach((enemy) => {
       if (this.collidesWith(enemy)) {
         this.remove = true;
-        bulletAudio.playImpact();
+        if (shouldPlayImpactSound) bulletAudio.playImpact();
         this.world.spawnExplosion(this.x, this.y);
         enemy.takeDamage?.(2);
         if (!enemy.isDead && enemy.health > 0 && !enemy.disableHitEffect) {
@@ -115,6 +116,23 @@ export class Bullet {
     }
 
     ctx.restore();
+  }
+
+  isBeyondCanvasMargin(margin = 0) {
+    const canvas = this.world?.canvas;
+    if (!canvas) return false;
+    const bounds = this.getBounds();
+    const camera = this.world?.camera;
+    const camX = camera?.x || 0;
+    const camY = camera?.y || 0;
+    const screenX = bounds.x - camX;
+    const screenY = bounds.y - camY;
+    return (
+      screenX + bounds.width < -margin ||
+      screenX > canvas.width + margin ||
+      screenY + bounds.height < -margin ||
+      screenY > canvas.height + margin
+    );
   }
 }
 

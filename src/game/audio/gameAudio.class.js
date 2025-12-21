@@ -161,6 +161,16 @@ export class GameAudio {
       .catch(() => false);
   }
 
+  ensureVolume() {
+    if (this.crossfadeTimer) return;
+    if (this.audio && this.audio.volume !== this.volume) {
+      this.audio.volume = this.volume;
+    }
+    if (this.nextAudio && this.nextAudio.volume !== this.volume) {
+      this.nextAudio.volume = this.volume;
+    }
+  }
+
   bindPlaybackUnlock() {
     if (this.unlockHandler) return;
     this.unlockHandler = () => {

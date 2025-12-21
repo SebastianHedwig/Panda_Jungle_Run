@@ -157,7 +157,10 @@ export class Player extends MovableObject {
     else addPopup();
 
     if (this.healthPoints <= 0) this.startDeath();
-    else this.startHurt(opts?.useDizzy ?? true);
+    else {
+      playerAudio.playOuch();
+      this.startHurt(opts?.useDizzy ?? true);
+    }
   }
 
   /** ----- HEAL ----- */
@@ -250,6 +253,8 @@ export class Player extends MovableObject {
   startDeath() {
     if (this.isDead) return;
     this.isDead = true;
+    this.world?.audio?.stop?.();
+    this.world?.bossAudioPlayer?.stop?.();
     playerAudio.playDead();
     this.isHurt = false;
     this.isAttacking = false;
@@ -298,6 +303,7 @@ export class Player extends MovableObject {
     this.slideStartX = this.x;
     this.slideDir = this.facing;
     this.vy = 0;
+    playerAudio.playSlide();
     this.slideBlockGrace = 0.12;
     this.slideHitEnemies.clear();
     this.invulnerableTimer = Math.max(
@@ -395,6 +401,7 @@ export class Player extends MovableObject {
           dy <= this.attackHeightTolerance &&
           Math.sign(dx || 1) === this.facing
         ) {
+          playerAudio.playHit();
           enemy.takeDamage?.(1);
           if (!enemy.isDead && enemy.health > 0 && !enemy.disableHitEffect) {
             this.world?.spawnHitEffect?.(
@@ -745,6 +752,7 @@ export class Player extends MovableObject {
         selfBox.y < enemyBox.y + enemyBox.height &&
         selfBox.y + selfBox.height > enemyBox.y;
       if (overlaps) {
+        playerAudio.playHit();
         const dmg = this.slideDamage ?? 2;
         enemy.takeDamage?.(dmg, { skipStun: true, source: "slide" });
         if (!enemy.isDead && enemy.health > 0 && !enemy.disableHitEffect) {

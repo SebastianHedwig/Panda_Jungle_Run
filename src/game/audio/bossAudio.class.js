@@ -1,15 +1,33 @@
-import { BOSS_MUSIC_LOOP_CUT } from "../../config/config.js";
+import {
+  BOSS_MUSIC_LOOP_CUT,
+  MUSIC_VOLUME,
+  SFX_VOLUME,
+} from "../../config/config.js";
 
 const BOSS_GONG = "./assets/music/boss-gong.mp3";
 const BOSS_MUSIC = "./assets/music/boss-music.mp3";
 const BOSS_DEFEAT = "./assets/music/boss-defeat.mp3";
+const BOSS_WHIMPER = [
+  "./assets/sfx/boss/Boss-whimper1.mp3",
+  "./assets/sfx/boss/Boss-whimper2.mp3",
+];
+const BOSS_HOWL_END = "./assets/sfx/boss/Boss-howl-end.mp3";
+const BOSS_ATTACK2 = "./assets/sfx/boss/Boss-attack2.mp3";
+const BOSS_WHOOSH = "./assets/sfx/boss/Boss-whoosh.mp3";
+const BOSS_HIT = "./assets/sfx/boss/Boss-hit.mp3";
 
 export class BossAudio {
   constructor({
     gongSrc = BOSS_GONG,
     musicSrc = BOSS_MUSIC,
     defeatSrc = BOSS_DEFEAT,
-    volume = 0.6,
+    whimperSrcs = BOSS_WHIMPER,
+    howlEndSrc = BOSS_HOWL_END,
+    attack2Src = BOSS_ATTACK2,
+    whooshSrc = BOSS_WHOOSH,
+    hitSrc = BOSS_HIT,
+    volume = MUSIC_VOLUME,
+    sfxVolume = SFX_VOLUME,
     gongPlayDuration = 3,
     fadeDuration = 1,
     musicLoopCut = BOSS_MUSIC_LOOP_CUT ?? 1,
@@ -18,7 +36,13 @@ export class BossAudio {
     this.gongSrc = gongSrc;
     this.musicSrc = musicSrc;
     this.defeatSrc = defeatSrc;
+    this.whimperSrcs = whimperSrcs;
+    this.howlEndSrc = howlEndSrc;
+    this.attack2Src = attack2Src;
+    this.whooshSrc = whooshSrc;
+    this.hitSrc = hitSrc;
     this.volume = volume;
+    this.sfxVolume = sfxVolume;
     this.gongPlayDuration = gongPlayDuration;
     this.fadeDuration = fadeDuration;
     this.musicLoopCut = musicLoopCut;
@@ -27,6 +51,11 @@ export class BossAudio {
     this.gongAudio = null;
     this.musicAudio = null;
     this.defeatAudio = null;
+    this.howlEndAudio = null;
+    this.attack2Audio = null;
+    this.whooshAudio = null;
+    this.hitAudio = null;
+    this.whimperCache = new Map();
     this.nextMusicAudio = null;
     this.fadeInterval = null;
     this.fadeStartTimer = null;
@@ -44,6 +73,105 @@ export class BossAudio {
     el.preload = "auto";
     el.autoplay = false;
     return el;
+  }
+
+  createSfxAudio(src) {
+    return this.createAudio(src, false, this.sfxVolume);
+  }
+
+  playWhimper() {
+    if (!this.whimperSrcs?.length) return;
+    const idx = Math.floor(Math.random() * this.whimperSrcs.length);
+    const src = this.whimperSrcs[idx];
+    if (!src) return;
+
+    let base = this.whimperCache.get(src);
+    if (!base) {
+      base = this.createSfxAudio(src);
+      this.whimperCache.set(src, base);
+    }
+
+    let audio = base;
+    if (!base.paused && !base.ended) {
+      audio = base.cloneNode(true);
+      audio.volume = this.sfxVolume;
+      audio.preload = "auto";
+      audio.autoplay = false;
+    } else {
+      base.currentTime = 0;
+    }
+
+    const start = () => audio.play().catch(() => {});
+    if (audio.readyState >= 2) start();
+    else {
+      audio.addEventListener("canplaythrough", start, { once: true });
+      audio.addEventListener("loadeddata", start, { once: true });
+    }
+    audio.load();
+    this.bindUnlock();
+  }
+
+  playAttack2() {
+    if (!this.attack2Src) return;
+    if (!this.attack2Audio) {
+      this.attack2Audio = this.createSfxAudio(this.attack2Src);
+    } else {
+      this.attack2Audio.currentTime = 0;
+    }
+    const audio = this.attack2Audio;
+    const start = () => audio.play().catch(() => {});
+    if (audio.readyState >= 2) start();
+    else {
+      audio.addEventListener("canplaythrough", start, { once: true });
+      audio.addEventListener("loadeddata", start, { once: true });
+    }
+    audio.load();
+    this.bindUnlock();
+  }
+
+  playAttack1() {
+    if (!this.whooshSrc) return;
+    const base =
+      this.whooshAudio || (this.whooshAudio = this.createSfxAudio(this.whooshSrc));
+    let audio = base;
+    if (!base.paused && !base.ended) {
+      audio = base.cloneNode(true);
+      audio.volume = this.sfxVolume;
+      audio.preload = "auto";
+      audio.autoplay = false;
+    } else {
+      base.currentTime = 0;
+    }
+    const start = () => audio.play().catch(() => {});
+    if (audio.readyState >= 2) start();
+    else {
+      audio.addEventListener("canplaythrough", start, { once: true });
+      audio.addEventListener("loadeddata", start, { once: true });
+    }
+    audio.load();
+    this.bindUnlock();
+  }
+
+  playHit() {
+    if (!this.hitSrc) return;
+    if (!this.hitAudio) {
+      this.hitAudio = this.createAudio(
+        this.hitSrc,
+        false,
+        Math.min(1, this.sfxVolume + 0.2)
+      );
+    } else {
+      this.hitAudio.currentTime = 0;
+    }
+    const audio = this.hitAudio;
+    const start = () => audio.play().catch(() => {});
+    if (audio.readyState >= 2) start();
+    else {
+      audio.addEventListener("canplaythrough", start, { once: true });
+      audio.addEventListener("loadeddata", start, { once: true });
+    }
+    audio.load();
+    this.bindUnlock();
   }
 
   play() {
@@ -136,6 +264,26 @@ export class BossAudio {
       this.defeatAudio.pause();
       this.defeatAudio.currentTime = 0;
       this.defeatAudio = null;
+    }
+    if (this.attack2Audio) {
+      this.attack2Audio.pause();
+      this.attack2Audio.currentTime = 0;
+      this.attack2Audio = null;
+    }
+    if (this.whooshAudio) {
+      this.whooshAudio.pause();
+      this.whooshAudio.currentTime = 0;
+      this.whooshAudio = null;
+    }
+    if (this.hitAudio) {
+      this.hitAudio.pause();
+      this.hitAudio.currentTime = 0;
+      this.hitAudio = null;
+    }
+    if (this.howlEndAudio) {
+      this.howlEndAudio.pause();
+      this.howlEndAudio.currentTime = 0;
+      this.howlEndAudio = null;
     }
     this.unbindUnlock();
   }
@@ -266,6 +414,14 @@ export class BossAudio {
 
     const defeat = this.createAudio(this.defeatSrc, false, 0);
     this.defeatAudio = defeat;
+    const howl = this.howlEndSrc
+      ? this.createAudio(
+          this.howlEndSrc,
+          false,
+          Math.min(1, this.sfxVolume + 0.2)
+        )
+      : null;
+    this.howlEndAudio = howl;
     const startDefeat = () => defeat.play().catch(() => {});
     if (defeat.readyState >= 2) startDefeat();
     else {
@@ -273,6 +429,15 @@ export class BossAudio {
       defeat.addEventListener("loadeddata", startDefeat, { once: true });
     }
     defeat.load();
+    if (howl) {
+      const startHowl = () => howl.play().catch(() => {});
+      if (howl.readyState >= 2) startHowl();
+      else {
+        howl.addEventListener("canplaythrough", startHowl, { once: true });
+        howl.addEventListener("loadeddata", startHowl, { once: true });
+      }
+      howl.load();
+    }
     this.bindUnlock();
 
     const fadingTracks = [

@@ -1,3 +1,5 @@
+import { SFX_VOLUME } from "../../config/config.js";
+
 const PLAYER_DEAD = "./assets/sfx/player/player-dead.mp3";
 const PLAYER_PUNCH = [
   "./assets/sfx/player/player-punch1.mp3",
@@ -5,36 +7,56 @@ const PLAYER_PUNCH = [
   "./assets/sfx/player/player-punch3.mp3",
   "./assets/sfx/player/player-punch4.mp3",
 ];
+const PLAYER_OUCH = [
+  "./assets/sfx/player/player-ouw1.mp3",
+  "./assets/sfx/player/player-ouw2.mp3",
+  "./assets/sfx/player/player-ouw3.mp3",
+];
+const PLAYER_HIT = "./assets/sfx/player/player-punch-hit.mp3";
 const PLAYER_SHOOT = "./assets/sfx/weapon/weapon-shoot.mp3";
 const PLAYER_JUMP = "./assets/sfx/player/player-jump.mp3";
 const PLAYER_LANDING = "./assets/sfx/player/player-landing.mp3";
+const PLAYER_SLIDE = [
+  "./assets/sfx/player/player-slide1.mp3",
+  "./assets/sfx/player/player-slide2.mp3",
+];
 
 export class PlayerAudio {
   constructor({
     deadSrc = PLAYER_DEAD,
     punchSrcs = PLAYER_PUNCH,
+    ouchSrcs = PLAYER_OUCH,
+    hitSrc = PLAYER_HIT,
     shootSrc = PLAYER_SHOOT,
     jumpSrc = PLAYER_JUMP,
     landingSrc = PLAYER_LANDING,
+    slideSrcs = PLAYER_SLIDE,
     landingOffset = 0.3,
-    landingVolume = 0.9,
-    volume = 0.7,
-    deadRate = 2.0,
+    landingVolume = SFX_VOLUME + 0.2,
+    volume = SFX_VOLUME,
+    deadRate = 2.5,
   } = {}) {
     this.deadSrc = deadSrc;
     this.punchSrcs = punchSrcs;
+    this.ouchSrcs = ouchSrcs;
+    this.hitSrc = hitSrc;
     this.shootSrc = shootSrc;
     this.jumpSrc = jumpSrc;
     this.landingSrc = landingSrc;
+    this.slideSrcs = slideSrcs;
     this.landingOffset = landingOffset;
     this.landingVolume = Math.min(1, landingVolume ?? volume);
     this.deadRate = deadRate;
     this.volume = volume;
     this.deadAudio = null;
     this.punchCache = new Map();
+    this.hitAudio = null;
+    this.ouchCache = new Map();
     this.shootAudio = null;
     this.jumpAudio = null;
     this.landingBase = null;
+    this.slideAudio0 = null;
+    this.slideAudio1 = null;
     this.unlockHandler = null;
   }
 
@@ -106,16 +128,44 @@ export class PlayerAudio {
     return audio;
   }
 
+  getOuchAudio(src) {
+    let audio = this.ouchCache.get(src);
+    if (!audio) {
+      audio = this.createAudio(src);
+      this.ouchCache.set(src, audio);
+    }
+    return audio;
+  }
+
   playPunch() {
     if (!this.punchSrcs?.length) return;
     const idx = Math.floor(Math.random() * this.punchSrcs.length);
     const src = this.punchSrcs[idx];
     this.getPunchAudio(src);
-    this.playOneShot({ propName: "_punchTemp", src, offset: 0, rate: 1 });
+    this.playOneShot({
+      propName: `punchAudio${idx}`,
+      src,
+      offset: 0,
+      rate: 1,
+    });
+  }
+
+  playHit() {
+    if (!this.hitSrc) return;
+    this.playOneShot({ propName: "hitAudio", src: this.hitSrc });
   }
 
   playShoot() {
     this.playOneShot({ propName: "shootAudio", src: this.shootSrc });
+  }
+
+  playOuch() {
+    if (!this.ouchSrcs?.length) return;
+    const idx = Math.floor(Math.random() * this.ouchSrcs.length);
+    const src = this.ouchSrcs[idx];
+    this.getOuchAudio(src);
+    const propName = `ouchAudio${idx}`;
+    this.playOneShot({ propName, src });
   }
 
   playJump() {
@@ -155,34 +205,20 @@ export class PlayerAudio {
     this.bindUnlock();
   }
 
-  playDead() {
-    if (!this.deadAudio) {
-      this.deadAudio = this.createAudio(this.deadSrc);
-    } else {
-      this.deadAudio.currentTime = 0;
-    }
-    this.deadAudio.playbackRate = this.deadRate || 1.5;
+  playSlide() {
+    if (!this.slideSrcs?.length) return;
+    const idx = Math.floor(Math.random() * this.slideSrcs.length);
+    const src = this.slideSrcs[idx];
+    const propName = `slideAudio${idx}`;
+    this.playOneShot({ propName, src });
+  }
 
-    const start = () => {
-      this.deadAudio.playbackRate = this.deadRate || 1.5;
-      this.deadAudio?.play().catch(() => {});
-    };
-    if (this.deadAudio.readyState >= 2) start();
-    else {
-      this.deadAudio.addEventListener("canplaythrough", start, {
-        once: true,
-      });
-      this.deadAudio.addEventListener("loadeddata", start, { once: true });
-      this.deadAudio.addEventListener(
-        "loadedmetadata",
-        () => {
-          this.deadAudio.playbackRate = this.deadRate || 1.5;
-        },
-        { once: true }
-      );
-    }
-    this.deadAudio.load();
-    this.bindUnlock();
+  playDead() {
+    this.playOneShot({
+      propName: "deadAudio",
+      src: this.deadSrc,
+      rate: this.deadRate || 1.5,
+    });
   }
 
   bindUnlock() {
@@ -190,9 +226,13 @@ export class PlayerAudio {
     this.unlockHandler = () => {
       const audios = [
         this.deadAudio,
+        this.hitAudio,
         this.shootAudio,
         this.jumpAudio,
         this.landingBase,
+        this.slideAudio0,
+        this.slideAudio1,
+        ...this.ouchCache.values(),
         ...this.punchCache.values(),
       ];
       audios.forEach((a) => {

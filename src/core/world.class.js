@@ -54,13 +54,27 @@ export class World {
     const prevBottom = player.y + player.height - player.vy;
     const currBottom = player.y + player.height;
     const currTop = player.y;
+    const overlapPad = 2;
+    const headBumpPadBase = 20;
+    const playerBox = player.getHitbox ? player.getHitbox() : player;
 
     for (const p of this.platforms) {
       const overlapsY = currBottom > p.top && currTop < p.bottom;
-      const overlapsX = player.x + player.width > p.left && player.x < p.right;
+      const overlapsX =
+        player.x + player.width > p.left && player.x < p.right;
+      const overlapsXLanding =
+        player.x + player.width > p.left - overlapPad &&
+        player.x < p.right + overlapPad;
+      const headBumpPad = Math.min(
+        headBumpPadBase,
+        Math.max(0, (p.right - p.left) * 0.2)
+      );
+      const overlapsXHead =
+        playerBox.x + playerBox.width > p.left + headBumpPad &&
+        playerBox.x < p.right - headBumpPad;
 
       // LANDING FROM ABOVE
-      if (p.supportsLanding && overlapsY && overlapsX) {
+      if (p.supportsLanding && overlapsY && overlapsXLanding) {
         if (player.vy > 0 && prevBottom <= p.top && currBottom >= p.top) {
           player.y = p.top - player.height;
           player.vy = 0;
@@ -74,7 +88,11 @@ export class World {
         }
 
         // Stay grounded while walking on the platform
-        if (player.vy >= 0 && currBottom >= p.top && currBottom <= p.top + 4) {
+        if (
+          player.vy >= 0 &&
+          currBottom >= p.top &&
+          currBottom <= p.top + 4
+        ) {
           player.y = p.top - player.height;
           player.vy = 0;
           player.onGround = true;
@@ -85,6 +103,7 @@ export class World {
         // HEAD BUMP
         if (
           player.vy < 0 &&
+          overlapsXHead &&
           currTop <= p.bottom &&
           currTop - player.vy >= p.bottom
         ) {
@@ -98,6 +117,7 @@ export class World {
       if (
         p.hasSideWalls &&
         overlapsY &&
+        overlapsX &&
         currBottom > p.top + p.sideWallGap &&
         player.vy >= 0
       ) {

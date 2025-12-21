@@ -57,6 +57,7 @@ export function initGame() {
   camera = new Camera(canvas, WORLD_WIDTH);
   background = new Background(canvas);
   audio = new GameAudio();
+  world.audio = audio;
   musicReadyPromise = audio.init().then(() => audio.play());
   requestAnimationFrame(renderLoading);
 
@@ -254,7 +255,15 @@ function start(
   world.addCollectables(collectables);
   placeHearts(world);
   placeGuns(world);
-  placeEnemiesMixed(world, enemy1Sprites, enemy2Sprites, enemy3Sprites, 5, 5, 2);
+  placeEnemiesMixed(
+    world,
+    enemy1Sprites,
+    enemy2Sprites,
+    enemy3Sprites,
+    5,
+    5,
+    2
+  );
 
   const spawnX = 25;
   const groundTop = world.baseGround ?? canvas.height;
@@ -303,16 +312,10 @@ function update(dt) {
     const maxX = BOSS_MOVE_MAX_X;
     const desiredSpawn = player.x + 1500;
     const bossWidth = 240;
-    const spawnX = Math.min(
-      Math.max(desiredSpawn, minX),
-      maxX - bossWidth
-    );
+    const spawnX = Math.min(Math.max(desiredSpawn, minX), maxX - bossWidth);
     const bossHeight = 240;
     const platform = world.platforms?.find(
-      (p) =>
-        p.supportsLanding &&
-        spawnX >= p.left &&
-        spawnX <= p.right
+      (p) => p.supportsLanding && spawnX >= p.left && spawnX <= p.right
     );
     const groundTop = platform?.top ?? world.baseGround ?? canvas.height;
     const spawnY = Math.max(
@@ -328,10 +331,12 @@ function update(dt) {
     audio?.stop?.();
     bossAudioPlayer = new BossAudio();
     bossAudioPlayer.play();
+    world.bossAudioPlayer = bossAudioPlayer;
     camera?.shake?.(BOSS_SPAWN_SHAKE_DURATION, BOSS_SPAWN_SHAKE_MAGNITUDE);
   }
 
   player.update(dt, input);
+  audio?.ensureVolume?.();
   camera.follow(player, 0.08, dt);
   background.update(camera.x, camera.y, dt);
 
@@ -359,6 +364,7 @@ function update(dt) {
         bossAudioPlayer = null;
       }
     }
+    world.bossAudioPlayer = null;
     bossRef = null;
   }
 
@@ -655,7 +661,7 @@ function renderLoading(t) {
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
   const radius = 40;
-  const angle = ((loadingAnimTime / 500) % (Math.PI * 2));
+  const angle = (loadingAnimTime / 500) % (Math.PI * 2);
   ctx.lineWidth = 8;
   ctx.strokeStyle = "rgba(0, 200, 200, 0.9)";
   ctx.beginPath();
