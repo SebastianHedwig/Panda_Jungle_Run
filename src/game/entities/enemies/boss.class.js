@@ -1,5 +1,11 @@
 import { EnemyBase } from "./enemyBase.class.js";
-import { DEBUG_MODE } from "../../../config/config.js";
+import {
+  BOSS_ATTACK1_DAMAGE,
+  BOSS_ATTACK2_DAMAGE,
+  BOSS_DAMAGE,
+  BOSS_HEALTH,
+  DEBUG_MODE,
+} from "../../../config/config.js";
 import { BossAudio } from "../../audio/bossAudio.class.js";
 
 const DEBUG_BOSS_HITBOX = DEBUG_MODE;
@@ -40,8 +46,8 @@ export class Boss extends EnemyBase {
 
     this.speed = 100;
     this.runSpeed = 200;
-    this.health = 20;
-    this.damage = 2;
+    this.health = BOSS_HEALTH;
+    this.damage = BOSS_DAMAGE;
     this.attackDamageCurrent = this.damage;
     this.isDead = false;
     this.remove = false;
@@ -61,8 +67,8 @@ export class Boss extends EnemyBase {
     this.chaseRangeY = 240;
     this.chaseRangeYExit = 250;
 
-    this.attack1Damage = 3;
-    this.attack2Damage = 4;
+    this.attack1Damage = BOSS_ATTACK1_DAMAGE;
+    this.attack2Damage = BOSS_ATTACK2_DAMAGE;
     this.attack1Duration = 1;
     this.attack2Duration = 1.1;
     this.attack1MoveSpeed = 0;

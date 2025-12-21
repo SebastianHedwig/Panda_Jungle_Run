@@ -1,6 +1,12 @@
 import { Enemy2 } from "./enemy2.class.js";
 import { EnemyBase } from "./enemyBase.class.js";
 import { CollectableItem } from "../../items/collectableItem.class.js";
+import {
+  ENEMY3_ATTACK1_DAMAGE,
+  ENEMY3_ATTACK2_DAMAGE,
+  ENEMY3_HEALTH,
+  ENEMY3_SLIDE_DAMAGE,
+} from "../../../config/config.js";
 
 export function loadEnemy3Sprites() {
   const base = "assets/img/enemies/Enemy_Sprites/Character-3/";
@@ -22,13 +28,13 @@ export class Enemy3 extends Enemy2 {
     this.attack1Frames = sprites.attack1;
     this.attack2Frames = sprites.attack2;
     this.slideFrames = sprites.slide;
-    this.attack1Damage = 1;
-    this.attack2Damage = 2;
-    this.slideDamage = 2;
+    this.attack1Damage = ENEMY3_ATTACK1_DAMAGE;
+    this.attack2Damage = ENEMY3_ATTACK2_DAMAGE;
+    this.slideDamage = ENEMY3_SLIDE_DAMAGE;
     this.slideRange = 220;
     this.slideHeightTolerance = this.attackHeightTolerance + 10;
     this.slideSpeed = (this.speed || 80) * 1.8;
-    this.health = 8;
+    this.health = ENEMY3_HEALTH;
     this.slideCooldown = 0;
     this.slideCooldownDuration = 5;
     this.hasDroppedLoot = false;

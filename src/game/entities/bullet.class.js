@@ -1,4 +1,5 @@
 import { BulletAudio } from "../audio/bulletAudio.class.js";
+import { PLAYER_BULLET_DAMAGE } from "../../config/config.js";
 
 const bulletAudio = new BulletAudio();
 
@@ -65,7 +66,7 @@ export class Bullet {
         this.remove = true;
         if (shouldPlayImpactSound) bulletAudio.playImpact();
         this.world.spawnExplosion(this.x, this.y);
-        enemy.takeDamage?.(2);
+        enemy.takeDamage?.(PLAYER_BULLET_DAMAGE);
         if (!enemy.isDead && enemy.health > 0 && !enemy.disableHitEffect) {
           this.world.spawnHitEffect?.(
             enemy.x,

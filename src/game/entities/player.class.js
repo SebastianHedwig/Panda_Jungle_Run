@@ -1,6 +1,12 @@
 import { MovableObject } from "../../engine/physics/movableObject.class.js";
 import { HudPopup } from "../effects/hudPopup.class.js";
-import { DEBUG_MODE } from "../../config/config.js";
+import {
+  DEBUG_MODE,
+  PLAYER_ATTACK_DAMAGE,
+  PLAYER_FALL_DAMAGE,
+  PLAYER_MAX_HEARTS,
+  PLAYER_SLIDE_DAMAGE,
+} from "../../config/config.js";
 import { PlayerAudio } from "../audio/playerAudio.class.js";
 
 const DEBUG_HITBOX = DEBUG_MODE;
@@ -54,7 +60,7 @@ export class Player extends MovableObject {
     this.slideSpeed = this.defaultSpeed * 2;
     this.slideBlockGrace = 0;
     this.slideHitEnemies = new Set();
-    this.slideDamage = 2;
+    this.slideDamage = PLAYER_SLIDE_DAMAGE;
     this.slideInvulnerableAfter = 1;
     this.slideInvulnerableDuring = 0.2;
     this.wasSlidingPreviousFrame = false;
@@ -110,7 +116,7 @@ export class Player extends MovableObject {
     this.facing = 1;
 
     /** ----- HEART SYSTEM ----- */
-    this.maxHearts = 6;
+    this.maxHearts = PLAYER_MAX_HEARTS;
     this.healthPoints = this.maxHearts * 2;
     this.maxHealthPoints = this.healthPoints;
     this.healthPulse = 0;
@@ -319,7 +325,7 @@ export class Player extends MovableObject {
   respawnFromFall() {
     if (this.isDead) return;
 
-    this.healthPoints = Math.max(0, this.healthPoints - 1);
+    this.healthPoints = Math.max(0, this.healthPoints - PLAYER_FALL_DAMAGE);
     this.healthPulse = 1.0;
 
     if (this.healthPoints <= 0) {
@@ -402,7 +408,7 @@ export class Player extends MovableObject {
           Math.sign(dx || 1) === this.facing
         ) {
           playerAudio.playHit();
-          enemy.takeDamage?.(1);
+          enemy.takeDamage?.(PLAYER_ATTACK_DAMAGE);
           if (!enemy.isDead && enemy.health > 0 && !enemy.disableHitEffect) {
             this.world?.spawnHitEffect?.(
               enemy.x,

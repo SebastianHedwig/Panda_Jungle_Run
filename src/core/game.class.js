@@ -12,7 +12,18 @@ import {
   placeGuns,
   placeEnemiesMixed,
 } from "../game/levels/level1.js";
-import { WORLD_WIDTH, GAME_WIDTH, GAME_HEIGHT } from "../config/config.js";
+import {
+  GAME_HEIGHT,
+  GAME_WIDTH,
+  LEVEL1_COIN_COUNT,
+  LEVEL1_COIN_RATIO_ABOVE,
+  LEVEL1_ENEMY1_COUNT,
+  LEVEL1_ENEMY2_COUNT,
+  LEVEL1_ENEMY3_COUNT,
+  LEVEL1_GUN_COUNT,
+  LEVEL1_HEART_COUNT,
+  WORLD_WIDTH,
+} from "../config/config.js";
 import { loadEnemy1Sprites } from "../game/entities/enemies/enemy1.class.js";
 import { loadEnemy2Sprites } from "../game/entities/enemies/enemy2.class.js";
 import { loadEnemy3Sprites } from "../game/entities/enemies/enemy3.class.js";
@@ -249,20 +260,20 @@ function start(
 
   const collectables = [
     ...createLevel1Collectables(),
-    ...generateCoinsMixed(world, 30, 0.5),
+    ...generateCoinsMixed(world, LEVEL1_COIN_COUNT, LEVEL1_COIN_RATIO_ABOVE),
     ...generateCoinArcs(world, 6),
   ];
   world.addCollectables(collectables);
-  placeHearts(world);
-  placeGuns(world);
+  placeHearts(world, LEVEL1_HEART_COUNT);
+  placeGuns(world, LEVEL1_GUN_COUNT);
   placeEnemiesMixed(
     world,
     enemy1Sprites,
     enemy2Sprites,
     enemy3Sprites,
-    5,
-    5,
-    2
+    LEVEL1_ENEMY1_COUNT,
+    LEVEL1_ENEMY2_COUNT,
+    LEVEL1_ENEMY3_COUNT
   );
 
   const spawnX = 25;

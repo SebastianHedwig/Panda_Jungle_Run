@@ -1,3 +1,12 @@
+import {
+  APEX_BOOST,
+  APEX_THRESHOLD,
+  GRAVITY,
+  GRAVITY_DOWN,
+  GRAVITY_UP,
+  JUMP_FORCE,
+} from "../../config/config.js";
+
 export class MovableObject {
   constructor(x, y, width, height) {
     this.x = x;
@@ -9,17 +18,17 @@ export class MovableObject {
     this.vx = 0;
     this.vy = 0;
 
-    this.gravity = 2800;
+    this.gravity = GRAVITY;
     this.onGround = true;
 
     this.facing = 1;
 
     /** Jump physics defaults */
-    this.jumpForce = 1200;
-    this.gravityUp = 2500;
-    this.gravityDown = 3500;
-    this.apexBoost = 0.6;
-    this.apexThreshold = 120;
+    this.jumpForce = JUMP_FORCE;
+    this.gravityUp = GRAVITY_UP;
+    this.gravityDown = GRAVITY_DOWN;
+    this.apexBoost = APEX_BOOST;
+    this.apexThreshold = APEX_THRESHOLD;
   }
 
   moveLeft(dt) {

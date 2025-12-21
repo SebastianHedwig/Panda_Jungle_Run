@@ -1,5 +1,6 @@
 import { EnemyBase, DEBUG_ENEMY_HITBOX } from "./enemyBase.class.js";
 import { CollectableItem } from "../../items/collectableItem.class.js";
+import { ENEMY1_DAMAGE, ENEMY1_HEALTH } from "../../../config/config.js";
 
 export function loadEnemy1Sprites() {
   const base = "assets/img/enemies/Enemy_Sprites/Character-1/";
@@ -27,8 +28,8 @@ export class Enemy1 extends EnemyBase {
     this.sprite = this.currentAnimation[0];
 
     this.speed = 80;
-    this.health = 4;
-    this.damage = 1;
+    this.health = ENEMY1_HEALTH;
+    this.damage = ENEMY1_DAMAGE;
     this.attackDamageCurrent = this.damage;
     this.isDead = false;
     this.remove = false;

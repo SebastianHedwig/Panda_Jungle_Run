@@ -1,5 +1,10 @@
 import { Enemy1 } from "./enemy1.class.js";
 import { CollectableItem } from "../../items/collectableItem.class.js";
+import {
+  ENEMY2_ATTACK1_DAMAGE,
+  ENEMY2_ATTACK2_DAMAGE,
+  ENEMY2_HEALTH,
+} from "../../../config/config.js";
 
 export function loadEnemy2Sprites() {
   const base = "assets/img/enemies/Enemy_Sprites/Character-2/";
@@ -19,10 +24,10 @@ export class Enemy2 extends Enemy1 {
     this.walkFrames = sprites.run;
     this.attack1Frames = sprites.attack1;
     this.attack2Frames = sprites.attack2;
-    this.attack1Damage = 1;
-    this.attack2Damage = 2;
+    this.attack1Damage = ENEMY2_ATTACK1_DAMAGE;
+    this.attack2Damage = ENEMY2_ATTACK2_DAMAGE;
     this.speed = (this.speed || 80) * 1.5;
-    this.health = 6;
+    this.health = ENEMY2_HEALTH;
     this.hasDroppedLoot = false;
   }
 
