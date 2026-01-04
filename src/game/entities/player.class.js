@@ -101,6 +101,7 @@ export class Player extends MovableObject {
     this.lastSafeX = x;
     this.lastSafeY = y;
     this.collisionDisabled = false;
+    this.deathSoundPlayed = false;
 
     /** ----- ADVANCED JUMP ----- */
     this.coyoteTime = 0.1;
@@ -261,7 +262,10 @@ export class Player extends MovableObject {
     this.isDead = true;
     this.world?.audio?.stop?.();
     this.world?.bossAudioPlayer?.stop?.();
-    playerAudio.playDead();
+    if (!this.deathSoundPlayed) {
+      playerAudio.playDead();
+      this.deathSoundPlayed = true;
+    }
     this.isHurt = false;
     this.isAttacking = false;
     this.isShooting = false;
@@ -493,6 +497,13 @@ export class Player extends MovableObject {
   /** ----- UPDATE LOOP ----- */
   update(dt, input) {
     this._preCollisionX = this.x;
+    if (this.healthPoints <= 0) {
+      if (!this.isDead) this.startDeath();
+      else if (!this.deathSoundPlayed) {
+        playerAudio.playDead();
+        this.deathSoundPlayed = true;
+      }
+    }
     const slideEndedLastFrame =
       this.wasSlidingPreviousFrame && !this.isSliding;
     if (this.slideBlockGrace > 0) {
