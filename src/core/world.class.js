@@ -72,6 +72,9 @@ export class World {
       const overlapsXHead =
         playerBox.x + playerBox.width > p.left + headBumpPad &&
         playerBox.x < p.right - headBumpPad;
+      const overlapsXSprite =
+        playerBox.x + playerBox.width > p.x &&
+        playerBox.x < p.x + p.width;
 
       // LANDING FROM ABOVE
       if (p.supportsLanding && overlapsY && overlapsXLanding) {
@@ -103,7 +106,8 @@ export class World {
         // HEAD BUMP
         if (
           player.vy < 0 &&
-          overlapsXHead &&
+          p.type !== "middleShort" &&
+          (overlapsXHead || overlapsXSprite) &&
           currTop <= p.bottom &&
           currTop - player.vy >= p.bottom
         ) {

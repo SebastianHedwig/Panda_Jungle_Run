@@ -16,8 +16,8 @@ export function createLevel1Platforms(sprites) {
   build.add("middleLong", 0, 650);
   build.add("middleLong", 1360, 650);
   build.add("middleShort", 2520, 450);
-  build.add("endLong", 2968, 650);
   build.stackFiller(2520, 465, 3, 2, sprites["filler"].width - 6);
+  build.add("endLong", 2968.5, 650);
   build.row(4250, 650, 2, "middleLong");
   build.stackFiller(4022, 265, 10, 1, sprites["filler"].width);
   build.add("startLong", 7100, 500);
@@ -26,10 +26,10 @@ export function createLevel1Platforms(sprites) {
   build.row(8350, 650, 2, "middleLong");
 
   /* ---- HIGHER LVL PLATFORMS ---- */
-  build.add("startLong", 260, 250);
+  build.add("startLong", 265, 250);
   build.add("endLong", 810, 250);
 
-  build.add("startLong", 3950, 250);
+  build.add("startLong", 3955, 250);
   build.add("endLong", 4500, 250);
 
   build.add("startLong", 5500, 380);
