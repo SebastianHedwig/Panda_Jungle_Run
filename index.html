@@ -12,7 +12,21 @@
 <body>
     <h1>Panda Jungle Run</h1>
 
-    <canvas id="game" class="canvas"></canvas>
+    <div id="game-container">
+        <canvas id="game" class="canvas"></canvas>
+
+        <div class="hud-container">
+            <button id="menu-toggle" class="hud-button menu-toggle" type="button" aria-label="Menu">
+                <img src="./assets/icons/menu-100.png" alt="Menu">
+                <span class="hud-label">menu</span>
+            </button>
+            <button id="sound-toggle" class="hud-button sound-toggle" type="button" aria-pressed="false" aria-label="Sound ausschalten">
+                <img id="sound-icon" src="./assets/icons/sound-on-100.png" alt="Sound an">
+                <span id="sound-label" class="hud-label">sound: off</span>
+            </button>
+        </div>
+        
+    </div>
 
     <script type="module" src="./src/main.js"></script>
 </body>

@@ -10,6 +10,7 @@ body {
   flex-direction: column;
   position: relative;
   background-image: url(./assets/img/body-main_BG.jpg);
+  background-size: cover;
   margin: 0;
   width: 100vw;
   height: 100vh;
@@ -19,20 +20,96 @@ h1 {
   font-family: "ComixLoud";
   font-variant: small-caps;
   text-align: center;
-  color: whitesmoke;
+  color: rgb(56, 200, 111);
+  text-shadow: 0 0 0.6rem rgb(0, 0, 0);
   font-size: 5rem;
   margin-top: 5rem;
 }
 
 .canvas {
-  position: absolute;
-  top: 25%;
-  left: 5%;
-  width: 1280px;
-  height: 720px;
-  margin: 0 auto;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  margin: 0;
   background: rgb(47, 79, 79);
   border: 0.3rem solid rgb(0, 139, 139);
   border-radius: 0.5rem;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.8), 0 12px 26px rgba(0, 0, 0, 0.65);
+}
+
+#game-container {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+  margin: 0 auto;
+}
+
+.hud-container {
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 0.5rem;
+  display: flex;
+  position: absolute;
+  left: 0.8rem;
+  bottom: 0.1rem;
+  gap: 1rem;
+  padding: 0.3rem;
+}
+
+.hud-button {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hud-button img {
+  width: 100%;
+  height: 100%;
+}
+
+.menu-toggle:hover img,
+.menu-toggle:focus-visible img {
+  animation: gear-spin 0.8s ease-in-out 1;
+}
+
+.hud-label {
+  position: absolute;
+  left: 0;
+  bottom: 2.6rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.3rem;
+  background: rgba(0, 0, 0, 0.6);
+  color: rgb(255, 255, 255);
+  font-size: 0.8rem;
+  text-transform: lowercase;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(0.2rem);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  pointer-events: none;
+}
+
+.hud-button:hover .hud-label,
+.hud-button:focus-visible .hud-label {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sound-toggle:focus-visible {
+  outline: 0rem;
+}
+
+@keyframes gear-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-180deg);
+  }
 }
