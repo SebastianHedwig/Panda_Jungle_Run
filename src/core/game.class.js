@@ -42,6 +42,8 @@ let bossSprites;
 let bossSpawned = false;
 let bossRef = null;
 let bossAudioPlayer = null;
+let isPaused = false;
+let menuBgImg;
 const BOSS_SPAWN_TRIGGER_X = WORLD_WIDTH - 2500;
 const BOSS_GROUND_OFFSET = 20;
 const BOSS_SPAWN_CLEARANCE = 20;
@@ -163,6 +165,7 @@ export function initGame() {
 
   hudCoinImg = loadImage("./assets/img/Coin/Coin_0000000.png");
   hudGunImg = loadImage("./assets/img/Character/Spriter_files/gun.png");
+  menuBgImg = loadImage("./assets/img/menu_BG.png");
 
   const assets = [
     ...bgImages,
@@ -202,6 +205,7 @@ export function initGame() {
     ...bossSprites.die,
     ...bossSprites.jump,
     hudGunImg,
+    menuBgImg,
   ];
 
   const assetsReady = Promise.allSettled(assets.map(waitForImage));
@@ -227,6 +231,15 @@ export function initGame() {
     )
   );
 }
+
+export function setPaused(paused) {
+  isPaused = !!paused;
+}
+
+export function getPaused() {
+  return isPaused;
+}
+
 
 function start(
   bg,
@@ -310,7 +323,7 @@ function loop(t) {
   const dt = Math.min((t - lastTime) / 1000, 0.05);
   lastTime = t;
 
-  update(dt);
+  if (!isPaused) update(dt);
   draw();
   input.endFrame();
   requestAnimationFrame(loop);
@@ -422,6 +435,7 @@ function draw() {
 
   drawHUD();
   drawBossIndicator();
+  if (isPaused) drawMenuOverlay();
 }
 
 /** HUD */
@@ -517,6 +531,30 @@ function drawBossIndicator() {
 
   ctx.restore();
 }
+
+function drawMenuOverlay() {
+  if (!menuBgImg || menuBgImg.naturalWidth === 0) return;
+
+  ctx.save();
+  ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  const maxW = canvas.width * 0.9;
+  const maxH = canvas.height * 0.9;
+  const scale = Math.min(
+    maxW / menuBgImg.naturalWidth,
+    maxH / menuBgImg.naturalHeight,
+    1
+  );
+  const drawW = menuBgImg.naturalWidth * scale;
+  const drawH = menuBgImg.naturalHeight * scale;
+  const x = (canvas.width - drawW) / 2;
+  const y = (canvas.height - drawH) / 2;
+
+  ctx.drawImage(menuBgImg, x, y, drawW, drawH);
+  ctx.restore();
+}
+
 
 /** HEARTS */
 function drawHearts() {

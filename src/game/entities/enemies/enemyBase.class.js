@@ -225,6 +225,13 @@ export class EnemyBase extends MovableObject {
     }
   }
 
+  applyAttackPhysics(dt) {
+    const prevBottom = this.y + this.height;
+    this.applyApexGravity(dt);
+    const currBottom = this.y + this.height;
+    this.handlePlatformLanding(prevBottom, currBottom);
+  }
+
   /** ----- EDGE / DROP HANDLING ----- */
   adjustForEdges(moveDir, dt, platform, onLowestPlatform, prevChasing) {
     const platformBelow = this.findPlatformBelow(

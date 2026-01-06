@@ -154,6 +154,7 @@ export class Enemy1 extends EnemyBase {
         this.activeAttackFrames = null;
       }
 
+      this.applyAttackPhysics(dt);
       this.isChasing = false;
       return;
     }

@@ -1,7 +1,8 @@
 import { Input } from "./engine/input/input.class.js";
-import { initGame } from "./core/game.class.js";
+import { getPaused, initGame, setPaused } from "./core/game.class.js";
 
 const audioRegistry = new Set();
+window.__isMuted = true;
 const OriginalAudio = window.Audio;
 const originalCloneNode = OriginalAudio.prototype.cloneNode;
 
@@ -30,6 +31,21 @@ function setAllAudioMuted(muted) {
     audio.muted = muted;
   });
 }
+
+function setupMenuToggle() {
+  const toggle = document.getElementById("menu-toggle");
+  if (!toggle) return;
+
+  const setMenuOpen = (open) => {
+    setPaused(open);
+    toggle.setAttribute("aria-pressed", String(open));
+    toggle.setAttribute("aria-label", open ? "Menu schliessen" : "Menu oeffnen");
+  };
+
+  toggle.addEventListener("click", () => setMenuOpen(!getPaused()));
+  setMenuOpen(false);
+}
+
 
 function setupSoundToggle() {
   const toggle = document.getElementById("sound-toggle");
@@ -67,9 +83,10 @@ function setupSoundToggle() {
     icon.src = icon.dataset.currentSrc || icon.src;
     icon.alt = icon.dataset.currentAlt || icon.alt;
   });
-  setMuted(false);
+  setMuted(true);
 }
 
 window.input = new Input();
 initGame();
 setupSoundToggle();
+setupMenuToggle();
