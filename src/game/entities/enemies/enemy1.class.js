@@ -1,6 +1,7 @@
 import { EnemyBase, DEBUG_ENEMY_HITBOX } from "./enemyBase.class.js";
 import { CollectableItem } from "../../items/collectableItem.class.js";
 import { ENEMY1_DAMAGE, ENEMY1_HEALTH } from "../../../config/config.js";
+import { loadFrames } from "../../../core/assets/assetLoader.js";
 
 export function loadEnemy1Sprites() {
   const base = "assets/img/Enemies/Enemy_Sprites/Character-1/";
@@ -338,12 +339,4 @@ export class Enemy1 extends EnemyBase {
     }
     this.world.addCollectables ? this.world.addCollectables(coins) : this.world.collectables.push(...coins);
   }
-}
-
-function loadFrames(path, prefix, count) {
-  return [...Array(count)].map((_, i) => {
-    const img = new Image();
-    img.src = `${path}${prefix}${String(i).padStart(3, "0")}.png`;
-    return img;
-  });
 }

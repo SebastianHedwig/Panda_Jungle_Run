@@ -1,4 +1,4 @@
-import { EnemyBase } from "./enemyBase.class.js";
+import { EnemyBase } from "../enemies/enemyBase.class.js";
 import {
   BOSS_ATTACK1_DAMAGE,
   BOSS_ATTACK2_DAMAGE,
@@ -7,23 +7,12 @@ import {
   DEBUG_MODE,
 } from "../../../config/config.js";
 import { BossAudio } from "../../audio/bossAudio.class.js";
+import { updateBoss } from "./bossUpdate.js";
+import { renderBoss } from "./bossRender.js";
+export { loadBossSprites } from "./bossSprites.js";
 
 const DEBUG_BOSS_HITBOX = DEBUG_MODE;
 const bossAudio = new BossAudio();
-
-export function loadBossSprites() {
-  const base = "assets/img/Boss/Boss_Sprites/";
-  return {
-    idle: loadFrames(`${base}idle/`, "Idle_", 12),
-    walk: loadFrames(`${base}walk/`, "walk_", 12),
-    run: loadFrames(`${base}run/`, "Run_", 8),
-    attack1: loadFrames(`${base}attack_1/`, "Attack_", 8),
-    attack2: loadFrames(`${base}attack_2/`, "Attack_", 8),
-    hurt: loadFrames(`${base}hurt/`, "Hurt_", 6),
-    die: loadFrames(`${base}die/`, "Die_", 12),
-    jump: loadFrames(`${base}jump/`, "Jump_", 6),
-  };
-}
 
 export class Boss extends EnemyBase {
   constructor(x, y, sprites, world = null) {
@@ -215,9 +204,7 @@ export class Boss extends EnemyBase {
 
     let choice = null;
     if (canAttack1 && canAttack2) {
-      if (this.lastAttackType === "attack1") choice = "attack2";
-      else if (this.lastAttackType === "attack2") choice = "attack1";
-      else choice = Math.random() < 0.5 ? "attack1" : "attack2";
+      choice = Math.random() < 0.5 ? "attack1" : "attack2";
     } else if (canAttack1) choice = "attack1";
     else if (canAttack2) choice = "attack2";
 
@@ -250,223 +237,7 @@ export class Boss extends EnemyBase {
   }
 
   update(dt, player) {
-    if (this.isDead) {
-      this.isChasing = false;
-      if (!this.deathDone) {
-        this.frameTime += dt;
-        if (this.frameTime >= this.frameSpeed) {
-          this.frameTime = 0;
-          this.currentFrame = Math.min(
-            this.currentFrame + 1,
-            this.currentAnimation.length - 1
-          );
-          this.sprite = this.currentAnimation[this.currentFrame];
-          if (this.currentFrame === this.currentAnimation.length - 1) {
-            this.deathDone = true;
-          }
-        }
-      }
-
-      if (this.deathTimer > 0) {
-        this.deathTimer = Math.max(0, this.deathTimer - dt);
-      }
-
-      return;
-    }
-
-    if (this.recentSlideHit > 0) {
-      this.recentSlideHit = Math.max(0, this.recentSlideHit - dt);
-    }
-    if (this.chaseCooldown > 0) {
-      this.chaseCooldown = Math.max(0, this.chaseCooldown - dt);
-    }
-    if (this.attack1Cooldown > 0) {
-      this.attack1Cooldown = Math.max(0, this.attack1Cooldown - dt);
-    }
-    if (this.attack2Cooldown > 0) {
-      this.attack2Cooldown = Math.max(0, this.attack2Cooldown - dt);
-    }
-    if (this.runningCooldown > 0) {
-      this.runningCooldown = Math.max(0, this.runningCooldown - dt);
-    }
-    if (this.runningBurstTimer > 0) {
-      this.runningBurstTimer = Math.max(0, this.runningBurstTimer - dt);
-    }
-    if (this.jumpCooldownTimer > 0) {
-      this.jumpCooldownTimer = Math.max(0, this.jumpCooldownTimer - dt);
-    }
-
-    if (this.hitStun > 0) {
-      this.hitStun = Math.max(0, this.hitStun - dt);
-      this.isChasing = false;
-      this.isAttacking = false;
-      this.setAnimation(this.hurtFrames || this.idleFrames);
-      this.currentFrame = 0;
-      this.sprite = this.currentAnimation[0];
-      return;
-    }
-
-    if (this.hurtAnimTimer > 0) {
-      this.hurtAnimTimer = Math.max(0, this.hurtAnimTimer - dt);
-      this.isChasing = false;
-      this.isAttacking = false;
-      this.setAnimation(this.hurtFrames || this.idleFrames);
-      this.animate(dt);
-      const prevBottom = this.y + this.height;
-      this.applyApexGravity(dt);
-      const currBottom = this.y + this.height;
-      this.handlePlatformLanding(prevBottom, currBottom);
-      return;
-    }
-
-    const playerInfo = this.getPlayerDelta(player);
-    if (player?.isDead) {
-      this.isChasing = false;
-      this.isAttacking = false;
-    }
-
-    const wantJump =
-      this.onGround &&
-      !this.isAttacking &&
-      playerInfo &&
-      playerInfo.dy < -this.jumpHeightThreshold &&
-      Math.abs(playerInfo.dx) <= this.jumpHorizontalRange &&
-      this.jumpCooldownTimer <= 0;
-    if (wantJump) {
-      this.jump();
-      this.jumpCooldownTimer = this.jumpCooldown;
-      if (this.jumpFrames) this.setAnimation(this.jumpFrames);
-    }
-
-    if (this.isAttacking) {
-      this.attackTimer -= dt;
-      const atkFrames = this.activeAttackFrames || this.attackFrames;
-      this.setAnimation(atkFrames);
-      this.animate(dt);
-
-      this.tryDealAttackDamage(player, 0.2);
-
-      const prevBottom = this.y + this.height;
-      this.applyApexGravity(dt);
-      const currBottom = this.y + this.height;
-      this.handlePlatformLanding(prevBottom, currBottom);
-
-      if (this.attackTimer <= 0) {
-        this.isAttacking = false;
-        this.hasHitDuringAttack = false;
-        this.attackMoveSpeed = 0;
-        this.activeAttackFrames = null;
-        this.activeAttackRange = null;
-        this.activeHeightTolerance = null;
-      }
-
-      this.isChasing = false;
-      return;
-    }
-
-    if (this.tryStartAttack(playerInfo, player)) return;
-
-    const platform = this.getPlatformUnderfoot();
-    this.currentPlatform = platform || null;
-    const onLowestPlatform = this.isOnLowestPlatform();
-    const prevChasing = this.isChasing;
-    const canChase =
-      this.chaseCooldown <= 0 &&
-      player &&
-      !player.isDead &&
-      this.shouldChasePlayer(playerInfo, prevChasing);
-    const enemyCenterX = this.x + this.width / 2;
-    const ignoreEdgeBlock =
-      Number.isFinite(this.movementMinX) && Number.isFinite(this.movementMaxX);
-    const blockedByEdge =
-      !ignoreEdgeBlock &&
-      canChase &&
-      onLowestPlatform &&
-      platform &&
-      ((playerInfo.dx < 0 && enemyCenterX <= platform.left + this.edgeMargin) ||
-        (playerInfo.dx > 0 && enemyCenterX >= platform.right - this.edgeMargin));
-
-    this.isChasing = canChase && !blockedByEdge;
-
-    this.updateRunState();
-    let moveDir = this.lastMoveDir || this.facing || -1;
-    if (this.isChasing) {
-      const dx = playerInfo?.dx ?? 0;
-      const targetDir =
-        Math.abs(dx) < 5
-          ? this.lastMoveDir || this.facing || 1
-          : Math.sign(dx) || 1;
-      moveDir = targetDir;
-    } else {
-      this.patrol();
-      moveDir = this.patrolDir;
-    }
-
-    if (platform) {
-      moveDir = this.adjustForEdges(
-        moveDir,
-        dt,
-        platform,
-        onLowestPlatform,
-        prevChasing
-      );
-    }
-
-    const moveSpeed =
-      this.isChasing && this.isRunning ? this.runSpeed : this.speed;
-    const runDir = Math.sign(moveDir || this.facing || 1) || 1;
-    this.x += runDir * moveSpeed * dt;
-    this.facing = runDir;
-    this.lastMoveDir = runDir;
-
-    const prevBottom = this.y + this.height;
-    const wasOnGround = this.onGround;
-    this.applyApexGravity(dt);
-    const currBottom = this.y + this.height;
-    this.handlePlatformLanding(prevBottom, currBottom);
-    const landed = !wasOnGround && this.onGround;
-    this.wasOnGround = this.onGround;
-
-    if (landed) {
-      if (
-        player &&
-        !player.isDead &&
-        player.onGround &&
-        player.applyDizzy
-      ) {
-        player.applyDizzy();
-      }
-      this.world?.camera?.shake?.(0.25, 8);
-    }
-
-    if (
-      player &&
-      !player.isDead &&
-      !player.isSliding &&
-      player.invulnerableTimer <= 0 &&
-      this.collidesWith(player)
-    ) {
-      player.takeDamage?.(this.damage, { useDizzy: false });
-      if (typeof player.invulnerableTimer === "number") {
-        player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);
-      }
-    }
-
-    const walkAnim = this.isChasing ? this.runFrames : this.walkFrames;
-    if (this.hurtAnimTimer > 0 && this.hurtFrames) {
-      this.setAnimation(this.hurtFrames);
-      this.animate(dt);
-    } else {
-      this.setAnimation(walkAnim);
-      this.animate(dt);
-    }
-
-    if (Number.isFinite(this.movementMinX)) {
-      this.x = Math.max(this.x, this.movementMinX);
-    }
-    if (Number.isFinite(this.movementMaxX)) {
-      this.x = Math.min(this.x, this.movementMaxX);
-    }
+    updateBoss(this, dt, player);
   }
 
   collidesWith(obj) {
@@ -568,93 +339,6 @@ export class Boss extends EnemyBase {
   }
 
   render(ctx, camera) {
-    ctx.save();
-    if (this.facing === 1) {
-      ctx.scale(-1, 1);
-      ctx.drawImage(
-        this.sprite,
-        -(this.x - camera.x + this.width),
-        this.y + this.spriteYOffset - camera.y,
-        this.width,
-        this.height
-      );
-      if (DEBUG_BOSS_HITBOX) {
-        const box = this.getHitbox();
-        ctx.strokeStyle = "rgba(255, 0, 0, 0.7)";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(
-          -(box.x - camera.x + box.width),
-          box.y - camera.y,
-          box.width,
-          box.height
-        );
-      }
-    } else {
-      ctx.drawImage(
-        this.sprite,
-        this.x - camera.x,
-        this.y + this.spriteYOffset - camera.y,
-        this.width,
-        this.height
-      );
-      if (DEBUG_BOSS_HITBOX) {
-        const box = this.getHitbox();
-        ctx.strokeStyle = "rgba(255, 0, 0, 0.7)";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(
-          box.x - camera.x,
-          box.y - camera.y,
-          box.width,
-          box.height
-        );
-      }
-    }
-
-    ctx.restore();
-    if (!this.isDead && this.health > 0 && this.maxHealth > 0) {
-      const barW = this.width * 0.8;
-      const barH = 15;
-      const barX = this.x - camera.x + (this.width - barW) / 2;
-      const barY = this.y - camera.y - barH + 8;
-      const ratio = Math.max(0, Math.min(1, this.health / this.maxHealth));
-
-      ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
-      ctx.fillRect(barX - 2, barY - 2, barW + 4, barH + 4);
-
-      ctx.fillStyle = "rgba(200, 0, 0, 0.9)";
-      ctx.fillRect(barX, barY, barW * ratio, barH);
-
-      ctx.fillStyle = "rgba(255,255,2,0.9)";
-      ctx.font = "0.5rem ComixLoud, sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(
-        `${Math.ceil(this.health)}/${Math.ceil(this.maxHealth)}`,
-        barX + barW / 2,
-        barY + barH / 2
-      );
-    }
-
-    if (DEBUG_BOSS_HITBOX) {
-      const box = this.getHitbox();
-      ctx.save();
-      ctx.strokeStyle = "rgba(255, 0, 0, 0.7)";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(
-        box.x - camera.x,
-        box.y - camera.y,
-        box.width,
-        box.height
-      );
-      ctx.restore();
-    }
+    renderBoss(this, ctx, camera, { debugHitbox: DEBUG_BOSS_HITBOX });
   }
-}
-
-function loadFrames(path, prefix, count) {
-  return [...Array(count)].map((_, i) => {
-    const img = new Image();
-    img.src = `${path}${prefix}${String(i).padStart(3, "0")}.png`;
-    return img;
-  });
 }

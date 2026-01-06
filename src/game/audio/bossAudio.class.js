@@ -3,6 +3,7 @@ import {
   MUSIC_VOLUME,
   SFX_VOLUME,
 } from "../../config/config.js";
+import { cloneOrRestart, playWhenReady } from "./audioUtils.js";
 
 const BOSS_GONG = "./assets/music/boss-gong.mp3";
 const BOSS_MUSIC = "./assets/music/boss-music.mp3";
@@ -91,41 +92,16 @@ export class BossAudio {
       this.whimperCache.set(src, base);
     }
 
-    let audio = base;
-    if (!base.paused && !base.ended) {
-      audio = base.cloneNode(true);
-      audio.volume = this.sfxVolume;
-      audio.preload = "auto";
-      audio.autoplay = false;
-    } else {
-      base.currentTime = 0;
-    }
-
-    const start = () => audio.play().catch(() => {});
-    if (audio.readyState >= 2) start();
-    else {
-      audio.addEventListener("canplaythrough", start, { once: true });
-      audio.addEventListener("loadeddata", start, { once: true });
-    }
-    audio.load();
+    const audio = cloneOrRestart(base, { volume: this.sfxVolume });
+    playWhenReady(audio);
     this.bindUnlock();
   }
 
   playAttack2() {
     if (!this.attack2Src) return;
-    if (!this.attack2Audio) {
-      this.attack2Audio = this.createSfxAudio(this.attack2Src);
-    } else {
-      this.attack2Audio.currentTime = 0;
-    }
-    const audio = this.attack2Audio;
-    const start = () => audio.play().catch(() => {});
-    if (audio.readyState >= 2) start();
-    else {
-      audio.addEventListener("canplaythrough", start, { once: true });
-      audio.addEventListener("loadeddata", start, { once: true });
-    }
-    audio.load();
+    if (!this.attack2Audio) this.attack2Audio = this.createSfxAudio(this.attack2Src);
+    const audio = cloneOrRestart(this.attack2Audio, { volume: this.sfxVolume });
+    playWhenReady(audio);
     this.bindUnlock();
   }
 
@@ -133,22 +109,8 @@ export class BossAudio {
     if (!this.whooshSrc) return;
     const base =
       this.whooshAudio || (this.whooshAudio = this.createSfxAudio(this.whooshSrc));
-    let audio = base;
-    if (!base.paused && !base.ended) {
-      audio = base.cloneNode(true);
-      audio.volume = this.sfxVolume;
-      audio.preload = "auto";
-      audio.autoplay = false;
-    } else {
-      base.currentTime = 0;
-    }
-    const start = () => audio.play().catch(() => {});
-    if (audio.readyState >= 2) start();
-    else {
-      audio.addEventListener("canplaythrough", start, { once: true });
-      audio.addEventListener("loadeddata", start, { once: true });
-    }
-    audio.load();
+    const audio = cloneOrRestart(base, { volume: this.sfxVolume });
+    playWhenReady(audio);
     this.bindUnlock();
   }
 
@@ -163,14 +125,9 @@ export class BossAudio {
     } else {
       this.hitAudio.currentTime = 0;
     }
-    const audio = this.hitAudio;
-    const start = () => audio.play().catch(() => {});
-    if (audio.readyState >= 2) start();
-    else {
-      audio.addEventListener("canplaythrough", start, { once: true });
-      audio.addEventListener("loadeddata", start, { once: true });
-    }
-    audio.load();
+    const vol = Math.min(1, this.sfxVolume + 0.2);
+    const audio = cloneOrRestart(this.hitAudio, { volume: vol });
+    playWhenReady(audio);
     this.bindUnlock();
   }
 
@@ -179,10 +136,7 @@ export class BossAudio {
     this.isPlaying = true;
 
     this.gongAudio = this.createAudio(this.gongSrc, false, this.volume);
-    const startGong = () => this.gongAudio?.play().catch(() => {});
-    this.gongAudio.addEventListener("canplaythrough", startGong, { once: true });
-    this.gongAudio.addEventListener("loadeddata", startGong, { once: true });
-    this.gongAudio.load();
+    playWhenReady(this.gongAudio);
     this.bindUnlock();
 
     const fadeStartMs = Math.max(
@@ -207,13 +161,8 @@ export class BossAudio {
     this.musicAudio = this.createAudio(this.musicSrc, false, 0);
     const music = this.musicAudio;
     music.playbackRate = this.playbackRate;
-    const startMusic = () => music.play().catch(() => {});
-    if (music.readyState >= 2) startMusic();
-    else {
-      music.addEventListener("canplaythrough", startMusic, { once: true });
-      music.addEventListener("loadeddata", startMusic, { once: true });
-    }
     this.attachMusicLoopWatcher(music);
+    playWhenReady(music);
 
     const durationMs = Math.max(100, this.fadeDuration * 1000);
     const stepMs = 50;
@@ -345,14 +294,9 @@ export class BossAudio {
     this.nextMusicAudio = this.createAudio(this.musicSrc, false, 0);
     const next = this.nextMusicAudio;
     next.playbackRate = this.playbackRate;
-    const startNext = () => next.play().catch(() => {});
-    if (next.readyState >= 2) startNext();
-    else {
-      next.addEventListener("canplaythrough", startNext, { once: true });
-      next.addEventListener("loadeddata", startNext, { once: true });
-    }
     this.attachMusicLoopWatcher(next);
     this.beginMusicCrossfade(current, next);
+    playWhenReady(next);
   }
 
   beginMusicCrossfade(current, next) {
@@ -422,21 +366,9 @@ export class BossAudio {
         )
       : null;
     this.howlEndAudio = howl;
-    const startDefeat = () => defeat.play().catch(() => {});
-    if (defeat.readyState >= 2) startDefeat();
-    else {
-      defeat.addEventListener("canplaythrough", startDefeat, { once: true });
-      defeat.addEventListener("loadeddata", startDefeat, { once: true });
-    }
-    defeat.load();
+    playWhenReady(defeat);
     if (howl) {
-      const startHowl = () => howl.play().catch(() => {});
-      if (howl.readyState >= 2) startHowl();
-      else {
-        howl.addEventListener("canplaythrough", startHowl, { once: true });
-        howl.addEventListener("loadeddata", startHowl, { once: true });
-      }
-      howl.load();
+      playWhenReady(howl);
     }
     this.bindUnlock();
 

@@ -1,48 +1,30 @@
-import { Input } from "./engine/input/input.class.js";
 import { getPaused, initGame, setPaused } from "./core/game.class.js";
+import { installAudioTracking } from "./app/audioTracking.js";
 
-const audioRegistry = new Set();
-window.__isMuted = true;
-const OriginalAudio = window.Audio;
-const originalCloneNode = OriginalAudio.prototype.cloneNode;
-
-function createTrackedAudio(...args) {
-  const audio = new OriginalAudio(...args);
-  audioRegistry.add(audio);
-  if (window.__isMuted === true) audio.muted = true;
-  return audio;
-}
-
-createTrackedAudio.prototype = OriginalAudio.prototype;
-Object.setPrototypeOf(createTrackedAudio, OriginalAudio);
-window.Audio = createTrackedAudio;
-if (originalCloneNode) {
-  OriginalAudio.prototype.cloneNode = function (...args) {
-    const clone = originalCloneNode.apply(this, args);
-    audioRegistry.add(clone);
-    if (window.__isMuted === true) clone.muted = true;
-    return clone;
-  };
-}
-
-function setAllAudioMuted(muted) {
-  audioRegistry.forEach((audio) => {
-    if (!audio) return;
-    audio.muted = muted;
-  });
-}
+const audioTracking = installAudioTracking({ initiallyMuted: true });
 
 function setupMenuToggle() {
   const toggle = document.getElementById("menu-toggle");
-  if (!toggle) return;
+  const hasButton = !!toggle;
 
   const setMenuOpen = (open) => {
     setPaused(open);
-    toggle.setAttribute("aria-pressed", String(open));
-    toggle.setAttribute("aria-label", open ? "Menu schliessen" : "Menu oeffnen");
+    if (hasButton) {
+      toggle.setAttribute("aria-pressed", String(open));
+      toggle.setAttribute("aria-label", open ? "Menu schliessen" : "Menu oeffnen");
+    }
   };
 
-  toggle.addEventListener("click", () => setMenuOpen(!getPaused()));
+  if (hasButton) {
+    toggle.addEventListener("click", () => setMenuOpen(!getPaused()));
+  }
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || event.repeat) return;
+    event.preventDefault();
+    setMenuOpen(!getPaused());
+  });
+
   setMenuOpen(false);
 }
 
@@ -54,8 +36,7 @@ function setupSoundToggle() {
   if (!toggle || !icon || !label) return;
 
   const setMuted = (muted) => {
-    window.__isMuted = muted;
-    setAllAudioMuted(muted);
+    audioTracking.setMuted(muted);
     toggle.setAttribute("aria-pressed", String(muted));
     toggle.setAttribute("aria-label", muted ? "Sound einschalten" : "Sound ausschalten");
     const src = muted
@@ -69,13 +50,12 @@ function setupSoundToggle() {
     label.textContent = muted ? "sound: on" : "sound: off";
   };
 
-  toggle.addEventListener("click", () => setMuted(!window.__isMuted));
+  toggle.addEventListener("click", () => setMuted(!audioTracking.getMuted()));
   toggle.addEventListener("mouseenter", () => {
-    const hoverSrc =
-      window.__isMuted === true
+    const hoverSrc = audioTracking.getMuted()
         ? "./assets/icons/sound-on-100.png"
         : "./assets/icons/sound-off-100.png";
-    const hoverAlt = window.__isMuted === true ? "Sound an" : "Sound aus";
+    const hoverAlt = audioTracking.getMuted() ? "Sound an" : "Sound aus";
     icon.src = hoverSrc;
     icon.alt = hoverAlt;
   });
@@ -86,7 +66,6 @@ function setupSoundToggle() {
   setMuted(true);
 }
 
-window.input = new Input();
 initGame();
 setupSoundToggle();
 setupMenuToggle();

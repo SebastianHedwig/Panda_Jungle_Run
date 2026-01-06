@@ -5,6 +5,7 @@ import {
   ENEMY2_ATTACK2_DAMAGE,
   ENEMY2_HEALTH,
 } from "../../../config/config.js";
+import { loadFrames } from "../../../core/assets/assetLoader.js";
 
 export function loadEnemy2Sprites() {
   const base = "assets/img/Enemies/Enemy_Sprites/Character-2/";
@@ -75,12 +76,4 @@ export class Enemy2 extends Enemy1 {
       ? this.world.addCollectables(coins)
       : this.world.collectables.push(...coins);
   }
-}
-
-function loadFrames(path, prefix, count) {
-  return [...Array(count)].map((_, i) => {
-    const img = new Image();
-    img.src = `${path}${prefix}${String(i).padStart(3, "0")}.png`;
-    return img;
-  });
 }
