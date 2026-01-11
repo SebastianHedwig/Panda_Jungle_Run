@@ -10,12 +10,10 @@
     
 </head>
 <body>
-    <h1>Panda Jungle Run</h1>
-
     <div id="game-container">
         <canvas id="game" class="canvas"></canvas>
 
-        <div class="hud-container">
+        <div class="hud-container hud-container-left">
             <button id="menu-toggle" class="hud-button menu-toggle" type="button" aria-label="Menu">
                 <img src="./assets/icons/menu-100.png" alt="Menu">
                 <span class="hud-label">menu</span>
@@ -23,6 +21,13 @@
             <button id="sound-toggle" class="hud-button sound-toggle" type="button" aria-pressed="false" aria-label="Sound ausschalten">
                 <img id="sound-icon" src="./assets/icons/sound-on-100.png" alt="Sound an">
                 <span id="sound-label" class="hud-label">sound: off</span>
+            </button>
+        </div>
+
+        <div class="hud-container hud-container-right">
+            <button id="fullscreen-toggle" class="hud-button fullscreen-toggle" type="button" aria-pressed="false" aria-label="Fullscreen">
+                <img id="fullscreen-icon" src="./assets/icons/fullscreen-on.png" alt="Fullscreen">
+                <span id="fullscreen-label" class="hud-label">fullscreen</span>
             </button>
         </div>
         

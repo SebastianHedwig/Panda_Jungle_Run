@@ -1,71 +1,17 @@
 import { getPaused, initGame, setPaused } from "./core/game.class.js";
+import { MUTE_TOGGLE_GAMESTART, SET_FULLSCREEN } from "./config/config.js";
 import { installAudioTracking } from "./app/audioTracking.js";
+import { setupSoundToggle } from "./app/ui/soundToggle.js";
+import { setupMenuToggle } from "./app/ui/menuToggle.js";
+import { setupFullscreenToggle, applyAutoFullscreen } from "./app/ui/fullscreenToggle.js";
+import { setupStartScreen } from "./app/start/startScreen.js";
 
-const audioTracking = installAudioTracking({ initiallyMuted: true });
+const audioTracking = installAudioTracking({ initiallyMuted: MUTE_TOGGLE_GAMESTART });
 
-function setupMenuToggle() {
-  const toggle = document.getElementById("menu-toggle");
-  const hasButton = !!toggle;
+setupSoundToggle({ audioTracking, initialMuted: MUTE_TOGGLE_GAMESTART });
+setupMenuToggle({ getPaused, setPaused });
+setupFullscreenToggle();
+applyAutoFullscreen({ enabled: SET_FULLSCREEN });
+window.addEventListener("resize", () => applyAutoFullscreen({ enabled: SET_FULLSCREEN }));
 
-  const setMenuOpen = (open) => {
-    setPaused(open);
-    if (hasButton) {
-      toggle.setAttribute("aria-pressed", String(open));
-      toggle.setAttribute("aria-label", open ? "Menu schliessen" : "Menu oeffnen");
-    }
-  };
-
-  if (hasButton) {
-    toggle.addEventListener("click", () => setMenuOpen(!getPaused()));
-  }
-
-  window.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape" || event.repeat) return;
-    event.preventDefault();
-    setMenuOpen(!getPaused());
-  });
-
-  setMenuOpen(false);
-}
-
-
-function setupSoundToggle() {
-  const toggle = document.getElementById("sound-toggle");
-  const icon = document.getElementById("sound-icon");
-  const label = document.getElementById("sound-label");
-  if (!toggle || !icon || !label) return;
-
-  const setMuted = (muted) => {
-    audioTracking.setMuted(muted);
-    toggle.setAttribute("aria-pressed", String(muted));
-    toggle.setAttribute("aria-label", muted ? "Sound einschalten" : "Sound ausschalten");
-    const src = muted
-      ? "./assets/icons/sound-off-100.png"
-      : "./assets/icons/sound-on-100.png";
-    const alt = muted ? "Sound aus" : "Sound an";
-    icon.src = src;
-    icon.alt = alt;
-    icon.dataset.currentSrc = src;
-    icon.dataset.currentAlt = alt;
-    label.textContent = muted ? "sound: on" : "sound: off";
-  };
-
-  toggle.addEventListener("click", () => setMuted(!audioTracking.getMuted()));
-  toggle.addEventListener("mouseenter", () => {
-    const hoverSrc = audioTracking.getMuted()
-        ? "./assets/icons/sound-on-100.png"
-        : "./assets/icons/sound-off-100.png";
-    const hoverAlt = audioTracking.getMuted() ? "Sound an" : "Sound aus";
-    icon.src = hoverSrc;
-    icon.alt = hoverAlt;
-  });
-  toggle.addEventListener("mouseleave", () => {
-    icon.src = icon.dataset.currentSrc || icon.src;
-    icon.alt = icon.dataset.currentAlt || icon.alt;
-  });
-  setMuted(true);
-}
-
-initGame();
-setupSoundToggle();
-setupMenuToggle();
+setupStartScreen({ onStart: initGame, preloadMuted: MUTE_TOGGLE_GAMESTART });

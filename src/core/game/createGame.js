@@ -54,10 +54,11 @@ export function createGame({ canvasId = "game" } = {}) {
     world = new World(canvas);
     camera = new Camera(canvas, WORLD_WIDTH);
     background = new Background(canvas);
-    audio = new GameAudio();
+    audio = window.__preloadedGameAudio ?? new GameAudio();
+    window.__preloadedGameAudio = null;
     world.audio = audio;
 
-    const musicReadyPromise = audio.init().then(() => audio.play());
+    const musicReadyPromise = (audio.ready ? Promise.resolve(true) : audio.init()).then(() => audio.play());
     requestAnimationFrame(renderLoading);
 
     const assets = createGameAssets();
@@ -233,4 +234,3 @@ export function createGame({ canvasId = "game" } = {}) {
 
   return { init, setPaused, getPaused };
 }
-
