@@ -1,7 +1,7 @@
 import { EnemyBase, DEBUG_ENEMY_HITBOX } from "./enemyBase.class.js";
 import { CollectableItem } from "../../items/collectableItem.class.js";
 import { ENEMY1_DAMAGE, ENEMY1_HEALTH } from "../../../config/config.js";
-import { loadFrames } from "../../../core/assets/assetLoader.js";
+import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
 export function loadEnemy1Sprites() {
   const base = "assets/img/Enemies/Enemy_Sprites/Character-1/";

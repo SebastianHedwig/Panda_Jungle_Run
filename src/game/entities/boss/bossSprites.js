@@ -1,4 +1,4 @@
-import { loadFrames } from "../../../core/assets/assetLoader.js";
+import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
 export function loadBossSprites() {
   const base = "assets/img/Boss/Boss_Sprites/";

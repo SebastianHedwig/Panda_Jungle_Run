@@ -1,4 +1,4 @@
-import { loadFrames, loadImage } from "../../assets/assetLoader.js";
+import { loadFrames, loadImage } from "./assetLoader.js";
 import { loadEnemy1Sprites } from "../../../game/entities/enemies/enemy1.class.js";
 import { loadEnemy2Sprites } from "../../../game/entities/enemies/enemy2.class.js";
 import { loadEnemy3Sprites } from "../../../game/entities/enemies/enemy3.class.js";
@@ -64,6 +64,7 @@ export function createGameAssets() {
   const hudCoinImg = loadImage("./assets/img/Coin/Coin_0000000.png");
   const hudGunImg = loadImage("./assets/img/Character/Spriter_files/gun.png");
   const menuBgImg = loadImage("./assets/img/menu_BG.png");
+  const menuUiImg = loadImage("./assets/img/Gui/Game-UI.png");
 
   const images = [
     ...bgImages,
@@ -105,6 +106,7 @@ export function createGameAssets() {
     hudCoinImg,
     hudGunImg,
     menuBgImg,
+    menuUiImg,
   ];
 
   return {
@@ -116,6 +118,7 @@ export function createGameAssets() {
     hudCoinImg,
     hudGunImg,
     menuBgImg,
+    menuUiImg,
     images,
   };
 }

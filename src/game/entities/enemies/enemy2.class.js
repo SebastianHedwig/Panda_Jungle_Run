@@ -5,7 +5,7 @@ import {
   ENEMY2_ATTACK2_DAMAGE,
   ENEMY2_HEALTH,
 } from "../../../config/config.js";
-import { loadFrames } from "../../../core/assets/assetLoader.js";
+import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
 export function loadEnemy2Sprites() {
   const base = "assets/img/Enemies/Enemy_Sprites/Character-2/";

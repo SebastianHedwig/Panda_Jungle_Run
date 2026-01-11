@@ -7,7 +7,7 @@ import {
   ENEMY3_HEALTH,
   ENEMY3_SLIDE_DAMAGE,
 } from "../../../config/config.js";
-import { loadFrames } from "../../../core/assets/assetLoader.js";
+import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
 export function loadEnemy3Sprites() {
   const base = "assets/img/Enemies/Enemy_Sprites/Character-3/";

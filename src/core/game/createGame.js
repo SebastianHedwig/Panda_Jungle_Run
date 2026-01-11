@@ -24,10 +24,10 @@ import {
   LEVEL1_HEART_COUNT,
   WORLD_WIDTH,
 } from "../../config/config.js";
-import { waitForImage } from "../assets/assetLoader.js";
+import { waitForImage } from "./assets/assetLoader.js";
 import { GameAudio } from "../../game/audio/gameAudio.class.js";
 import { Hud } from "../../game/ui/hud.class.js";
-import { Menu } from "../../game/ui/menu.class.js";
+import { MenuOverlay } from "../../app/ui/overlay/menuOverlay.class.js";
 import { BossDirector } from "../../game/directors/bossDirector.class.js";
 import { createGameAssets } from "./assets/createGameAssets.js";
 
@@ -39,6 +39,7 @@ export function createGame({ canvasId = "game" } = {}) {
   let isLoading = true;
   let loadingAnimTime = 0;
   let isPaused = false;
+  let menuPointer = null;
 
   let hud;
   let menu;
@@ -69,10 +70,53 @@ export function createGame({ canvasId = "game" } = {}) {
 
   function setPaused(paused) {
     isPaused = !!paused;
+    if (!isPaused) {
+      menuPointer = null;
+      menu?.clearPointer?.();
+    }
   }
 
   function getPaused() {
     return isPaused;
+  }
+
+  function setMenuOpen(open) {
+    setPaused(open);
+    const toggle = document.getElementById("menu-toggle");
+    if (toggle) {
+      toggle.setAttribute("aria-pressed", String(open));
+      toggle.setAttribute("aria-label", open ? "Menu schliessen" : "Menu oeffnen");
+    }
+  }
+
+  function updateMenuPointer(event) {
+    if (!canvas || !menu) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
+    const y = ((event.clientY - rect.top) / rect.height) * canvas.height;
+    menuPointer = { x, y };
+    if (isPaused) menu.setPointer?.(x, y);
+  }
+
+  function clearMenuPointer() {
+    menuPointer = null;
+    menu?.clearPointer?.();
+  }
+
+  function handleMenuClick(event) {
+    if (!isPaused || !menu) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
+    const y = ((event.clientY - rect.top) / rect.height) * canvas.height;
+    if (menu.handleClick?.(x, y)) {
+      setMenuOpen(false);
+      event.stopImmediatePropagation?.();
+      event.preventDefault?.();
+    }
+  }
+
+  function handleQuit() {
+    window.location.reload();
   }
 
   function start(assets) {
@@ -136,10 +180,17 @@ export function createGame({ canvasId = "game" } = {}) {
     });
 
     hud = new Hud({ coinImage: assets.hudCoinImg, gunImage: assets.hudGunImg });
-    menu = new Menu({ backgroundImage: assets.menuBgImg });
+    menu = new MenuOverlay({
+      backgroundImage: assets.menuBgImg,
+      uiImage: assets.menuUiImg,
+      onQuit: handleQuit,
+    });
 
     audio?.play();
     isLoading = false;
+    canvas.addEventListener("mousemove", updateMenuPointer);
+    canvas.addEventListener("mouseleave", clearMenuPointer);
+    canvas.addEventListener("click", handleMenuClick, true);
     requestAnimationFrame(loop);
   }
 
@@ -202,7 +253,10 @@ export function createGame({ canvasId = "game" } = {}) {
     world.renderHitEffects(ctx, camera);
 
     hud?.render(ctx, canvas, camera, player, bossDirector?.getBoss());
-    if (isPaused) menu?.render(ctx, canvas);
+    if (isPaused) {
+      if (menuPointer) menu.setPointer?.(menuPointer.x, menuPointer.y);
+      menu?.render(ctx, canvas);
+    }
   }
 
   function renderLoading(t) {
