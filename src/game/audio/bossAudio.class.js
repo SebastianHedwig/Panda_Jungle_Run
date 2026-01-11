@@ -1,5 +1,6 @@
 import {
   BOSS_MUSIC_LOOP_CUT,
+  BOSS_MUSIC_PLAYBACK_RATE,
   MUSIC_VOLUME,
   SFX_VOLUME,
 } from "../../config/config.js";
@@ -31,8 +32,8 @@ export class BossAudio {
     sfxVolume = SFX_VOLUME,
     gongPlayDuration = 3,
     fadeDuration = 1,
-    musicLoopCut = BOSS_MUSIC_LOOP_CUT ?? 1,
-    playbackRate = 1.2,
+    musicLoopCut = BOSS_MUSIC_LOOP_CUT,
+    playbackRate = BOSS_MUSIC_PLAYBACK_RATE,
   } = {}) {
     this.gongSrc = gongSrc;
     this.musicSrc = musicSrc;
@@ -78,6 +79,12 @@ export class BossAudio {
 
   createSfxAudio(src) {
     return this.createAudio(src, false, this.sfxVolume);
+  }
+
+  createMusicAudio(volume = 0) {
+    const el = this.createAudio(this.musicSrc, false, volume);
+    el.playbackRate = this.playbackRate;
+    return el;
   }
 
   playWhimper() {
@@ -158,11 +165,14 @@ export class BossAudio {
 
   startFadeToMusic() {
     if (this.musicAudio) return;
-    this.musicAudio = this.createAudio(this.musicSrc, false, 0);
+    this.musicAudio = this.createMusicAudio(0);
     const music = this.musicAudio;
-    music.playbackRate = this.playbackRate;
     this.attachMusicLoopWatcher(music);
-    playWhenReady(music);
+    playWhenReady(music, {
+      beforePlay: () => {
+        music.playbackRate = this.playbackRate;
+      },
+    });
 
     const durationMs = Math.max(100, this.fadeDuration * 1000);
     const stepMs = 50;
@@ -291,12 +301,15 @@ export class BossAudio {
   }
 
   startNextMusicLoop(current) {
-    this.nextMusicAudio = this.createAudio(this.musicSrc, false, 0);
+    this.nextMusicAudio = this.createMusicAudio(0);
     const next = this.nextMusicAudio;
-    next.playbackRate = this.playbackRate;
     this.attachMusicLoopWatcher(next);
     this.beginMusicCrossfade(current, next);
-    playWhenReady(next);
+    playWhenReady(next, {
+      beforePlay: () => {
+        next.playbackRate = this.playbackRate;
+      },
+    });
   }
 
   beginMusicCrossfade(current, next) {

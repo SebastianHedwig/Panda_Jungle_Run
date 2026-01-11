@@ -16,6 +16,7 @@ export const MUSIC_LOOP_CUT = 4;
 export const MUSIC_VOLUME = 0.2;
 export const SFX_VOLUME = 0.2;
 export const BOSS_MUSIC_LOOP_CUT = 1;
+export const BOSS_MUSIC_PLAYBACK_RATE = 1.2;
 
 export const LEVEL1_COIN_COUNT = 30;
 export const LEVEL1_COIN_RATIO_ABOVE = 0.5;

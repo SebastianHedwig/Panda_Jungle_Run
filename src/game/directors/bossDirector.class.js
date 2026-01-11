@@ -10,6 +10,7 @@ import {
 } from "../../config/config.js";
 import { Boss } from "../entities/boss/boss.class.js";
 import { BossAudio } from "../audio/bossAudio.class.js";
+import { BOSS_MUSIC_PLAYBACK_RATE } from "../../config/config.js";
 
 export class BossDirector {
   constructor({
@@ -87,7 +88,7 @@ export class BossDirector {
     this.bossSpawned = true;
 
     this.gameAudio?.stop?.();
-    this.bossAudioPlayer = new BossAudio();
+    this.bossAudioPlayer = new BossAudio({ playbackRate: BOSS_MUSIC_PLAYBACK_RATE });
     this.bossAudioPlayer.play();
     this.world.bossAudioPlayer = this.bossAudioPlayer;
 
