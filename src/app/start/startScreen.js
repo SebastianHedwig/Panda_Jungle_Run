@@ -10,9 +10,15 @@ export function setupStartScreen({
   const ctx = canvas?.getContext("2d");
   if (!canvas || !ctx) return;
 
+  const menuToggle = document.getElementById("menu-toggle");
+  const menuLabel = menuToggle?.querySelector(".hud-label");
+  const defaultMenuLabel = menuLabel?.textContent ?? "menu";
+  if (menuLabel) menuLabel.textContent = "settings";
+
   let startScreenActive = true;
   let startButtonBounds = null;
   let startButtonHover = false;
+  let settingsOpen = false;
   let startAssets = null;
   let preloadedGameAudio = null;
 
@@ -95,9 +101,28 @@ export function setupStartScreen({
     ctx.restore();
 
     startButtonBounds = { x: drawX, y: drawY, w: btnW, h: btnH };
+
+    if (settingsOpen && startAssets.menuBg) {
+      const img = startAssets.menuBg;
+      ctx.save();
+      ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const maxW = canvas.width * 0.9;
+      const maxH = canvas.height * 0.9;
+      const scale = Math.min(maxW / img.naturalWidth, maxH / img.naturalHeight, 2);
+      const drawW = img.naturalWidth * scale;
+      const drawH = img.naturalHeight * scale;
+      const x = (canvas.width - drawW) / 2;
+      const y = (canvas.height - drawH) / 2;
+
+      ctx.drawImage(img, x, y, drawW, drawH);
+      ctx.restore();
+    }
   };
 
   const handleClick = (event) => {
+    if (settingsOpen) return;
     if (!startScreenActive || !startButtonBounds) return;
     const rect = canvas.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
@@ -109,7 +134,10 @@ export function setupStartScreen({
       canvas.removeEventListener("click", handleClick);
       canvas.removeEventListener("mousemove", handleMove);
       canvas.removeEventListener("mouseleave", handleLeave);
+      menuToggle?.removeEventListener("click", handleSettingsClick, true);
+      settingsOpen = false;
       canvas.style.cursor = "default";
+      if (menuLabel) menuLabel.textContent = defaultMenuLabel;
       if (preloadedGameAudio?.audio) {
         preloadedGameAudio.audio.pause();
         preloadedGameAudio.audio.currentTime = 0;
@@ -119,6 +147,7 @@ export function setupStartScreen({
   };
 
   const handleMove = (event) => {
+    if (settingsOpen) return;
     if (!startScreenActive || !startButtonBounds) return;
     const rect = canvas.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
@@ -143,14 +172,25 @@ export function setupStartScreen({
     canvas.style.cursor = "default";
   };
 
+  const handleSettingsClick = (event) => {
+    if (!startScreenActive) return;
+    event?.preventDefault();
+    event?.stopImmediatePropagation();
+    settingsOpen = !settingsOpen;
+    startButtonHover = false;
+    canvas.style.cursor = "default";
+    drawStartScreen();
+  };
+
   preloadStartAudio();
   Promise.all([
     loadImage("./assets/img/canvas-start-game_BG.jpg"),
     loadImage("./assets/img/Gui/Game-UI.png"),
+    loadImage("./assets/img/menu_BG.png"),
     loadFont("ComixLoud", "4rem"),
   ])
-    .then(([bg, ui]) => {
-      startAssets = { bg, ui };
+    .then(([bg, ui, menuBg, _fontLoaded]) => {
+      startAssets = { bg, ui, menuBg };
       drawStartScreen();
     })
     .catch((err) => console.error("Failed to load start assets", err));
@@ -158,5 +198,6 @@ export function setupStartScreen({
   canvas.addEventListener("click", handleClick);
   canvas.addEventListener("mousemove", handleMove);
   canvas.addEventListener("mouseleave", handleLeave);
+  menuToggle?.addEventListener("click", handleSettingsClick, true);
 }
 
