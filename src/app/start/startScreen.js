@@ -1,6 +1,7 @@
 import { GAME_HEIGHT, GAME_WIDTH, MUTE_TOGGLE_GAMESTART } from "../../config/config.js";
 import { GameAudio } from "../../game/audio/gameAudio.class.js";
 import { ControlsOverlay } from "../ui/overlay/controlsOverlay.class.js";
+import { loadImage, waitForImage } from "../../core/game/assets/assetLoader.js";
 
 export function setupStartScreen({
   canvasId = "game",
@@ -48,12 +49,10 @@ export function setupStartScreen({
   let startAssets = null;
   let preloadedGameAudio = null;
 
-  const loadImage = (src) =>
-    new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = src;
+  const loadStartImage = (src) =>
+    waitForImage(loadImage(src)).then(({ ok, img }) => {
+      if (!ok) throw new Error(`Failed to load ${src}`);
+      return img;
     });
 
   const loadFont = (family, descriptor = "1rem") => {
@@ -241,9 +240,9 @@ export function setupStartScreen({
 
   preloadStartAudio();
   Promise.all([
-    loadImage("./assets/img/canvas-start-game_BG.jpg"),
-    loadImage("./assets/img/Gui/Game-UI.png"),
-    loadImage("./assets/img/menu_BG.png"),
+    loadStartImage("./assets/img/canvas-start-game_BG.jpg"),
+    loadStartImage("./assets/img/Gui/Game-UI.png"),
+    loadStartImage("./assets/img/menu_BG.png"),
     loadFont("ComixLoud", "4rem"),
   ])
     .then(([bg, ui, menuBg, _fontLoaded]) => {

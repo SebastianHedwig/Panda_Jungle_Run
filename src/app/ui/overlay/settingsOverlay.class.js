@@ -1,7 +1,7 @@
 import { OverlayRenderer } from "./overlayBase.class.js";
 import { ControlsOverlay } from "./controlsOverlay.class.js";
 
-export class MenuOverlay {
+export class SettingsOverlay {
   constructor({ backgroundImage = null, uiImage = null, onQuit = null } = {}) {
     this.renderer = new OverlayRenderer();
     this.controlsOverlay = new ControlsOverlay({ showBackButton: true });

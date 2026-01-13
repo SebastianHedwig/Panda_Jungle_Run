@@ -27,7 +27,7 @@ import {
 import { waitForImage } from "./assets/assetLoader.js";
 import { GameAudio } from "../../game/audio/gameAudio.class.js";
 import { Hud } from "../../game/ui/hud.class.js";
-import { MenuOverlay } from "../../app/ui/overlay/menuOverlay.class.js";
+import { SettingsOverlay } from "../../app/ui/overlay/settingsOverlay.class.js";
 import { BossDirector } from "../../game/directors/bossDirector.class.js";
 import { GameOverOverlay } from "../../app/ui/overlay/gameOverOverlay.class.js";
 import { GameWonOverlay } from "../../app/ui/overlay/gameWonOverlay.class.js";
@@ -86,7 +86,7 @@ export function createGame({ canvasId = "game" } = {}) {
     return isPaused;
   }
 
-  function setMenuOpen(open) {
+  function setSettingsOpen(open) {
     setPaused(open);
     const toggle = document.getElementById("menu-toggle");
     if (toggle) {
@@ -95,7 +95,7 @@ export function createGame({ canvasId = "game" } = {}) {
     }
   }
 
-  function updateMenuPointer(event) {
+  function updateSettingsPointer(event) {
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
@@ -112,7 +112,7 @@ export function createGame({ canvasId = "game" } = {}) {
     if (isPaused) menu?.setPointer?.(x, y);
   }
 
-  function clearMenuPointer() {
+  function clearSettingsPointer() {
     menuPointer = null;
     menu?.clearPointer?.();
     gameOverOverlay?.clearPointer?.();
@@ -137,7 +137,7 @@ export function createGame({ canvasId = "game" } = {}) {
     }
     if (!isPaused || !menu) return;
     if (menu.handleClick?.(x, y)) {
-      setMenuOpen(false);
+      setSettingsOpen(false);
       event.stopImmediatePropagation?.();
       event.preventDefault?.();
     }
@@ -151,7 +151,7 @@ export function createGame({ canvasId = "game" } = {}) {
     try {
       window.localStorage?.setItem?.("panda_autostart", "1");
     } catch (_err) {
-      /* ignore storage errors */
+      // ignore
     }
     window.location.reload();
   }
@@ -223,7 +223,7 @@ export function createGame({ canvasId = "game" } = {}) {
     });
 
     hud = new Hud({ coinImage: assets.hudCoinImg, gunImage: assets.hudGunImg });
-    menu = new MenuOverlay({
+    menu = new SettingsOverlay({
       backgroundImage: assets.menuBgImg,
       uiImage: assets.menuUiImg,
       onQuit: handleQuit,
@@ -234,8 +234,8 @@ export function createGame({ canvasId = "game" } = {}) {
 
     audio?.play();
     isLoading = false;
-    canvas.addEventListener("mousemove", updateMenuPointer);
-    canvas.addEventListener("mouseleave", clearMenuPointer);
+    canvas.addEventListener("mousemove", updateSettingsPointer);
+    canvas.addEventListener("mouseleave", clearSettingsPointer);
     canvas.addEventListener("click", handleMenuClick, true);
     requestAnimationFrame(loop);
   }
