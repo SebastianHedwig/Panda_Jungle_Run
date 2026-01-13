@@ -88,7 +88,7 @@ export function createGame({ canvasId = "game" } = {}) {
 
   function setSettingsOpen(open) {
     setPaused(open);
-    const toggle = document.getElementById("menu-toggle");
+    const toggle = document.getElementById("settings-toggle");
     if (toggle) {
       toggle.setAttribute("aria-pressed", String(open));
       toggle.setAttribute("aria-label", open ? "Menu schliessen" : "Menu oeffnen");

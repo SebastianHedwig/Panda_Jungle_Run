@@ -27,17 +27,17 @@ export function setupStartScreen({
     return;
   }
 
-  const menuToggle = document.getElementById("menu-toggle");
-  const menuLabel = menuToggle?.querySelector(".hud-label");
-  const menuIcon = menuToggle?.querySelector("img");
-  const defaultMenuLabel = menuLabel?.textContent ?? "settings";
-  const menuIconMenuSrc = "./assets/icons/menu-100.png";
-  const menuIconControllerSrc = "./assets/icons/controler.png";
-  if (menuLabel) menuLabel.textContent = "controls";
-  menuToggle?.classList.remove("menu-toggle--spin");
-  if (menuIcon) {
-    menuIcon.src = menuIconControllerSrc;
-    menuIcon.alt = "Settings";
+  const settingsToggle = document.getElementById("settings-toggle");
+  const settingsLabel = settingsToggle?.querySelector(".hud-label");
+  const settingsIcon = settingsToggle?.querySelector("img");
+  const defaultSettingsLabel = settingsLabel?.textContent ?? "settings";
+  const settingsIconDefaultSrc = "./assets/icons/menu-100.png";
+  const settingsIconControllerSrc = "./assets/icons/controler.png";
+  if (settingsLabel) settingsLabel.textContent = "controls";
+  settingsToggle?.classList.remove("settings-toggle--spin");
+  if (settingsIcon) {
+    settingsIcon.src = settingsIconControllerSrc;
+    settingsIcon.alt = "Settings";
   }
 
   const controlsOverlay = new ControlsOverlay({ showBackButton: false });
@@ -157,16 +157,16 @@ export function setupStartScreen({
       canvas.removeEventListener("click", handleClick);
       canvas.removeEventListener("mousemove", handleMove);
       canvas.removeEventListener("mouseleave", handleLeave);
-      menuToggle?.removeEventListener("click", handleSettingsClick, true);
+      settingsToggle?.removeEventListener("click", handleSettingsClick, true);
       window.removeEventListener("keydown", handleKeyDown, true);
       settingsOpen = false;
       canvas.style.cursor = "default";
-      if (menuLabel) menuLabel.textContent = defaultMenuLabel;
-      if (menuIcon) {
-        menuIcon.src = menuIconMenuSrc;
-        menuIcon.alt = "Settings";
+      if (settingsLabel) settingsLabel.textContent = defaultSettingsLabel;
+      if (settingsIcon) {
+        settingsIcon.src = settingsIconDefaultSrc;
+        settingsIcon.alt = "Settings";
       }
-      menuToggle?.classList.add("menu-toggle--spin");
+      settingsToggle?.classList.add("settings-toggle--spin");
       if (preloadedGameAudio?.audio) {
         preloadedGameAudio.audio.pause();
         preloadedGameAudio.audio.currentTime = 0;
@@ -254,6 +254,6 @@ export function setupStartScreen({
   canvas.addEventListener("click", handleClick);
   canvas.addEventListener("mousemove", handleMove);
   canvas.addEventListener("mouseleave", handleLeave);
-  menuToggle?.addEventListener("click", handleSettingsClick, true);
+  settingsToggle?.addEventListener("click", handleSettingsClick, true);
   window.addEventListener("keydown", handleKeyDown, true);
 }
