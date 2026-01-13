@@ -29,6 +29,8 @@ import { GameAudio } from "../../game/audio/gameAudio.class.js";
 import { Hud } from "../../game/ui/hud.class.js";
 import { MenuOverlay } from "../../app/ui/overlay/menuOverlay.class.js";
 import { BossDirector } from "../../game/directors/bossDirector.class.js";
+import { GameOverOverlay } from "../../app/ui/overlay/gameOverOverlay.class.js";
+import { GameWonOverlay } from "../../app/ui/overlay/gameWonOverlay.class.js";
 import { createGameAssets } from "./assets/createGameAssets.js";
 
 export function createGame({ canvasId = "game" } = {}) {
@@ -44,6 +46,10 @@ export function createGame({ canvasId = "game" } = {}) {
   let hud;
   let menu;
   let bossDirector;
+  let gameOverOverlay;
+  let gameWonOverlay;
+  let isGameOver = false;
+  let isGameWon = false;
 
   function init() {
     canvas = document.getElementById(canvasId);
@@ -90,24 +96,46 @@ export function createGame({ canvasId = "game" } = {}) {
   }
 
   function updateMenuPointer(event) {
-    if (!canvas || !menu) return;
+    if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
     const y = ((event.clientY - rect.top) / rect.height) * canvas.height;
+    if (isGameWon) {
+      gameWonOverlay?.setPointer?.(x, y);
+      return;
+    }
+    if (isGameOver) {
+      gameOverOverlay?.setPointer?.(x, y);
+      return;
+    }
     menuPointer = { x, y };
-    if (isPaused) menu.setPointer?.(x, y);
+    if (isPaused) menu?.setPointer?.(x, y);
   }
 
   function clearMenuPointer() {
     menuPointer = null;
     menu?.clearPointer?.();
+    gameOverOverlay?.clearPointer?.();
+    gameWonOverlay?.clearPointer?.();
   }
 
   function handleMenuClick(event) {
-    if (!isPaused || !menu) return;
     const rect = canvas.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
     const y = ((event.clientY - rect.top) / rect.height) * canvas.height;
+    if (isGameWon) {
+      const action = gameWonOverlay?.handleClick?.(x, y);
+      if (action === "retry") handleRetry();
+      if (action === "quit") handleQuit();
+      return;
+    }
+    if (isGameOver) {
+      const action = gameOverOverlay?.handleClick?.(x, y);
+      if (action === "retry") handleRetry();
+      if (action === "quit") handleQuit();
+      return;
+    }
+    if (!isPaused || !menu) return;
     if (menu.handleClick?.(x, y)) {
       setMenuOpen(false);
       event.stopImmediatePropagation?.();
@@ -116,6 +144,15 @@ export function createGame({ canvasId = "game" } = {}) {
   }
 
   function handleQuit() {
+    window.location.href = window.location.origin + window.location.pathname;
+  }
+
+  function handleRetry() {
+    try {
+      window.localStorage?.setItem?.("panda_autostart", "1");
+    } catch (_err) {
+      /* ignore storage errors */
+    }
     window.location.reload();
   }
 
@@ -169,6 +206,12 @@ export function createGame({ canvasId = "game" } = {}) {
       assets.playerFrames.die
     );
     player.world = world;
+    player.onDeath = () => {
+      isGameOver = true;
+      setPaused(false);
+      menuPointer = null;
+      gameOverOverlay?.reset?.();
+    };
     world.setHitEffectFrames(assets.playerFrames.hitStars);
     world.hudPopups = [];
 
@@ -185,6 +228,9 @@ export function createGame({ canvasId = "game" } = {}) {
       uiImage: assets.menuUiImg,
       onQuit: handleQuit,
     });
+    gameOverOverlay = new GameOverOverlay();
+    gameWonOverlay = new GameWonOverlay();
+    gameWonOverlay.setCoinImage?.(assets.hudCoinImg);
 
     audio?.play();
     isLoading = false;
@@ -206,7 +252,15 @@ export function createGame({ canvasId = "game" } = {}) {
   }
 
   function update(dt) {
-    bossDirector?.update(dt, player);
+    const bossResult = bossDirector?.update(dt, player);
+    if (!isGameWon && bossResult?.cleared) {
+      isGameWon = true;
+      gameWonOverlay?.setCoins?.(player?.coins ?? 0);
+      setPaused(false);
+      menuPointer = null;
+      gameWonOverlay?.reset?.();
+      return;
+    }
 
     player.update(dt, input);
     audio?.ensureVolume?.();
@@ -241,6 +295,7 @@ export function createGame({ canvasId = "game" } = {}) {
   }
 
   function draw() {
+    if (canvas) canvas.style.cursor = "default";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     background.render(ctx, camera);
@@ -253,6 +308,19 @@ export function createGame({ canvasId = "game" } = {}) {
     world.renderHitEffects(ctx, camera);
 
     hud?.render(ctx, canvas, camera, player, bossDirector?.getBoss());
+
+    if (isGameWon) {
+      gameWonOverlay?.render(ctx, canvas);
+      if (canvas) canvas.style.cursor = gameWonOverlay?.isHovering?.() ? "pointer" : "default";
+      return;
+    }
+
+    if (isGameOver) {
+      gameOverOverlay?.render(ctx, canvas);
+      if (canvas) canvas.style.cursor = gameOverOverlay?.isHovering?.() ? "pointer" : "default";
+      return;
+    }
+
     if (isPaused) {
       if (menuPointer) menu.setPointer?.(menuPointer.x, menuPointer.y);
       menu?.render(ctx, canvas);

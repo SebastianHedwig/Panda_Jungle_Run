@@ -67,8 +67,11 @@ export function updatePlayer(player, dt, input, playerAudio) {
 
   /** ATTACK / SHOOT INPUT (Enter only, bullets take priority) */
   if (input.isPressed("Enter")) {
-    if (player.bulletAmmo > 0) player.startShoot();
-    else player.startAttack();
+    if (player.bulletAmmo > 0) {
+      player.startShoot();
+    } else if (!player.startAttack()) {
+      player.attackQueued = true;
+    }
   }
 
   player.updateShoot(dt);
@@ -89,6 +92,12 @@ export function updatePlayer(player, dt, input, playerAudio) {
     player.animate(dt);
     player.wasSlidingPreviousFrame = player.isSliding;
     return;
+  }
+
+  if (player.attackQueued && player.onGround && !player.isHurt && !player.isDead && !player.isShooting) {
+    if (player.startAttack()) {
+      player.attackQueued = false;
+    }
   }
 
   /** SLIDE INPUT */

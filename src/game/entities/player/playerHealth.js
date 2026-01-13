@@ -115,6 +115,13 @@ export function updateHurt(player, dt) {
 export function startDeath(player, playerAudio) {
   if (player.isDead) return;
   player.isDead = true;
+  if (typeof player.onDeath === "function") {
+    try {
+      player.onDeath(player);
+    } catch (_err) {
+      /* no-op if handler fails */
+    }
+  }
   player.world?.audio?.stop?.();
   player.world?.bossAudioPlayer?.stop?.();
   if (!player.deathSoundPlayed) {
@@ -189,4 +196,3 @@ export function handleFallOffWorld(player, grounded, bottom, canvasHeight) {
     player.respawnFromFall();
   }
 }
-

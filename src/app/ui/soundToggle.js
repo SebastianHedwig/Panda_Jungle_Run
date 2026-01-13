@@ -25,7 +25,18 @@ export function setupSoundToggle({
     label.textContent = muted ? "sound: on" : "sound: off";
   };
 
-  toggle.addEventListener("click", () => setMuted(!audioTracking.getMuted()));
+  toggle.addEventListener("click", () => {
+    setMuted(!audioTracking.getMuted());
+    toggle.blur();
+  });
+  const blockSpaceToggle = (event) => {
+    if (event.key === " " || event.code === "Space") {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    }
+  };
+  toggle.addEventListener("keydown", blockSpaceToggle);
+  toggle.addEventListener("keyup", blockSpaceToggle);
   toggle.addEventListener("mouseenter", () => {
     const hoverSrc = audioTracking.getMuted()
       ? "./assets/icons/sound-on-100.png"
@@ -41,4 +52,3 @@ export function setupSoundToggle({
 
   setMuted(initialMuted);
 }
-

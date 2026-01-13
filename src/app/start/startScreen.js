@@ -11,6 +11,21 @@ export function setupStartScreen({
   const ctx = canvas?.getContext("2d");
   if (!canvas || !ctx) return;
 
+  const autoStart = (() => {
+    try {
+      return window.localStorage?.getItem?.("panda_autostart") === "1";
+    } catch (_err) {
+      return false;
+    }
+  })();
+  if (autoStart) {
+    try {
+      window.localStorage?.removeItem?.("panda_autostart");
+    } catch (_err) {}
+    onStart?.();
+    return;
+  }
+
   const menuToggle = document.getElementById("menu-toggle");
   const menuLabel = menuToggle?.querySelector(".hud-label");
   const menuIcon = menuToggle?.querySelector("img");

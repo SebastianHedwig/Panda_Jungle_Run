@@ -76,11 +76,11 @@ export class PlayerAudio {
     return this[propName];
   }
 
-  playOneShot({ propName, src, offset = 0, rate = 1 }) {
+  playOneShot({ propName, src, offset = 0, rate = 1, forceClone = false }) {
     const base = this.ensureBase(propName, src);
     let audio = base;
 
-    if (!base.paused && !base.ended) {
+    if (forceClone || (!base.paused && !base.ended)) {
       audio = base.cloneNode(true);
       audio.volume = this.volume;
       audio.preload = "auto";
@@ -147,6 +147,7 @@ export class PlayerAudio {
       src,
       offset: 0,
       rate: 1,
+      forceClone: true, // allow overlaps when spammed
     });
   }
 

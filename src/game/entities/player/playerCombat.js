@@ -1,7 +1,7 @@
 import { PLAYER_ATTACK_DAMAGE } from "../../../config/config.js";
 
 export function startAttack(player, playerAudio) {
-  if (player.bulletAmmo > 0) return;
+  if (player.bulletAmmo > 0) return false;
   if (
     player.isAttacking ||
     player.isShooting ||
@@ -9,7 +9,7 @@ export function startAttack(player, playerAudio) {
     player.isDead ||
     !player.onGround
   )
-    return;
+    return false;
 
   player.isAttacking = true;
   player.attackTimer = player.attackDuration;
@@ -17,6 +17,7 @@ export function startAttack(player, playerAudio) {
   playerAudio.playPunch();
   player.setAnimation(player.throwFrames);
   player.currentFrame = 0;
+  return true;
 }
 
 export function updateAttack(player, dt, playerAudio) {
@@ -90,4 +91,3 @@ export function updateShoot(player, dt) {
   player.shootTimer -= dt;
   if (player.shootTimer <= 0) player.isShooting = false;
 }
-

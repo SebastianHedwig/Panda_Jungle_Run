@@ -15,7 +15,10 @@ export function setupMenuToggle({
   };
 
   if (hasButton) {
-    toggle.addEventListener("click", () => setMenuOpen(!getPaused?.()));
+    toggle.addEventListener("click", () => {
+      setMenuOpen(!getPaused?.());
+      toggle.blur();
+    });
   }
 
   window.addEventListener("keydown", (event) => {

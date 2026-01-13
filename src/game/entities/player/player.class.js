@@ -89,6 +89,7 @@ export class Player extends MovableObject {
     this.attackHitDone = false;
     this.attackRange = 70;
     this.attackHeightTolerance = 15;
+    this.attackQueued = false;
 
     /** ----- SHOOT ----- */
     this.isShooting = false;
@@ -118,6 +119,7 @@ export class Player extends MovableObject {
     this.lastSafeY = y;
     this.collisionDisabled = false;
     this.deathSoundPlayed = false;
+    this.onDeath = null;
 
     /** ----- ADVANCED JUMP ----- */
     this.coyoteTime = 0.1;
@@ -277,7 +279,9 @@ export class Player extends MovableObject {
 
   /** ----- ATTACK ----- */
   startAttack() {
-    startAttack(this, playerAudio);
+    const started = startAttack(this, playerAudio);
+    if (started) this.attackQueued = false;
+    return started;
   }
 
   updateAttack(dt) {

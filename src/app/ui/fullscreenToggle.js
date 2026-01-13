@@ -50,6 +50,7 @@ export function setupFullscreenToggle({
     } else {
       enterFullscreen();
     }
+    toggle.blur();
   });
 
   document.addEventListener("fullscreenchange", () => {

@@ -49,7 +49,7 @@ export class BossDirector {
   }
 
   update(dt, player) {
-    if (!player || !this.world) return;
+    if (!player || !this.world) return null;
 
     if (!this.bossSpawned && player.x >= this.spawnTriggerX) {
       this.spawnBoss(player);
@@ -60,7 +60,10 @@ export class BossDirector {
       (this.bossRef && this.bossRef.isDead && this.bossRef.health <= 0)
     ) {
       this.handleBossDefeat();
+      return { cleared: true };
     }
+
+    return null;
   }
 
   spawnBoss(player) {
