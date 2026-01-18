@@ -17,11 +17,6 @@ export function setupFullscreenToggle({
     const alt = isFullscreen ? "Fullscreen schliessen" : "Fullscreen starten";
     const text = isFullscreen ? "close fullscreen" : "fullscreen";
 
-    toggle.setAttribute("aria-pressed", String(isFullscreen));
-    toggle.setAttribute(
-      "aria-label",
-      isFullscreen ? "Fullscreen schliessen" : "Fullscreen starten"
-    );
     icon.src = src;
     icon.alt = alt;
     label.textContent = text;

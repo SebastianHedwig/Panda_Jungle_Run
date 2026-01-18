@@ -7,6 +7,9 @@
     <title>Panda Jungle Run</title>
 
     <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./styles/hud.css">
+    <link rel="stylesheet" href="./styles/mobileRotationOverlay.css">
+    <script type="module" src="./src/main.js" defer></script>
     
 </head>
 <body>
@@ -14,25 +17,23 @@
         <canvas id="game" class="canvas"></canvas>
 
         <div class="hud-container hud-container-left">
-            <button id="settings-toggle" class="hud-button settings-toggle" type="button" aria-label="Settings">
+            <button id="settings-toggle" class="hud-button settings-toggle" type="button">
                 <img src="./assets/icons/controler.png" alt="Settings">
                 <span class="hud-label">settings</span>
             </button>
-            <button id="sound-toggle" class="hud-button sound-toggle" type="button" aria-pressed="false" aria-label="Sound ausschalten">
+            <button id="sound-toggle" class="hud-button sound-toggle" type="button">
                 <img id="sound-icon" src="./assets/icons/sound-on-100.png" alt="Sound an">
                 <span id="sound-label" class="hud-label">sound: off</span>
             </button>
         </div>
 
         <div class="hud-container hud-container-right">
-            <button id="fullscreen-toggle" class="hud-button fullscreen-toggle" type="button" aria-pressed="false" aria-label="Fullscreen">
+            <button id="fullscreen-toggle" class="hud-button fullscreen-toggle" type="button">
                 <img id="fullscreen-icon" src="./assets/icons/fullscreen-on.png" alt="Fullscreen">
                 <span id="fullscreen-label" class="hud-label">fullscreen</span>
             </button>
         </div>
         
     </div>
-
-    <script type="module" src="./src/main.js"></script>
 </body>
 </html>

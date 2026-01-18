@@ -12,8 +12,6 @@ export function setupSoundToggle({
 
   const setMuted = (muted) => {
     audioTracking.setMuted(muted);
-    toggle.setAttribute("aria-pressed", String(muted));
-    toggle.setAttribute("aria-label", muted ? "Sound einschalten" : "Sound ausschalten");
     const src = muted
       ? "./assets/icons/sound-off-100.png"
       : "./assets/icons/sound-on-100.png";

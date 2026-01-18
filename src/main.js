@@ -5,6 +5,7 @@ import { setupSoundToggle } from "./app/ui/controls/soundToggle.js";
 import { togglePauseState } from "./app/ui/controls/settingsToggle.js";
 import { setupFullscreenToggle, applyAutoFullscreen } from "./app/ui/controls/fullscreenToggle.js";
 import { setupStartScreen } from "./app/start/startScreen.js";
+import { ViewportManagement } from "./app/ui/viewportManagement.class.js";
 
 const audioTracking = installAudioTracking({ initiallyMuted: MUTE_TOGGLE_GAMESTART });
 
@@ -13,5 +14,7 @@ togglePauseState({ getPaused, setPaused });
 setupFullscreenToggle();
 applyAutoFullscreen({ enabled: SET_FULLSCREEN });
 window.addEventListener("resize", () => applyAutoFullscreen({ enabled: SET_FULLSCREEN }));
+
+new ViewportManagement({ setPaused, getPaused });
 
 setupStartScreen({ onStart: initGame, preloadMuted: MUTE_TOGGLE_GAMESTART });
