@@ -16,7 +16,7 @@
   pointer-events: auto;
 }
 
-@media (orientation: portrait) and (max-width: 56.25rem), (max-aspect-ratio: 7 / 5) and (max-width: 56.25rem) {
+@media (orientation: portrait) and (max-width: 56.25rem), (max-aspect-ratio: 7 / 5) and (max-width: 920px) {
   .rotate-overlay.is-active {
     display: flex;
   }

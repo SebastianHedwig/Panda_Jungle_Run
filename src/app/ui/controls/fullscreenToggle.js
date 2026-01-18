@@ -1,3 +1,8 @@
+import {
+  AUTO_FULLSCREEN_MAX_HEIGHT,
+  AUTO_FULLSCREEN_MAX_WIDTH,
+} from "../../../config/config.js";
+
 export function setupFullscreenToggle({
   containerId = "game-container",
   toggleId = "fullscreen-toggle",
@@ -58,8 +63,8 @@ export function setupFullscreenToggle({
 
 export function applyAutoFullscreen({
   containerId = "game-container",
-  maxWidth = 1366,
-  maxHeight = 800,
+  maxWidth = AUTO_FULLSCREEN_MAX_WIDTH,
+  maxHeight = AUTO_FULLSCREEN_MAX_HEIGHT,
   enabled = true,
   toggleContainerSelector = ".hud-container-right",
 } = {}) {
