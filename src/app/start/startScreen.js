@@ -1,6 +1,7 @@
 import { GAME_HEIGHT, GAME_WIDTH, MUTE_TOGGLE_GAMESTART } from "../../config/config.js";
 import { GameAudio } from "../../game/audio/gameAudio.class.js";
 import { ControlsOverlay } from "../ui/overlay/controlsOverlay.class.js";
+import { ControlsOverlayMobile } from "../ui/overlay/controlsOverlayMobile.class.js";
 import { loadImage, waitForImage } from "../../core/game/assets/assetLoader.js";
 
 export function setupStartScreen({
@@ -40,7 +41,20 @@ export function setupStartScreen({
     settingsIcon.alt = "Settings";
   }
 
-  const controlsOverlay = new ControlsOverlay({ showBackButton: false });
+  const controlsOverlayDesktop = new ControlsOverlay({ showBackButton: false });
+  const controlsOverlayMobile = new ControlsOverlayMobile({ showBackButton: false });
+  controlsOverlayDesktop.setOnIconLoad?.(() => drawStartScreen());
+  controlsOverlayMobile.setOnIconLoad?.(() => drawStartScreen());
+
+  const setOverlayActive = (active) => {
+    document.body?.classList.toggle("overlay-active", active);
+  };
+
+  const getActiveControlsOverlay = () => {
+    const container = document.getElementById("game-container");
+    const useMobile = container?.classList?.contains("auto-fullscreen");
+    return useMobile ? controlsOverlayMobile : controlsOverlayDesktop;
+  };
 
   let startScreenActive = true;
   let startButtonBounds = null;
@@ -128,8 +142,10 @@ export function setupStartScreen({
     startButtonBounds = { x: drawX, y: drawY, w: btnW, h: btnH };
 
     if (settingsOpen && startAssets.menuBg) {
-      controlsOverlay.setAssets({ bgImage: startAssets.menuBg, uiImage: startAssets.ui });
-      controlsOverlay.render(ctx, canvas);
+      const overlay = getActiveControlsOverlay();
+      overlay.setAssets({ bgImage: startAssets.menuBg, uiImage: startAssets.ui });
+      overlay.render(ctx, canvas);
+      setOverlayActive(true);
     }
   };
 
@@ -140,9 +156,11 @@ export function setupStartScreen({
     const y = ((event.clientY - rect.top) / rect.height) * canvas.height;
 
     if (settingsOpen) {
-      if (controlsOverlay.handleClick(x, y)) {
+      const overlay = getActiveControlsOverlay();
+      if (overlay.handleClick(x, y)) {
         settingsOpen = false;
-        controlsOverlay.clearPointer();
+        overlay.clearPointer();
+        setOverlayActive(false);
         canvas.style.cursor = "default";
         drawStartScreen();
       }
@@ -160,6 +178,8 @@ export function setupStartScreen({
       settingsToggle?.removeEventListener("click", handleSettingsClick, true);
       window.removeEventListener("keydown", handleKeyDown, true);
       settingsOpen = false;
+      setOverlayActive(false);
+      document.body?.classList.remove("start-screen-active");
       canvas.style.cursor = "default";
       if (settingsLabel) settingsLabel.textContent = defaultSettingsLabel;
       if (settingsIcon) {
@@ -182,8 +202,9 @@ export function setupStartScreen({
     const y = ((event.clientY - rect.top) / rect.height) * canvas.height;
 
     if (settingsOpen) {
-      controlsOverlay.setPointer(x, y);
-      const hovering = controlsOverlay.isHovering();
+      const overlay = getActiveControlsOverlay();
+      overlay.setPointer(x, y);
+      const hovering = overlay.isHovering();
       canvas.style.cursor = hovering ? "pointer" : "default";
       drawStartScreen();
       return;
@@ -204,8 +225,10 @@ export function setupStartScreen({
   const handleLeave = () => {
     if (!startScreenActive) return;
     if (settingsOpen) {
-      controlsOverlay.clearPointer();
+      const overlay = getActiveControlsOverlay();
+      overlay.clearPointer();
       drawStartScreen();
+      setOverlayActive(true);
       canvas.style.cursor = "default";
       return;
     }
@@ -222,8 +245,10 @@ export function setupStartScreen({
     event?.stopImmediatePropagation();
     settingsOpen = !settingsOpen;
     startButtonHover = false;
-    controlsOverlay.clearPointer();
+    const overlay = getActiveControlsOverlay();
+    overlay.clearPointer();
     canvas.style.cursor = "default";
+    setOverlayActive(settingsOpen);
     drawStartScreen();
   };
 
@@ -233,7 +258,9 @@ export function setupStartScreen({
       event.preventDefault();
       event.stopImmediatePropagation();
       settingsOpen = false;
-      controlsOverlay.clearPointer();
+      const overlay = getActiveControlsOverlay();
+      overlay.clearPointer();
+      setOverlayActive(false);
       drawStartScreen();
     }
   };
@@ -247,6 +274,7 @@ export function setupStartScreen({
   ])
     .then(([bg, ui, menuBg, _fontLoaded]) => {
       startAssets = { bg, ui, menuBg };
+      document.body?.classList.add("start-screen-active");
       drawStartScreen();
     })
     .catch((err) => console.error("Failed to load start assets", err));

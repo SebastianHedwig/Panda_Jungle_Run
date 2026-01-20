@@ -1,10 +1,12 @@
 import { OverlayRenderer } from "./overlayBase.class.js";
 import { ControlsOverlay } from "./controlsOverlay.class.js";
+import { ControlsOverlayMobile } from "./controlsOverlayMobile.class.js";
 
 export class SettingsOverlay {
   constructor({ backgroundImage = null, uiImage = null, onQuit = null } = {}) {
     this.renderer = new OverlayRenderer();
-    this.controlsOverlay = new ControlsOverlay({ showBackButton: true });
+    this.controlsOverlayDesktop = new ControlsOverlay({ showBackButton: true });
+    this.controlsOverlayMobile = new ControlsOverlayMobile({ showBackButton: true });
     this.assets = { bgImage: backgroundImage, uiImage };
     this.pointer = null;
     this.itemBounds = [];
@@ -12,15 +14,22 @@ export class SettingsOverlay {
     this.onQuit = onQuit;
   }
 
+  getActiveControlsOverlay() {
+    const container = document.getElementById("game-container");
+    const useMobile = container?.classList?.contains("auto-fullscreen");
+    return useMobile ? this.controlsOverlayMobile : this.controlsOverlayDesktop;
+  }
+
   setAssets({ bgImage, uiImage }) {
     this.assets = { bgImage, uiImage };
-    this.controlsOverlay.setAssets({ bgImage, uiImage });
+    this.controlsOverlayDesktop.setAssets({ bgImage, uiImage });
+    this.controlsOverlayMobile.setAssets({ bgImage, uiImage });
   }
 
   setPointer(x, y) {
     this.pointer = x == null || y == null ? null : { x, y };
     if (this.showControls) {
-      this.controlsOverlay.setPointer(x, y);
+      this.getActiveControlsOverlay().setPointer(x, y);
     } else {
       this.renderer.setPointer(x, y);
     }
@@ -30,18 +39,20 @@ export class SettingsOverlay {
     this.pointer = null;
     this.itemBounds = [];
     this.renderer.clearPointer();
-    this.controlsOverlay.clearPointer();
+    this.controlsOverlayDesktop.clearPointer();
+    this.controlsOverlayMobile.clearPointer();
   }
 
   handleClick(x, y) {
     if (this.showControls) {
-      if (this.controlsOverlay.handleBackClick?.(x, y)) {
+      const activeOverlay = this.getActiveControlsOverlay();
+      if (activeOverlay.handleBackClick?.(x, y)) {
         this.showControls = false;
-        this.controlsOverlay.clearPointer();
+        activeOverlay.clearPointer();
         this.renderer.clearPointer();
         return false;
       }
-      if (this.controlsOverlay.handleClick(x, y)) {
+      if (activeOverlay.handleClick(x, y)) {
         this.showControls = false;
         return true;
       }
@@ -56,7 +67,8 @@ export class SettingsOverlay {
     if (hitIndex === 0) {
       this.showControls = true;
       this.renderer.clearPointer();
-      this.controlsOverlay.clearPointer();
+      this.controlsOverlayDesktop.clearPointer();
+      this.controlsOverlayMobile.clearPointer();
       return false;
     }
     if (hitIndex === 1) {
@@ -73,12 +85,13 @@ export class SettingsOverlay {
 
     ctx.save();
     if (this.showControls) {
-      this.controlsOverlay.setAssets({
+      const activeOverlay = this.getActiveControlsOverlay();
+      activeOverlay.setAssets({
         bgImage: this.assets.bgImage,
         uiImage: this.assets.uiImage,
       });
-      this.controlsOverlay.render(ctx, canvas);
-      if (canvas) canvas.style.cursor = this.controlsOverlay.isHovering() ? "pointer" : "default";
+      activeOverlay.render(ctx, canvas);
+      if (canvas) canvas.style.cursor = activeOverlay.isHovering() ? "pointer" : "default";
       ctx.restore();
       return;
     }

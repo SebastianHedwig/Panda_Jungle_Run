@@ -20,8 +20,13 @@
             <button class="mobile-control-button" type="button">
                 <img src="./assets/icons/mobileControls/arrow-backward.png" alt="Nach links">
             </button>
-            <button class="mobile-control-button" type="button">
-                <img src="./assets/icons/mobileControls/button-fast-forward-inactive.png" alt="Sprinten inaktiv">
+            <button
+                class="mobile-control-button mobile-control-button--fast-forward mobile-control-button--no-scale"
+                type="button"
+                data-src-inactive="./assets/icons/mobileControls/button-fast-forward-inactive.png"
+                data-src-active="./assets/icons/mobileControls/button-fast-forward.active.png"
+            >
+                <img id="mobile-fast-forward-icon" src="./assets/icons/mobileControls/button-fast-forward-inactive.png" alt="Sprinten">
             </button>
             <button class="mobile-control-button" type="button">
                 <img src="./assets/icons/mobileControls/arrow-forward.png" alt="Nach rechts">
@@ -46,7 +51,7 @@
                 <span class="hud-label">settings</span>
             </button>
             <button id="sound-toggle" class="hud-button sound-toggle" type="button">
-                <img id="sound-icon" src="./assets/icons/sound-on-100.png" alt="Sound an">
+                <img id="sound-icon" src="./assets/icons/sound-on-100.png" alt="Sound an/aus">
                 <span id="sound-label" class="hud-label">sound: off</span>
             </button>
         </div>

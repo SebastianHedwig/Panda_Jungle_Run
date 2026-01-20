@@ -292,6 +292,8 @@ export function createGame({ canvasId = "game" } = {}) {
 
   function draw() {
     if (canvas) canvas.style.cursor = "default";
+    const overlayActive = isGameWon || isGameOver || isPaused;
+    document.body?.classList.toggle("overlay-active", overlayActive);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     background.render(ctx, camera);
