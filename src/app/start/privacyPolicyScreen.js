@@ -1,0 +1,169 @@
+const PRIVACY_PARAGRAPHS = [
+  "1. Data Protection at a Glance",
+  "General Information",
+  "The following information provides a simple overview of what happens to your personal data when you visit this website. Personal data is any data by which you can be personally identified. Detailed information on the subject of data protection can be found in our privacy policy listed below this text.",
+  "",
+  "Data Collection on This Website",
+  "Who is responsible for data collection on this website?",
+  "The data processing on this website is carried out by the website operator. You can find their contact details in the section “Information on the Responsible Entity” in this privacy policy.",
+  "How do we collect your data?",
+  "Your data is collected, on the one hand, by you providing it to us. This may include, for example, data that you enter into a contact form.",
+  "Other data is collected automatically or after your consent when you visit the website through our IT systems. These are primarily technical data (e.g. internet browser, operating system, or time of page access). This data is collected automatically as soon as you enter this website.",
+  "What do we use your data for?",
+  "Some of the data is collected to ensure error-free provision of the website. Other data may be used to analyze your user behavior. If contracts can be concluded or initiated via the website, the transmitted data will also be processed for contract offers, orders, or other inquiries.",
+  "What rights do you have regarding your data?",
+  "You have the right at any time to obtain free information about the origin, recipient, and purpose of your stored personal data. You also have the right to request correction or deletion of this data. If you have given consent to data processing, you can revoke this consent at any time for the future. Furthermore, you have the right, under certain circumstances, to request the restriction of the processing of your personal data. In addition, you have the right to lodge a complaint with the competent supervisory authority.",
+  "You can contact us at any time with questions about this or other data protection issues.",
+  "",
+  "2. General Information and Mandatory Information",
+  "Data Protection",
+  "The operators of these pages take the protection of your personal data very seriously. We treat your personal data confidentially and in accordance with statutory data protection regulations and this privacy policy.",
+  "",
+  "When you use this website, various personal data are collected. Personal data are data by which you can be personally identified. This privacy policy explains what data we collect and what we use it for. It also explains how and for what purpose this is done.",
+  "We point out that data transmission over the internet (e.g. communication by email) may have security gaps. Complete protection of data against access by third parties is not possible.",
+  "",
+  "Information on the Responsible Entity",
+  "The responsible entity for data processing on this website is:",
+  "",
+  "Sebastian Hedwig",
+  "Moselstraße 3",
+  "65439 Flörsheim am Main",
+  "Phone: 0151 23537848",
+  "Email: sebastian.hedwig@web.de",
+  "",
+  "The responsible entity is the natural or legal person who alone or jointly with others decides on the purposes and means of processing personal data (e.g. names, email addresses, etc.).",
+  "",
+  "Storage Duration",
+  "Unless a more specific storage period has been specified in this privacy policy, your personal data will remain with us until the purpose for the data processing no longer applies. If you assert a legitimate request for deletion or revoke your consent to data processing, your data will be deleted unless we have other legally permissible reasons for storing your personal data (e.g. tax or commercial law retention periods); in the latter case, deletion will take place after these reasons cease to apply.",
+  "General Information on the Legal Bases for Data Processing on This Website",
+  "If you have consented to data processing, we process your personal data on the basis of Art. 6(1)(a) GDPR or Art. 9(2)(a) GDPR if special categories of data are processed pursuant to Art. 9(1) GDPR. In the case of explicit consent to the transfer of personal data to third countries, data processing is also based on Art. 49(1)(a) GDPR. If you have consented to the storage of cookies or access to information on your end device (e.g. via device fingerprinting), data processing is additionally based on Section 25(1) TDDDG. Consent can be revoked at any time. If your data is required for the fulfillment of a contract or for the implementation of pre-contractual measures, we process your data on the basis of Art. 6(1)(b) GDPR. Furthermore, we process your data if this is necessary to fulfill a legal obligation on the basis of Art. 6(1)(c) GDPR. Data processing may also be based on our legitimate interest pursuant to Art. 6(1)(f) GDPR. The relevant legal bases in each individual case are explained in the following sections of this privacy policy.",
+  "",
+  "Recipients of Personal Data",
+  "As part of our business activities, we work with various external parties. In some cases, this also requires the transfer of personal data to these external parties. We only pass on personal data to external parties if this is necessary for the fulfillment of a contract, if we are legally obliged to do so (e.g. passing on data to tax authorities), if we have a legitimate interest pursuant to Art. 6(1)(f) GDPR in the transfer, or if another legal basis permits the transfer of data. When using processors, we only pass on personal data of our customers on the basis of a valid data processing agreement. In the case of joint processing, a joint processing agreement is concluded.",
+  "Revocation of Your Consent to Data Processing",
+  "Many data processing operations are only possible with your explicit consent. You can revoke consent that has already been given at any time. The legality of the data processing carried out until the revocation remains unaffected by the revocation.",
+  "Right to Object to Data Collection in Special Cases and to Direct Advertising (Art. 21 GDPR)",
+  "IF DATA PROCESSING IS BASED ON ART. 6(1)(E) OR (F) GDPR, YOU HAVE THE RIGHT AT ANY TIME, FOR REASONS ARISING FROM YOUR PARTICULAR SITUATION, TO OBJECT TO THE PROCESSING OF YOUR PERSONAL DATA; THIS ALSO APPLIES TO PROFILING BASED ON THESE PROVISIONS. THE RESPECTIVE LEGAL BASIS ON WHICH PROCESSING IS BASED CAN BE FOUND IN THIS PRIVACY POLICY. IF YOU OBJECT, WE WILL NO LONGER PROCESS YOUR PERSONAL DATA UNLESS WE CAN DEMONSTRATE COMPELLING LEGITIMATE GROUNDS FOR THE PROCESSING WHICH OVERRIDE YOUR INTERESTS, RIGHTS AND FREEDOMS OR THE PROCESSING SERVES THE ASSERTION, EXERCISE OR DEFENSE OF LEGAL CLAIMS (OBJECTION PURSUANT TO ART. 21(1) GDPR).",
+  "IF YOUR PERSONAL DATA IS PROCESSED FOR THE PURPOSE OF DIRECT ADVERTISING, YOU HAVE THE RIGHT TO OBJECT AT ANY TIME TO THE PROCESSING OF YOUR PERSONAL DATA FOR THE PURPOSE OF SUCH ADVERTISING; THIS ALSO APPLIES TO PROFILING INSOFAR AS IT IS ASSOCIATED WITH SUCH DIRECT ADVERTISING. IF YOU OBJECT, YOUR PERSONAL DATA WILL SUBSEQUENTLY NO LONGER BE USED FOR THE PURPOSE OF DIRECT ADVERTISING (OBJECTION PURSUANT TO ART. 21(2) GDPR).",
+  "Right to Lodge a Complaint with the Competent Supervisory Authority",
+  "In the event of violations of the GDPR, data subjects have the right to lodge a complaint with a supervisory authority, in particular in the Member State of their habitual residence, their place of work, or the place of the alleged infringement. The right to lodge a complaint is without prejudice to any other administrative or judicial remedies.",
+  "",
+  "Right to Data Portability",
+  "You have the right to receive data that we process automatically on the basis of your consent or in fulfillment of a contract, in a commonly used, machine-readable format, and to have it transmitted to yourself or to a third party. If you request the direct transfer of the data to another controller, this will only be done insofar as it is technically feasible.",
+  "",
+  "Information, Correction and Deletion",
+  "Within the framework of applicable legal provisions, you have the right at any time to free information about your stored personal data, its origin and recipients, and the purpose of the data processing and, if applicable, a right to correction or deletion of this data. You can contact us at any time regarding this or other questions on the subject of personal data.",
+  "",
+  "Right to Restriction of Processing",
+  "You have the right to request the restriction of the processing of your personal data. You can contact us at any time to do so. The right to restriction of processing exists in the following cases:",
+  "- If you dispute the accuracy of your personal data stored by us, we usually need time to verify this. For the duration of the review, you have the right to request the restriction of the processing of your personal data.",
+  "- If the processing of your personal data was/is unlawful, you may request the restriction of data processing instead of deletion.",
+  "- If we no longer need your personal data, but you require it for the exercise, defense or assertion of legal claims, you have the right to request the restriction of the processing of your personal data instead of deletion.",
+  "- If you have lodged an objection pursuant to Art. 21(1) GDPR, a balance must be struck between your interests and ours. As long as it has not yet been determined whose interests prevail, you have the right to request the restriction of the processing of your personal data.",
+  "If the processing of your personal data has been restricted, such data may – apart from storage – only be processed with your consent or for the assertion, exercise or defense of legal claims or for the protection of the rights of another natural or legal person or for reasons of important public interest of the European Union or a Member State.",
+  "",
+  "Source: https://www.e-recht24.de",
+];
+
+
+export function renderPrivacyPolicyScreen({ ctx, canvas, scroll = 0 }) {
+  if (!ctx || !canvas) return { maxScroll: 0, closeBounds: null };
+
+  const padding = 28;
+  const panelWidth = Math.min(canvas.width * 0.8);
+  const panelX = (canvas.width - panelWidth) / 2;
+  const panelY = canvas.height * 0.05;
+  const panelHeight = canvas.height * 0.8;
+  const innerWidth = panelWidth - padding * 2;
+
+  ctx.save();
+  ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+  ctx.strokeStyle = "rgba(0, 110, 110, 0.8)";
+  ctx.lineWidth = 3;
+  ctx.shadowColor = "rgba(0,0,0,0.4)";
+  ctx.shadowBlur = 10;
+  ctx.roundRect(panelX, panelY, panelWidth, panelHeight, 16);
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+
+  const titleFontSize = 32;
+  const bodyFontSize = 16;
+  const lineHeight = bodyFontSize * 1.5;
+
+  ctx.shadowBlur = 0;
+  ctx.shadowColor = "transparent";
+  ctx.font = `bold ${titleFontSize}px sans-serif`;
+  ctx.fillStyle = "rgb(0, 110, 110)";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  ctx.fillText("Privacy Policy", panelX + padding, panelY + padding);
+
+  ctx.shadowColor = "transparent";
+  ctx.font = `${bodyFontSize}px sans-serif`;
+  ctx.fillStyle = "#e4f7f7";
+
+  const wrapped = [];
+  PRIVACY_PARAGRAPHS.forEach((para) => {
+    if (!para) {
+      wrapped.push({ text: "", height: lineHeight * 0.6 });
+      return;
+    }
+    const words = para.split(" ");
+    let current = "";
+    words.forEach((word, idx) => {
+      const test = current ? `${current} ${word}` : word;
+      if (ctx.measureText(test).width > innerWidth) {
+        wrapped.push({ text: current, height: lineHeight });
+        current = word;
+      } else {
+        current = test;
+      }
+      if (idx === words.length - 1) {
+        wrapped.push({ text: current, height: lineHeight });
+      }
+    });
+  });
+
+  const contentHeight = wrapped.reduce((sum, line) => sum + line.height, 0);
+  const textStartY = panelY + padding + titleFontSize + 24;
+  const innerHeight = panelHeight - (textStartY - panelY) - padding;
+  const maxScroll = Math.max(0, contentHeight - innerHeight);
+  const clampedScroll = Math.min(Math.max(scroll, 0), maxScroll);
+  const closeFontSize = 18;
+  ctx.font = `bold ${closeFontSize}px sans-serif`;
+  const closeText = "Close";
+  const closeWidth = ctx.measureText(closeText).width;
+  const closeHeight = closeFontSize * 1.2;
+  const closeX = panelX + panelWidth - padding - closeWidth;
+  const closeY = panelY + padding;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(panelX + padding, textStartY, innerWidth, innerHeight);
+  ctx.clip();
+
+  ctx.shadowColor = "transparent";
+  ctx.shadowBlur = 0;
+  ctx.font = `${bodyFontSize}px sans-serif`;
+  ctx.fillStyle = "#e4f7f7";
+
+  let currentY = textStartY - clampedScroll;
+  wrapped.forEach((line) => {
+    if (
+      line.text &&
+      currentY > panelY + padding - lineHeight &&
+      currentY < panelY + panelHeight - padding + lineHeight
+    ) {
+      ctx.fillText(line.text, panelX + padding, currentY);
+    }
+    currentY += line.height;
+  });
+
+  ctx.restore();
+
+  return {
+    maxScroll,
+    closeBounds: { x: closeX, y: closeY, w: closeWidth, h: closeHeight, fontSize: closeFontSize, text: closeText },
+  };
+}

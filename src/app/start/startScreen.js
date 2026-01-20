@@ -3,6 +3,8 @@ import { GameAudio } from "../../game/audio/gameAudio.class.js";
 import { ControlsOverlay } from "../ui/overlay/controlsOverlay.class.js";
 import { ControlsOverlayMobile } from "../ui/overlay/controlsOverlayMobile.class.js";
 import { loadImage, waitForImage } from "../../core/game/assets/assetLoader.js";
+import { renderImpressumScreen } from "./impressumScreen.js";
+import { renderPrivacyPolicyScreen } from "./privacyPolicyScreen.js";
 
 export function setupStartScreen({
   canvasId = "game",
@@ -46,6 +48,11 @@ export function setupStartScreen({
   controlsOverlayDesktop.setOnIconLoad?.(() => drawStartScreen());
   controlsOverlayMobile.setOnIconLoad?.(() => drawStartScreen());
 
+  const impressumLink = document.querySelector(".impressum");
+  const privacyPolicyLink = document.querySelector(".privacyPolicy");
+  let impressumLinkBounds = null;
+  let legalReturnBounds = null;
+
   const setOverlayActive = (active) => {
     document.body?.classList.toggle("overlay-active", active);
   };
@@ -62,6 +69,10 @@ export function setupStartScreen({
   let settingsOpen = false;
   let startAssets = null;
   let preloadedGameAudio = null;
+  let legalPage = null; // "impressum" | "privacy" | null
+  let legalScroll = 0;
+  let legalMaxScroll = 0;
+  let legalReturnHover = false;
 
   const loadStartImage = (src) =>
     waitForImage(loadImage(src)).then(({ ok, img }) => {
@@ -89,7 +100,47 @@ export function setupStartScreen({
       .catch(() => {});
   };
 
-  const drawStartScreen = () => {
+  const drawLegalPage = () => {
+    const isImpressum = legalPage === "impressum";
+    const renderer =
+      legalPage === "impressum"
+        ? renderImpressumScreen
+        : legalPage === "privacy"
+        ? renderPrivacyPolicyScreen
+        : null;
+
+    impressumLinkBounds = null;
+    legalReturnBounds = null;
+    if (!renderer) return;
+
+    const { maxScroll, closeBounds, linkBounds } = renderer({ ctx, canvas, scroll: legalScroll });
+    legalMaxScroll = maxScroll;
+    legalScroll = Math.min(legalScroll, legalMaxScroll);
+    if (isImpressum) impressumLinkBounds = linkBounds || null;
+
+    const drawClose = (bounds) => {
+      ctx.font = `bold ${bounds.fontSize}px sans-serif`;
+      ctx.fillStyle = legalReturnHover ? "rgba(255,255,255,0.8)" : "rgb(0, 110, 110)";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      ctx.save();
+      const scale = legalReturnHover ? 1.02 : 1;
+      ctx.translate(bounds.x, bounds.y);
+      ctx.scale(scale, scale);
+      ctx.fillText(bounds.text, 0, 0);
+      ctx.restore();
+      const retWidth = ctx.measureText(bounds.text).width;
+      legalReturnBounds = {
+        x: bounds.x,
+        y: bounds.y,
+        w: retWidth,
+        h: bounds.h,
+      };
+    };
+
+    if (closeBounds) drawClose(closeBounds);
+  };
+const drawStartScreen = () => {
     if (!startAssets) return;
 
     canvas.width = GAME_WIDTH;
@@ -119,6 +170,12 @@ export function setupStartScreen({
     ctx.strokeText(title, canvas.width / 2, canvas.height * 0.22);
     ctx.fillText(title, canvas.width / 2, canvas.height * 0.22);
     ctx.shadowBlur = 0;
+
+    if (legalPage) {
+      startButtonBounds = null;
+      drawLegalPage();
+      return;
+    }
 
     const src = { x: 525, y: 130, w: 360, h: 135 };
     const buttonWidth = Math.min(canvas.width * 0.28, 260);
@@ -154,6 +211,35 @@ export function setupStartScreen({
     const rect = canvas.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
     const y = ((event.clientY - rect.top) / rect.height) * canvas.height;
+
+    if (legalPage) {
+      if (
+        legalPage === "impressum" &&
+        impressumLinkBounds &&
+        x >= impressumLinkBounds.x &&
+        x <= impressumLinkBounds.x + impressumLinkBounds.w &&
+        y >= impressumLinkBounds.y &&
+        y <= impressumLinkBounds.y + impressumLinkBounds.h
+      ) {
+        showLegalPage("privacy");
+        return;
+      }
+      const canClose =
+        legalReturnBounds &&
+        x >= legalReturnBounds.x &&
+        x <= legalReturnBounds.x + legalReturnBounds.w &&
+        y >= legalReturnBounds.y &&
+        y <= legalReturnBounds.y + legalReturnBounds.h;
+      if (canClose) {
+        legalPage = null;
+        setOverlayActive(false);
+        canvas.style.cursor = "default";
+        legalReturnBounds = null;
+        legalReturnHover = false;
+        drawStartScreen();
+      }
+      return;
+    }
 
     if (settingsOpen) {
       const overlay = getActiveControlsOverlay();
@@ -201,6 +287,28 @@ export function setupStartScreen({
     const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
     const y = ((event.clientY - rect.top) / rect.height) * canvas.height;
 
+    if (legalPage) {
+      const overReturn =
+        legalReturnBounds &&
+        x >= legalReturnBounds.x &&
+        x <= legalReturnBounds.x + legalReturnBounds.w &&
+        y >= legalReturnBounds.y &&
+        y <= legalReturnBounds.y + legalReturnBounds.h;
+      if (legalReturnHover !== overReturn) {
+        legalReturnHover = overReturn;
+        drawStartScreen();
+      }
+      const overLink =
+        legalPage === "impressum" &&
+        impressumLinkBounds &&
+        x >= impressumLinkBounds.x &&
+        x <= impressumLinkBounds.x + impressumLinkBounds.w &&
+        y >= impressumLinkBounds.y &&
+        y <= impressumLinkBounds.y + impressumLinkBounds.h;
+      canvas.style.cursor = overReturn || overLink ? "pointer" : "default";
+      return;
+    }
+
     if (settingsOpen) {
       const overlay = getActiveControlsOverlay();
       overlay.setPointer(x, y);
@@ -224,6 +332,14 @@ export function setupStartScreen({
 
   const handleLeave = () => {
     if (!startScreenActive) return;
+    if (legalPage) {
+      canvas.style.cursor = "default";
+      if (legalReturnHover) {
+        legalReturnHover = false;
+        drawStartScreen();
+      }
+      return;
+    }
     if (settingsOpen) {
       const overlay = getActiveControlsOverlay();
       overlay.clearPointer();
@@ -254,6 +370,14 @@ export function setupStartScreen({
 
   const handleKeyDown = (event) => {
     if (!startScreenActive || event.key !== "Escape") return;
+    if (legalPage) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      legalPage = null;
+      setOverlayActive(false);
+      drawStartScreen();
+      return;
+    }
     if (settingsOpen) {
       event.preventDefault();
       event.stopImmediatePropagation();
@@ -263,6 +387,28 @@ export function setupStartScreen({
       setOverlayActive(false);
       drawStartScreen();
     }
+  };
+
+  const handleWheel = (event) => {
+    if (!legalPage) return;
+    event.preventDefault();
+    const delta = event.deltaY;
+    legalScroll = Math.min(legalMaxScroll, Math.max(0, legalScroll + delta));
+    drawStartScreen();
+  };
+
+  const showLegalPage = (page) => {
+    legalPage = page;
+    legalScroll = 0;
+    legalMaxScroll = 0;
+    impressumLinkBounds = null;
+    legalReturnBounds = null;
+    settingsOpen = false;
+    startButtonHover = false;
+    setOverlayActive(false);
+    canvas.style.cursor = "pointer";
+    legalReturnHover = false;
+    drawStartScreen();
   };
 
   preloadStartAudio();
@@ -282,6 +428,17 @@ export function setupStartScreen({
   canvas.addEventListener("click", handleClick);
   canvas.addEventListener("mousemove", handleMove);
   canvas.addEventListener("mouseleave", handleLeave);
+  canvas.addEventListener("wheel", handleWheel, { passive: false });
   settingsToggle?.addEventListener("click", handleSettingsClick, true);
   window.addEventListener("keydown", handleKeyDown, true);
+  impressumLink?.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    showLegalPage("impressum");
+  });
+  privacyPolicyLink?.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    showLegalPage("privacy");
+  });
 }

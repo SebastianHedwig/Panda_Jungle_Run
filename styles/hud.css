@@ -216,3 +216,51 @@
     transform: rotate(-180deg);
   }
 }
+
+.legal-links {
+  position: absolute;
+  bottom: clamp(0.6rem, 2vw, 1rem);
+  left: 0;
+  right: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.4rem, 2vw, 0.8rem);
+  color: rgb(0, 110, 110);
+  font-family: "ComixLoud", sans-serif;
+  font-weight: 700;
+  font-size: clamp(0.7rem, 3vw, 1rem);
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.separator {
+  width: 0.125rem;
+  height: clamp(1.2rem, 5vw, 1.8rem);
+  border: 1.5px solid rgb(0, 110, 110);
+  pointer-events: none;
+}
+
+.impressum, .privacyPolicy {
+  cursor: pointer;
+  text-shadow: 0.2rem 0.05rem 0.8rem rgba(0, 0, 0, 0.8);
+  transform-origin: center;
+  transition: transform 0.2s ease;
+  pointer-events: auto;
+}
+
+.start-screen-active .legal-links {
+  display: flex;
+}
+
+.overlay-active .legal-links {
+  display: none !important;
+}
+
+.start-screen-active .impressum:hover,
+.start-screen-active .privacyPolicy:hover {
+  transform: scale(1.05);
+}
