@@ -6,6 +6,7 @@
   gap: clamp(0.4rem, 1.5vw, 1rem);
   padding: clamp(0.2rem, 1vw, 0.4rem);
   z-index: 2;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .hud-container-left {
@@ -32,12 +33,12 @@
   position: absolute;
   display: none;
   align-items: center;
-  gap: clamp(0.45rem, 2vw, 0.8rem);
+  gap: clamp(0.33rem, 1.5vw, 0.65rem);
   padding: clamp(0.35rem, 1.5vw, 0.6rem);
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 0.75rem;
   z-index: 3;
-  touch-action: manipulation;
+  touch-action: none;
   box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.35);
 }
 
@@ -59,9 +60,9 @@
 }
 
 .mobile-control-button {
-  width: clamp(2rem, 10vw, 2.5rem);
-  height: clamp(2rem, 10vw, 2.5rem);
-  padding: clamp(0.2rem, 1vw, 0.35rem);
+  width: clamp(1.6rem, 11vw, 3.8rem);
+  height: clamp(1.6rem, 11vw, 3.8rem);
+  padding: clamp(0.14rem, 1.8vw, 0.5rem);
   border: none;
   border-radius: 50%;
   background: linear-gradient(145deg, rgba(0, 180, 180, 0.35), rgba(0, 60, 60, 0.45));
@@ -73,6 +74,24 @@
   transition: transform 0.08s ease;
   user-select: none;
   -webkit-touch-callout: none;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 670px) {
+  .mobile-control-button {
+    width: clamp(1.1rem, 7.5vw, 2.6rem);
+    height: clamp(1.1rem, 7.5vw, 2.6rem);
+    padding: clamp(0.1rem, 1.2vw, 0.35rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobile-control-button {
+    width: clamp(2.4rem, 16.5vw, 5.7rem);
+    height: clamp(2.4rem, 16.5vw, 5.7rem);
+    padding: clamp(0.21rem, 2.7vw, 0.75rem);
+  }
 }
 
 .mobile-control-button:focus-visible {
@@ -110,18 +129,6 @@
   pointer-events: none;
 }
 
-@media (max-height: 430px) {
-  .mobile-control-container {
-    gap: 0.3rem;
-    padding: 0.3rem;
-  }
-
-  .mobile-control-button {
-    width: clamp(1.6rem, 10vw, 2rem);
-    height: clamp(1.6rem, 10vw, 2rem);
-    padding: clamp(0.15rem, 1vw, 0.2rem);
-  }
-}
 
 .hud-button {
   position: relative;
@@ -134,6 +141,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .hud-button img {
@@ -235,6 +243,7 @@
   margin-right: auto;
   z-index: 1;
   pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .separator {
@@ -250,6 +259,7 @@
   transform-origin: center;
   transition: transform 0.2s ease;
   pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .start-screen-active .legal-links {

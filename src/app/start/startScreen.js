@@ -73,6 +73,7 @@ export function setupStartScreen({
   let legalScroll = 0;
   let legalMaxScroll = 0;
   let legalReturnHover = false;
+  let touchScrollStartY = null;
 
   const loadStartImage = (src) =>
     waitForImage(loadImage(src)).then(({ ok, img }) => {
@@ -397,6 +398,28 @@ const drawStartScreen = () => {
     drawStartScreen();
   };
 
+  const handleTouchStart = (event) => {
+    if (!legalPage) return;
+    const touch = event.touches?.[0];
+    if (!touch) return;
+    touchScrollStartY = touch.clientY;
+  };
+
+  const handleTouchMove = (event) => {
+    if (!legalPage || touchScrollStartY === null) return;
+    const touch = event.touches?.[0];
+    if (!touch) return;
+    const delta = touchScrollStartY - touch.clientY;
+    legalScroll = Math.min(legalMaxScroll, Math.max(0, legalScroll + delta));
+    touchScrollStartY = touch.clientY;
+    event.preventDefault();
+    drawStartScreen();
+  };
+
+  const handleTouchEnd = () => {
+    touchScrollStartY = null;
+  };
+
   const showLegalPage = (page) => {
     legalPage = page;
     legalScroll = 0;
@@ -429,6 +452,10 @@ const drawStartScreen = () => {
   canvas.addEventListener("mousemove", handleMove);
   canvas.addEventListener("mouseleave", handleLeave);
   canvas.addEventListener("wheel", handleWheel, { passive: false });
+  canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+  canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+  canvas.addEventListener("touchend", handleTouchEnd);
+  canvas.addEventListener("touchcancel", handleTouchEnd);
   settingsToggle?.addEventListener("click", handleSettingsClick, true);
   window.addEventListener("keydown", handleKeyDown, true);
   impressumLink?.addEventListener("click", (event) => {

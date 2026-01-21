@@ -16,18 +16,31 @@ export function setupMobileControls() {
 
   function bindHold(button, key) {
     if (!button) return;
-    let isDown = false;
+    const activePointers = new Set();
 
     const press = (event) => {
       event?.preventDefault?.();
-      if (isDown) return;
-      isDown = true;
-      emitKeyDown(key);
+      const pointerId = event?.pointerId;
+      if (pointerId != null) {
+        if (activePointers.has(pointerId)) return;
+        activePointers.add(pointerId);
+      }
+      if (activePointers.size === 1 || pointerId == null) emitKeyDown(key);
     };
 
-    const release = () => {
-      if (!isDown) return;
-      isDown = false;
+    const release = (event) => {
+      const pointerId = event?.pointerId;
+      if (pointerId != null) {
+        if (!activePointers.has(pointerId)) return;
+        activePointers.delete(pointerId);
+        if (activePointers.size > 0) return;
+      }
+      emitKeyUp(key);
+    };
+
+    const cancelAll = () => {
+      if (activePointers.size === 0) return;
+      activePointers.clear();
       emitKeyUp(key);
     };
 
@@ -37,8 +50,7 @@ export function setupMobileControls() {
     });
     button.addEventListener("pointerup", release);
     button.addEventListener("pointercancel", release);
-    button.addEventListener("pointerleave", release);
-    button.addEventListener("pointerout", release);
+    button.addEventListener("lostpointercapture", cancelAll);
   }
 
   const btnLeft = document.querySelector(
@@ -68,18 +80,7 @@ export function setupMobileControls() {
     ?.closest("button");
 
   bindHold(btnJump, " ");
-
-  if (btnAttack) {
-    btnAttack.addEventListener("pointerdown", (event) => {
-      btnAttack.setPointerCapture?.(event.pointerId);
-      event?.preventDefault?.();
-      emitKeyDown("Enter");
-    });
-    btnAttack.addEventListener("pointerup", () => emitKeyUp("Enter"));
-    btnAttack.addEventListener("pointercancel", () => emitKeyUp("Enter"));
-    btnAttack.addEventListener("pointerleave", () => emitKeyUp("Enter"));
-    btnAttack.addEventListener("pointerout", () => emitKeyUp("Enter"));
-  }
+  bindHold(btnAttack, "Enter");
 
   const updateSlideEnabled = (enabled) => {
     if (!btnSlide) return;

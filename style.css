@@ -21,6 +21,7 @@ body {
   width: 100%;
   min-height: 100vh;
   gap: 2rem;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .canvas {
@@ -33,6 +34,7 @@ body {
   border: 0.3rem solid rgb(0, 139, 139);
   border-radius: 0.5rem;
   box-shadow: 0 1.5rem 4.375rem rgba(0, 0, 0, 0.8), 0 0.75rem 1.625rem rgba(0, 0, 0, 0.65);
+  -webkit-tap-highlight-color: transparent;
 }
 
 #game-container {
@@ -44,6 +46,7 @@ body {
   max-height: calc(100vh - 10rem);
   margin: 0 auto;
   align-self: center;
+  -webkit-tap-highlight-color: transparent;
 }
 
 #game-container.fullscreen-active,
