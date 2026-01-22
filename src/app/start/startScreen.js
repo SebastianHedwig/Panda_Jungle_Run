@@ -1,19 +1,18 @@
-import { GAME_HEIGHT, GAME_WIDTH, MUTE_TOGGLE_GAMESTART } from "../../config/config.js";
-import { GameAudio } from "../../game/audio/gameAudio.class.js";
+import { GAME_HEIGHT, GAME_WIDTH } from "../../config/config.js";
+import { mobileAudioUnlock } from "../audio/mobileAudioUnlock.js";
+import { startMusicController } from "../audio/webAudioUnlock.js";
 import { ControlsOverlay } from "../ui/overlay/controlsOverlay.class.js";
 import { ControlsOverlayMobile } from "../ui/overlay/controlsOverlayMobile.class.js";
 import { loadImage, waitForImage } from "../../core/game/assets/assetLoader.js";
 import { renderImpressumScreen } from "./impressumScreen.js";
 import { renderPrivacyPolicyScreen } from "./privacyPolicyScreen.js";
 
-export function setupStartScreen({
-  canvasId = "game",
-  onStart,
-  preloadMuted = MUTE_TOGGLE_GAMESTART,
-} = {}) {
+export function setupStartScreen({ canvasId = "game", onStart } = {}) {
   const canvas = document.getElementById(canvasId);
   const ctx = canvas?.getContext("2d");
   if (!canvas || !ctx) return;
+
+  mobileAudioUnlock.bind();
 
   const autoStart = (() => {
     try {
@@ -68,7 +67,6 @@ export function setupStartScreen({
   let startButtonHover = false;
   let settingsOpen = false;
   let startAssets = null;
-  let preloadedGameAudio = null;
   let legalPage = null; // "impressum" | "privacy" | null
   let legalScroll = 0;
   let legalMaxScroll = 0;
@@ -86,20 +84,9 @@ export function setupStartScreen({
     return document.fonts.load(`${descriptor} "${family}"`).catch(() => false);
   };
 
-  const preloadStartAudio = () => {
-    if (preloadedGameAudio) return;
-    preloadedGameAudio = new GameAudio();
-    preloadedGameAudio
-      .init()
-      .then(() => {
-        if (!preloadMuted) {
-          preloadedGameAudio?.play?.();
-        } else {
-          preloadedGameAudio?.audio?.pause?.();
-        }
-      })
-      .catch(() => {});
-  };
+  const { start: startMenuMusic, stop: stopMenuMusic } = startMusicController;
+
+  startMenuMusic();
 
   const drawLegalPage = () => {
     const isImpressum = legalPage === "impressum";
@@ -141,11 +128,13 @@ export function setupStartScreen({
 
     if (closeBounds) drawClose(closeBounds);
   };
-const drawStartScreen = () => {
+
+  const drawStartScreen = () => {
     if (!startAssets) return;
 
     canvas.width = GAME_WIDTH;
     canvas.height = GAME_HEIGHT;
+    const canvasCenterX = canvas.width / 2;
 
     const { bg, ui } = startAssets;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -153,9 +142,9 @@ const drawStartScreen = () => {
     const scale = Math.max(canvas.width / bg.width, canvas.height / bg.height);
     const drawW = bg.width * scale;
     const drawH = bg.height * scale;
-    const dx = (canvas.width - drawW) / 2;
-    const dy = (canvas.height - drawH) / 2;
-    ctx.drawImage(bg, dx, dy, drawW, drawH);
+    const bgDrawX = (canvas.width - drawW) / 2;
+    const bgDrawY = (canvas.height - drawH) / 2;
+    ctx.drawImage(bg, bgDrawX, bgDrawY, drawW, drawH);
 
     const title = "Panda Jungle Run";
     ctx.font = `small-caps ${Math.min(80, canvas.width * 0.06)}px "ComixLoud", sans-serif`;
@@ -168,8 +157,8 @@ const drawStartScreen = () => {
     ctx.shadowOffsetY = 2;
     ctx.lineWidth = 3;
     ctx.strokeStyle = "rgba(0, 100, 100, 0.9)";
-    ctx.strokeText(title, canvas.width / 2, canvas.height * 0.22);
-    ctx.fillText(title, canvas.width / 2, canvas.height * 0.22);
+    ctx.strokeText(title, canvasCenterX, canvas.height * 0.22);
+    ctx.fillText(title, canvasCenterX, canvas.height * 0.22);
     ctx.shadowBlur = 0;
 
     if (legalPage) {
@@ -178,26 +167,36 @@ const drawStartScreen = () => {
       return;
     }
 
-    const src = { x: 525, y: 130, w: 360, h: 135 };
+    const startButtonSprite = { x: 525, y: 130, w: 360, h: 135 };
     const buttonWidth = Math.min(canvas.width * 0.28, 260);
-    const buttonHeight = (src.h / src.w) * buttonWidth;
+    const buttonHeight = (startButtonSprite.h / startButtonSprite.w) * buttonWidth;
     const baseCenterX = (canvas.width - buttonWidth) / 2 + buttonWidth / 2;
     const baseCenterY = canvas.height * 0.32 + 170 + buttonHeight / 2;
     const hoverScale = startButtonHover ? 1.2 : 1;
     const btnW = buttonWidth * hoverScale;
     const btnH = buttonHeight * hoverScale;
-    const drawX = baseCenterX - btnW / 2;
-    const drawY = baseCenterY - btnH / 2;
+    const buttonDrawX = baseCenterX - btnW / 2;
+    const buttonDrawY = baseCenterY - btnH / 2;
 
     ctx.save();
     ctx.shadowColor = "rgba(255,255,255,0.7)";
     ctx.shadowBlur = 14;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 2;
-    ctx.drawImage(ui, src.x, src.y, src.w, src.h, drawX, drawY, btnW, btnH);
+    ctx.drawImage(
+      ui,
+      startButtonSprite.x,
+      startButtonSprite.y,
+      startButtonSprite.w,
+      startButtonSprite.h,
+      buttonDrawX,
+      buttonDrawY,
+      btnW,
+      btnH
+    );
     ctx.restore();
 
-    startButtonBounds = { x: drawX, y: drawY, w: btnW, h: btnH };
+    startButtonBounds = { x: buttonDrawX, y: buttonDrawY, w: btnW, h: btnH };
 
     if (settingsOpen && startAssets.menuBg) {
       const overlay = getActiveControlsOverlay();
@@ -274,10 +273,8 @@ const drawStartScreen = () => {
         settingsIcon.alt = "Settings";
       }
       settingsToggle?.classList.add("settings-toggle--spin");
-      if (preloadedGameAudio?.audio) {
-        preloadedGameAudio.audio.pause();
-        preloadedGameAudio.audio.currentTime = 0;
-      }
+      stopMenuMusic();
+      mobileAudioUnlock.unlock();
       onStart?.();
     }
   };
@@ -434,7 +431,6 @@ const drawStartScreen = () => {
     drawStartScreen();
   };
 
-  preloadStartAudio();
   Promise.all([
     loadStartImage("./assets/img/canvas-start-game_BG.jpg"),
     loadStartImage("./assets/img/Gui/Game-UI.png"),

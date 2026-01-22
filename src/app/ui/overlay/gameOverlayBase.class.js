@@ -48,12 +48,14 @@ export class GameOverlayBase {
     const easeOut = 1 - Math.pow(1 - animT, 3);
     const scale = this.minScale + (1 - this.minScale) * easeOut;
     const bgAlpha = this.maxBgAlpha * easeOut;
+    const canvasCenterX = canvas.width / 2;
+    const canvasCenterY = canvas.height / 2;
 
     ctx.save();
     ctx.fillStyle = `rgba(0, 0, 0, ${bgAlpha})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    return { easeOut, scale, centerX: canvas.width / 2, centerY: canvas.height / 2 };
+    return { easeOut, scale, centerX: canvasCenterX, centerY: canvasCenterY };
   }
 
   finishFrame(ctx) {
@@ -90,7 +92,9 @@ export class GameOverlayBase {
     }
 
     const drawFontSize = targetFontSize * scale;
-    const titleY = canvas.height / 2 + canvas.height * yOffsetRatio;
+    const canvasCenterX = canvas.width / 2;
+    const canvasCenterY = canvas.height / 2;
+    const titleY = canvasCenterY + canvas.height * yOffsetRatio;
     ctx.font = `900 ${drawFontSize}px "ComixLoud", sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -112,18 +116,19 @@ export class GameOverlayBase {
     ctx.shadowBlur = 14 * easeOut;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 6 * easeOut;
-    ctx.strokeText(title, canvas.width / 2, titleY);
+    ctx.strokeText(title, canvasCenterX, titleY);
 
     ctx.shadowColor = "rgba(255, 255, 255, 0.65)";
     ctx.shadowBlur = 18 * easeOut;
     ctx.fillStyle = gradient;
-    ctx.fillText(title, canvas.width / 2, titleY);
+    ctx.fillText(title, canvasCenterX, titleY);
 
     return { titleY, drawFontSize };
   }
 
   drawSubtitle(ctx, canvas, text, y, easeOut, { fontSizeCap = 48, fontSizeRatio = 0.06 } = {}) {
     const fontSize = Math.min(fontSizeCap, canvas.width * fontSizeRatio);
+    const canvasCenterX = canvas.width / 2;
     ctx.font = `800 ${fontSize}px "ComixLoud", sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -134,8 +139,8 @@ export class GameOverlayBase {
     ctx.shadowOffsetY = 3 * easeOut;
     ctx.strokeStyle = "#8a3b04";
     ctx.lineWidth = Math.max(3, fontSize * 0.12);
-    ctx.strokeText(text, canvas.width / 2, y);
-    ctx.fillText(text, canvas.width / 2, y);
+    ctx.strokeText(text, canvasCenterX, y);
+    ctx.fillText(text, canvasCenterX, y);
     return y + fontSize + canvas.height * 0.06;
   }
 

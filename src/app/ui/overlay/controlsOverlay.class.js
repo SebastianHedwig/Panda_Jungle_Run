@@ -66,12 +66,13 @@ export class ControlsOverlay {
 
     const { x, y, width, height } = panelRect;
     const titleY = y + height * 0.2 + 30;
+    const canvasCenterX = canvas.width / 2;
     this.renderer.applyTitleStyle(ctx, canvas.width);
-    ctx.fillText("Controls", canvas.width / 2, titleY);
+    ctx.fillText("Controls", canvasCenterX, titleY);
 
     const listStartY = titleY + 100;
     const lineHeight = Math.min(64, canvas.height * 0.065);
-    const labelX = canvas.width / 2 - 105;
+    const labelX = canvasCenterX - 105;
     const colonX = labelX + 27;
     const valueX = colonX + 27;
 

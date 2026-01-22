@@ -1,4 +1,5 @@
 import { SFX_VOLUME } from "../../config/config.js";
+import { mobileAudioUnlock } from "../../app/audio/mobileAudioUnlock.js";
 
 const DEFAULT_IMPACT_SRC = "./assets/sfx/weapon/weapon-impact.mp3";
 
@@ -13,7 +14,11 @@ export class BulletAudio {
     this.impactDurationMs = impactDurationMs;
     this.fadeOutMs = fadeOutMs;
     this.volume = volume;
-    this.impactBase = null;
+    this.poolSize = 2;
+    this.impactPool = null;
+
+    mobileAudioUnlock.addAudios(() => this.getWarmupAudios());
+    mobileAudioUnlock.bind();
   }
 
   createAudio(src) {
@@ -25,25 +30,27 @@ export class BulletAudio {
     return audio;
   }
 
-  getImpactAudio() {
-    if (!this.impactBase) {
-      this.impactBase = this.createAudio(this.impactSrc);
+  ensurePool() {
+    if (!this.impactPool) {
+      this.impactPool = Array.from({ length: this.poolSize }, () =>
+        this.createAudio(this.impactSrc)
+      );
+      this.poolIdx = 0;
     }
-    return this.impactBase;
+    return this.impactPool;
+  }
+
+  nextImpactAudio() {
+    const pool = this.ensurePool();
+    const audio = pool[this.poolIdx];
+    this.poolIdx = (this.poolIdx + 1) % pool.length;
+    audio.volume = this.volume;
+    audio.currentTime = 0;
+    return audio;
   }
 
   playImpact() {
-    const base = this.getImpactAudio();
-    let audio = base;
-
-    if (!base.paused && !base.ended) {
-      audio = base.cloneNode(true);
-      audio.volume = this.volume;
-      audio.preload = "auto";
-      audio.autoplay = false;
-    } else {
-      base.currentTime = 0;
-    }
+    const audio = this.nextImpactAudio();
 
     const stopAt = () => {
       audio.pause();
@@ -91,5 +98,9 @@ export class BulletAudio {
       audio.addEventListener("loadeddata", start, { once: true });
     }
     audio.load();
+  }
+
+  getWarmupAudios() {
+    return this.ensurePool()[0];
   }
 }

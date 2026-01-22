@@ -113,8 +113,9 @@ export class PlayerAudio {
       audio.addEventListener("canplaythrough", start, { once: true });
       audio.addEventListener("loadeddata", start, { once: true });
       audio.addEventListener("loadedmetadata", setOffset, { once: true });
+      audio.load();
     }
-    audio.load();
+
     this.bindUnlock();
     return audio;
   }

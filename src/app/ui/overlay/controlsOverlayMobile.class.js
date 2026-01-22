@@ -96,13 +96,14 @@ export class ControlsOverlayMobile {
 
     const { x, y, width, height } = panelRect;
     const titleY = y + height * 0.2 + 30;
+    const canvasCenterX = canvas.width / 2;
     this.renderer.applyTitleStyle(ctx, canvas.width);
-    ctx.fillText("Mobile Controls", canvas.width / 2, titleY);
+    ctx.fillText("Mobile Controls", canvasCenterX, titleY);
 
     const iconSize = Math.min(32, canvas.width * 0.05);
     const listStartY = titleY + 75;
     const lineHeight = Math.max(iconSize + 14, Math.min(68, canvas.height * 0.065));
-    const iconX = canvas.width / 2 - 100;
+    const iconX = canvasCenterX - 100;
     const valueX = iconX + iconSize + 30;
 
     this.renderer.applyBodyStyle(ctx, canvas.width);

@@ -1,6 +1,6 @@
 import { getPaused, initGame, setPaused } from "./core/game.js";
 import { MUTE_TOGGLE_GAMESTART, SET_FULLSCREEN } from "./config/config.js";
-import { installAudioTracking } from "./app/audioTracking.js";
+import { installAudioTracking } from "./app/audio/audioTracking.js";
 import { setupSoundToggle } from "./app/ui/controls/soundToggle.js";
 import { togglePauseState } from "./app/ui/controls/settingsToggle.js";
 import { setupFullscreenToggle, applyAutoFullscreen } from "./app/ui/controls/fullscreenToggle.js";
@@ -19,4 +19,4 @@ setupMobileControls();
 
 new ViewportManagement({ setPaused, getPaused });
 
-setupStartScreen({ onStart: initGame, preloadMuted: MUTE_TOGGLE_GAMESTART });
+setupStartScreen({ onStart: initGame });

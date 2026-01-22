@@ -1,4 +1,5 @@
 import { SFX_VOLUME } from "../../config/config.js";
+import { mobileAudioUnlock } from "../../app/audio/mobileAudioUnlock.js";
 
 const COIN_PICKUP = "./assets/sfx/coin/coin-pickup.mp3";
 const HEART_PICKUP = "./assets/sfx/heart/heart-pickup.mp3";
@@ -15,8 +16,11 @@ export class CollectablesAudio {
     this.heartSrc = heartSrc;
     this.weaponSrc = weaponSrc;
     this.volume = volume;
-    this.cache = new Map();
-    this.unlockHandler = null;
+    this.poolSize = 3;
+    this.cache = new Map(); // key -> { pool: Audio[], idx: number }
+
+    mobileAudioUnlock.addAudios(() => this.collectWarmupAudios());
+    mobileAudioUnlock.bind();
   }
 
   createAudio(src) {
@@ -28,27 +32,27 @@ export class CollectablesAudio {
     return el;
   }
 
-  getBaseAudio(key, src) {
-    let audio = this.cache.get(key);
-    if (!audio) {
-      audio = this.createAudio(src);
-      this.cache.set(key, audio);
+  ensurePool(key, src) {
+    let entry = this.cache.get(key);
+    if (!entry) {
+      const pool = Array.from({ length: this.poolSize }, () => this.createAudio(src));
+      entry = { pool, idx: 0 };
+      this.cache.set(key, entry);
     }
+    return entry;
+  }
+
+  nextAudioFromPool(key, src) {
+    const entry = this.ensurePool(key, src);
+    const audio = entry.pool[entry.idx];
+    entry.idx = (entry.idx + 1) % entry.pool.length;
+    audio.volume = this.volume;
+    audio.currentTime = 0;
     return audio;
   }
 
   playSound(key, src) {
-    const base = this.getBaseAudio(key, src);
-    let audio = base;
-
-    if (!base.paused && !base.ended) {
-      audio = base.cloneNode(true);
-      audio.volume = this.volume;
-      audio.preload = "auto";
-      audio.autoplay = false;
-    } else {
-      base.currentTime = 0;
-    }
+    const audio = this.nextAudioFromPool(key, src);
 
     const start = () => audio.play().catch(() => {});
     if (audio.readyState >= 2) start();
@@ -57,7 +61,6 @@ export class CollectablesAudio {
       audio.addEventListener("loadeddata", start, { once: true });
     }
     audio.load();
-    this.bindUnlock();
   }
 
   playCoin() {
@@ -72,21 +75,11 @@ export class CollectablesAudio {
     this.playSound("weapon", this.weaponSrc);
   }
 
-  bindUnlock() {
-    if (this.unlockHandler) return;
-    this.unlockHandler = () => {
-      this.unbindUnlock();
-    };
-    window.addEventListener("pointerdown", this.unlockHandler, { once: true });
-    window.addEventListener("keydown", this.unlockHandler, { once: true });
-    window.addEventListener("touchstart", this.unlockHandler, { once: true });
-  }
-
-  unbindUnlock() {
-    if (!this.unlockHandler) return;
-    window.removeEventListener("pointerdown", this.unlockHandler);
-    window.removeEventListener("keydown", this.unlockHandler);
-    window.removeEventListener("touchstart", this.unlockHandler);
-    this.unlockHandler = null;
+  collectWarmupAudios() {
+    return [
+      this.ensurePool("coin", this.coinSrc).pool[0],
+      this.ensurePool("heart", this.heartSrc).pool[0],
+      this.ensurePool("weapon", this.weaponSrc).pool[0],
+    ];
   }
 }

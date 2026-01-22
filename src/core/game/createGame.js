@@ -333,21 +333,21 @@ export function createGame({ canvasId = "game" } = {}) {
     ctx.fillStyle = "rgba(10, 16, 20, 0.85)";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    const cx = canvas.width / 2;
-    const cy = canvas.height / 2;
+    const canvasCenterX = canvas.width / 2;
+    const canvasCenterY = canvas.height / 2;
     const radius = 40;
     const angle = (loadingAnimTime / 500) % (Math.PI * 2);
     ctx.lineWidth = 8;
     ctx.strokeStyle = "rgba(0, 200, 200, 0.9)";
     ctx.beginPath();
-    ctx.arc(cx, cy, radius, angle, angle + Math.PI * 1.5);
+    ctx.arc(canvasCenterX, canvasCenterY, radius, angle, angle + Math.PI * 1.5);
     ctx.stroke();
 
     ctx.fillStyle = "#e5f7ff";
     ctx.font = "32px ComixLoud, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("Loading...", cx, cy + 80);
+    ctx.fillText("Loading...", canvasCenterX, canvasCenterY + 80);
 
     requestAnimationFrame(renderLoading);
   }

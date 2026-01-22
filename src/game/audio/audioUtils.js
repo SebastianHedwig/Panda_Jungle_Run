@@ -20,11 +20,11 @@ export function playWhenReady(audio, { beforePlay } = {}) {
     } catch (_) {}
     audio.play().catch(() => {});
   };
-  if (audio.readyState >= 2) start();
-  else {
+  if (audio.readyState >= 2) {
+    start();
+  } else {
     audio.addEventListener("canplaythrough", start, { once: true });
     audio.addEventListener("loadeddata", start, { once: true });
+    audio.load();
   }
-  audio.load();
 }
-

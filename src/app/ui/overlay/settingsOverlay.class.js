@@ -105,8 +105,9 @@ export class SettingsOverlay {
 
     const { y, height } = panelRect;
     const titleY = y + height * 0.18 + 70;
+    const canvasCenterX = canvas.width / 2;
     this.renderer.applyTitleStyle(ctx, canvas.width);
-    ctx.fillText("SETTINGS", canvas.width / 2, titleY);
+    ctx.fillText("SETTINGS", canvasCenterX, titleY);
 
     const pausedY = titleY + Math.min(26, canvas.height * 0.03) + 45;
     ctx.font = `600 ${Math.min(18, canvas.width * 0.02)}px "ComixLoud", sans-serif`;
@@ -115,7 +116,7 @@ export class SettingsOverlay {
     ctx.textBaseline = "middle";
     ctx.shadowColor = "rgba(0, 0, 0, 0)";
     ctx.shadowBlur = 0;
-    ctx.fillText("(game paused)", canvas.width / 2, pausedY);
+    ctx.fillText("(game paused)", canvasCenterX, pausedY);
 
     const listStartY = pausedY + Math.min(90, canvas.height * 0.09) + 50;
     const lineHeight = Math.min(100, canvas.height * 0.15);
@@ -135,7 +136,7 @@ export class SettingsOverlay {
       const textWidth = ctx.measureText(item).width;
       const padding = 30;
       const bounds = {
-        x: canvas.width / 2 - textWidth / 2 - padding / 2,
+        x: canvasCenterX - textWidth / 2 - padding / 2,
         y: yPos - lineHeight / 2,
         w: textWidth + padding,
         h: lineHeight,
@@ -152,7 +153,7 @@ export class SettingsOverlay {
       hoverAny = hoverAny || isHover;
 
       ctx.save();
-      ctx.translate(canvas.width / 2, yPos);
+      ctx.translate(canvasCenterX, yPos);
       ctx.scale(scale, scale);
       ctx.textAlign = "center";
       ctx.fillText(item, 0, 0);

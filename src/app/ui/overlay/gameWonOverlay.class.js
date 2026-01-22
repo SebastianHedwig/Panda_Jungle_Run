@@ -65,7 +65,8 @@ export class GameWonOverlay extends GameOverlayBase {
     const padding = Math.min(14, coinSize * 0.3);
     const gap = Math.min(18, coinSize * 0.35);
     const totalWidth = labelWidth + gap + valueWidth + padding + coinSize;
-    const startX = canvas.width / 2 - totalWidth / 2;
+    const canvasCenterX = canvas.width / 2;
+    const startX = canvasCenterX - totalWidth / 2;
 
     ctx.textAlign = "left";
     ctx.strokeText(labelText, startX, y);
