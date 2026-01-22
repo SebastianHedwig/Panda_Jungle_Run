@@ -1,4 +1,4 @@
-import { LegalScreenBase } from "./legalScreenBase.class";
+import { LegalScreenBase } from "./legalScreenBase.class.js";
 
 const PRIVACY_PARAGRAPHS = [
   "1. Data Protection at a Glance",
