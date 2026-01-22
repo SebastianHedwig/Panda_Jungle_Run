@@ -149,22 +149,16 @@
   height: 100%;
 }
 
-.fullscreen-toggle img {
-  transition: transform 0.15s ease;
-}
-
-.fullscreen-toggle:hover img,
-.fullscreen-toggle:focus-visible img {
-  transform: scale(1.25);
-}
-
+.fullscreen-toggle img,
 .settings-toggle img {
   transition: transform 0.15s ease;
 }
 
+.fullscreen-toggle:hover img,
+.fullscreen-toggle:focus-visible img,
 .settings-toggle:hover img,
 .settings-toggle:focus-visible img {
-  transform: scale(1.25);
+  transform: scale(1.2);
 }
 
 .settings-toggle.settings-toggle--spin:hover img,

@@ -6,7 +6,7 @@ const FAST_FORWARD_INACTIVE_SRC =
 export function setupMobileControls() {
   const buttons = document.querySelectorAll(".mobile-control-button");
   buttons.forEach((btn) =>
-    btn.addEventListener("contextmenu", (e) => e.preventDefault())
+    btn.addEventListener("contextmenu", (event) => event.preventDefault())
   );
 
   const emitKeyDown = (key) =>
@@ -122,6 +122,5 @@ export function setupMobileControls() {
     setRunMode(!isActive);
   });
 
-  // ensure initial state
   setRunMode(false);
 }

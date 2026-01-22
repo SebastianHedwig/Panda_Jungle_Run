@@ -4,6 +4,8 @@ export function createWebAudioUnlock({ src, volume = MUSIC_VOLUME ?? 0.2 } = {})
   let audio = null;
   let unlockHandlers = [];
 
+  const getGlobalMuted = () => window?.__isMuted === true;
+
   const clearUnlockHandlers = () => {
     if (!unlockHandlers.length) return;
     unlockHandlers.forEach(({ event: eventName, handler }) => window.removeEventListener(eventName, handler));
@@ -28,13 +30,13 @@ export function createWebAudioUnlock({ src, volume = MUSIC_VOLUME ?? 0.2 } = {})
     return audio
       .play()
       .then(() => {
-        audio.muted = false;
+        audio.muted = getGlobalMuted();
         audio.volume = volume;
         clearUnlockHandlers();
         return true;
       })
       .catch(() => {
-        audio.muted = false;
+        audio.muted = getGlobalMuted();
         audio.volume = volume;
         bindUnlock(() => audio.play().catch(() => {}));
         return false;
@@ -46,7 +48,7 @@ export function createWebAudioUnlock({ src, volume = MUSIC_VOLUME ?? 0.2 } = {})
       audio = new Audio(src);
       audio.loop = true;
       audio.volume = 0;
-      audio.muted = true;
+      audio.muted = getGlobalMuted();
       audio.preload = "auto";
     }
 
