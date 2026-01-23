@@ -1,28 +1,11 @@
 import { MovableObject } from "../../../engine/physics/movableObject.class.js";
 import { HudPopup } from "../../effects/hudPopup.class.js";
-import {
-  DEBUG_MODE,
-  PLAYER_MAX_HEARTS,
-  PLAYER_SLIDE_DAMAGE,
-} from "../../../config/config.js";
+import { DEBUG_MODE, PLAYER_MAX_HEARTS, PLAYER_SLIDE_DAMAGE } from "../../../config/config.js";
 import { PlayerAudio } from "../../audio/playerAudio.class.js";
 import { updatePlayer } from "./playerUpdate.js";
 import { renderPlayer } from "./playerRender.js";
-import {
-  applyDizzy,
-  handleDeathLanding,
-  handleFallOffWorld,
-  respawnFromFall,
-  startDeath,
-  startHurt,
-  updateHurt,
-} from "./playerHealth.js";
-import {
-  startAttack,
-  startShoot,
-  updateAttack,
-  updateShoot,
-} from "./playerCombat.js";
+import { applyDizzy, handleDeathLanding, handleFallOffWorld, respawnFromFall, startDeath, startHurt, updateHurt } from "./playerHealth.js";
+import { startAttack, startShoot, updateAttack, updateShoot } from "./playerCombat.js";
 import { handleLandingAudio, startSlide } from "./playerSlide.js";
 
 const DEBUG_HITBOX = DEBUG_MODE;
@@ -146,7 +129,6 @@ export class Player extends MovableObject {
 
   }
 
-  /** ----- HEART STATES FOR HUD ----- */
   get heartStates() {
     const s = [];
     for (let i = 0; i < this.maxHearts; i++) {
@@ -158,7 +140,6 @@ export class Player extends MovableObject {
     return s;
   }
 
-  /** ----- DAMAGE ----- */
   takeDamage(amount = 1, opts = {}) {
     if (this.isDead) return;
 
@@ -188,7 +169,6 @@ export class Player extends MovableObject {
     }
   }
 
-  /** ----- HEAL ----- */
   heal(amount = 1) {
     if (this.isDead) return;
 
@@ -213,7 +193,6 @@ export class Player extends MovableObject {
     this.healthPulse = 1.0;
   }
 
-  /** ----- COINS ----- */
   addCoins(amount) {
     this.coins += amount;
     this.hudPulse = 1.0;
@@ -257,7 +236,6 @@ export class Player extends MovableObject {
     handleLandingAudio(this, playerAudio);
   }
 
-  /** ----- ANIMATION ----- */
   setAnimation(frames) {
     if (this.currentAnimation !== frames) {
       this.currentAnimation = frames;
@@ -277,7 +255,6 @@ export class Player extends MovableObject {
     }
   }
 
-  /** ----- ATTACK ----- */
   startAttack() {
     const started = startAttack(this, playerAudio);
     if (started) this.attackQueued = false;
@@ -292,7 +269,6 @@ export class Player extends MovableObject {
     updateHurt(this, dt);
   }
 
-  /** ----- SHOOT ----- */
   startShoot() {
     return startShoot(this, playerAudio);
   }
@@ -301,17 +277,14 @@ export class Player extends MovableObject {
     updateShoot(this, dt);
   }
 
-  /** ----- WORLD FALL DEATH ----- */
   handleFallOffWorld(grounded, bottom, canvasHeight) {
     handleFallOffWorld(this, grounded, bottom, canvasHeight);
   }
 
-  /** ----- UPDATE LOOP ----- */
   update(dt, input) {
     updatePlayer(this, dt, input, playerAudio);
   }
 
-  /** ----- RENDER ----- */
   render(ctx, camera) {
     renderPlayer(this, ctx, camera, { debugHitbox: DEBUG_HITBOX });
   }

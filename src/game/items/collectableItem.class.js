@@ -23,13 +23,13 @@ export class CollectableItem {
     this.collected = false;
     this.pickupAnimating = false;
 
-    this.scale = 1;
-    this.alpha = 1;
-    this.rotation = 0;
+    this.scaleFactor = 1;
+    this.opacity = 1;
+    this.rotationAngle = 0;
 
     this.dropPhysics = false;
-    this.vx = 0;
-    this.vy = 0;
+    this.velocityX = 0;
+    this.velocityY = 0;
     this.gravity = 1800;
     this.pickupDelay = this.type === "gun" ? 1 : 0;
 
@@ -53,10 +53,7 @@ export class CollectableItem {
       heart: Array.from(
         { length: 49 },
         (_, i) =>
-          `assets/img/PowerUps/heart/frame-${String(i + 1).padStart(
-            2,
-            "0"
-          )}.gif`
+          `assets/img/PowerUps/heart/frame-${String(i + 1).padStart(2, "0")}.gif`
       ),
       gun: ["assets/img/Character/Spriter_files/gun.png"],
     };
@@ -94,46 +91,46 @@ export class CollectableItem {
 
     // Pickup FX
     if (this.pickupAnimating) {
-      this.scale += dt * 4;
-      this.alpha -= dt * 3;
-      this.rotation += dt * 6;
+      this.scaleFactor += dt * 4;
+      this.opacity -= dt * 3;
+      this.rotationAngle += dt * 6;
 
-      if (this.alpha <= 0) {
+      if (this.opacity <= 0) {
         this.pickupAnimating = false;
       }
     }
   }
 
   /** ---------- DROP ARC ---------- */
-  startDrop(vx = 0, vy = -300) {
+  startDrop(velocityX = 0, velocityY = -300) {
     this.dropPhysics = true;
-    this.vx = vx;
-    this.vy = vy;
+    this.velocityX = velocityX;
+    this.velocityY = velocityY;
   }
 
   applyDropPhysics(dt) {
-    this.vy += this.gravity * dt;
-    this.x += this.vx * dt;
-    this.y += this.vy * dt;
+    this.velocityY += this.gravity * dt;
+    this.x += this.velocityX * dt;
+    this.y += this.velocityY * dt;
 
     const world = this.world;
     const ground = world?.baseGround ?? world?.canvas?.height ?? 1000;
-    const prevBottom = this.y + this.height - this.vy * dt;
+    const prevBottom = this.y + this.height - this.velocityY * dt;
     const currBottom = this.y + this.height;
 
     if (world?.platforms?.length) {
-      for (const p of world.platforms) {
-        if (!p.supportsLanding) continue;
-        const overlapsX = this.x + this.width > p.left && this.x < p.right;
+      for (const platform of world.platforms) {
+        if (!platform.supportsLanding) continue;
+        const overlapsX = this.x + this.width > platform.left && this.x < platform.right;
         if (
           overlapsX &&
-          this.vy > 0 &&
-          prevBottom <= p.top &&
-          currBottom >= p.top
+          this.velocityY > 0 &&
+          prevBottom <= platform.top &&
+          currBottom >= platform.top
         ) {
-          this.y = p.top - this.height;
-          this.vy = 0;
-          this.vx *= 0.4;
+          this.y = platform.top - this.height;
+          this.velocityY = 0;
+          this.velocityX *= 0.4;
           this.dropPhysics = false;
           return;
         }
@@ -142,15 +139,15 @@ export class CollectableItem {
 
     if (currBottom >= ground) {
       this.y = ground - this.height;
-      this.vy = 0;
-      this.vx = 0;
+      this.velocityY = 0;
+      this.velocityX = 0;
       this.dropPhysics = false;
     }
   }
 
   /** ---------- RENDER ---------- */
   draw(ctx, camera) {
-    if (!this.images.length || this.alpha <= 0) return;
+    if (!this.images.length || this.opacity <= 0) return;
 
     const img = this.images[this.currentImage];
     if (!img) return;
@@ -159,14 +156,14 @@ export class CollectableItem {
     const screenY = this.y - (camera?.y || 0);
 
     ctx.save();
-    ctx.globalAlpha = this.alpha;
+    ctx.globalAlpha = this.opacity;
 
-    const cx = screenX + this.width / 2;
-    const cy = screenY + this.height / 2;
+    const centerX = screenX + this.width / 2;
+    const centerY = screenY + this.height / 2;
 
-    ctx.translate(cx, cy);
-    ctx.scale(this.scale, this.scale);
-    ctx.rotate(this.rotation);
+    ctx.translate(centerX, centerY);
+    ctx.scale(this.scaleFactor, this.scaleFactor);
+    ctx.rotate(this.rotationAngle);
 
     ctx.drawImage(
       img,
@@ -182,11 +179,22 @@ export class CollectableItem {
   /** ---------- COLLISION CHECK ---------- */
   isColliding(player) {
     if (this.pickupDelay > 0) return false;
+
+    const itemLeft = this.x;
+    const itemRight = this.x + this.width;
+    const itemTop = this.y;
+    const itemBottom = this.y + this.height;
+
+    const playerLeft = player.x;
+    const playerRight = player.x + player.width;
+    const playerTop = player.y;
+    const playerBottom = player.y + player.height;
+
     return !(
-      player.x > this.x + this.width ||
-      player.x + player.width < this.x ||
-      player.y > this.y + this.height ||
-      player.y + player.height < this.y
+      playerLeft > itemRight ||
+      playerRight < itemLeft ||
+      playerTop > itemBottom ||
+      playerBottom < itemTop
     );
   }
 
@@ -196,27 +204,29 @@ export class CollectableItem {
 
     this.collected = true;
     this.pickupAnimating = true;
+    const itemX = this.x;
+    const itemY = this.y;
 
     if (this.type === "coin") {
       collectablesAudio.playCoin();
       player.addCoins(10);
-      player.world.hudPopups.push(new HudPopup("+10", this.x, this.y, "coin"));
+      player.world.hudPopups.push(new HudPopup("+10", itemX, itemY, "coin"));
     }
 
     if (this.type === "heart") {
       collectablesAudio.playHeart();
       player.heal(2);
-      player.world.hudPopups.push(new HudPopup("❤️", this.x, this.y, "heart"));
+      player.world.hudPopups.push(new HudPopup("❤️", itemX, itemY, "heart"));
     }
 
     if (this.type === "gun") {
       collectablesAudio.playWeapon();
       player.addBullets?.(5);
-      player.world.hudPopups.push(new HudPopup("+5", this.x, this.y, "gun"));
+      player.world.hudPopups.push(new HudPopup("+5", itemX, itemY, "gun"));
     }
 
-    this.scale = 1;
-    this.alpha = 1;
-    this.rotation = 0;
+    this.scaleFactor = 1;
+    this.opacity = 1;
+    this.rotationAngle = 0;
   }
 }

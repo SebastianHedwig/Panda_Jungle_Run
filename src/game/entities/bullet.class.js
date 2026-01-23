@@ -2,18 +2,19 @@ import { BulletAudio } from "../audio/bulletAudio.class.js";
 import { PLAYER_BULLET_DAMAGE } from "../../config/config.js";
 
 const bulletAudio = new BulletAudio();
+const EXPLOSION_BASE_SIZE = 64;
 
 export class Bullet {
-  constructor(x, y, direction, world) {
-    this.x = x;
-    this.y = y;
-    this.vx = 900 * direction;
+  constructor(startX, startY, direction, world) {
+    this.positionX = startX;
+    this.positionY = startY;
+    this.velocityX = 900 * direction;
 
     this.width = 32;
     this.height = 16;
-    this.scale = 1.2;
+    this.scaleFactor = 1.2;
 
-    this.direction = direction;
+    this.facingDirection = direction;
     this.world = world;
     this.remove = false;
 
@@ -22,40 +23,46 @@ export class Bullet {
   }
 
   getBounds() {
+    const left = this.positionX;
+    const top = this.positionY;
+    const width = this.width * this.scaleFactor;
+    const height = this.height * this.scaleFactor;
     return {
-      x: this.x,
-      y: this.y,
-      width: this.width * this.scale,
-      height: this.height * this.scale,
+      left,
+      top,
+      width,
+      height,
+      right: left + width,
+      bottom: top + height,
     };
   }
 
   update(dt, enemies = []) {
-    this.x += this.vx * dt;
+    this.positionX += this.velocityX * dt;
 
     const bounds = this.getBounds();
     const shouldPlayImpactSound = !this.isBeyondCanvasMargin(50);
 
-    for (const p of this.world.platforms || []) {
+    for (const platform of this.world.platforms || []) {
       const hit =
-        bounds.x < p.right &&
-        bounds.x + bounds.width > p.left &&
-        bounds.y < p.bottom &&
-        bounds.y + bounds.height > p.top;
+        bounds.left < platform.right &&
+        bounds.right > platform.left &&
+        bounds.top < platform.bottom &&
+        bounds.bottom > platform.top;
 
       if (hit) {
         this.remove = true;
         if (shouldPlayImpactSound) bulletAudio.playImpact();
         this.world.spawnExplosion(
-          this.x + bounds.width / 2,
-          this.y + bounds.height / 2
+          this.positionX + bounds.width / 2,
+          this.positionY + bounds.height / 2
         );
         return;
       }
     }
 
     // OUT OF WORLD → remove
-    if (this.x < -200 || this.x > this.world.width + 200) {
+    if (this.positionX < -200 || this.positionX > this.world.width + 200) {
       this.remove = true;
       return;
     }
@@ -65,15 +72,11 @@ export class Bullet {
       if (this.collidesWith(enemy)) {
         this.remove = true;
         if (shouldPlayImpactSound) bulletAudio.playImpact();
-        this.world.spawnExplosion(this.x, this.y);
+        this.world.spawnExplosion(this.positionX, this.positionY);
         enemy.takeDamage?.(PLAYER_BULLET_DAMAGE);
         if (!enemy.isDead && enemy.health > 0 && !enemy.disableHitEffect) {
-          this.world.spawnHitEffect?.(
-            enemy.x,
-            enemy.y,
-            enemy.width,
-            enemy.height
-          );
+          const { x: enemyX, y: enemyY, width: enemyWidth, height: enemyHeight } = enemy;
+          this.world.spawnHitEffect?.(enemyX, enemyY, enemyWidth, enemyHeight);
         }
       }
     });
@@ -83,36 +86,36 @@ export class Bullet {
     const bounds = this.getBounds();
     const target = obj.getHitbox ? obj.getHitbox() : obj;
     return (
-      bounds.x < target.x + target.width &&
-      bounds.x + bounds.width > target.x &&
-      bounds.y < target.y + target.height &&
-      bounds.y + bounds.height > target.y
+      bounds.left < target.x + target.width &&
+      bounds.right > target.x &&
+      bounds.top < target.y + target.height &&
+      bounds.bottom > target.y
     );
   }
 
   render(ctx, camera) {
-    const sx = this.x - camera.x;
-    const sy = this.y - camera.y;
+    const screenX = this.positionX - camera.x;
+    const screenY = this.positionY - camera.y;
 
     ctx.save();
 
     // Flip when facing left
-    if (this.direction === -1) {
+    if (this.facingDirection === -1) {
       ctx.scale(-1, 1);
       ctx.drawImage(
         this.image,
-        -(sx + this.width * this.scale),
-        sy,
-        this.width * this.scale,
-        this.height * this.scale
+        -(screenX + this.width * this.scaleFactor),
+        screenY,
+        this.width * this.scaleFactor,
+        this.height * this.scaleFactor
       );
     } else {
       ctx.drawImage(
         this.image,
-        sx,
-        sy,
-        this.width * this.scale,
-        this.height * this.scale
+        screenX,
+        screenY,
+        this.width * this.scaleFactor,
+        this.height * this.scaleFactor
       );
     }
 
@@ -124,10 +127,10 @@ export class Bullet {
     if (!canvas) return false;
     const bounds = this.getBounds();
     const camera = this.world?.camera;
-    const camX = camera?.x || 0;
-    const camY = camera?.y || 0;
-    const screenX = bounds.x - camX;
-    const screenY = bounds.y - camY;
+    const cameraX = camera?.x || 0;
+    const cameraY = camera?.y || 0;
+    const screenX = bounds.left - cameraX;
+    const screenY = bounds.top - cameraY;
     return (
       screenX + bounds.width < -margin ||
       screenX > canvas.width + margin ||
@@ -142,32 +145,32 @@ export class Bullet {
    =========================================================== */
 
 export class Explosion {
-  constructor(x, y) {
-    this.x = x;
-    this.y = y;
+  constructor(centerX, centerY) {
+    this.positionX = centerX;
+    this.positionY = centerY;
 
     this.frames = [];
-    this.current = 0;
-    this.time = 0;
+    this.currentFrameIndex = 0;
+    this.frameTime = 0;
     this.frameDuration = 0.06;
-    this.scale = 1.6;
+    this.scaleFactor = 1.6;
     this.finished = false;
 
-    for (let i = 1; i <= 7; i++) {
+    for (let frameIndex = 1; frameIndex <= 7; frameIndex++) {
       const img = new Image();
-      img.src = `assets/img/Explosions/EXPLOSIONS${i}.png`;
+      img.src = `assets/img/Explosions/EXPLOSIONS${frameIndex}.png`;
       this.frames.push(img);
     }
   }
 
   update(dt) {
-    this.time += dt;
+    this.frameTime += dt;
 
-    if (this.time >= this.frameDuration) {
-      this.time = 0;
-      this.current++;
+    if (this.frameTime >= this.frameDuration) {
+      this.frameTime = 0;
+      this.currentFrameIndex++;
 
-      if (this.current >= this.frames.length) {
+      if (this.currentFrameIndex >= this.frames.length) {
         this.finished = true;
         return;
       }
@@ -177,16 +180,17 @@ export class Explosion {
   render(ctx, camera) {
     if (this.finished) return;
 
-    const img = this.frames[this.current];
+    const img = this.frames[this.currentFrameIndex];
     if (!img) return;
 
-    const size = 64 * this.scale;
+    const explosionWidth = EXPLOSION_BASE_SIZE * this.scaleFactor;
+    const explosionHeight = explosionWidth;
     ctx.drawImage(
       img,
-      this.x - camera.x - size / 2,
-      this.y - camera.y - size / 2,
-      size,
-      size
+      this.positionX - camera.x - explosionWidth / 2,
+      this.positionY - camera.y - explosionHeight / 2,
+      explosionWidth,
+      explosionHeight
     );
   }
 }

@@ -107,7 +107,10 @@
 }
 
 .overlay-active .mobile-control-container,
-.overlay-active .hud-container {
+.overlay-active .hud-container,
+.start-screen-active .mobile-control-container,
+.hide-fullscreen-toggle,
+.overlay-active .legal-links {
   display: none !important;
 }
 
@@ -116,10 +119,6 @@
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
-}
-
-.start-screen-active .mobile-control-container {
-  display: none !important;
 }
 
 .mobile-control-button img {
@@ -206,10 +205,6 @@
   max-height: 100vh !important;
 }
 
-.hide-fullscreen-toggle {
-  display: none !important;
-}
-
 @keyframes gear-spin {
   from {
     transform: rotate(0deg);
@@ -258,10 +253,6 @@
 
 .start-screen-active .legal-links {
   display: flex;
-}
-
-.overlay-active .legal-links {
-  display: none !important;
 }
 
 .start-screen-active .impressum:hover,

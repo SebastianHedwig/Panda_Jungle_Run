@@ -67,7 +67,7 @@ export function generateCoinsMixed(
   const coinsAbove = Math.floor(totalCount * ratioAbovePlatforms);
 
   /** ----- COINS ----- */
-  for (let i = 0; i < coinsAbove; i++) {
+  for (let spawnAttempt = 0; spawnAttempt < coinsAbove; spawnAttempt++) {
     const platform =
       world.platforms[Math.floor(Math.random() * world.platforms.length)];
     const width = platform.right - platform.left;
@@ -87,8 +87,8 @@ export function generateCoinsMixed(
   }
 
   /** ----- RANDOM COINS ----- */
-  let tries = 0;
-  while (coins.length < totalCount && tries < totalCount * 40) {
+  let placementAttempts = 0;
+  while (coins.length < totalCount && placementAttempts < totalCount * 40) {
     const xMin = MIN_COIN_X;
     const xMax = world.width - 100;
     if (xMax <= xMin) break;
@@ -100,7 +100,7 @@ export function generateCoinsMixed(
       coins.push(new CollectableItem(x, y, "coin"));
     }
 
-    tries++;
+    placementAttempts++;
   }
 
   return coins;
@@ -113,11 +113,11 @@ export function generateCoinArcs(world, maxArcs = 4) {
 
   const platforms = world.platforms.sort((a, b) => a.left - b.left);
 
-  for (let i = 0; i < platforms.length - 1; i++) {
+  for (let platformIndex = 0; platformIndex < platforms.length - 1; platformIndex++) {
     if (created >= maxArcs) break;
 
-    const p1 = platforms[i];
-    const p2 = platforms[i + 1];
+    const p1 = platforms[platformIndex];
+    const p2 = platforms[platformIndex + 1];
 
     const gap = p2.left - p1.right;
     const heightDiff = Math.abs(p2.top - p1.top);
@@ -130,12 +130,12 @@ export function generateCoinArcs(world, maxArcs = 4) {
     const arcWidth = Math.min(gap * 0.85, 350);
     const coinsInArc = Math.floor(arcWidth / 70);
 
-    for (let j = 0; j < coinsInArc; j++) {
-      const t = j / (coinsInArc - 1);
+    for (let coinIndex = 0; coinIndex < coinsInArc; coinIndex++) {
+      const arcProgress = coinIndex / (coinsInArc - 1);
 
-      const x = p1.right + gap * t - 25;
+      const x = p1.right + gap * arcProgress - 25;
       const y =
-        p1.top - 110 - Math.sin(t * Math.PI) * 160 + (p2.top - p1.top) * t;
+        p1.top - 110 - Math.sin(arcProgress * Math.PI) * 160 + (p2.top - p1.top) * arcProgress;
 
       if (x < MIN_COIN_X) continue;
 
@@ -161,14 +161,15 @@ export function placeGuns(world, count = 4) {
 
   const heartCenters =
     world.collectables
-      ?.filter((c) => c.type === "heart")
-      .map((c) => ({ x: c.x + c.width / 2, y: c.y + c.height / 2 })) || [];
+      ?.filter((collectable) => collectable.type === "heart")
+      .map((collectable) => ({
+        x: collectable.x + collectable.width / 2,
+        y: collectable.y + collectable.height / 2,
+      })) || [];
 
   const farFromHearts = (x, y) =>
-    heartCenters.every((h) => {
-      const dx = h.x - x;
-      const dy = h.y - y;
-      return Math.hypot(dx, dy) >= minHeartDistance;
+    heartCenters.every((heartCenter) => {
+      return Math.hypot(heartCenter.x - x, heartCenter.y - y) >= minHeartDistance;
     });
 
   const targets = [
@@ -178,33 +179,37 @@ export function placeGuns(world, count = 4) {
     WORLD_WIDTH * 0.86,
   ].slice(0, count);
 
-  targets.forEach((x) => {
-    const platform = world.platforms.find((p) => x >= p.left && x <= p.right);
-    if (!platform) return;
-
-    const clampedX = Math.min(
-      Math.max(x, platform.left + 10),
-      platform.right - 60
+  targets.forEach((targetX) => {
+    const platformUnderTarget = world.platforms.find(
+      (platform) => targetX >= platform.left && targetX <= platform.right
     );
-    const y = platform.top - 80;
+    if (!platformUnderTarget) return;
 
-    const offsets = [0, 150, -150, 250, -250];
+    const platformMinX = platformUnderTarget.left + 10;
+    const platformMaxX = platformUnderTarget.right - 60;
+    const baseX = Math.min(Math.max(targetX, platformMinX), platformMaxX);
+    const gunY = platformUnderTarget.top - 80;
+
+    const candidateOffsets = [0, 150, -150, 250, -250];
     let placed = false;
-    for (const off of offsets) {
-      const px = Math.min(
-        Math.max(clampedX + off, platform.left + 10),
-        platform.right - 60
+
+    for (const offset of candidateOffsets) {
+      const candidateX = Math.min(
+        Math.max(baseX + offset, platformMinX),
+        platformMaxX
       );
-      const centerX = px + 25;
-      const centerY = y + 25;
+      const centerX = candidateX + 25;
+      const centerY = gunY + 25;
+
       if (farFromHearts(centerX, centerY)) {
-        guns.push(new CollectableItem(px, y, "gun"));
+        guns.push(new CollectableItem(candidateX, gunY, "gun"));
         placed = true;
         break;
       }
     }
+
     if (!placed) {
-      guns.push(new CollectableItem(clampedX, y, "gun"));
+      guns.push(new CollectableItem(baseX, gunY, "gun"));
     }
   });
 
@@ -224,38 +229,42 @@ export function placeEnemiesMixed(
   if (totalRequested === 0) return;
 
   const platforms = world.platforms
-    .filter((p) => p.width > 80 && p.top <= world.baseGround)
-    .filter((p) => p.supportsLanding)
-    .filter((p) => p.left > 200)
-    .filter((p) => p.right <= WORLD_WIDTH - 1000);
+    .filter((platform) => platform.width > 80 && platform.top <= world.baseGround)
+    .filter((platform) => platform.supportsLanding)
+    .filter((platform) => platform.left > 200)
+    .filter((platform) => platform.right <= WORLD_WIDTH - 1000);
 
-  for (let i = platforms.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [platforms[i], platforms[j]] = [platforms[j], platforms[i]];
+  // Shuffle platforms to randomize placement order
+  for (let platformIndex = platforms.length - 1; platformIndex > 0; platformIndex--) {
+    const swapIndex = Math.floor(Math.random() * (platformIndex + 1));
+    [platforms[platformIndex], platforms[swapIndex]] = [platforms[swapIndex], platforms[platformIndex]];
   }
+  // (Fisher‑Yates‑Shuffle) 
+  const enemyMix = [];
+  for (let enemyIndex = 0; enemyIndex < count1; enemyIndex++) enemyMix.push("e1");
+  for (let enemyIndex = 0; enemyIndex < count2; enemyIndex++) enemyMix.push("e2");
+  for (let enemyIndex = 0; enemyIndex < count3; enemyIndex++) enemyMix.push("e3");
 
-  const mix = [];
-  for (let i = 0; i < count1; i++) mix.push("e1");
-  for (let i = 0; i < count2; i++) mix.push("e2");
-  for (let i = 0; i < count3; i++) mix.push("e3");
-  for (let i = mix.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [mix[i], mix[j]] = [mix[j], mix[i]];
+  // Shuffle enemy mix to randomize which type goes where
+  for (let mixIndex = enemyMix.length - 1; mixIndex > 0; mixIndex--) {
+    const swapIndex = Math.floor(Math.random() * (mixIndex + 1));
+    [enemyMix[mixIndex], enemyMix[swapIndex]] = [enemyMix[swapIndex], enemyMix[mixIndex]];
   }
 
   const enemies = [];
-  const usable = Math.min(platforms.length, mix.length);
-  for (let i = 0; i < usable; i++) {
-    const p = platforms[i];
-    const ex = Math.min(Math.max(p.left + 60, p.left + 20), p.right - 120);
-    const ey = p.top - 110;
-    const type = mix[i];
-    if (type === "e2" && enemy2Sprites) {
-      enemies.push(new Enemy2(ex, ey, enemy2Sprites, world));
-    } else if (type === "e3" && enemy3Sprites) {
-      enemies.push(new Enemy3(ex, ey, enemy3Sprites, world));
+  const usable = Math.min(platforms.length, enemyMix.length);
+  for (let placementIndex = 0; placementIndex < usable; placementIndex++) {
+    const platform = platforms[placementIndex];
+    const enemyX = Math.min(Math.max(platform.left + 60, platform.left + 20), platform.right - 120);
+    const enemyY = platform.top - 110;
+    const enemyType = enemyMix[placementIndex];
+
+    if (enemyType === "e2" && enemy2Sprites) {
+      enemies.push(new Enemy2(enemyX, enemyY, enemy2Sprites, world));
+    } else if (enemyType === "e3" && enemy3Sprites) {
+      enemies.push(new Enemy3(enemyX, enemyY, enemy3Sprites, world));
     } else if (enemy1Sprites) {
-      enemies.push(new Enemy1(ex, ey, enemy1Sprites, world));
+      enemies.push(new Enemy1(enemyX, enemyY, enemy1Sprites, world));
     }
   }
 
@@ -264,28 +273,29 @@ export function placeEnemiesMixed(
 
 export function placeHearts(world, count = 4) {
   const validHearts = [];
+  const heartYOffset = 80;
 
-  const minX = WORLD_WIDTH * 0.25;
-  const midX = WORLD_WIDTH * 0.5;
-  const maxX = WORLD_WIDTH * 0.95;
+  const spawnMinX = WORLD_WIDTH * 0.25;
+  const spawnMidX = WORLD_WIDTH * 0.5;
+  const spawnMaxX = WORLD_WIDTH * 0.95;
   const maxHeartX = WORLD_WIDTH - 50;
 
   const positions = [
-    Math.random() * (WORLD_WIDTH * 0.2) + minX,
-    Math.random() * (WORLD_WIDTH * 0.25) + midX,
-    Math.random() * (WORLD_WIDTH * 0.1) + maxX,
+    Math.random() * (WORLD_WIDTH * 0.2) + spawnMinX,
+    Math.random() * (WORLD_WIDTH * 0.25) + spawnMidX,
+    Math.random() * (WORLD_WIDTH * 0.1) + spawnMaxX,
   ];
 
-  for (let i = 0; i < count; i++) {
-    const x = Math.min(positions[i], maxHeartX);
+  for (let heartIndex = 0; heartIndex < count; heartIndex++) {
+    const x = Math.min(positions[heartIndex], maxHeartX);
 
     const platform = world.platforms.find(
-      (p) => x >= p.x && x <= p.x + p.width
+      (platform) => x >= platform.x && x <= platform.x + platform.width
     );
 
     if (!platform) continue;
 
-    const y = platform.y - 80;
+    const y = platform.y - heartYOffset;
 
     if (!isInsidePlatform(world, x, y)) {
       validHearts.push(new CollectableItem(x, y, "heart"));
@@ -295,12 +305,12 @@ export function placeHearts(world, count = 4) {
   world.addCollectables(validHearts);
 }
 
-function isInsidePlatform(world, hx, hy) {
+function isInsidePlatform(world, heartX, heartY) {
   return world.platforms.some(
-    (p) =>
-      hx + 30 > p.x &&
-      hx < p.x + p.width &&
-      hy + 30 > p.y &&
-      hy < p.y + p.height
+    (platform) =>
+      heartX + 30 > platform.x &&
+      heartX < platform.x + platform.width &&
+      heartY + 30 > platform.y &&
+      heartY < platform.y + platform.height
   );
 }

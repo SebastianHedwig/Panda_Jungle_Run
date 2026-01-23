@@ -33,19 +33,19 @@ export class Hud {
     const y = 5;
     const spacing = 10;
     const states = player.heartStates;
-    const lastFilled = [...states]
-      .map((s, i) => ({ s, i }))
-      .filter((h) => h.s > 0)
-      .pop()?.i;
+    const lastFilledIndex = [...states]
+      .map((state, heartIndex) => ({ state, heartIndex }))
+      .filter((heart) => heart.state > 0)
+      .pop()?.heartIndex;
 
-    states.forEach((state, i) => {
-      const x = startX + i * (size + spacing);
+    states.forEach((state, heartIndex) => {
+      const x = startX + heartIndex * (size + spacing);
 
       ctx.save();
       ctx.translate(x + size / 2, y + size / 2);
 
       let scale = 1;
-      if (i === lastFilled) {
+      if (heartIndex === lastFilledIndex) {
         const baseAmp = 0.07;
         const baseWave = 0.5 + 0.5 * Math.sin(this.heartPulseTime * 6);
         scale += baseAmp * baseWave;
@@ -144,12 +144,12 @@ export class Hud {
 
     const margin = 16;
     const centerX = boss.x + boss.width / 2 - camera.x;
-    const topY = boss.y - camera.y;
+    const topY = boss.y - camera.y - 30;
     const barW = boss.width * 0.8;
     const barH = 12;
 
     let drawX = centerX;
-    let drawY = topY - 30;
+    let drawY = topY;
 
     const offLeft = drawX < margin;
     const offRight = drawX > canvas.width - margin;
