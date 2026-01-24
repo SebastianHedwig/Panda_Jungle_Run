@@ -17,8 +17,8 @@ export class MovableObject {
     this.height = height;
 
     this.speed = 150;
-    this.vx = 0;
-    this.vy = 0;
+    this.velocityX = 0;
+    this.velocityY = 0;
 
     this.gravity = GRAVITY;
     this.onGround = true;
@@ -44,22 +44,22 @@ export class MovableObject {
   }
 
   applyGravity(dt) {
-    this.vy += this.gravity * dt;
-    this.y += this.vy * dt;
+    this.velocityY += this.gravity * dt;
+    this.y += this.velocityY * dt;
   }
 
   jump() {
-    this.vy = -this.jumpForce;
+    this.velocityY = -this.jumpForce;
     this.onGround = false;
   }
 
   applyApexGravity(dt) {
-    const up = this.vy < 0;
-    const near = Math.abs(this.vy) < this.apexThreshold;
+    const up = this.velocityY < 0;
+    const near = Math.abs(this.velocityY) < this.apexThreshold;
 
-    this.vy += (up ? this.gravityUp : this.gravityDown) * dt;
-    if (up && near) this.vy *= this.apexBoost;
+    this.velocityY += (up ? this.gravityUp : this.gravityDown) * dt;
+    if (up && near) this.velocityY *= this.apexBoost;
 
-    this.y += this.vy * dt;
+    this.y += this.velocityY * dt;
   }
 }

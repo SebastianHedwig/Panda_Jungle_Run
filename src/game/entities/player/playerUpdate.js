@@ -207,7 +207,8 @@ export function updatePlayer(player, dt, input, playerAudio) {
     player.jumpBufferTimer = 0;
   }
 
-  if (!player.jumpHeld && player.velocityY < 0) player.velocityY *= player.jumpCutMultiplier;
+  if (!player.jumpHeld && player.velocityY < 0)
+    player.velocityY *= player.jumpCutMultiplier;
   player.jumpBufferTimer -= dt;
 
   player.applyApexGravity(dt);

@@ -53,8 +53,8 @@ export class EnemyBase extends MovableObject {
       this.setAnimation?.(this.dieFrames);
       this.currentFrame = 0;
       this.frameTime = 0;
-      this.vx = 0;
-      this.vy = 0;
+      this.velocityX = 0;
+      this.velocityY = 0;
       this.deathTimer = 5;
       this.blinkTimer = 0.9; // 3 blinks at 0.3s
       this.onDeath?.();
@@ -63,8 +63,8 @@ export class EnemyBase extends MovableObject {
 
     if (!opts.skipStun) {
       this.hitStun = Math.max(this.hitStun, 1.5);
-      this.vx = 0;
-      this.vy = 0;
+      this.velocityX = 0;
+      this.velocityY = 0;
       this.setAnimation?.(this.idleFrames);
       this.currentFrame = 0;
       this.frameTime = 0;
@@ -203,12 +203,12 @@ export class EnemyBase extends MovableObject {
 
       if (
         overlapsX &&
-        this.vy > 0 &&
+        this.velocityY > 0 &&
         prevBottom <= p.top &&
         currBottom >= p.top
       ) {
         this.y = p.top - this.height;
-        this.vy = 0;
+        this.velocityY = 0;
         this.onGround = true;
         this.currentPlatform = p;
         this.lastGroundY = this.y;
@@ -220,7 +220,7 @@ export class EnemyBase extends MovableObject {
     const canvasH = this.world?.canvas?.height ?? 1000;
     if (currBottom > canvasH + this.height) {
       this.y = this.lastGroundY;
-      this.vy = 0;
+      this.velocityY = 0;
       this.onGround = true;
     }
   }
@@ -293,7 +293,7 @@ export class EnemyBase extends MovableObject {
     this.attackMoveSpeed = moveSpeed || 0;
     this.activeAttackFrames = frames || this.attackFrames;
     this.facing = dx >= 0 ? FACING_RIGHT : FACING_LEFT;
-    this.vx = 0;
+    this.velocityX = 0;
     this.setAnimation?.(this.activeAttackFrames);
     this.tryDealAttackDamage?.(player, 0.2);
   }

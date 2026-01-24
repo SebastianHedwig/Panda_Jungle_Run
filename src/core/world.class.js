@@ -53,7 +53,7 @@ export class World {
 
     const playerLeft = player.x;
     const playerRight = player.x + player.width;
-    const prevBottom = player.y + player.height - player.vy;
+    const prevBottom = player.y + player.height - player.velocityY;
     const currBottom = player.y + player.height;
     const currTop = player.y;
     const overlapPad = 2;
@@ -80,9 +80,9 @@ export class World {
 
       // LANDING FROM ABOVE
       if (p.supportsLanding && overlapsY && overlapsXLanding) {
-        if (player.vy > 0 && prevBottom <= p.top && currBottom >= p.top) {
+        if (player.velocityY > 0 && prevBottom <= p.top && currBottom >= p.top) {
           player.y = p.top - player.height;
-          player.vy = 0;
+          player.velocityY = 0;
           player.onGround = true;
           grounded = true;
           if (!wasOnGround) {
@@ -94,12 +94,12 @@ export class World {
 
         // Stay grounded while walking on the platform
         if (
-          player.vy >= 0 &&
+          player.velocityY >= 0 &&
           currBottom >= p.top &&
           currBottom <= p.top + 4
         ) {
           player.y = p.top - player.height;
-          player.vy = 0;
+          player.velocityY = 0;
           player.onGround = true;
           grounded = true;
           continue;
@@ -107,14 +107,14 @@ export class World {
 
         // HEAD BUMP
         if (
-          player.vy < 0 &&
+          player.velocityY < 0 &&
           p.type !== "middleShort" &&
           (overlapsXHead || overlapsXSprite) &&
           currTop <= p.bottom &&
-          currTop - player.vy >= p.bottom
+          currTop - player.velocityY >= p.bottom
         ) {
           player.y = p.bottom;
-          player.vy = 0;
+          player.velocityY = 0;
           continue;
         }
       }
@@ -125,7 +125,7 @@ export class World {
         overlapsY &&
         overlapsX &&
         currBottom > p.top + p.sideWallGap &&
-        player.vy >= 0
+        player.velocityY >= 0
       ) {
         if (player.x + player.width > p.left && player.x <= p.left) {
           player.x = p.left - player.width;
