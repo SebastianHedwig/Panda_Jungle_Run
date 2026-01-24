@@ -1,4 +1,4 @@
-import { PLAYER_ATTACK_DAMAGE } from "../../../config/config.js";
+import { PLAYER_ATTACK_DAMAGE, FACING_RIGHT } from "../../../config/config.js";
 
 export function startAttack(player, playerAudio) {
   if (player.bulletAmmo > 0) return false;
@@ -24,23 +24,27 @@ export function updateAttack(player, dt, playerAudio) {
   if (!player.isAttacking) return;
   player.attackTimer -= dt;
   if (!player.attackHitDone && player.world?.enemies) {
-    const px = player.x + player.width / 2;
-    const py = player.y + player.height / 2;
+    const playerCenterX = player.x + player.width / 2;
+    const playerCenterY = player.y + player.height / 2;
     for (const enemy of player.world.enemies) {
       if (enemy.isDead) continue;
-      const ex = enemy.x + enemy.width / 2;
-      const ey = enemy.y + enemy.height / 2;
-      const dx = ex - px;
-      const dy = Math.abs(ey - py);
+      const enemyCenterX = enemy.x + enemy.width / 2;
+      const enemyCenterY = enemy.y + enemy.height / 2;
+      const deltaX = enemyCenterX - playerCenterX;
+      const deltaY = Math.abs(enemyCenterY - playerCenterY);
       if (
-        Math.abs(dx) <= player.attackRange &&
-        dy <= player.attackHeightTolerance &&
-        Math.sign(dx || 1) === player.facing
+        Math.abs(deltaX) <= player.attackRange &&
+        deltaY <= player.attackHeightTolerance &&
+        Math.sign(deltaX || 1) === player.facing
       ) {
         playerAudio.playHit();
         enemy.takeDamage?.(PLAYER_ATTACK_DAMAGE);
         if (!enemy.isDead && enemy.health > 0 && !enemy.disableHitEffect) {
-          player.world?.spawnHitEffect?.(enemy.x, enemy.y, enemy.width, enemy.height);
+          const hitEffectX = enemy.x;
+          const hitEffectY = enemy.y;
+          const hitEffectWidth = enemy.width;
+          const hitEffectHeight = enemy.height;
+          player.world?.spawnHitEffect?.(hitEffectX, hitEffectY, hitEffectWidth, hitEffectHeight);
         }
         player.attackHitDone = true;
         break;
@@ -79,10 +83,11 @@ export function updateShoot(player, dt) {
   if (!player.shootHasFired) {
     player.shootFireTimer -= dt;
     if (player.shootFireTimer <= 0 && player.world?.spawnBullet) {
-      const dir = player.shootFacing;
-      const muzzleX = player.x + (dir === 1 ? player.width : 0);
-      const muzzleY = player.y + player.height * 0.55;
-      player.world.spawnBullet(muzzleX, muzzleY, dir);
+      const facingDirection = player.shootFacing;
+      const muzzleHeightFactor = 0.55;
+      const muzzleX = player.x + (facingDirection === FACING_RIGHT ? player.width : 0);
+      const muzzleY = player.y + player.height * muzzleHeightFactor;
+      player.world.spawnBullet(muzzleX, muzzleY, facingDirection);
       if (player.bulletAmmo > 0) player.bulletAmmo = Math.max(0, player.bulletAmmo - 1);
       player.shootHasFired = true;
     }

@@ -1,6 +1,12 @@
 import { MovableObject } from "../../../engine/physics/movableObject.class.js";
 import { HudPopup } from "../../effects/hudPopup.class.js";
-import { DEBUG_MODE, PLAYER_MAX_HEARTS, PLAYER_SLIDE_DAMAGE } from "../../../config/config.js";
+import {
+  DEBUG_MODE,
+  PLAYER_MAX_HEARTS,
+  PLAYER_SLIDE_DAMAGE,
+  FACING_LEFT,
+  FACING_RIGHT,
+} from "../../../config/config.js";
 import { PlayerAudio } from "../../audio/playerAudio.class.js";
 import { updatePlayer } from "./playerUpdate.js";
 import { renderPlayer } from "./playerRender.js";
@@ -10,6 +16,7 @@ import { handleLandingAudio, startSlide } from "./playerSlide.js";
 
 const DEBUG_HITBOX = DEBUG_MODE;
 const playerAudio = new PlayerAudio();
+const msPerSecond = 1000;
 
 export class Player extends MovableObject {
   constructor(
@@ -55,7 +62,7 @@ export class Player extends MovableObject {
     this.slideReady = true;
     this.slideDistance = 200;
     this.slideStartX = 0;
-    this.slideDir = 1;
+    this.slideDirection = 1;
     this.slideSpeed = this.defaultSpeed * 2;
     this.slideBlockGrace = 0;
     this.slideHitEnemies = new Set();
@@ -98,8 +105,8 @@ export class Player extends MovableObject {
     this.invulnerableTimer = 0;
     this.invulnerableBlinkInterval = 0.15;
     this.invulnerableBlinkWindow = 0.6;
-    this.lastSafeX = x;
-    this.lastSafeY = y;
+    this.lastSafePosX = x;
+    this.lastSafePosY = y;
     this.collisionDisabled = false;
     this.deathSoundPlayed = false;
     this.onDeath = null;
@@ -115,7 +122,7 @@ export class Player extends MovableObject {
     this.landedOnPlatform = false;
 
     /** ----- FACING ----- */
-    this.facing = 1;
+    this.facing = FACING_RIGHT;
 
     /** ----- HEART SYSTEM ----- */
     this.maxHearts = PLAYER_MAX_HEARTS;
@@ -130,86 +137,84 @@ export class Player extends MovableObject {
   }
 
   get heartStates() {
-    const s = [];
-    for (let i = 0; i < this.maxHearts; i++) {
-      const hp = this.healthPoints - i * 2;
-      if (hp >= 2) s.push(2);
-      else if (hp === 1) s.push(1);
-      else s.push(0);
+    const heartStates = [];
+    for (let heartIndex = 0; heartIndex < this.maxHearts; heartIndex++) {
+      const heartHp = this.healthPoints - heartIndex * 2;
+      if (heartHp >= 2) heartStates.push(2);
+      else if (heartHp === 1) heartStates.push(1);
+      else heartStates.push(0);
     }
-    return s;
+    return heartStates;
   }
 
-  takeDamage(amount = 1, opts = {}) {
+  getPopupPosition(offset = 30) {
+    const popupX = this.x + this.width / 2; 
+    const popupY = this.y - offset;
+    return { popupX, popupY };
+  }
+
+  takeDamage(damageAmount = 1, options = {}) {
     if (this.isDead) return;
 
-    this.healthPoints = Math.max(0, this.healthPoints - amount);
+    this.healthPoints = Math.max(0, this.healthPoints - damageAmount);
     this.healthPulse = 1.0;
 
-    const popupDelay = opts?.popupDelay ?? 0;
-    const addPopup = () => {
+    const popupDelaySeconds = options?.popupDelay ?? 0;
+    const showDamagePopup = () => {
+      const { popupX, popupY } = this.getPopupPosition();
       if (this.world?.hudPopups) {
         this.world.hudPopups.push(
-          new HudPopup(
-            `-${amount}❤️`,
-            this.x + this.width / 2,
-            this.y - 30,
-            "damage"
-          )
+          new HudPopup(`-${damageAmount}❤️`, popupX, popupY, "damage")
         );
       }
     };
-    if (popupDelay > 0) setTimeout(addPopup, popupDelay * 1000);
-    else addPopup();
+    if (popupDelaySeconds > 0) setTimeout(showDamagePopup, popupDelaySeconds * msPerSecond);
+    else showDamagePopup();
 
     if (this.healthPoints <= 0) this.startDeath();
     else {
       playerAudio.playOuch();
-      this.startHurt(opts?.useDizzy ?? true);
+      this.startHurt(options?.useDizzy ?? true);
     }
   }
 
-  heal(amount = 1) {
+  heal(healAmount = 1) {
     if (this.isDead) return;
 
     const before = this.healthPoints;
     this.healthPoints = Math.min(
       this.maxHealthPoints,
-      this.healthPoints + amount
+      this.healthPoints + healAmount
     );
     const gained = this.healthPoints - before;
 
     if (gained > 0 && this.world?.hudPopups) {
+      const { popupX, popupY } = this.getPopupPosition();
       this.world.hudPopups.push(
-        new HudPopup(
-          `+${gained}❤️`,
-          this.x + this.width / 2,
-          this.y - 30,
-          "heal"
-        )
+        new HudPopup(`+${gained}❤️`, popupX, popupY, "heal")
       );
     }
 
     this.healthPulse = 1.0;
   }
 
-  addCoins(amount) {
-    this.coins += amount;
+  addCoins(coinAmount) {
+    this.coins += coinAmount;
     this.hudPulse = 1.0;
   }
 
-  addBullets(amount = 0) {
-    this.bulletAmmo = Math.max(0, this.bulletAmmo + amount);
+  addBullets(bulletAmount = 0) {
+    this.bulletAmmo = Math.max(0, this.bulletAmmo + bulletAmount);
     this.gunPulse = 1.0;
   }
 
   markSafePosition() {
-    this.lastSafeX = this.x;
-    this.lastSafeY = this.y;
+    this.lastSafePosX = this.x;
+    this.lastSafePosY = this.y;
   }
 
-  applyDizzy(duration = 0) {
-    applyDizzy(this, duration);
+  applyDizzy(dizzyDuration = 0) {
+    applyDizzy(this, dizzyDuration);
   }
 
   startHurt(useDizzy = true) {

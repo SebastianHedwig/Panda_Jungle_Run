@@ -17,6 +17,7 @@ const BOSS_HOWL_END = "./assets/sfx/boss/Boss-howl-end.mp3";
 const BOSS_ATTACK2 = "./assets/sfx/boss/Boss-attack2.mp3";
 const BOSS_WHOOSH = "./assets/sfx/boss/Boss-whoosh.mp3";
 const BOSS_HIT = "./assets/sfx/boss/Boss-hit.mp3";
+const msPerSecond = 1000;
 
 export class BossAudio {
   constructor({
@@ -148,7 +149,7 @@ export class BossAudio {
 
     const fadeStartMs = Math.max(
       0,
-      (this.gongPlayDuration - this.fadeDuration) * 1000
+      (this.gongPlayDuration - this.fadeDuration) * msPerSecond
     );
     this.fadeStartTimer = setTimeout(
       () => this.startFadeToMusic(),
@@ -160,7 +161,7 @@ export class BossAudio {
         this.gongAudio.pause();
         this.gongAudio.currentTime = 0;
       }
-    }, this.gongPlayDuration * 1000);
+    }, this.gongPlayDuration * msPerSecond);
   }
 
   startFadeToMusic() {
@@ -174,7 +175,7 @@ export class BossAudio {
       },
     });
 
-    const durationMs = Math.max(100, this.fadeDuration * 1000);
+    const durationMs = Math.max(100, this.fadeDuration * msPerSecond);
     const stepMs = 50;
     let elapsed = 0;
     this.fadeInterval = setInterval(() => {
@@ -314,7 +315,7 @@ export class BossAudio {
 
   beginMusicCrossfade(current, next) {
     this.clearFadeInterval();
-    const durationMs = Math.max(100, this.fadeDuration * 1000);
+    const durationMs = Math.max(100, this.fadeDuration * msPerSecond);
     const stepMs = 50;
     let elapsed = 0;
     this.fadeInterval = setInterval(() => {
@@ -396,7 +397,7 @@ export class BossAudio {
       return defeat;
     }
 
-    const durationMs = Math.max(100, this.fadeDuration * 1000);
+    const durationMs = Math.max(100, this.fadeDuration * msPerSecond);
     const stepMs = 50;
     let elapsed = 0;
     this.fadeInterval = setInterval(() => {

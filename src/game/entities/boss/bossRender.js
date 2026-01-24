@@ -1,6 +1,8 @@
+import { FACING_RIGHT } from "../../../config/config.js";
+
 export function renderBoss(boss, ctx, camera, { debugHitbox = false } = {}) {
   ctx.save();
-  if (boss.facing === 1) {
+  if (boss.facing === FACING_RIGHT) {
     ctx.scale(-1, 1);
     ctx.drawImage(
       boss.sprite,
@@ -75,4 +77,3 @@ export function renderBoss(boss, ctx, camera, { debugHitbox = false } = {}) {
     ctx.restore();
   }
 }
-

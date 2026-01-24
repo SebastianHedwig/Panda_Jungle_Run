@@ -33,6 +33,8 @@ export const PLAYER_ATTACK_DAMAGE = 1;
 export const PLAYER_SLIDE_DAMAGE = 2;
 export const PLAYER_BULLET_DAMAGE = 3;
 export const PLAYER_FALL_DAMAGE = 2;
+export const FACING_LEFT = -1;
+export const FACING_RIGHT = 1;
 
 export const BOSS_SPAWN_TRIGGER_OFFSET = 2500;
 export const BOSS_SPAWN_GROUND_OFFSET = 20;

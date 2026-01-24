@@ -51,6 +51,8 @@ export class World {
     let grounded = false;
     const prevX = player?._preCollisionX ?? player.x;
 
+    const playerLeft = player.x;
+    const playerRight = player.x + player.width;
     const prevBottom = player.y + player.height - player.vy;
     const currBottom = player.y + player.height;
     const currTop = player.y;
@@ -61,10 +63,10 @@ export class World {
     for (const p of this.platforms) {
       const overlapsY = currBottom > p.top && currTop < p.bottom;
       const overlapsX =
-        player.x + player.width > p.left && player.x < p.right;
+        playerRight > p.left && playerLeft < p.right;
       const overlapsXLanding =
-        player.x + player.width > p.left - overlapPad &&
-        player.x < p.right + overlapPad;
+        playerRight > p.left - overlapPad &&
+        playerLeft < p.right + overlapPad;
       const headBumpPad = Math.min(
         headBumpPadBase,
         Math.max(0, (p.right - p.left) * 0.2)

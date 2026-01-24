@@ -1,6 +1,6 @@
 import { MovableObject } from "../../../engine/physics/movableObject.class.js";
 import { HudPopup } from "../../effects/hudPopup.class.js";
-import { DEBUG_MODE } from "../../../config/config.js";
+import { DEBUG_MODE, FACING_LEFT, FACING_RIGHT } from "../../../config/config.js";
 
 export const DEBUG_ENEMY_HITBOX = DEBUG_MODE;
 
@@ -10,7 +10,7 @@ export class EnemyBase extends MovableObject {
     this.world = world;
 
     /** Movement / chase defaults */
-    this.patrolDir = -1;
+    this.patrolDir = FACING_LEFT;
     this.patrolRange = 800;
     this.originX = x;
     this.currentPlatform = null;
@@ -18,7 +18,7 @@ export class EnemyBase extends MovableObject {
     this.hitStun = 0;
     this.edgeMargin = 5;
     this.isChasing = false;
-    this.lastMoveDir = -1;
+    this.lastMoveDir = FACING_LEFT;
     this.chaseCooldown = 0;
     this.chaseCooldownDuration = 2;
     this.chaseRangeX = 300;
@@ -292,7 +292,7 @@ export class EnemyBase extends MovableObject {
     this.attackDamageCurrent = damage;
     this.attackMoveSpeed = moveSpeed || 0;
     this.activeAttackFrames = frames || this.attackFrames;
-    this.facing = dx >= 0 ? 1 : -1;
+    this.facing = dx >= 0 ? FACING_RIGHT : FACING_LEFT;
     this.vx = 0;
     this.setAnimation?.(this.activeAttackFrames);
     this.tryDealAttackDamage?.(player, 0.2);

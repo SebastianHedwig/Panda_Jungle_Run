@@ -1,5 +1,5 @@
 import { BulletAudio } from "../audio/bulletAudio.class.js";
-import { PLAYER_BULLET_DAMAGE } from "../../config/config.js";
+import { PLAYER_BULLET_DAMAGE, FACING_LEFT } from "../../config/config.js";
 
 const bulletAudio = new BulletAudio();
 const EXPLOSION_BASE_SIZE = 64;
@@ -100,7 +100,7 @@ export class Bullet {
     ctx.save();
 
     // Flip when facing left
-    if (this.facingDirection === -1) {
+    if (this.facingDirection === FACING_LEFT) {
       ctx.scale(-1, 1);
       ctx.drawImage(
         this.image,

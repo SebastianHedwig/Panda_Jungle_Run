@@ -1,3 +1,5 @@
+import { FACING_LEFT, FACING_RIGHT } from "../../../config/config.js";
+
 export function updateBoss(boss, dt, player) {
   if (boss.isDead) {
     boss.isChasing = false;
@@ -138,13 +140,13 @@ export function updateBoss(boss, dt, player) {
   boss.isChasing = canChase && !blockedByEdge;
 
   boss.updateRunState();
-  let moveDir = boss.lastMoveDir || boss.facing || -1;
+  let moveDir = boss.lastMoveDir || boss.facing || FACING_LEFT;
   if (boss.isChasing) {
     const dx = playerInfo?.dx ?? 0;
     const targetDir =
       Math.abs(dx) < 5
-        ? boss.lastMoveDir || boss.facing || 1
-        : Math.sign(dx) || 1;
+        ? boss.lastMoveDir || boss.facing || FACING_RIGHT
+        : Math.sign(dx) || FACING_RIGHT;
     moveDir = targetDir;
   } else {
     boss.patrol();
@@ -162,7 +164,7 @@ export function updateBoss(boss, dt, player) {
   }
 
   const moveSpeed = boss.isChasing && boss.isRunning ? boss.runSpeed : boss.speed;
-  const runDir = Math.sign(moveDir || boss.facing || 1) || 1;
+  const runDir = Math.sign(moveDir || boss.facing || FACING_RIGHT) || FACING_RIGHT;
   boss.x += runDir * moveSpeed * dt;
   boss.facing = runDir;
   boss.lastMoveDir = runDir;

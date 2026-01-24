@@ -5,6 +5,8 @@ import {
   GRAVITY_DOWN,
   GRAVITY_UP,
   JUMP_FORCE,
+  FACING_LEFT,
+  FACING_RIGHT,
 } from "../../config/config.js";
 
 export class MovableObject {
@@ -21,7 +23,7 @@ export class MovableObject {
     this.gravity = GRAVITY;
     this.onGround = true;
 
-    this.facing = 1;
+    this.facing = FACING_RIGHT;
 
     /** Jump physics defaults */
     this.jumpForce = JUMP_FORCE;
@@ -33,12 +35,12 @@ export class MovableObject {
 
   moveLeft(dt) {
     this.x -= this.speed * dt;
-    this.facing = -1;
+    this.facing = FACING_LEFT;
   }
 
   moveRight(dt) {
     this.x += this.speed * dt;
-    this.facing = 1;
+    this.facing = FACING_RIGHT;
   }
 
   applyGravity(dt) {

@@ -1,64 +1,68 @@
 import { HudPopup } from "../../effects/hudPopup.class.js";
 import { PLAYER_FALL_DAMAGE } from "../../../config/config.js";
 
-export function takeDamage(player, amount = 1, opts = {}, playerAudio) {
+const msPerSecond = 1000;
+const fallbackFrames = 1;
+const dizzyFrameDurationMultiplier = 2;
+
+export function takeDamage(player, damageAmount = 1, hitEffects = {}, playerAudio) {
   if (player.isDead) return;
 
-  player.healthPoints = Math.max(0, player.healthPoints - amount);
+  player.healthPoints = Math.max(0, player.healthPoints - damageAmount);
   player.healthPulse = 1.0;
 
-  const popupDelay = opts?.popupDelay ?? 0;
+  const popupDelaySeconds = hitEffects?.popupDelay ?? 0;
   const addPopup = () => {
     if (player.world?.hudPopups) {
+      const { popupX, popupY } = player.getPopupPosition();
       player.world.hudPopups.push(
         new HudPopup(
-          `-${amount}ƒ?Ï‹÷?`,
-          player.x + player.width / 2,
-          player.y - 30,
+          `-${damageAmount}❤️`,
+          popupX,
+          popupY,
           "damage"
         )
       );
     }
   };
-  if (popupDelay > 0) setTimeout(addPopup, popupDelay * 1000);
+  if (popupDelaySeconds > 0) setTimeout(addPopup, popupDelaySeconds * msPerSecond);
   else addPopup();
 
   if (player.healthPoints <= 0) startDeath(player, playerAudio);
   else {
     playerAudio.playOuch();
-    startHurt(player, opts?.useDizzy ?? true);
+    startHurt(player, hitEffects?.useDizzy ?? true);
   }
 }
 
-export function heal(player, amount = 1) {
+export function heal(player, healAmount = 1) {
   if (player.isDead) return;
 
   const before = player.healthPoints;
-  player.healthPoints = Math.min(player.maxHealthPoints, player.healthPoints + amount);
+  player.healthPoints = Math.min(player.maxHealthPoints, player.healthPoints + healAmount);
   const gained = player.healthPoints - before;
 
   if (gained > 0 && player.world?.hudPopups) {
+    const { popupX, popupY } = player.getPopupPosition();
     player.world.hudPopups.push(
-      new HudPopup(
-        `+${gained}ƒ?Ï‹÷?`,
-        player.x + player.width / 2,
-        player.y - 30,
-        "heal"
-      )
+      new HudPopup(`+${gained}❤️`, popupX, popupY, "heal")
     );
   }
 
   player.healthPulse = 1.0;
 }
 
-export function applyDizzy(player, duration = 0) {
+export function applyDizzy(player, dizzyDuration = 0) {
   if (player.isDead) return;
   const base =
-    (player.dizzyFrames?.length || 1) * player.frameSpeed * 2 || player.hurtDuration;
+    (player.dizzyFrames?.length || fallbackFrames) *
+      player.frameSpeed *
+      dizzyFrameDurationMultiplier ||
+    player.hurtDuration;
   player.hurtPhase = "dizzy";
   player.isHurt = true;
   player.hurtUseDizzy = true;
-  player.hurtPhaseTimer = duration > 0 ? duration : base;
+  player.hurtPhaseTimer = dizzyDuration > 0 ? dizzyDuration : base;
   player.setAnimation(player.dizzyFrames || player.hurtFrames);
   player.currentFrame = 0;
 }
@@ -76,10 +80,12 @@ export function startHurt(player, useDizzy = true) {
   }
 
   player.isHurt = true;
-  const hurtDuration = (player.hurtFrames?.length || 1) * player.frameSpeed;
+  const hurtDuration = (player.hurtFrames?.length || fallbackFrames) * player.frameSpeed;
   const dizzyDuration =
     player.hurtUseDizzy && player.dizzyFrames
-      ? player.dizzyFrames.length * player.frameSpeed * 2
+      ? player.dizzyFrames.length *
+        player.frameSpeed *
+        dizzyFrameDurationMultiplier
       : 0;
 
   player.hurtPhase = "hurt";
@@ -102,7 +108,10 @@ export function updateHurt(player, dt) {
   if (player.hurtUseDizzy && player.hurtPhase === "hurt" && player.dizzyFrames) {
     player.hurtPhase = "dizzy";
     player.hurtPhaseTimer =
-      player.dizzyFrames.length * player.frameSpeed * 2 || player.hurtDuration;
+      player.dizzyFrames.length *
+        player.frameSpeed *
+        dizzyFrameDurationMultiplier ||
+      player.hurtDuration;
     player.setAnimation(player.dizzyFrames);
     player.currentFrame = 0;
     return;
@@ -116,11 +125,7 @@ export function startDeath(player, playerAudio) {
   if (player.isDead) return;
   player.isDead = true;
   if (typeof player.onDeath === "function") {
-    try {
-      player.onDeath(player);
-    } catch (_err) {
-      /* no-op if handler fails */
-    }
+    player.onDeath(player);
   }
   player.world?.audio?.stop?.();
   player.world?.bossAudioPlayer?.stop?.();
@@ -131,8 +136,8 @@ export function startDeath(player, playerAudio) {
   player.isHurt = false;
   player.isAttacking = false;
   player.isShooting = false;
-  player.vx = 0;
-  player.vy = 0;
+  player.velocityX = 0;
+  player.velocityY = 0;
   player.onGround = true;
   player.setAnimation(player.dieFrames);
   player.currentFrame = 0;
@@ -143,23 +148,30 @@ export function startDeath(player, playerAudio) {
 
 export function handleDeathLanding(player, prevBottom, currBottom) {
   const platforms = player.world?.platforms || [];
-  const canvasH = player.world?.canvas?.height ?? 1000;
-  const ground = player.world?.baseGround ?? canvasH;
+  const canvasHeight = player.world?.canvas?.height;
+  const groundLevel = player.world?.baseGround ?? canvasHeight;
 
-  for (const p of platforms) {
-    if (!p.supportsLanding) continue;
-    const overlapsX = player.x + player.width > p.left && player.x < p.right;
-    if (overlapsX && player.vy > 0 && prevBottom <= p.top && currBottom >= p.top) {
-      player.y = p.top - player.height;
-      player.vy = 0;
+  const playerLeft = player.x;
+  const playerRight = player.x + player.width;
+
+  for (const platform of platforms) {
+    if (!platform.supportsLanding) continue;
+    const overlapsX = playerRight > platform.left && playerLeft < platform.right;
+    const crossingTop =
+      player.velocityY > 0 && prevBottom <= platform.top && currBottom >= platform.top;
+    if (overlapsX && crossingTop) {
+      const landingTopPosition = platform.top - player.height;
+      player.y = landingTopPosition;
+      player.velocityY = 0;
       player.onGround = true;
       return;
     }
   }
 
-  if (currBottom >= ground) {
-    player.y = ground - player.height;
-    player.vy = 0;
+  if (currBottom >= groundLevel) {
+    const groundTopPosition = groundLevel - player.height;
+    player.y = groundTopPosition;
+    player.velocityY = 0;
     player.onGround = true;
   }
 }
@@ -175,10 +187,11 @@ export function respawnFromFall(player) {
     return;
   }
 
-  player.x = player.lastSafeX ?? player.x;
-  player.y = (player.lastSafeY ?? player.y) - 5;
-  player.vx = 0;
-  player.vy = 0;
+  player.x = player.lastSafePosX ?? player.x;
+  const respawnYOffset = 5;
+  player.y = (player.lastSafePosY ?? player.y) - respawnYOffset;
+  player.velocityX = 0;
+  player.velocityY = 0;
   player.onGround = true;
 
   player.invulnerableTimer = 1.0;
@@ -192,7 +205,7 @@ export function respawnFromFall(player) {
 export function handleFallOffWorld(player, grounded, bottom, canvasHeight) {
   if (player.invulnerableTimer > 0) return;
   if (grounded) return;
-  if (player.vy >= 0 && bottom >= canvasHeight + player.height) {
+  if (player.velocityY >= 0 && bottom >= canvasHeight + player.height) {
     player.respawnFromFall();
   }
 }

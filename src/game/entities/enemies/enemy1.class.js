@@ -1,6 +1,11 @@
 import { EnemyBase, DEBUG_ENEMY_HITBOX } from "./enemyBase.class.js";
 import { CollectableItem } from "../../items/collectableItem.class.js";
-import { ENEMY1_DAMAGE, ENEMY1_HEALTH } from "../../../config/config.js";
+import {
+  ENEMY1_DAMAGE,
+  ENEMY1_HEALTH,
+  FACING_LEFT,
+  FACING_RIGHT,
+} from "../../../config/config.js";
 import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
 export function loadEnemy1Sprites() {
@@ -187,8 +192,8 @@ export class Enemy1 extends EnemyBase {
       const dx = playerInfo?.dx ?? 0;
       const targetDir =
         Math.abs(dx) < 1
-          ? this.lastMoveDir || this.facing || 1
-          : Math.sign(dx) || 1;
+          ? this.lastMoveDir || this.facing || FACING_RIGHT
+          : Math.sign(dx) || FACING_RIGHT;
       this.facing = targetDir;
       moveDir = targetDir;
     } else {
@@ -246,7 +251,7 @@ export class Enemy1 extends EnemyBase {
     const py = player.y + player.height / 2;
     const dx = px - ex;
     const dy = Math.abs(py - ey);
-    const facingMatches = Math.sign(dx || 1) === this.facing;
+    const facingMatches = Math.sign(dx || FACING_RIGHT) === this.facing;
 
     if (
       facingMatches &&
@@ -272,12 +277,14 @@ export class Enemy1 extends EnemyBase {
 
   render(ctx, camera) {
     if (this.isDead && this.deathTimer === 0 && this.blinkTimer > 0) {
-      const blinkPhase = Math.floor((this.blinkTimer / 0.3)) % 2;
-      if (blinkPhase === 0) return;
+      const blinkPhaseModulo = 2;
+      const blinkPhase = Math.floor(this.blinkTimer / 0.3) % blinkPhaseModulo;
+      const isInvisiblePhase = blinkPhase === 0;
+      if (isInvisiblePhase) return;
     }
 
     ctx.save();
-    if (this.facing === -1) {
+    if (this.facing === FACING_LEFT) {
       ctx.scale(-1, 1);
       ctx.drawImage(
         this.sprite,

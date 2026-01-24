@@ -1,5 +1,7 @@
 import { MUSIC_LOOP_CUT, MUSIC_VOLUME } from "../../config/config.js";
 
+const msPerSecond = 1000;
+
 export class GameAudio {
   constructor(src = "./assets/music/wildlife-jungle-background-game-music.mp3") {
     this.src = src;
@@ -104,7 +106,7 @@ export class GameAudio {
 
   beginCrossfade(current, next) {
     this.clearCrossfade();
-    const durationMs = Math.max(100, this.overlapDuration * 1000);
+    const durationMs = Math.max(100, this.overlapDuration * msPerSecond);
     const stepMs = 50;
     let elapsed = 0;
 

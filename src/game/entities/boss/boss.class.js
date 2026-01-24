@@ -5,6 +5,8 @@ import {
   BOSS_DAMAGE,
   BOSS_HEALTH,
   DEBUG_MODE,
+  FACING_LEFT,
+  FACING_RIGHT,
 } from "../../../config/config.js";
 import { BossAudio } from "../../audio/bossAudio.class.js";
 import { updateBoss } from "./bossUpdate.js";
@@ -84,7 +86,7 @@ export class Boss extends EnemyBase {
     this.jumpHeightThreshold = 120;
     this.jumpHorizontalRange = 420;
     this.animDirection = -1;
-    this.facing = -1;
+    this.facing = FACING_LEFT;
     this.lastMoveDir = -1;
     this.patrolRange = 1500;
     this.jumpCooldown = 5;
@@ -168,7 +170,7 @@ export class Boss extends EnemyBase {
   }
 
   beginAttack1(playerInfo, player) {
-    const dx = playerInfo?.dx ?? this.facing ?? 1;
+    const dx = playerInfo?.dx ?? this.facing ?? FACING_RIGHT;
     this.attackDuration = this.attack1Duration;
     this.startMeleeAttack(
       dx,
@@ -283,7 +285,7 @@ export class Boss extends EnemyBase {
     const py = player.y + player.height / 2;
     const dx = px - ex;
     const dy = Math.abs(py - ey);
-    const facingMatches = Math.sign(dx || 1) === this.facing;
+    const facingMatches = Math.sign(dx || FACING_RIGHT) === this.facing;
     const range = this.activeAttackRange ?? this.attackRange;
     const heightTol = this.activeHeightTolerance ?? this.attackHeightTolerance;
 
