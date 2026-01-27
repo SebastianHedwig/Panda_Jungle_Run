@@ -5,6 +5,16 @@ export const WORLD_HEIGHT = 720;
 export const SET_FULLSCREEN = true;
 export const AUTO_FULLSCREEN_MAX_WIDTH = 1368;
 export const AUTO_FULLSCREEN_MAX_HEIGHT = 912;
+export const FACING_LEFT = -1;
+export const FACING_RIGHT = 1;
+
+export const BASE_SPEED = 150;
+export const ENEMY1_SPEED = BASE_SPEED / 2;
+export const ENEMY2_SPEED = BASE_SPEED * 1;
+export const ENEMY3_SPEED = BASE_SPEED * 1.2;
+export const ENEMY3_SLIDE_SPEED = BASE_SPEED * 1.5;
+export const BOSS_SPEED = 100;
+export const BOSS_RUN_SPEED = BOSS_SPEED * 2;
 
 export const GRAVITY = 2800;
 export const GRAVITY_UP = 2500;
@@ -13,7 +23,7 @@ export const JUMP_FORCE = 1200;
 export const APEX_BOOST = 0.6;
 export const APEX_THRESHOLD = 120;
 
-export const MUTE_TOGGLE_GAMESTART = false;
+export const MUTE_TOGGLE_GAMESTART = true;
 export const MUSIC_LOOP_CUT = 4;
 export const MUSIC_VOLUME = 0.2;
 export const SFX_VOLUME = 0.2;
@@ -33,8 +43,7 @@ export const PLAYER_ATTACK_DAMAGE = 1;
 export const PLAYER_SLIDE_DAMAGE = 2;
 export const PLAYER_BULLET_DAMAGE = 3;
 export const PLAYER_FALL_DAMAGE = 2;
-export const FACING_LEFT = -1;
-export const FACING_RIGHT = 1;
+export const PLAYER_HURT_IMMUNITY_TIME = 1;
 
 export const BOSS_SPAWN_TRIGGER_OFFSET = 2500;
 export const BOSS_SPAWN_GROUND_OFFSET = 20;
@@ -48,16 +57,24 @@ export const BOSS_DAMAGE = 2;
 export const BOSS_ATTACK1_DAMAGE = 3;
 export const BOSS_ATTACK2_DAMAGE = 4;
 
-export const ENEMY1_HEALTH = 4;
+export const ENEMY_WIDTH = 110;
+export const ENEMY_HEIGHT = 110;
+
 export const ENEMY1_DAMAGE = 1;
+export const ENEMY1_COIN_DROP_COUNT = 2;
+export const ENEMY1_HEALTH = 4;
+
 
 export const ENEMY2_HEALTH = 6;
 export const ENEMY2_ATTACK1_DAMAGE = 1;
 export const ENEMY2_ATTACK2_DAMAGE = 2;
+export const ENEMY2_COIN_DROP_COUNT = 4;
 
 export const ENEMY3_HEALTH = 8;
 export const ENEMY3_ATTACK1_DAMAGE = 2;
 export const ENEMY3_ATTACK2_DAMAGE = 3;
 export const ENEMY3_SLIDE_DAMAGE = 2;
+export const ENEMY3_COIN_DROP_COUNT = 6;
+export const ENEMY3_GUN_DROP_COUNT = 1;
 
 export const DEBUG_MODE = false;

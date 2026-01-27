@@ -82,14 +82,14 @@ export class Bullet {
     });
   }
 
-  collidesWith(obj) {
+  collidesWith(target) {
     const bounds = this.getBounds();
-    const target = obj.getHitbox ? obj.getHitbox() : obj;
+    const targetBox = target.getHitbox ? target.getHitbox() : target;
     return (
-      bounds.left < target.x + target.width &&
-      bounds.right > target.x &&
-      bounds.top < target.y + target.height &&
-      bounds.bottom > target.y
+      bounds.left < targetBox.x + targetBox.width &&
+      bounds.right > targetBox.x &&
+      bounds.top < targetBox.y + targetBox.height &&
+      bounds.bottom > targetBox.y
     );
   }
 

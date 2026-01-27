@@ -3,8 +3,13 @@ import { CollectableItem } from "../../items/collectableItem.class.js";
 import {
   ENEMY1_DAMAGE,
   ENEMY1_HEALTH,
+  ENEMY1_COIN_DROP_COUNT,
+  ENEMY1_SPEED,
+  ENEMY_WIDTH,
+  ENEMY_HEIGHT,
   FACING_LEFT,
   FACING_RIGHT,
+  PLAYER_HURT_IMMUNITY_TIME,
 } from "../../../config/config.js";
 import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
@@ -19,8 +24,15 @@ export function loadEnemy1Sprites() {
 }
 
 export class Enemy1 extends EnemyBase {
-  constructor(x, y, sprites, world = null) {
-    super(x, y, 110, 110, world);
+  constructor(
+    x,
+    y,
+    sprites,
+    world = null,
+    width = ENEMY_WIDTH,
+    height = ENEMY_HEIGHT
+  ) {
+    super(x, y, width, height, world);
 
     this.idleFrames = sprites.idle;
     this.walkFrames = sprites.walk;
@@ -33,7 +45,7 @@ export class Enemy1 extends EnemyBase {
     this.frameSpeed = 0.09;
     this.sprite = this.currentAnimation[0];
 
-    this.speed = 80;
+    this.speed = ENEMY1_SPEED;
     this.health = ENEMY1_HEALTH;
     this.damage = ENEMY1_DAMAGE;
     this.attackDamageCurrent = this.damage;
@@ -67,8 +79,7 @@ export class Enemy1 extends EnemyBase {
     this.frameTime += dt;
     if (this.frameTime >= this.frameSpeed) {
       this.frameTime = 0;
-      this.currentFrame =
-        (this.currentFrame + 1) % this.currentAnimation.length;
+      this.currentFrame = (this.currentFrame + 1) % this.currentAnimation.length;
       this.sprite = this.currentAnimation[this.currentFrame];
     }
   }
@@ -128,8 +139,8 @@ export class Enemy1 extends EnemyBase {
     // ATTACK HANDLING
     if (this.isAttacking) {
       this.attackTimer -= dt;
-      const atkFrames = this.activeAttackFrames || this.attackFrames;
-      this.setAnimation(atkFrames);
+      const attackFrames = this.activeAttackFrames || this.attackFrames;
+      this.setAnimation(attackFrames);
       if (this.attackMoveSpeed) {
         const platform = this.getPlatformUnderfoot();
         const nextX = this.x + this.attackMoveSpeed * this.facing * dt;
@@ -171,58 +182,67 @@ export class Enemy1 extends EnemyBase {
     const platform = this.getPlatformUnderfoot();
     this.currentPlatform = platform || null;
     const onLowestPlatform = this.isOnLowestPlatform();
-    const prevChasing = this.isChasing;
-    const canChase =
-      this.chaseCooldown <= 0 &&
-      player &&
-      !player.isDead &&
-      this.shouldChasePlayer(playerInfo, prevChasing);
+    const fromChasing = this.isChasing;
+    const chaseReady = this.chaseCooldown <= 0;
+    const hasLivingPlayer = !!player && !player.isDead;
+    const playerInRange = this.shouldChasePlayer(playerInfo, fromChasing);
+    const canChase = chaseReady && hasLivingPlayer && playerInRange;
     const enemyCenterX = this.x + this.width / 2;
     const blockedByEdge =
       canChase &&
       onLowestPlatform &&
       platform &&
-      ((playerInfo.dx < 0 && enemyCenterX <= platform.left + this.edgeMargin) ||
-        (playerInfo.dx > 0 && enemyCenterX >= platform.right - this.edgeMargin));
+      ((playerInfo.deltaX < 0 &&
+        enemyCenterX <= platform.left + this.edgeMargin) ||
+        (playerInfo.deltaX > 0 &&
+          enemyCenterX >= platform.right - this.edgeMargin));
 
     this.isChasing = canChase && !blockedByEdge;
 
-    let moveDir = this.lastMoveDir;
+    let moveDirection = this.lastMoveDirection;
     if (this.isChasing) {
-      const dx = playerInfo?.dx ?? 0;
-      const targetDir =
-        Math.abs(dx) < 1
-          ? this.lastMoveDir || this.facing || FACING_RIGHT
-          : Math.sign(dx) || FACING_RIGHT;
-      this.facing = targetDir;
-      moveDir = targetDir;
+      const deltaX = playerInfo.deltaX;
+      const targetDirection =
+        Math.abs(deltaX) < 1
+          ? this.lastMoveDirection || this.facing || FACING_RIGHT
+          : Math.sign(deltaX) || FACING_RIGHT;
+      this.facing = targetDirection;
+      moveDirection = targetDirection;
     } else {
       this.patrol();
-      moveDir = this.patrolDir;
+      moveDirection = this.patrolDirection;
     }
 
     if (platform) {
-      moveDir = this.adjustForEdges(
-        moveDir,
+      moveDirection = this.adjustForEdges(
+        moveDirection,
         dt,
         platform,
         onLowestPlatform,
-        prevChasing
+        fromChasing
       );
     }
 
-    this.x += moveDir * this.speed * dt;
-    this.lastMoveDir = moveDir;
+    this.x += moveDirection * this.speed * dt;
+    this.lastMoveDirection = moveDirection;
 
-    const prevBottom = this.y + this.height;
+    const previousBottom = this.y + this.height;
     this.applyApexGravity(dt);
-    const currBottom = this.y + this.height;
-    this.handlePlatformLanding(prevBottom, currBottom);
+    const currentBottom = this.y + this.height;
+    this.handlePlatformLanding(previousBottom, currentBottom);
 
-    if (player && !player.isDead && !player.isSliding && this.collidesWith(player) && player.invulnerableTimer <= 0) {
+    const playerCanBeHit =
+      player &&
+      !player.isDead &&
+      !player.isSliding &&
+      player.invulnerableTimer <= 0;
+    const isColliding = playerCanBeHit && this.collidesWith(player);
+    if (isColliding) {
       player.takeDamage?.(this.damage, { useDizzy: false });
       if (typeof player.invulnerableTimer === "number") {
-        player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);
+        player.invulnerableTimer = Math.max(
+          player.invulnerableTimer, PLAYER_HURT_IMMUNITY_TIME
+        );
       }
     }
 
@@ -230,33 +250,22 @@ export class Enemy1 extends EnemyBase {
     this.animate(dt);
   }
 
-  collidesWith(obj) {
-    const selfBox = this.getHitbox();
-    const targetBox = obj.getHitbox ? obj.getHitbox() : obj;
-    return (
-      selfBox.x < targetBox.x + targetBox.width &&
-      selfBox.x + selfBox.width > targetBox.x &&
-      selfBox.y < targetBox.y + targetBox.height &&
-      selfBox.y + selfBox.height > targetBox.y
-    );
-  }
-
   tryDealAttackDamage(player, popupDelay = 0) {
     if (!player || player.isDead || this.isDead || this.hasHitDuringAttack)
       return false;
 
-    const ex = this.x + this.width / 2;
-    const ey = this.y + this.height / 2;
-    const px = player.x + player.width / 2;
-    const py = player.y + player.height / 2;
-    const dx = px - ex;
-    const dy = Math.abs(py - ey);
-    const facingMatches = Math.sign(dx || FACING_RIGHT) === this.facing;
+    const enemyCenterX = this.x + this.width / 2;
+    const enemyCenterY = this.y + this.height / 2;
+    const playerCenterX = player.x + player.width / 2;
+    const playerCenterY = player.y + player.height / 2;
+    const deltaX = playerCenterX - enemyCenterX;
+    const absoluteDeltaY = Math.abs(playerCenterY - enemyCenterY);
+    const facingMatches = Math.sign(deltaX || FACING_RIGHT) === this.facing;
 
     if (
       facingMatches &&
-      Math.abs(dx) <= this.attackRange &&
-      dy <= this.attackHeightTolerance &&
+      Math.abs(deltaX) <= this.attackRange &&
+      absoluteDeltaY <= this.attackHeightTolerance &&
       player.invulnerableTimer <= 0
     ) {
       if (player.isSliding) {
@@ -266,7 +275,10 @@ export class Enemy1 extends EnemyBase {
       const dmg = this.attackDamageCurrent ?? this.damage;
       player.takeDamage?.(dmg, { popupDelay });
       if (typeof player.invulnerableTimer === "number") {
-        player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);
+        player.invulnerableTimer = Math.max(
+          player.invulnerableTimer,
+          PLAYER_HURT_IMMUNITY_TIME
+        );
       }
       this.hasHitDuringAttack = true;
       return true;
@@ -277,73 +289,48 @@ export class Enemy1 extends EnemyBase {
 
   render(ctx, camera) {
     if (this.isDead && this.deathTimer === 0 && this.blinkTimer > 0) {
+      const blinkInterval = 0.3;
       const blinkPhaseModulo = 2;
-      const blinkPhase = Math.floor(this.blinkTimer / 0.3) % blinkPhaseModulo;
+      const blinkPhase = Math.floor(this.blinkTimer / blinkInterval) % blinkPhaseModulo;
       const isInvisiblePhase = blinkPhase === 0;
       if (isInvisiblePhase) return;
     }
 
     ctx.save();
-    if (this.facing === FACING_LEFT) {
-      ctx.scale(-1, 1);
-      ctx.drawImage(
-        this.sprite,
-        -(this.x - camera.x + this.width),
-        this.y - camera.y,
-        this.width,
-        this.height
-      );
-      if (DEBUG_ENEMY_HITBOX) {
-        const box = this.getHitbox();
-        ctx.strokeStyle = "rgba(0,120,255,0.6)";
-        ctx.lineWidth = 2;
-        ctx.strokeRect(
-          -(box.x - camera.x + box.width),
-          box.y - camera.y,
-          box.width,
-          box.height
-        );
-      }
-    } else {
-      ctx.drawImage(
-        this.sprite,
-        this.x - camera.x,
-        this.y - camera.y,
-        this.width,
-        this.height
-      );
-      if (DEBUG_ENEMY_HITBOX) this.renderHitbox(ctx, camera);
+    const isMirroredFacing = this.facing === FACING_LEFT;
+    if (isMirroredFacing) ctx.scale(-1, 1);
+
+    const enemyScreenX = this.x - camera.x;
+    const enemyScreenY = this.y - camera.y;
+    const spriteDrawX = isMirroredFacing
+      ? -(enemyScreenX + this.width)
+      : enemyScreenX;
+    const spriteDrawY = enemyScreenY;
+
+    ctx.drawImage(this.sprite, spriteDrawX, spriteDrawY, this.width, this.height);
+
+    if (DEBUG_ENEMY_HITBOX) {
+      const hitbox = this.getHitbox();
+      const hitboxScreenX = hitbox.x - camera.x;
+      const hitboxScreenY = hitbox.y - camera.y;
+      const hitboxDrawX = isMirroredFacing
+        ? -(hitboxScreenX + hitbox.width)
+        : hitboxScreenX;
+      const hitboxDrawY = hitboxScreenY;
+      ctx.strokeStyle = "rgba(0,120,255,0.6)";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(hitboxDrawX, hitboxDrawY, hitbox.width, hitbox.height);
     }
 
     ctx.restore();
   }
 
-  takeDamage(amount = 1, opts = {}) {
+  takeDamage(amount = 1, hitContext = {}) {
     const prevDead = this.isDead;
-    super.takeDamage?.(amount, opts);
+    super.takeDamage?.(amount, hitContext);
     if (!prevDead && this.isDead && !this.hasDroppedLoot) {
-      this.dropCoins(4);
+      this.dropCoins(ENEMY1_COIN_DROP_COUNT);
       this.hasDroppedLoot = true;
     }
-  }
-
-  dropCoins(count = 2) {
-    if (!this.world?.collectables) return;
-    const coins = [];
-    const baseX = this.x + this.width / 2;
-    const baseY = this.y + this.height * 0.2;
-    for (let i = 0; i < count; i++) {
-      const dir = i % 2 === 0 ? -1 : 1;
-      const radius = 30 + Math.random() * 20;
-      const angle = (Math.random() * Math.PI) / 6 + Math.PI / 3; // 30°..90°
-      const x = baseX + dir * radius * Math.cos(angle);
-      const y = baseY - radius * Math.sin(angle);
-      const vx = dir * (120 + Math.random() * 60);
-      const vy = -(400 + Math.random() * 150);
-      const c = new CollectableItem(x, y, "coin", this.world);
-      c.startDrop(vx, vy);
-      coins.push(c);
-    }
-    this.world.addCollectables ? this.world.addCollectables(coins) : this.world.collectables.push(...coins);
   }
 }

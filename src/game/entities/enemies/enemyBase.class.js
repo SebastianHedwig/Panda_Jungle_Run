@@ -1,6 +1,11 @@
 import { MovableObject } from "../../../engine/physics/movableObject.class.js";
 import { HudPopup } from "../../effects/hudPopup.class.js";
-import { DEBUG_MODE, FACING_LEFT, FACING_RIGHT } from "../../../config/config.js";
+import {
+  DEBUG_MODE,
+  FACING_LEFT,
+  FACING_RIGHT,
+} from "../../../config/config.js";
+import { CollectableItem } from "../../items/collectableItem.class.js";
 
 export const DEBUG_ENEMY_HITBOX = DEBUG_MODE;
 
@@ -10,15 +15,15 @@ export class EnemyBase extends MovableObject {
     this.world = world;
 
     /** Movement / chase defaults */
-    this.patrolDir = FACING_LEFT;
+    this.patrolDirection = FACING_LEFT;
     this.patrolRange = 800;
-    this.originX = x;
+    this.spawnX = x;
     this.currentPlatform = null;
     this.lastGroundY = y;
     this.hitStun = 0;
     this.edgeMargin = 5;
     this.isChasing = false;
-    this.lastMoveDir = FACING_LEFT;
+    this.lastMoveDirection = FACING_LEFT;
     this.chaseCooldown = 0;
     this.chaseCooldownDuration = 2;
     this.chaseRangeX = 300;
@@ -34,18 +39,21 @@ export class EnemyBase extends MovableObject {
   }
 
   /** ----- DAMAGE / HITBOX ----- */
-  takeDamage(amount = 1, opts = {}) {
+  takeDamage(amount = 1, hitContext = {}) {
+    const recentSlideHitDuration = 0.4;
+    const hitStunMinDuration = 1.5;
+
     if (this.isDead) return;
     this.health -= amount;
 
-    if (opts?.source === "slide") {
-      this.recentSlideHit = Math.max(this.recentSlideHit, 0.4);
+    if (hitContext?.source === "slide") {
+      this.recentSlideHit = Math.max(this.recentSlideHit, recentSlideHitDuration);
     }
 
     if (this.world?.hudPopups) {
-      this.world.hudPopups.push(
-        new HudPopup(`-${amount}`, this.x + this.width / 2, this.y - 20, "damage")
-      );
+      const popupX = this.x + this.width * 0.5;
+      const popupY = this.y - 20;
+      this.world.hudPopups.push(new HudPopup(`-${amount}`, popupX, popupY, "damage"));
     }
 
     if (this.health <= 0) {
@@ -61,8 +69,8 @@ export class EnemyBase extends MovableObject {
       return;
     }
 
-    if (!opts.skipStun) {
-      this.hitStun = Math.max(this.hitStun, 1.5);
+    if (!hitContext.skipStun) {
+      this.hitStun = Math.max(this.hitStun, hitStunMinDuration);
       this.velocityX = 0;
       this.velocityY = 0;
       this.setAnimation?.(this.idleFrames);
@@ -72,153 +80,170 @@ export class EnemyBase extends MovableObject {
   }
 
   getHitbox() {
-    const shrinkX = this.width * 0.55;
-    const shrinkY = this.height * 0.2;
+    const hitboxShrinkXFactor = 0.55;
+    const hitboxShrinkYFactor = 0.2;
+
+    const { x, y, width: enemyWidth, height: enemyHeight } = this;
+    const hitboxWidth = enemyWidth * (1 - hitboxShrinkXFactor);
+    const hitboxHeight = enemyHeight * (1 - hitboxShrinkYFactor);
+    const hitboxX = x + (enemyWidth - hitboxWidth) / 2;
+    const hitboxY = y + (enemyHeight - hitboxHeight);
     return {
-      x: this.x + shrinkX / 2,
-      y: this.y + shrinkY,
-      width: this.width - shrinkX,
-      height: this.height - shrinkY,
+      x: hitboxX,
+      y: hitboxY,
+      width: hitboxWidth,
+      height: hitboxHeight,
     };
   }
 
   renderHitbox(ctx, camera) {
-    const box = this.getHitbox();
+    const hitbox = this.getHitbox();
     ctx.strokeStyle = "rgba(0,120,255,0.6)";
     ctx.lineWidth = 2;
     ctx.strokeRect(
-      box.x - camera.x,
-      box.y - camera.y,
-      box.width,
-      box.height
+      hitbox.x - camera.x,
+      hitbox.y - camera.y,
+      hitbox.width,
+      hitbox.height
     );
   }
 
   /** ----- PLAYER DELTA / CHASE ----- */
   getPlayerDelta(player) {
     if (!player) return null;
-    const ex = this.x + this.width / 2;
-    const ey = this.y + this.height / 2;
-    const px = player.x + player.width / 2;
-    const py = player.y + player.height / 2;
-    const dx = px - ex;
-    const dy = py - ey;
+    const enemyCenterX = this.x + this.width / 2;
+    const enemyCenterY = this.y + this.height / 2;
+    const playerCenterX = player.x + player.width / 2;
+    const playerCenterY = player.y + player.height / 2;
+    const deltaX = playerCenterX - enemyCenterX;
+    const deltaY = playerCenterY - enemyCenterY;
     return {
-      dx,
-      dy,
-      absDx: Math.abs(dx),
-      absDy: Math.abs(dy),
-      px,
-      py,
-      ex,
-      ey,
+      deltaX,
+      deltaY,
+      absoluteDeltaX: Math.abs(deltaX),
+      absoluteDeltaY: Math.abs(deltaY),
+      playerCenterX,
+      playerCenterY,
+      enemyCenterX,
+      enemyCenterY,
       playerWidth: player.width,
     };
   }
 
   shouldChasePlayer(playerInfo, wasChasing = false) {
     if (!playerInfo) return false;
-    const horizGap = playerInfo.absDx;
+    const horizGap = playerInfo.absoluteDeltaX;
     const maxX = wasChasing ? this.chaseRangeXExit : this.chaseRangeX;
     const maxY = wasChasing ? this.chaseRangeYExit : this.chaseRangeY;
-    return horizGap <= maxX && playerInfo.absDy <= maxY;
+    return horizGap <= maxX && playerInfo.absoluteDeltaY <= maxY;
   }
 
   /** ----- PATROL ----- */
   patrol() {
-    const minX = this.originX - this.patrolRange / 2;
-    const maxX = this.originX + this.patrolRange / 2;
+    const minX = this.spawnX - this.patrolRange / 2;
+    const maxX = this.spawnX + this.patrolRange / 2;
 
     if (this.x <= minX) {
-      this.patrolDir = 1;
+      this.patrolDirection = FACING_RIGHT;
     } else if (this.x >= maxX) {
-      this.patrolDir = -1;
+      this.patrolDirection = FACING_LEFT;
     }
 
-    this.facing = this.patrolDir;
+    this.facing = this.patrolDirection;
   }
 
   /** ----- PLATFORM HELPERS ----- */
   isOnLowestPlatform() {
+    const platformLevelTolerance = 0.5;
     if (!this.currentPlatform || !this.world?.platforms?.length) return false;
-    const lowestTop = this.world.platforms.reduce((max, p) => {
-      if (!p.supportsLanding) return max;
-      return Math.max(max, p.top);
+    const lowestTop = this.world.platforms.reduce((max, platform) => {
+      if (!platform.supportsLanding) return max;
+      return Math.max(max, platform.top);
     }, -Infinity);
     if (!Number.isFinite(lowestTop)) return false;
-    return this.currentPlatform.top >= lowestTop - 0.5;
+    return this.currentPlatform.top >= lowestTop - platformLevelTolerance;
   }
 
   getPlatformUnderfoot() {
+    const footProbeOffset = 2;
+    const platformBottomTolerance = 5;
+
     if (!this.world?.platforms?.length) return null;
     const footX = this.x + this.width / 2;
-    const footY = this.y + this.height + 2;
+    const footY = this.y + this.height + footProbeOffset;
     return this.world.platforms.find(
-      (p) =>
-        p.supportsLanding &&
-        footX >= p.left &&
-        footX <= p.right &&
-        footY >= p.top &&
-        footY <= p.bottom + 5
+      (platform) =>
+        platform.supportsLanding &&
+        footX >= platform.left &&
+        footX <= platform.right &&
+        footY >= platform.top &&
+        footY <= platform.bottom + platformBottomTolerance
     );
   }
 
-  findPlatformBelow(x, currentTop) {
+  findPlatformBelowAt(footX, currentTop) {
     if (!this.world?.platforms?.length) return null;
-    let best = null;
-    for (const p of this.world.platforms) {
-      if (!p.supportsLanding) continue;
-      if (x < p.left || x > p.right) continue;
-      if (p.top <= currentTop) continue;
-      if (!best || p.top < best.top) best = p;
+    let nearestPlatformBelow = null;
+    for (const platform of this.world.platforms) {
+      if (!platform.supportsLanding) continue;
+      if (footX < platform.left || footX > platform.right) continue;
+      if (platform.top <= currentTop) continue;
+      if (!nearestPlatformBelow || platform.top < nearestPlatformBelow.top) {
+        nearestPlatformBelow = platform;
+      }
     }
-    return best;
+    return nearestPlatformBelow;
   }
 
-  hasAdjacentPlatform(currentPlatform, moveDir, footX) {
+  hasAdjacentPlatform(currentPlatform, moveDirection, footX) {
+    const adjacentPlatformLookaheadFactor = 3;
+    const minAdjacentPlatformToleranceY = 4;
+
     if (!this.world?.platforms?.length) return false;
-    const toleranceY = Math.max(4, this.edgeMargin);
-    const boundary = moveDir > 0 ? currentPlatform.right : currentPlatform.left;
+    const toleranceY = Math.max(minAdjacentPlatformToleranceY, this.edgeMargin);
+    const boundary =
+      moveDirection > 0 ? currentPlatform.right : currentPlatform.left;
     const lookStart = boundary - this.edgeMargin;
-    const lookEnd = boundary + this.edgeMargin * 3 * moveDir;
+    const lookEnd =
+      boundary + this.edgeMargin * adjacentPlatformLookaheadFactor * moveDirection;
     const minX = Math.min(lookStart, lookEnd, footX - this.edgeMargin);
     const maxX = Math.max(lookStart, lookEnd, footX + this.edgeMargin);
     return this.world.platforms.some(
-      (p) =>
-        p !== currentPlatform &&
-        p.supportsLanding &&
-        Math.abs(p.top - currentPlatform.top) <= toleranceY &&
-        p.right >= minX &&
-        p.left <= maxX
+      (platform) =>
+        platform !== currentPlatform &&
+        platform.supportsLanding &&
+        Math.abs(platform.top - currentPlatform.top) <= toleranceY &&
+        platform.right >= minX &&
+        platform.left <= maxX
     );
   }
 
-  handlePlatformLanding(prevBottom, currBottom) {
+  handlePlatformLanding(previousBottom, currentBottom) {
     if (!this.world?.platforms?.length) return;
     const footX = this.x + this.width / 2;
 
-    for (const p of this.world.platforms) {
-      if (!p.supportsLanding) continue;
-      const overlapsX = this.x + this.width > p.left && this.x < p.right;
+    for (const platform of this.world.platforms) {
+      if (!platform.supportsLanding) continue;
+      const overlapsX = this.x + this.width > platform.left && this.x < platform.right;
 
       if (
         overlapsX &&
         this.velocityY > 0 &&
-        prevBottom <= p.top &&
-        currBottom >= p.top
+        previousBottom <= platform.top &&
+        currentBottom >= platform.top
       ) {
-        this.y = p.top - this.height;
+        this.y = platform.top - this.height;
         this.velocityY = 0;
         this.onGround = true;
-        this.currentPlatform = p;
+        this.currentPlatform = platform;
         this.lastGroundY = this.y;
         return;
       }
     }
 
     this.onGround = false;
-    const canvasH = this.world?.canvas?.height ?? 1000;
-    if (currBottom > canvasH + this.height) {
+    const canvasH = this.world?.canvas?.height;
+    if (currentBottom > canvasH + this.height) {
       this.y = this.lastGroundY;
       this.velocityY = 0;
       this.onGround = true;
@@ -226,75 +251,127 @@ export class EnemyBase extends MovableObject {
   }
 
   applyAttackPhysics(dt) {
-    const prevBottom = this.y + this.height;
+    const previousBottom = this.y + this.height;
     this.applyApexGravity(dt);
-    const currBottom = this.y + this.height;
-    this.handlePlatformLanding(prevBottom, currBottom);
+    const currentBottom = this.y + this.height;
+    this.handlePlatformLanding(previousBottom, currentBottom);
   }
 
   /** ----- EDGE / DROP HANDLING ----- */
-  adjustForEdges(moveDir, dt, platform, onLowestPlatform, prevChasing) {
-    const platformBelow = this.findPlatformBelow(
+  adjustForEdges(moveDirection, dt, platform, onLowestPlatform, fromChasing) {
+    const platformBelow = this.findPlatformBelowAt(
       this.x + this.width / 2,
       platform.top
     );
-    const currFootX = this.x + this.width / 2;
-    const nextX = this.x + moveDir * this.speed * dt;
+    const currentFootX = this.x + this.width / 2;
+    const nextX = this.x + moveDirection * this.speed * dt;
     const footX = nextX + this.width / 2;
     const beyondEdge =
       footX < platform.left + this.edgeMargin ||
       footX > platform.right - this.edgeMargin;
     const returningInside =
-      (currFootX >= platform.right - this.edgeMargin && moveDir <= 0) ||
-      (currFootX <= platform.left + this.edgeMargin && moveDir >= 0);
+      (currentFootX >= platform.right - this.edgeMargin && moveDirection <= 0) ||
+      (currentFootX <= platform.left + this.edgeMargin && moveDirection >= 0);
     const allowDrop = this.isChasing && !onLowestPlatform && !!platformBelow;
     const hasAdjacentFloor =
-      onLowestPlatform && this.hasAdjacentPlatform(platform, moveDir, footX);
+      onLowestPlatform &&
+      this.hasAdjacentPlatform(platform, moveDirection, footX);
 
     if (beyondEdge && !returningInside && !allowDrop && !hasAdjacentFloor) {
-      this.patrolDir = moveDir > 0 ? -1 : 1;
+      this.patrolDirection = moveDirection > 0 ? FACING_LEFT : FACING_RIGHT;
       this.isChasing = false;
-      if (prevChasing) {
+      if (fromChasing) {
         this.chaseCooldown = Math.max(
           this.chaseCooldown,
           this.chaseCooldownDuration
         );
       }
-      moveDir = this.patrolDir;
-      this.facing = moveDir;
+      moveDirection = this.patrolDirection;
+      this.facing = moveDirection;
     }
 
-    return moveDir;
+    return moveDirection;
   }
 
   /** ----- ATTACK HANDLERS (DEFAULT) ----- */
   tryStartAttack(playerInfo, player) {
     if (!playerInfo || !player || player.isDead) return false;
-    const dx = playerInfo.dx;
-    const dy = playerInfo.absDy;
+    const deltaX = playerInfo.deltaX;
+    const absoluteDeltaY = playerInfo.absoluteDeltaY;
     if (
-      Math.abs(dx) <= this.attackRange &&
-      dy <= this.attackHeightTolerance
+      Math.abs(deltaX) <= this.attackRange &&
+      absoluteDeltaY <= this.attackHeightTolerance
     ) {
       const frames = this.attackFrames;
       if (frames) {
-        this.startMeleeAttack(dx, frames, this.damage, player);
+        this.startMeleeAttack(deltaX, frames, this.damage, player);
         return true;
       }
     }
     return false;
   }
 
-  startMeleeAttack(dx, frames, damage, player, moveSpeed = 0) {
+  startMeleeAttack(deltaX, frames, damage, player, moveSpeed = 0) {
     this.isAttacking = true;
     this.attackTimer = this.attackDuration;
     this.hasHitDuringAttack = false;
     this.attackDamageCurrent = damage;
     this.attackMoveSpeed = moveSpeed || 0;
     this.activeAttackFrames = frames || this.attackFrames;
-    this.facing = dx >= 0 ? FACING_RIGHT : FACING_LEFT;
+    this.facing = deltaX >= 0 ? FACING_RIGHT : FACING_LEFT;
     this.velocityX = 0;
     this.setAnimation?.(this.activeAttackFrames);
-    this.tryDealAttackDamage?.(player, 0.2);
+    const attackPopupDelay = 0.2;
+    this.tryDealAttackDamage?.(player, attackPopupDelay);
+  }
+
+  dropCollectables(itemType, count = 0) {
+    if (!this.world?.collectables || count <= 0) return;
+
+    const spawnOffsetYFactor = 0.2;
+    const baseRadius = 30;
+    const radiusScattering = 20;
+    const minAngle = Math.PI / 3; // 60°
+    const angleRange = Math.PI / 6; // up to 90°
+    const baseSpeedX = 120;
+    const speedXScattering = 60;
+    const baseSpeedY = 400;
+    const speedYScattering = 150;
+
+    const drops = [];
+    const baseX = this.x + this.width / 2;
+    const baseY = this.y + this.height * spawnOffsetYFactor;
+    for (let dropIndex = 0; dropIndex < count; dropIndex++) {
+      const isEvenDropIndex = dropIndex % 2 === 0; // drop left/right alternation
+      const dropDirection = isEvenDropIndex ? FACING_LEFT : FACING_RIGHT;
+      const radius = baseRadius + Math.random() * radiusScattering;
+      const angle = minAngle + Math.random() * angleRange;
+      const dropX = baseX + dropDirection * radius * Math.cos(angle);
+      const dropY = baseY - radius * Math.sin(angle);
+      const velocityX = dropDirection * (baseSpeedX + Math.random() * speedXScattering);
+      const velocityY = -(baseSpeedY + Math.random() * speedYScattering);
+      const item = new CollectableItem(dropX, dropY, itemType, this.world);
+      item.startDrop(velocityX, velocityY);
+      drops.push(item);
+    }
+
+    this.world.addCollectables
+      ? this.world.addCollectables(drops)
+      : this.world.collectables.push(...drops);
+  }
+
+  dropCoins(count = 0) {
+    this.dropCollectables("coin", count);
+  }
+
+  collidesWith(target) {
+    const selfBox = this.getHitbox();
+    const targetBox = target.getHitbox ? target.getHitbox() : target;
+    return (
+      selfBox.x < targetBox.x + targetBox.width &&
+      selfBox.x + selfBox.width > targetBox.x &&
+      selfBox.y < targetBox.y + targetBox.height &&
+      selfBox.y + selfBox.height > targetBox.y
+    );
   }
 }

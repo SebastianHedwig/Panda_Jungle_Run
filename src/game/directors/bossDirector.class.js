@@ -21,8 +21,8 @@ export class BossDirector {
     spawnTriggerOffset = BOSS_SPAWN_TRIGGER_OFFSET,
     spawnGroundOffset = BOSS_SPAWN_GROUND_OFFSET,
     spawnClearance = BOSS_SPAWN_CLEARANCE,
-    moveMinX = BOSS_MOVE_MIN_X,
-    moveMaxX = BOSS_MOVE_MAX_X,
+    movementMinX = BOSS_MOVE_MIN_X,
+    movementMaxX = BOSS_MOVE_MAX_X,
     spawnShakeDuration = BOSS_SPAWN_SHAKE_DURATION,
     spawnShakeMagnitude = BOSS_SPAWN_SHAKE_MAGNITUDE,
   } = {}) {
@@ -34,8 +34,8 @@ export class BossDirector {
     this.spawnTriggerX = WORLD_WIDTH - spawnTriggerOffset;
     this.spawnGroundOffset = spawnGroundOffset;
     this.spawnClearance = spawnClearance;
-    this.moveMinX = moveMinX;
-    this.moveMaxX = moveMaxX;
+    this.movementMinX = movementMinX;
+    this.movementMaxX = movementMaxX;
     this.spawnShakeDuration = spawnShakeDuration;
     this.spawnShakeMagnitude = spawnShakeMagnitude;
 
@@ -68,8 +68,8 @@ export class BossDirector {
 
   spawnBoss(player) {
     if (!this.bossSprites) return;
-    const minX = this.moveMinX;
-    const maxX = this.moveMaxX;
+    const minX = this.movementMinX;
+    const maxX = this.movementMaxX;
     const desiredSpawn = player.x + 1500;
     const bossWidth = 240;
     const spawnX = Math.min(Math.max(desiredSpawn, minX), maxX - bossWidth);

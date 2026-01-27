@@ -2,6 +2,7 @@ import { MovableObject } from "../../../engine/physics/movableObject.class.js";
 import { HudPopup } from "../../effects/hudPopup.class.js";
 import {
   DEBUG_MODE,
+  BASE_SPEED,
   PLAYER_MAX_HEARTS,
   PLAYER_SLIDE_DAMAGE,
   FACING_LEFT,
@@ -54,7 +55,7 @@ export class Player extends MovableObject {
     this.sprite = this.currentAnimation[0];
 
     /** ----- MOVEMENT ----- */
-    this.defaultSpeed = this.speed;
+    this.defaultSpeed = BASE_SPEED;
     this.runMultiplier = 2;
 
     /** ----- SLIDE ----- */

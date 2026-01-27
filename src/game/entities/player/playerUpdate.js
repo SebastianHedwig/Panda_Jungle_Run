@@ -127,7 +127,7 @@ export function updatePlayer(player, dt, input, playerAudio) {
       player.slideInvulWindow,
       player.slideInvulnerableDuring
     );
-    if (moved >= player.slideDistance) {
+    if (slideDistanceTraveled >= player.slideDistance) {
       player.isSliding = false;
       applyPostSlideInvulnerability(player);
     }

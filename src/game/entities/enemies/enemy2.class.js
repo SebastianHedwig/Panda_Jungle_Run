@@ -1,9 +1,12 @@
 import { Enemy1 } from "./enemy1.class.js";
-import { CollectableItem } from "../../items/collectableItem.class.js";
 import {
   ENEMY2_ATTACK1_DAMAGE,
   ENEMY2_ATTACK2_DAMAGE,
   ENEMY2_HEALTH,
+  ENEMY2_SPEED,
+  ENEMY_WIDTH,
+  ENEMY_HEIGHT,
+  ENEMY2_COIN_DROP_COUNT,
 } from "../../../config/config.js";
 import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
@@ -20,60 +23,46 @@ export function loadEnemy2Sprites() {
 
 export class Enemy2 extends Enemy1 {
   constructor(x, y, sprites, world = null) {
-    super(x, y, { ...sprites, walk: sprites.run, attack: sprites.attack1 }, world);
+    super(
+      x,
+      y,
+      { ...sprites, walk: sprites.run, attack: sprites.attack1 },
+      world,
+      ENEMY_WIDTH,
+      ENEMY_HEIGHT
+    );
     this.runFrames = sprites.run;
     this.walkFrames = sprites.run;
     this.attack1Frames = sprites.attack1;
     this.attack2Frames = sprites.attack2;
     this.attack1Damage = ENEMY2_ATTACK1_DAMAGE;
     this.attack2Damage = ENEMY2_ATTACK2_DAMAGE;
-    this.speed = (this.speed || 80) * 1.5;
+    this.speed = ENEMY2_SPEED;
     this.health = ENEMY2_HEALTH;
     this.hasDroppedLoot = false;
   }
 
   tryStartAttack(playerInfo, player) {
     if (!playerInfo || !player || player.isDead) return false;
-    const dx = playerInfo.dx;
-    const dy = playerInfo.absDy;
-    if (Math.abs(dx) <= this.attackRange && dy <= this.attackHeightTolerance) {
-      const useSecond = Math.random() < 0.5;
+    const deltaX = playerInfo.deltaX;
+    const absoluteDeltaY = playerInfo.absoluteDeltaY;
+    if (Math.abs(deltaX) <= this.attackRange && absoluteDeltaY <= this.attackHeightTolerance) {
+      const attack2Probability = 0.5;
+      const useSecond = Math.random() < attack2Probability;
       const frames = useSecond ? this.attack2Frames : this.attack1Frames;
       const damage = useSecond ? this.attack2Damage : this.attack1Damage;
-      this.startMeleeAttack(dx, frames, damage, player);
+      this.startMeleeAttack(deltaX, frames, damage, player);
       return true;
     }
     return false;
   }
 
-  takeDamage(amount = 1, opts = {}) {
-    const prevDead = this.isDead;
-    super.takeDamage?.(amount, opts);
-    if (!prevDead && this.isDead && !this.hasDroppedLoot) {
-      this.dropCoins(4);
+  takeDamage(amount = 1, hitContext = {}) {
+    const wasDead = this.isDead;
+    EnemyBase.prototype.takeDamage.call(this, amount, hitContext);
+    if (!wasDead && this.isDead && !this.hasDroppedLoot) {
+      this.dropCoins(ENEMY2_COIN_DROP_COUNT);
       this.hasDroppedLoot = true;
     }
-  }
-
-  dropCoins(count = 4) {
-    if (!this.world?.collectables) return;
-    const coins = [];
-    const baseX = this.x + this.width / 2;
-    const baseY = this.y + this.height * 0.2;
-    for (let i = 0; i < count; i++) {
-      const dir = i % 2 === 0 ? -1 : 1;
-      const radius = 30 + Math.random() * 20;
-      const angle = (Math.random() * Math.PI) / 6 + Math.PI / 3;
-      const x = baseX + dir * radius * Math.cos(angle);
-      const y = baseY - radius * Math.sin(angle);
-      const vx = dir * (120 + Math.random() * 60);
-      const vy = -(400 + Math.random() * 150);
-      const c = new CollectableItem(x, y, "coin", this.world);
-      c.startDrop(vx, vy);
-      coins.push(c);
-    }
-    this.world.addCollectables
-      ? this.world.addCollectables(coins)
-      : this.world.collectables.push(...coins);
   }
 }

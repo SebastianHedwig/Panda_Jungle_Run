@@ -6,6 +6,12 @@ import {
   ENEMY3_ATTACK2_DAMAGE,
   ENEMY3_HEALTH,
   ENEMY3_SLIDE_DAMAGE,
+  ENEMY3_COIN_DROP_COUNT,
+  ENEMY3_GUN_DROP_COUNT,
+  ENEMY3_SPEED,
+  ENEMY3_SLIDE_SPEED,
+  ENEMY_WIDTH,
+  ENEMY_HEIGHT,
 } from "../../../config/config.js";
 import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
@@ -23,7 +29,14 @@ export function loadEnemy3Sprites() {
 
 export class Enemy3 extends Enemy2 {
   constructor(x, y, sprites, world = null) {
-    super(x, y, { ...sprites, walk: sprites.run, attack: sprites.attack1 }, world);
+    super(
+      x,
+      y,
+      { ...sprites, walk: sprites.run, attack: sprites.attack1 },
+      world,
+      ENEMY_WIDTH,
+      ENEMY_HEIGHT
+    );
     this.runFrames = sprites.run;
     this.walkFrames = sprites.run;
     this.attack1Frames = sprites.attack1;
@@ -34,7 +47,8 @@ export class Enemy3 extends Enemy2 {
     this.slideDamage = ENEMY3_SLIDE_DAMAGE;
     this.slideRange = 220;
     this.slideHeightTolerance = this.attackHeightTolerance + 10;
-    this.slideSpeed = (this.speed || 80) * 1.8;
+    this.speed = ENEMY3_SPEED;
+    this.slideSpeed = ENEMY3_SLIDE_SPEED;
     this.health = ENEMY3_HEALTH;
     this.slideCooldown = 0;
     this.slideCooldownDuration = 5;
@@ -46,7 +60,7 @@ export class Enemy3 extends Enemy2 {
       this.slideCooldown = Math.max(0, this.slideCooldown - dt);
     }
     if (this.isDead && !this.hasDroppedLoot) {
-      this.dropCoins(4);
+      this.dropCoins(ENEMY3_COIN_DROP_COUNT);
       this.dropGun();
       this.hasDroppedLoot = true;
     }
@@ -55,54 +69,36 @@ export class Enemy3 extends Enemy2 {
 
   tryStartAttack(playerInfo, player) {
     if (!playerInfo || !player || player.isDead) return false;
-    const dx = playerInfo.dx;
-    const dy = playerInfo.absDy;
+    const deltaX = playerInfo.deltaX;
+    const absoluteDeltaY = playerInfo.absoluteDeltaY;
 
     if (
       this.onGround &&
-      Math.abs(dx) > this.attackRange &&
-      Math.abs(dx) <= this.slideRange &&
-      dy <= this.slideHeightTolerance &&
+      Math.abs(deltaX) > this.attackRange &&
+      Math.abs(deltaX) <= this.slideRange &&
+      absoluteDeltaY <= this.slideHeightTolerance &&
       this.slideCooldown <= 0
     ) {
       const frames = this.slideFrames || this.attack2Frames || this.attack1Frames;
-      this.startMeleeAttack(dx, frames, this.slideDamage, player, this.slideSpeed);
+      this.startMeleeAttack(deltaX, frames, this.slideDamage, player, this.slideSpeed);
       this.slideCooldown = this.slideCooldownDuration;
       return true;
     }
 
-    if (Math.abs(dx) <= this.attackRange && dy <= this.attackHeightTolerance) {
-      const useSecond = Math.random() < 0.5;
-      const frames = useSecond ? this.attack2Frames : this.attack1Frames;
-      const damage = useSecond ? this.attack2Damage : this.attack1Damage;
-      this.startMeleeAttack(dx, frames, damage, player);
-      return true;
-    }
-
-    return false;
+    return super.tryStartAttack(playerInfo, player);
   }
 
-  takeDamage(amount = 1, opts = {}) {
-    const prevDead = this.isDead;
-    EnemyBase.prototype.takeDamage.call(this, amount, opts);
-    if (!prevDead && this.isDead && !this.hasDroppedLoot) {
-      this.dropCoins(4);
+  takeDamage(amount = 1, hitContext = {}) {
+    const wasDead = this.isDead;
+    EnemyBase.prototype.takeDamage.call(this, amount, hitContext);
+    if (!wasDead && this.isDead && !this.hasDroppedLoot) {
+      this.dropCoins(ENEMY3_COIN_DROP_COUNT);
       this.dropGun();
       this.hasDroppedLoot = true;
     }
   }
 
-  dropGun() {
-    if (!this.world?.collectables) return;
-    const baseX = this.x + this.width / 2;
-    const baseY = this.y + this.height * 0.2;
-    const gun = new CollectableItem(baseX, baseY, "gun", this.world);
-    const dir = Math.random() < 0.5 ? -1 : 1;
-    const vx = dir * (120 + Math.random() * 60);
-    const vy = -(400 + Math.random() * 150);
-    gun.startDrop(vx, vy);
-    this.world.addCollectables
-      ? this.world.addCollectables([gun])
-      : this.world.collectables.push(gun);
+  dropGun(count = ENEMY3_GUN_DROP_COUNT) {
+    this.dropCollectables("gun", count);
   }
 }

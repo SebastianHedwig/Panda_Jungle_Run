@@ -1,4 +1,8 @@
-import { FACING_LEFT, FACING_RIGHT } from "../../../config/config.js";
+import {
+  FACING_LEFT,
+  FACING_RIGHT,
+  PLAYER_HURT_IMMUNITY_TIME,
+} from "../../../config/config.js";
 
 export function updateBoss(boss, dt, player) {
   if (boss.isDead) {
@@ -80,8 +84,8 @@ export function updateBoss(boss, dt, player) {
     boss.onGround &&
     !boss.isAttacking &&
     playerInfo &&
-    playerInfo.dy < -boss.jumpHeightThreshold &&
-    Math.abs(playerInfo.dx) <= boss.jumpHorizontalRange &&
+    playerInfo.deltaY < -boss.jumpHeightThreshold &&
+    Math.abs(playerInfo.deltaX) <= boss.jumpHorizontalRange &&
     boss.jumpCooldownTimer <= 0;
   if (wantJump) {
     boss.jump();
@@ -120,12 +124,12 @@ export function updateBoss(boss, dt, player) {
   const platform = boss.getPlatformUnderfoot();
   boss.currentPlatform = platform || null;
   const onLowestPlatform = boss.isOnLowestPlatform();
-  const prevChasing = boss.isChasing;
+  const fromChasing = boss.isChasing;
   const canChase =
     boss.chaseCooldown <= 0 &&
     player &&
     !player.isDead &&
-    boss.shouldChasePlayer(playerInfo, prevChasing);
+    boss.shouldChasePlayer(playerInfo, fromChasing);
   const enemyCenterX = boss.x + boss.width / 2;
   const ignoreEdgeBlock =
     Number.isFinite(boss.movementMinX) && Number.isFinite(boss.movementMaxX);
@@ -134,15 +138,17 @@ export function updateBoss(boss, dt, player) {
     canChase &&
     onLowestPlatform &&
     platform &&
-    ((playerInfo.dx < 0 && enemyCenterX <= platform.left + boss.edgeMargin) ||
-      (playerInfo.dx > 0 && enemyCenterX >= platform.right - boss.edgeMargin));
+    ((playerInfo.deltaX < 0 &&
+      enemyCenterX <= platform.left + boss.edgeMargin) ||
+      (playerInfo.deltaX > 0 &&
+        enemyCenterX >= platform.right - boss.edgeMargin));
 
   boss.isChasing = canChase && !blockedByEdge;
 
   boss.updateRunState();
   let moveDir = boss.lastMoveDir || boss.facing || FACING_LEFT;
   if (boss.isChasing) {
-    const dx = playerInfo?.dx ?? 0;
+    const dx = playerInfo?.deltaX ?? 0;
     const targetDir =
       Math.abs(dx) < 5
         ? boss.lastMoveDir || boss.facing || FACING_RIGHT
@@ -150,7 +156,7 @@ export function updateBoss(boss, dt, player) {
     moveDir = targetDir;
   } else {
     boss.patrol();
-    moveDir = boss.patrolDir;
+    moveDir = boss.patrolDirection;
   }
 
   if (platform) {
@@ -159,7 +165,7 @@ export function updateBoss(boss, dt, player) {
       dt,
       platform,
       onLowestPlatform,
-      prevChasing
+      fromChasing
     );
   }
 
@@ -193,7 +199,10 @@ export function updateBoss(boss, dt, player) {
   ) {
     player.takeDamage?.(boss.damage, { useDizzy: false });
     if (typeof player.invulnerableTimer === "number") {
-      player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);
+      player.invulnerableTimer = Math.max(
+        player.invulnerableTimer,
+        PLAYER_HURT_IMMUNITY_TIME
+      );
     }
   }
 

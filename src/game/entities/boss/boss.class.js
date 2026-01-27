@@ -1,5 +1,7 @@
 import { EnemyBase } from "../enemies/enemyBase.class.js";
 import {
+  BOSS_SPEED,
+  BOSS_RUN_SPEED, 
   BOSS_ATTACK1_DAMAGE,
   BOSS_ATTACK2_DAMAGE,
   BOSS_DAMAGE,
@@ -7,6 +9,7 @@ import {
   DEBUG_MODE,
   FACING_LEFT,
   FACING_RIGHT,
+  PLAYER_HURT_IMMUNITY_TIME,
 } from "../../../config/config.js";
 import { BossAudio } from "../../audio/bossAudio.class.js";
 import { updateBoss } from "./bossUpdate.js";
@@ -35,8 +38,8 @@ export class Boss extends EnemyBase {
     this.frameSpeed = 0.09;
     this.sprite = this.currentAnimation[0];
 
-    this.speed = 100;
-    this.runSpeed = 200;
+    this.speed = BOSS_SPEED;
+    this.runSpeed = BOSS_RUN_SPEED;
     this.health = BOSS_HEALTH;
     this.damage = BOSS_DAMAGE;
     this.attackDamageCurrent = this.damage;
@@ -129,128 +132,121 @@ export class Boss extends EnemyBase {
   }
 
   patrol() {
-    if (Number.isFinite(this.movementMinX) && Number.isFinite(this.movementMaxX)) {
-      const minX = this.movementMinX;
-      const maxX = this.movementMaxX;
-      if (this.x <= minX) {
-        this.patrolDir = 1;
-      } else if (this.x >= maxX) {
-        this.patrolDir = -1;
-      }
-      this.facing = this.patrolDir;
-      return;
+    const minX = this.movementMinX;
+    const maxX = this.movementMaxX;
+
+    if (this.x <= minX) {
+      this.patrolDirection = FACING_RIGHT;
+    } else if (this.x >= maxX) {
+      this.patrolDirection = FACING_LEFT;
     }
-    super.patrol();
+    this.facing = this.patrolDirection;
   }
 
-  hasAdjacentPlatform(currentPlatform, moveDir, footX) {
-    if (!this.world?.platforms?.length) return false;
-    const margin = Math.max(this.edgeMargin, 60);
-    const toleranceY = Math.max(4, margin);
-    const boundary = moveDir > 0 ? currentPlatform.right : currentPlatform.left;
-    const lookStart = boundary - margin;
-    const lookEnd = boundary + margin * 6 * moveDir;
-    const minX = Math.min(lookStart, lookEnd, footX - margin);
-    const maxX = Math.max(lookStart, lookEnd, footX + margin);
-    return this.world.platforms.some(
-      (p) =>
-        p !== currentPlatform &&
-        p.supportsLanding &&
-        Math.abs(p.top - currentPlatform.top) <= toleranceY &&
-        p.right >= minX &&
-        p.left <= maxX
+  adjustForEdges(moveDirection, dt, platform, onLowestPlatform, fromChasing) {
+    if (Number.isFinite(this.movementMinX) && Number.isFinite(this.movementMaxX)) {
+      return moveDirection;
+    }
+    return super.adjustForEdges(
+      moveDirection,
+      dt,
+      platform,
+      onLowestPlatform,
+      fromChasing
     );
   }
 
-  adjustForEdges(moveDir, dt, platform, onLowestPlatform, prevChasing) {
-    if (Number.isFinite(this.movementMinX) && Number.isFinite(this.movementMaxX)) {
-      return moveDir;
-    }
-    return super.adjustForEdges(moveDir, dt, platform, onLowestPlatform, prevChasing);
-  }
-
   beginAttack1(playerInfo, player) {
-    const dx = playerInfo?.dx ?? this.facing ?? FACING_RIGHT;
+    const deltaX = playerInfo?.deltaX ?? this.facing ?? FACING_RIGHT;
+    const extraAttack1HeightTolerance = 20;
     this.attackDuration = this.attack1Duration;
     this.startMeleeAttack(
-      dx,
+      deltaX,
       this.attack1Frames,
       this.attack1Damage,
       player,
       this.attack1MoveSpeed,
       this.attack1StrikeRange,
-      this.attackHeightTolerance + 20
+      this.attackHeightTolerance + extraAttack1HeightTolerance
     );
   }
 
   tryStartAttack(playerInfo, player) {
     if (!playerInfo || !player || player.isDead) return false;
-    const dx = playerInfo.dx;
-    const dy = playerInfo.absDy;
-    const absDx = Math.abs(dx);
+    const deltaX = playerInfo.deltaX;
+    const absoluteDeltaY = playerInfo.absoluteDeltaY;
+    const absoluteDeltaX = Math.abs(deltaX);
 
-    const canUseHeight = dy <= this.attackHeightTolerance + 30;
+    const extraHeightTolerance = 30;
+    const canUseHeight = absoluteDeltaY <= this.attackHeightTolerance + extraHeightTolerance;
     if (!this.onGround || !canUseHeight) return false;
 
-    const canAttack1 =
-      this.attack1Frames &&
-      this.attack1Cooldown <= 0 &&
-      absDx <= this.attack1TriggerRange &&
-      absDx >= this.attack1MinRange;
-    const canAttack2 =
-      this.attack2Frames &&
-      this.attack2Cooldown <= 0 &&
-      absDx <= this.attack2Range;
-
+    const { canAttack1, canAttack2 } = this.getAvailableAttacks(absoluteDeltaX);
     if (!canAttack1 && !canAttack2) return false;
 
     let choice = null;
     if (canAttack1 && canAttack2) {
-      choice = Math.random() < 0.5 ? "attack1" : "attack2";
+      choice = this.pickBossAttack();
     } else if (canAttack1) choice = "attack1";
     else if (canAttack2) choice = "attack2";
 
     if (choice === "attack2") {
-      this.attackDuration = this.attack2Duration;
-      this.attack2Cooldown = this.attack2CooldownDuration;
-      this.lastAttackType = "attack2";
-      bossAudio.playAttack2();
-      this.startMeleeAttack(
-        dx,
-        this.attack2Frames,
-        this.attack2Damage,
-        player,
-        0,
-        this.attack2Range,
-        this.attackHeightTolerance + 10
-      );
-      return true;
+      return this.executeAttack2(deltaX, player);
     }
 
     if (choice === "attack1") {
-      bossAudio.playAttack1();
-      this.beginAttack1(playerInfo, player);
-      this.attack1Cooldown = this.attack1CooldownDuration;
-      this.lastAttackType = "attack1";
-      return true;
+      return this.executeAttack1(playerInfo, player);
     }
 
     return false;
   }
 
-  update(dt, player) {
-    updateBoss(this, dt, player);
+  pickBossAttack() {
+    const attack2Probability = 0.5;
+    return Math.random() < attack2Probability ? "attack1" : "attack2";
   }
 
-  collidesWith(obj) {
-    const selfBox = this.getHitbox();
-    const targetBox = obj.getHitbox ? obj.getHitbox() : obj;
-    return (
-      selfBox.x < targetBox.x + targetBox.width &&
-      selfBox.x + selfBox.width > targetBox.x &&
-      selfBox.y < targetBox.y + targetBox.height &&
-      selfBox.y + selfBox.height > targetBox.y
+  getAvailableAttacks(absoluteDeltaX) {
+    const canAttack1 =
+      this.attack1Frames &&
+      this.attack1Cooldown <= 0 &&
+      absoluteDeltaX <= this.attack1TriggerRange &&
+      absoluteDeltaX >= this.attack1MinRange;
+    const canAttack2 =
+      this.attack2Frames &&
+      this.attack2Cooldown <= 0 &&
+      absoluteDeltaX <= this.attack2Range;
+    return { canAttack1, canAttack2 };
+  }
+
+  executeAttack1(playerInfo, player) {
+    bossAudio.playAttack1();
+    this.beginAttack1(playerInfo, player);
+    this.attack1Cooldown = this.attack1CooldownDuration;
+    this.lastAttackType = "attack1";
+    return true;
+  }
+
+  executeAttack2(deltaX, player) {
+    const extraAttack2HeightTolerance = 10;
+    this.attackDuration = this.attack2Duration;
+    this.attack2Cooldown = this.attack2CooldownDuration;
+    this.lastAttackType = "attack2";
+    bossAudio.playAttack2();
+    this.startMeleeAttack(
+        deltaX,
+        this.attack2Frames,
+      this.attack2Damage,
+      player,
+      0,
+      this.attack2Range,
+      this.attackHeightTolerance + extraAttack2HeightTolerance
     );
+    return true;
+  }
+
+  update(dt, player) {
+    updateBoss(this, dt, player);
   }
 
   updateRunState() {
@@ -303,7 +299,10 @@ export class Boss extends EnemyBase {
       player.takeDamage?.(dmg, { popupDelay });
       bossAudio.playHit();
       if (typeof player.invulnerableTimer === "number") {
-        player.invulnerableTimer = Math.max(player.invulnerableTimer, 2);
+        player.invulnerableTimer = Math.max(
+          player.invulnerableTimer,
+          PLAYER_HURT_IMMUNITY_TIME
+        );
       }
       this.hasHitDuringAttack = true;
       return true;
@@ -312,9 +311,9 @@ export class Boss extends EnemyBase {
     return false;
   }
 
-  takeDamage(amount = 1, opts = {}) {
+  takeDamage(amount = 1, hitContext = {}) {
     const prevDead = this.isDead;
-    super.takeDamage?.(amount, { ...opts, skipStun: true });
+    super.takeDamage?.(amount, { ...hitContext, skipStun: true });
     if (!prevDead && this.isDead) {
       this.deathTimer = Math.max(this.deathTimer, 5.5);
     } else if (this.hurtFrames) {

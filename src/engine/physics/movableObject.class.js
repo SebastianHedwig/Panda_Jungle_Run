@@ -1,6 +1,7 @@
 import {
   APEX_BOOST,
   APEX_THRESHOLD,
+  BASE_SPEED,
   GRAVITY,
   GRAVITY_DOWN,
   GRAVITY_UP,
@@ -16,7 +17,7 @@ export class MovableObject {
     this.width = width;
     this.height = height;
 
-    this.speed = 150;
+    this.speed = BASE_SPEED;
     this.velocityX = 0;
     this.velocityY = 0;
 
