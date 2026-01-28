@@ -1,4 +1,5 @@
 import { Enemy1 } from "./enemy1.class.js";
+import { EnemyBase } from "./enemyBase.class.js";
 import {
   ENEMY2_ATTACK1_DAMAGE,
   ENEMY2_ATTACK2_DAMAGE,
