@@ -1,20 +1,33 @@
 import { FACING_RIGHT } from "../../../config/config.js";
 
 export function renderBoss(boss, ctx, camera, { debugHitbox = false } = {}) {
+  const hitboxStrokeColor = "rgba(255, 0, 0, 0.7)";
+  const hitboxLineWidth = 2;
+  const spriteYOffset = boss.spriteYOffset;
+
+  const healthBarHeight = 15;
+  const healthBarWidthFactor = 0.8;
+  const healthBarVerticalOffset = 8;
+  const healthBarPadding = 2;
+  const healthTextFont = "0.5rem ComixLoud, sans-serif";
+  const healthTextColor = "rgba(255,255,2,0.9)";
+  const healthBarBgColor = "rgba(0, 0, 0, 0.4)";
+  const healthBarFillColor = "rgba(200, 0, 0, 0.9)";
+
   ctx.save();
   if (boss.facing === FACING_RIGHT) {
     ctx.scale(-1, 1);
     ctx.drawImage(
       boss.sprite,
       -(boss.x - camera.x + boss.width),
-      boss.y + boss.spriteYOffset - camera.y,
+      boss.y + spriteYOffset - camera.y,
       boss.width,
       boss.height
     );
     if (debugHitbox) {
       const box = boss.getHitbox();
-      ctx.strokeStyle = "rgba(255, 0, 0, 0.7)";
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = hitboxStrokeColor;
+      ctx.lineWidth = hitboxLineWidth;
       ctx.strokeRect(
         -(box.x - camera.x + box.width),
         box.y - camera.y,
@@ -26,14 +39,14 @@ export function renderBoss(boss, ctx, camera, { debugHitbox = false } = {}) {
     ctx.drawImage(
       boss.sprite,
       boss.x - camera.x,
-      boss.y + boss.spriteYOffset - camera.y,
+      boss.y + spriteYOffset - camera.y,
       boss.width,
       boss.height
     );
     if (debugHitbox) {
       const box = boss.getHitbox();
-      ctx.strokeStyle = "rgba(255, 0, 0, 0.7)";
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = hitboxStrokeColor;
+      ctx.lineWidth = hitboxLineWidth;
       ctx.strokeRect(
         box.x - camera.x,
         box.y - camera.y,
@@ -45,20 +58,22 @@ export function renderBoss(boss, ctx, camera, { debugHitbox = false } = {}) {
 
   ctx.restore();
   if (!boss.isDead && boss.health > 0 && boss.maxHealth > 0) {
-    const barW = boss.width * 0.8;
-    const barH = 15;
+    const barW = boss.width * healthBarWidthFactor;
+    const barH = healthBarHeight;
     const barX = boss.x - camera.x + (boss.width - barW) / 2;
-    const barY = boss.y - camera.y - barH + 8;
-    const ratio = Math.max(0, Math.min(1, boss.health / boss.maxHealth));
+    const barY = boss.y - camera.y - barH + healthBarVerticalOffset;
+    const healthRatioMin = 0;
+    const healthRatioMax = 1;
+    const ratio = Math.max(healthRatioMin, Math.min(healthRatioMax, boss.health / boss.maxHealth));
 
-    ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
-    ctx.fillRect(barX - 2, barY - 2, barW + 4, barH + 4);
+    ctx.fillStyle = healthBarBgColor;
+    ctx.fillRect(barX - healthBarPadding, barY - healthBarPadding, barW + healthBarPadding * 2, barH + healthBarPadding * 2);
 
-    ctx.fillStyle = "rgba(200, 0, 0, 0.9)";
+    ctx.fillStyle = healthBarFillColor;
     ctx.fillRect(barX, barY, barW * ratio, barH);
 
-    ctx.fillStyle = "rgba(255,255,2,0.9)";
-    ctx.font = "0.5rem ComixLoud, sans-serif";
+    ctx.fillStyle = healthTextColor;
+    ctx.font = healthTextFont;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(
@@ -69,11 +84,11 @@ export function renderBoss(boss, ctx, camera, { debugHitbox = false } = {}) {
   }
 
   if (debugHitbox) {
-    const box = boss.getHitbox();
+    const hitbox = boss.getHitbox();
     ctx.save();
-    ctx.strokeStyle = "rgba(255, 0, 0, 0.7)";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(box.x - camera.x, box.y - camera.y, box.width, box.height);
+    ctx.strokeStyle = hitboxStrokeColor;
+    ctx.lineWidth = hitboxLineWidth;
+    ctx.strokeRect(hitbox.x - camera.x, hitbox.y - camera.y, hitbox.width, hitbox.height);
     ctx.restore();
   }
 }

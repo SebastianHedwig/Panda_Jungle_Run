@@ -34,10 +34,10 @@ export function updatePlayer(player, dt, input, playerAudio) {
   /** DEATH OVERRIDE */
   if (player.isDead) {
     player.setAnimation(player.dieFrames);
-    const prevBottom = player.y + player.height;
+    const previousBottom = player.y + player.height;
     player.applyApexGravity(dt);
-    const currBottom = player.y + player.height;
-    player.handleDeathLanding(prevBottom, currBottom);
+    const currentBottom = player.y + player.height;
+    player.handleDeathLanding(previousBottom, currentBottom);
     if (!player.deathDone) {
       player.frameTime += dt;
       if (player.frameTime >= player.frameSpeed) {

@@ -67,10 +67,10 @@ export function updateBoss(boss, dt, player) {
     boss.isAttacking = false;
     boss.setAnimation(boss.hurtFrames || boss.idleFrames);
     boss.animate(dt);
-    const prevBottom = boss.y + boss.height;
+    const previousBottom = boss.y + boss.height;
     boss.applyApexGravity(dt);
-    const currBottom = boss.y + boss.height;
-    boss.handlePlatformLanding(prevBottom, currBottom);
+    const currentBottom = boss.y + boss.height;
+    boss.handlePlatformLanding(previousBottom, currentBottom);
     return;
   }
 
@@ -101,10 +101,10 @@ export function updateBoss(boss, dt, player) {
 
     boss.tryDealAttackDamage(player, 0.2);
 
-    const prevBottom = boss.y + boss.height;
+    const previousBottom = boss.y + boss.height;
     boss.applyApexGravity(dt);
-    const currBottom = boss.y + boss.height;
-    boss.handlePlatformLanding(prevBottom, currBottom);
+    const currentBottom = boss.y + boss.height;
+    boss.handlePlatformLanding(previousBottom, currentBottom);
 
     if (boss.attackTimer <= 0) {
       boss.isAttacking = false;
@@ -175,11 +175,11 @@ export function updateBoss(boss, dt, player) {
   boss.facing = runDir;
   boss.lastMoveDir = runDir;
 
-  const prevBottom = boss.y + boss.height;
+  const previousBottom = boss.y + boss.height;
   const wasOnGround = boss.onGround;
   boss.applyApexGravity(dt);
-  const currBottom = boss.y + boss.height;
-  boss.handlePlatformLanding(prevBottom, currBottom);
+  const currentBottom = boss.y + boss.height;
+  boss.handlePlatformLanding(previousBottom, currentBottom);
   const landed = !wasOnGround && boss.onGround;
   boss.wasOnGround = boss.onGround;
 

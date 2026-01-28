@@ -79,6 +79,7 @@ export class Boss extends EnemyBase {
     this.runningBurstDuration = 2;
     this.runningBurstTimer = 0;
     this.runningCooldownDuration = 2;
+    this.runningBurstChance = 0.7;
     this.runningCooldown = 0;
     this.isRunning = false;
     this.spriteYOffset = 8;
@@ -96,6 +97,39 @@ export class Boss extends EnemyBase {
     this.jumpCooldownTimer = 0;
     this.wasOnGround = true;
     this.hurtAnimTimer = 0;
+    this.deathTimerMin = 5.5;
+    this.hurtAnimMinDuration = 0.5;
+    this.hitboxShrinkXFactor = 0.5;
+    this.hitboxShrinkYFactor = 0.55;
+
+    this.attacks = {
+      attack1: {
+        frames: this.attack1Frames,
+        damage: this.attack1Damage,
+        duration: this.attack1Duration,
+        moveSpeed: this.attack1MoveSpeed,
+        range: this.attack1StrikeRange,
+        minRange: this.attack1MinRange,
+        triggerRange: this.attack1TriggerRange,
+        heightAdd: 20,
+        cooldownKey: "attack1Cooldown",
+        cooldownDuration: this.attack1CooldownDuration,
+        audio: () => bossAudio.playAttack1(),
+      },
+      attack2: {
+        frames: this.attack2Frames,
+        damage: this.attack2Damage,
+        duration: this.attack2Duration,
+        moveSpeed: 0,
+        range: this.attack2Range,
+        minRange: 0,
+        triggerRange: this.attack2Range,
+        heightAdd: 10,
+        cooldownKey: "attack2Cooldown",
+        cooldownDuration: this.attack2CooldownDuration,
+        audio: () => bossAudio.playAttack2(),
+      },
+    };
   }
 
   setAnimation(frames) {
@@ -117,18 +151,14 @@ export class Boss extends EnemyBase {
     }
   }
 
-  startMeleeAttack(
-    dx,
-    frames,
-    damage,
-    player,
-    moveSpeed = 0,
-    rangeOverride = null,
-    heightOverride = null
-  ) {
+  startConfiguredAttack(dx, frames, damage, player, moveSpeed = 0, rangeOverride = null, heightOverride = null) {
     this.activeAttackRange = rangeOverride ?? this.attackRange;
     this.activeHeightTolerance = heightOverride ?? this.attackHeightTolerance;
     super.startMeleeAttack(dx, frames, damage, player, moveSpeed);
+  }
+
+  initiateAttack(...args) {
+    return this.startConfiguredAttack(...args);
   }
 
   patrol() {
@@ -156,21 +186,6 @@ export class Boss extends EnemyBase {
     );
   }
 
-  beginAttack1(playerInfo, player) {
-    const deltaX = playerInfo?.deltaX ?? this.facing ?? FACING_RIGHT;
-    const extraAttack1HeightTolerance = 20;
-    this.attackDuration = this.attack1Duration;
-    this.startMeleeAttack(
-      deltaX,
-      this.attack1Frames,
-      this.attack1Damage,
-      player,
-      this.attack1MoveSpeed,
-      this.attack1StrikeRange,
-      this.attackHeightTolerance + extraAttack1HeightTolerance
-    );
-  }
-
   tryStartAttack(playerInfo, player) {
     if (!playerInfo || !player || player.isDead) return false;
     const deltaX = playerInfo.deltaX;
@@ -190,57 +205,51 @@ export class Boss extends EnemyBase {
     } else if (canAttack1) choice = "attack1";
     else if (canAttack2) choice = "attack2";
 
-    if (choice === "attack2") {
-      return this.executeAttack2(deltaX, player);
-    }
-
-    if (choice === "attack1") {
-      return this.executeAttack1(playerInfo, player);
-    }
-
-    return false;
+    return this.runAttack(choice, deltaX, player, playerInfo);
   }
 
   pickBossAttack() {
     const attack2Probability = 0.5;
-    return Math.random() < attack2Probability ? "attack1" : "attack2";
+    return Math.random() < attack2Probability ? "attack2" : "attack1";
   }
 
   getAvailableAttacks(absoluteDeltaX) {
+    const attack1 = this.attacks.attack1;
+    const attack2 = this.attacks.attack2;
     const canAttack1 =
-      this.attack1Frames &&
-      this.attack1Cooldown <= 0 &&
-      absoluteDeltaX <= this.attack1TriggerRange &&
-      absoluteDeltaX >= this.attack1MinRange;
+      attack1.frames &&
+      this[attack1.cooldownKey] <= 0 &&
+      absoluteDeltaX <= attack1.triggerRange &&
+      absoluteDeltaX >= attack1.minRange;
     const canAttack2 =
-      this.attack2Frames &&
-      this.attack2Cooldown <= 0 &&
-      absoluteDeltaX <= this.attack2Range;
+      attack2.frames &&
+      this[attack2.cooldownKey] <= 0 &&
+      absoluteDeltaX <= attack2.triggerRange;
     return { canAttack1, canAttack2 };
   }
 
-  executeAttack1(playerInfo, player) {
-    bossAudio.playAttack1();
-    this.beginAttack1(playerInfo, player);
-    this.attack1Cooldown = this.attack1CooldownDuration;
-    this.lastAttackType = "attack1";
-    return true;
-  }
+  runAttack(attackId, deltaX, player, playerInfo) {
+    if (!attackId) return false;
+    const attackConfiguration = this.attacks[attackId];
+    if (!attackConfiguration) return false;
 
-  executeAttack2(deltaX, player) {
-    const extraAttack2HeightTolerance = 10;
-    this.attackDuration = this.attack2Duration;
-    this.attack2Cooldown = this.attack2CooldownDuration;
-    this.lastAttackType = "attack2";
-    bossAudio.playAttack2();
-    this.startMeleeAttack(
-        deltaX,
-        this.attack2Frames,
-      this.attack2Damage,
+    const heightTolerance = this.attackHeightTolerance + (attackConfiguration.heightAdd || 0);
+    this.attackDuration = attackConfiguration.duration;
+    this.activeAttackRange = attackConfiguration.range ?? this.attackRange;
+    this.activeHeightTolerance = heightTolerance;
+
+    attackConfiguration.audio?.();
+    this[attackConfiguration.cooldownKey] = attackConfiguration.cooldownDuration;
+    this.lastAttackType = attackId;
+
+    this.initiateAttack(
+      deltaX,
+      attackConfiguration.frames,
+      attackConfiguration.damage,
       player,
-      0,
-      this.attack2Range,
-      this.attackHeightTolerance + extraAttack2HeightTolerance
+      attackConfiguration.moveSpeed,
+      attackConfiguration.range,
+      heightTolerance
     );
     return true;
   }
@@ -261,7 +270,7 @@ export class Boss extends EnemyBase {
       return;
     }
 
-    if (this.runningCooldown <= 0 && Math.random() < 0.7) {
+    if (this.runningCooldown <= 0 && Math.random() < this.runningBurstChance) {
       this.runningBurstTimer = this.runningBurstDuration;
       this.runningCooldown = this.runningCooldownDuration;
       this.isRunning = true;
@@ -275,20 +284,21 @@ export class Boss extends EnemyBase {
     if (!player || player.isDead || this.isDead || this.hasHitDuringAttack)
       return false;
 
-    const ex = this.x + this.width / 2;
-    const ey = this.y + this.height / 2;
-    const px = player.x + player.width / 2;
-    const py = player.y + player.height / 2;
-    const dx = px - ex;
-    const dy = Math.abs(py - ey);
-    const facingMatches = Math.sign(dx || FACING_RIGHT) === this.facing;
-    const range = this.activeAttackRange ?? this.attackRange;
-    const heightTol = this.activeHeightTolerance ?? this.attackHeightTolerance;
+    const bossCenterX = this.x + this.width / 2;
+    const bossCenterY = this.y + this.height / 2;
+    const playerCenterX = player.x + player.width / 2;
+    const playerCenterY = player.y + player.height / 2;
+    const deltaX = playerCenterX - bossCenterX;
+    const absoluteDeltaY = Math.abs(playerCenterY - bossCenterY);
+    const facingMatches = Math.sign(deltaX || FACING_RIGHT) === this.facing;
+    const attackRange = this.activeAttackRange ?? this.attackRange;
+    const attackHeightTolerance =
+      this.activeHeightTolerance ?? this.attackHeightTolerance;
 
     if (
       facingMatches &&
-      Math.abs(dx) <= range &&
-      dy <= heightTol &&
+      Math.abs(deltaX) <= attackRange &&
+      absoluteDeltaY <= attackHeightTolerance &&
       player.invulnerableTimer <= 0
     ) {
       if (player.isSliding) {
@@ -315,10 +325,10 @@ export class Boss extends EnemyBase {
     const prevDead = this.isDead;
     super.takeDamage?.(amount, { ...hitContext, skipStun: true });
     if (!prevDead && this.isDead) {
-      this.deathTimer = Math.max(this.deathTimer, 5.5);
+      this.deathTimer = Math.max(this.deathTimer, this.deathTimerMin);
     } else if (this.hurtFrames) {
       bossAudio.playWhimper();
-      this.hurtAnimTimer = Math.max(this.hurtAnimTimer, 0.5);
+      this.hurtAnimTimer = Math.max(this.hurtAnimTimer, this.hurtAnimMinDuration);
       this.setAnimation(this.hurtFrames);
       this.currentFrame = 0;
       this.sprite = this.currentAnimation[0];
@@ -329,8 +339,8 @@ export class Boss extends EnemyBase {
     if (this.isDead || this.health <= 0) {
       return { x: 0, y: 0, width: 0, height: 0 };
     }
-    const shrinkX = this.width * 0.50;
-    const shrinkY = this.height * 0.55;
+    const shrinkX = this.width * this.hitboxShrinkXFactor;
+    const shrinkY = this.height * this.hitboxShrinkYFactor;
     return {
       x: this.x + shrinkX / 2,
       y: this.y + shrinkY,

@@ -36,6 +36,8 @@ export class EnemyBase extends MovableObject {
     this.recentSlideHit = 0;
     this.attackDamageCurrent = this.damage ?? 1;
     this.attackMoveSpeed = 0;
+    this.hitboxShrinkXFactor = 0.55;
+    this.hitboxShrinkYFactor = 0.2;
   }
 
   /** ----- DAMAGE / HITBOX ----- */
@@ -80,12 +82,9 @@ export class EnemyBase extends MovableObject {
   }
 
   getHitbox() {
-    const hitboxShrinkXFactor = 0.55;
-    const hitboxShrinkYFactor = 0.2;
-
     const { x, y, width: enemyWidth, height: enemyHeight } = this;
-    const hitboxWidth = enemyWidth * (1 - hitboxShrinkXFactor);
-    const hitboxHeight = enemyHeight * (1 - hitboxShrinkYFactor);
+    const hitboxWidth = enemyWidth * (1 - this.hitboxShrinkXFactor);
+    const hitboxHeight = enemyHeight * (1 - this.hitboxShrinkYFactor);
     const hitboxX = x + (enemyWidth - hitboxWidth) / 2;
     const hitboxY = y + (enemyHeight - hitboxHeight);
     return {

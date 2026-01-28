@@ -146,7 +146,7 @@ export function startDeath(player, playerAudio) {
   player.deathDone = false;
 }
 
-export function handleDeathLanding(player, prevBottom, currBottom) {
+export function handleDeathLanding(player, previousBottom, currentBottom) {
   const platforms = player.world?.platforms || [];
   const canvasHeight = player.world?.canvas?.height;
   const groundLevel = player.world?.baseGround ?? canvasHeight;
@@ -158,7 +158,9 @@ export function handleDeathLanding(player, prevBottom, currBottom) {
     if (!platform.supportsLanding) continue;
     const overlapsX = playerRight > platform.left && playerLeft < platform.right;
     const crossingTop =
-      player.velocityY > 0 && prevBottom <= platform.top && currBottom >= platform.top;
+      player.velocityY > 0 &&
+      previousBottom <= platform.top &&
+      currentBottom >= platform.top;
     if (overlapsX && crossingTop) {
       const landingTopPosition = platform.top - player.height;
       player.y = landingTopPosition;
@@ -168,7 +170,7 @@ export function handleDeathLanding(player, prevBottom, currBottom) {
     }
   }
 
-  if (currBottom >= groundLevel) {
+  if (currentBottom >= groundLevel) {
     const groundTopPosition = groundLevel - player.height;
     player.y = groundTopPosition;
     player.velocityY = 0;

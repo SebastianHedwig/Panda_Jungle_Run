@@ -226,8 +226,8 @@ export class Player extends MovableObject {
     startDeath(this, playerAudio);
   }
 
-  handleDeathLanding(prevBottom, currBottom) {
-    handleDeathLanding(this, prevBottom, currBottom);
+  handleDeathLanding(previousBottom, currentBottom) {
+    handleDeathLanding(this, previousBottom, currentBottom);
   }
 
   startSlide() {
