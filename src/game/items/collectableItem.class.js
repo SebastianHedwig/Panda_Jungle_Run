@@ -1,5 +1,6 @@
 import { HudPopup } from "../effects/hudPopup.class.js";
 import { CollectablesAudio } from "../audio/collectablesAudio.class.js";
+import { loadImage } from "../../core/game/assets/assetLoader.js";
 
 const collectablesAudio = new CollectablesAudio();
 
@@ -10,6 +11,19 @@ export const COLLECTABLE_VALUES = {
   gun: 0,
 };
 
+const ITEM_SIZE = 50;
+const DEFAULT_GRAVITY = 1800;
+const GUN_PICKUP_DELAY = 1;
+const DROP_INITIAL_VELOCITY_Y = -300;
+const HEART_FRAME_DURATION = 0.06;
+const DEFAULT_FRAME_DURATION = 0.12;
+const PICKUP_SCALE_SPEED = 4;
+const PICKUP_FADE_SPEED = 3;
+const PICKUP_ROTATE_SPEED = 6;
+const DROP_DAMPING = 0.4;
+const FALLBACK_GROUND = 1000;
+const GUN_BULLETS_GRANT = 5;
+
 export class CollectableItem {
   constructor(x, y, type = "coin", world = null) {
     this.x = x;
@@ -17,8 +31,8 @@ export class CollectableItem {
     this.type = type;
     this.world = world;
 
-    this.width = 50;
-    this.height = 50;
+    this.width = ITEM_SIZE;
+    this.height = ITEM_SIZE;
 
     this.collected = false;
     this.pickupAnimating = false;
@@ -30,13 +44,13 @@ export class CollectableItem {
     this.dropPhysics = false;
     this.velocityX = 0;
     this.velocityY = 0;
-    this.gravity = 1800;
-    this.pickupDelay = this.type === "gun" ? 1 : 0;
+    this.gravity = DEFAULT_GRAVITY;
+    this.pickupDelay = this.type === "gun" ? GUN_PICKUP_DELAY : 0;
 
     this.images = [];
     this.currentImage = 0;
     this.frameTime = 0;
-    this.frameDuration = 0.12;
+    this.frameDuration = DEFAULT_FRAME_DURATION;
 
     this.loadAssets();
   }
@@ -52,9 +66,7 @@ export class CollectableItem {
       ],
       heart: Array.from(
         { length: 49 },
-        (_, i) =>
-          `assets/img/PowerUps/heart/frame-${String(i + 1).padStart(2, "0")}.gif`
-      ),
+        (_, i) => `assets/img/PowerUps/heart/frame-${String(i + 1).padStart(2, "0")}.gif`),
       gun: ["assets/img/Character/Spriter_files/gun.png"],
     };
 
@@ -62,13 +74,9 @@ export class CollectableItem {
     if (!list) return;
 
     // ---- INDIVIDUAL ANIMATION SPEED ----
-    this.frameDuration = this.type === "heart" ? 0.06 : 0.12;
+    this.frameDuration = this.type === "heart" ? HEART_FRAME_DURATION : DEFAULT_FRAME_DURATION;
 
-    list.forEach((path) => {
-      const img = new Image();
-      img.src = path;
-      this.images.push(img);
-    });
+    this.images = list.map(loadImage);
   }
 
   /** ---------- UPDATE ANIMATION ---------- */
@@ -91,9 +99,9 @@ export class CollectableItem {
 
     // Pickup FX
     if (this.pickupAnimating) {
-      this.scaleFactor += dt * 4;
-      this.opacity -= dt * 3;
-      this.rotationAngle += dt * 6;
+      this.scaleFactor += dt * PICKUP_SCALE_SPEED;
+      this.opacity -= dt * PICKUP_FADE_SPEED;
+      this.rotationAngle += dt * PICKUP_ROTATE_SPEED;
 
       if (this.opacity <= 0) {
         this.pickupAnimating = false;
@@ -102,7 +110,7 @@ export class CollectableItem {
   }
 
   /** ---------- DROP ARC ---------- */
-  startDrop(velocityX = 0, velocityY = -300) {
+  startDrop(velocityX = 0, velocityY = DROP_INITIAL_VELOCITY_Y) {
     this.dropPhysics = true;
     this.velocityX = velocityX;
     this.velocityY = velocityY;
@@ -114,9 +122,9 @@ export class CollectableItem {
     this.y += this.velocityY * dt;
 
     const world = this.world;
-    const ground = world?.baseGround ?? world?.canvas?.height ?? 1000;
-    const prevBottom = this.y + this.height - this.velocityY * dt;
-    const currBottom = this.y + this.height;
+    const ground = world?.baseGround ?? world?.canvas?.height ?? FALLBACK_GROUND;
+    const previousBottom = this.y + this.height - this.velocityY * dt;
+    const currentBottom = this.y + this.height;
 
     if (world?.platforms?.length) {
       for (const platform of world.platforms) {
@@ -125,19 +133,19 @@ export class CollectableItem {
         if (
           overlapsX &&
           this.velocityY > 0 &&
-          prevBottom <= platform.top &&
-          currBottom >= platform.top
+          previousBottom <= platform.top &&
+          currentBottom >= platform.top
         ) {
           this.y = platform.top - this.height;
           this.velocityY = 0;
-          this.velocityX *= 0.4;
+          this.velocityX *= DROP_DAMPING;
           this.dropPhysics = false;
           return;
         }
       }
     }
 
-    if (currBottom >= ground) {
+    if (currentBottom >= ground) {
       this.y = ground - this.height;
       this.velocityY = 0;
       this.velocityX = 0;
@@ -209,20 +217,20 @@ export class CollectableItem {
 
     if (this.type === "coin") {
       collectablesAudio.playCoin();
-      player.addCoins(10);
-      player.world.hudPopups.push(new HudPopup("+10", itemX, itemY, "coin"));
+      player.addCoins(COLLECTABLE_VALUES.coin);
+      player.world.hudPopups.push(new HudPopup(`+${COLLECTABLE_VALUES.coin}`, itemX, itemY, "coin"));
     }
 
     if (this.type === "heart") {
       collectablesAudio.playHeart();
-      player.heal(2);
+      player.heal(COLLECTABLE_VALUES.heart);
       player.world.hudPopups.push(new HudPopup("❤️", itemX, itemY, "heart"));
     }
 
     if (this.type === "gun") {
       collectablesAudio.playWeapon();
-      player.addBullets?.(5);
-      player.world.hudPopups.push(new HudPopup("+5", itemX, itemY, "gun"));
+      player.addBullets?.(GUN_BULLETS_GRANT);
+      player.world.hudPopups.push(new HudPopup(`+${GUN_BULLETS_GRANT}`, itemX, itemY, "gun"));
     }
 
     this.scaleFactor = 1;
