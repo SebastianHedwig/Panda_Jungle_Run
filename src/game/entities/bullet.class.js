@@ -61,13 +61,12 @@ export class Bullet {
       }
     }
 
-    // OUT OF WORLD → remove
-    if (this.positionX < -200 || this.positionX > this.world.width + 200) {
+    const horizontalDespawnMargin = 200;
+    if (this.positionX < -horizontalDespawnMargin || this.positionX > this.world.width + horizontalDespawnMargin) {
       this.remove = true;
       return;
     }
 
-    // ENEMY COLLISION
     enemies.forEach((enemy) => {
       if (this.collidesWith(enemy)) {
         this.remove = true;
@@ -99,7 +98,6 @@ export class Bullet {
 
     ctx.save();
 
-    // Flip when facing left
     if (this.facingDirection === FACING_LEFT) {
       ctx.scale(-1, 1);
       ctx.drawImage(
@@ -139,10 +137,6 @@ export class Bullet {
     );
   }
 }
-
-/* ===========================================================
-   EXPLOSION ANIMATION – LASTS 7 FRAMES & REMOVES ITSELF
-   =========================================================== */
 
 export class Explosion {
   constructor(centerX, centerY) {
