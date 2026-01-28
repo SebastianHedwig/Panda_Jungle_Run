@@ -6,6 +6,21 @@ const POPUP_STYLES = {
   gun: { stroke: "#000", fill: "rgba(235, 145, 0, 1)", fontSize: "1.2rem" },
 };
 
+const INITIAL_OPACITY = 1;
+const INITIAL_RISE_OFFSET = 0;
+const INITIAL_SCALE_FACTOR = 1.25;
+const INITIAL_SHAKE_OFFSET = 0;
+
+const RISE_SPEED = 40;
+const OPACITY_FADE_RATE = 1.4;
+const SCALE_SHRINK_RATE = 0.3;
+const MIN_SCALE_FACTOR = 1;
+
+const DAMAGE_SHAKE_FREQUENCY = 0.04;
+const DAMAGE_SHAKE_AMPLITUDE = 3;
+
+const LINE_WIDTH = 3;
+
 export class HudPopup {
   constructor(text = "+10", x, y, type = "coin") {
     this.text = text;
@@ -13,38 +28,38 @@ export class HudPopup {
     this.y = y;
     this.type = type; // "coin" | "damage" | "heal" | "heart" | "gun"
 
-    this.alpha = 1;
-    this.lift = 0;
-    this.scale = 1.25;
-    this.shake = 0;
+    this.opacity = INITIAL_OPACITY;
+    this.riseOffset = INITIAL_RISE_OFFSET;
+    this.scaleFactor = INITIAL_SCALE_FACTOR;
+    this.shakeOffset = INITIAL_SHAKE_OFFSET;
   }
 
   update(dt) {
-    this.lift += dt * 40;
-    this.alpha -= dt * 1.4;
-    this.scale -= dt * 0.3;
-    if (this.scale < 1) this.scale = 1;
+    this.riseOffset += dt * RISE_SPEED;
+    this.opacity -= dt * OPACITY_FADE_RATE;
+    this.scaleFactor -= dt * SCALE_SHRINK_RATE;
+    if (this.scaleFactor < MIN_SCALE_FACTOR) this.scaleFactor = MIN_SCALE_FACTOR;
 
     if (this.type === "damage") {
-      this.shake = Math.sin(Date.now() * 0.04) * 3;
+      this.shakeOffset = Math.sin(Date.now() * DAMAGE_SHAKE_FREQUENCY) * DAMAGE_SHAKE_AMPLITUDE;
     }
 
-    if (this.alpha < 0) this.alpha = 0;
+    if (this.opacity < 0) this.opacity = 0;
   }
 
   draw(ctx, camera) {
-    if (this.alpha <= 0) return;
+    if (this.opacity <= 0) return;
 
     ctx.save();
-    ctx.globalAlpha = this.alpha;
+    ctx.globalAlpha = this.opacity;
 
-    const sx = this.x - camera.x + this.shake;
-    const sy = this.y - camera.y - this.lift;
+    const sx = this.x - camera.x + this.shakeOffset;
+    const sy = this.y - camera.y - this.riseOffset;
 
     ctx.translate(sx, sy);
-    ctx.scale(this.scale, this.scale);
+    ctx.scale(this.scaleFactor, this.scaleFactor);
     ctx.textAlign = "center";
-    ctx.lineWidth = 3;
+    ctx.lineWidth = LINE_WIDTH;
 
     const style = POPUP_STYLES[this.type] ?? POPUP_STYLES.coin;
     ctx.font = `${style.fontSize} ComixLoud`;

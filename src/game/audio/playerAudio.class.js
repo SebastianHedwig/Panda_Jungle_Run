@@ -32,7 +32,7 @@ export class PlayerAudio {
     landingSrc = PLAYER_LANDING,
     slideSrcs = PLAYER_SLIDE,
     landingOffset = 0.3,
-    landingVolume = SFX_VOLUME + 0.2,
+    landingVolume = SFX_VOLUME + 0.3,
     volume = SFX_VOLUME,
     deadRate = 2.5,
   } = {}) {
@@ -61,27 +61,27 @@ export class PlayerAudio {
   }
 
   createAudio(src) {
-    const el = new Audio(src);
-    el.loop = false;
-    el.volume = this.volume;
-    el.preload = "auto";
-    el.autoplay = false;
-    return el;
+    const audioElement = new Audio(src);
+    audioElement.loop = false;
+    audioElement.volume = this.volume;
+    audioElement.preload = "auto";
+    audioElement.autoplay = false;
+    return audioElement;
   }
 
-  ensureBase(propName, src) {
-    if (!this[propName]) {
-      this[propName] = this.createAudio(src);
+  ensureBase(propertyName, src) {
+    if (!this[propertyName]) {
+      this[propertyName] = this.createAudio(src);
     }
-    return this[propName];
+    return this[propertyName];
   }
 
-  playOneShot({ propName, src, offset = 0, rate = 1, forceClone = false }) {
-    const base = this.ensureBase(propName, src);
-    let audio = base;
+  playOneShot({ propertyName, src, audioStartOffset = 0, rate = 1, forceClone = false }) {
+    const cachedAudioBaseInstance = this.ensureBase(propertyName, src);
+    let audio = cachedAudioBaseInstance;
 
-    if (forceClone || (!base.paused && !base.ended)) {
-      audio = base.cloneNode(true);
+    if (forceClone || (!cachedAudioBaseInstance.paused && !cachedAudioBaseInstance.ended)) {
+      audio = cachedAudioBaseInstance.cloneNode(true);
       audio.volume = this.volume;
       audio.preload = "auto";
       audio.autoplay = false;
@@ -89,29 +89,30 @@ export class PlayerAudio {
       audio.currentTime = 0;
     }
 
+    if (rate !== 1) {
+      audio.playbackRate = rate;
+    }
+
     const setOffset = () => {
       if (
-        offset > 0 &&
+        audioStartOffset > 0 &&
         Number.isFinite(audio.duration) &&
-        audio.duration > offset
+        audio.duration > audioStartOffset
       ) {
-        audio.currentTime = offset;
+        audio.currentTime = audioStartOffset;
       }
     };
 
-    audio.playbackRate = rate;
-
-    const start = () => {
-      try {
-        setOffset();
-      } catch (_) {}
-      audio.play().catch(() => {});
+    const startAudio = () => {
+      setOffset();
+      audio.play();
     };
 
-    if (audio.readyState >= 2) start();
+    // readyState >= 2 => HAVE_CURRENT_DATA, can start immediately
+    if (audio.readyState >= 2) startAudio();
     else {
-      audio.addEventListener("canplaythrough", start, { once: true });
-      audio.addEventListener("loadeddata", start, { once: true });
+      audio.addEventListener("canplaythrough", startAudio, { once: true });
+      audio.addEventListener("loadeddata", startAudio, { once: true });
       audio.addEventListener("loadedmetadata", setOffset, { once: true });
       audio.load();
     }
@@ -140,13 +141,13 @@ export class PlayerAudio {
 
   playPunch() {
     if (!this.punchSrcs?.length) return;
-    const idx = Math.floor(Math.random() * this.punchSrcs.length);
-    const src = this.punchSrcs[idx];
+    const randomPunchIndex = Math.floor(Math.random() * this.punchSrcs.length);
+    const src = this.punchSrcs[randomPunchIndex];
     this.getPunchAudio(src);
     this.playOneShot({
-      propName: `punchAudio${idx}`,
+      propertyName: `punchAudio${randomPunchIndex}`,
       src,
-      offset: 0,
+      audioStartOffset: 0,
       rate: 1,
       forceClone: true, // allow overlaps when spammed
     });
@@ -154,50 +155,54 @@ export class PlayerAudio {
 
   playHit() {
     if (!this.hitSrc) return;
-    this.playOneShot({ propName: "hitAudio", src: this.hitSrc });
+    this.playOneShot({ propertyName: "hitAudio", src: this.hitSrc });
   }
 
   playShoot() {
-    this.playOneShot({ propName: "shootAudio", src: this.shootSrc });
+    this.playOneShot({ propertyName: "shootAudio", src: this.shootSrc });
   }
 
   playOuch() {
     if (!this.ouchSrcs?.length) return;
-    const idx = Math.floor(Math.random() * this.ouchSrcs.length);
-    const src = this.ouchSrcs[idx];
+    const randomOuchIndex = Math.floor(Math.random() * this.ouchSrcs.length);
+    const src = this.ouchSrcs[randomOuchIndex];
     this.getOuchAudio(src);
-    const propName = `ouchAudio${idx}`;
-    this.playOneShot({ propName, src });
+    const propertyName = `ouchAudio${randomOuchIndex}`;
+    this.playOneShot({ propertyName, src });
   }
 
   playJump() {
-    this.playOneShot({ propName: "jumpAudio", src: this.jumpSrc });
+    this.playOneShot({ propertyName: "jumpAudio", src: this.jumpSrc });
   }
 
   playLanding() {
-    const base =
+    const cachedLandingBase =
       this.landingBase && this.landingBase.src === this.landingSrc
         ? this.landingBase
         : (this.landingBase = this.createAudio(this.landingSrc));
 
-    const audio = base.cloneNode(true);
+    const audio = cachedLandingBase.cloneNode(true);
     audio.volume = this.landingVolume;
     audio.preload = "auto";
     audio.autoplay = false;
 
     const start = () => {
-      try {
-        const dur = audio.duration;
-        const targetOffset =
-          this.landingOffset > 0 && Number.isFinite(dur)
-            ? Math.max(0, Math.min(this.landingOffset, Math.max(0, dur - 0.05)))
-            : 0;
-        if (Number.isFinite(targetOffset)) audio.currentTime = targetOffset;
-      } catch (_) {}
-      audio.play().catch(() => {});
+      const landingEndSafetyMargin = 0.05;
+      const duration = audio.duration;
+      if (Number.isFinite(duration)) {
+        const latestSafeStart = Math.max(0, duration - landingEndSafetyMargin);
+        const clampedOffset = Math.min(
+          Math.max(0, this.landingOffset),
+          latestSafeStart
+        );
+        audio.currentTime = clampedOffset;
+      } else {
+        audio.currentTime = 0;
+      }
+      audio.play();
     };
 
-    if (audio.readyState >= 2) start();
+    if (audio.readyState >= 2) start();  // readyState >= 2 => HAVE_CURRENT_DATA, can start immediately
     else {
       audio.addEventListener("canplaythrough", start, { once: true });
       audio.addEventListener("loadeddata", start, { once: true });
@@ -209,24 +214,24 @@ export class PlayerAudio {
 
   playSlide() {
     if (!this.slideSrcs?.length) return;
-    const idx = Math.floor(Math.random() * this.slideSrcs.length);
-    const src = this.slideSrcs[idx];
-    const propName = `slideAudio${idx}`;
-    this.playOneShot({ propName, src });
+    const randomSlideIndex = Math.floor(Math.random() * this.slideSrcs.length);
+    const src = this.slideSrcs[randomSlideIndex];
+    const propertyName = `slideAudio${randomSlideIndex}`;
+    this.playOneShot({ propertyName, src });
   }
 
   playDead() {
     this.playOneShot({
-      propName: "deadAudio",
+      propertyName: "deadAudio",
       src: this.deadSrc,
-      rate: this.deadRate || 1.5,
+      rate: this.deadRate,
     });
   }
 
   bindUnlock() {
     if (this.unlockHandler) return;
     this.unlockHandler = () => {
-      const audios = [
+      const audioFiles = [
         this.deadAudio,
         this.hitAudio,
         this.shootAudio,
@@ -237,21 +242,20 @@ export class PlayerAudio {
         ...this.ouchCache.values(),
         ...this.punchCache.values(),
       ];
-      audios.forEach((a) => {
-        if (!a) return;
-        const prevMuted = a.muted;
-        const prevVolume = a.volume;
-        a.muted = true;
-        a.volume = 0;
-        a.play()
+      audioFiles.forEach((audioFile) => {
+        if (!audioFile) return;
+        const previousMuted = audioFile.muted;
+        const previousVolume = audioFile.volume;
+        audioFile.muted = true;
+        audioFile.volume = 0;
+        audioFile.play()
           .then(() => {
-            a.pause();
-            a.currentTime = 0;
+            audioFile.pause();
+            audioFile.currentTime = 0;
           })
-          .catch(() => {})
           .finally(() => {
-            a.muted = prevMuted;
-            a.volume = prevVolume;
+            audioFile.muted = previousMuted;
+            audioFile.volume = previousVolume;
           });
       });
       this.unbindUnlock();

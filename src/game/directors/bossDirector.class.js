@@ -68,16 +68,18 @@ export class BossDirector {
 
   spawnBoss(player) {
     if (!this.bossSprites) return;
+    const bossSpawnPlayerOffset = 1500;
     const minX = this.movementMinX;
     const maxX = this.movementMaxX;
-    const desiredSpawn = player.x + 1500;
+    const desiredSpawn = player.x + bossSpawnPlayerOffset;
     const bossWidth = 240;
     const spawnX = Math.min(Math.max(desiredSpawn, minX), maxX - bossWidth);
     const bossHeight = 240;
     const platform = this.world.platforms?.find(
-      (p) => p.supportsLanding && spawnX >= p.left && spawnX <= p.right
+      (platform) => platform.supportsLanding && spawnX >= platform.left && spawnX <= platform.right
     );
-    const groundTop = platform?.top ?? this.world.baseGround ?? this.world.canvas?.height;
+    if (!platform) return;
+    const groundTop = platform.top;
     const spawnY = Math.max(
       0,
       groundTop - bossHeight - this.spawnClearance + this.spawnGroundOffset

@@ -276,7 +276,7 @@ export function createGame({ canvasId = "game" } = {}) {
 
     world.hudPopups = world.hudPopups.filter((p) => {
       p.update(dt);
-      return p.alpha > 0;
+      return p.opacity > 0;
     });
   }
 
@@ -286,7 +286,7 @@ export function createGame({ canvasId = "game" } = {}) {
         c.collect(player);
         return true;
       }
-      return !c.pickupAnimating || c.alpha > 0;
+      return !c.pickupAnimating || c.opacity > 0;
     });
   }
 
