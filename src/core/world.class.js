@@ -28,7 +28,8 @@ export class World {
   /** ---------- ADD PLATFORMS ---------- */
   addPlatforms(platforms) {
     this.platforms.push(...platforms);
-    const floorTop = Math.max(...this.platforms.map((p) => p.top));
+    const landingPlatforms = this.platforms.filter((p) => p.supportsLanding);
+    const floorTop = Math.max(...landingPlatforms.map((p) => p.top));
     if (Number.isFinite(floorTop)) this.baseGround = floorTop;
   }
 
@@ -153,8 +154,15 @@ export class World {
   }
 
   /** ---------- VALID COIN SPAWN CHECK ---------- */
-  coinPositionIsValid(x, y, width = 50, height = 50) {
-    return !this.platforms.some((p) => {
+  coinPositionIsValid(
+    x,
+    y,
+    width = 50,
+    height = 50,
+    existingCoins = [],
+    minSpacing = 0
+  ) {
+    const overlapsPlatform = this.platforms.some((p) => {
       const platformLeft = p.x;
       const platformRight = p.x + p.width;
       const platformTop = p.y;
@@ -165,6 +173,26 @@ export class World {
       const overlapsY = coinBottom > platformTop && coinTop < platformBottom;
       return overlapsX && overlapsY;
     });
+
+    if (overlapsPlatform) return false;
+
+    if (minSpacing > 0 && existingCoins?.length) {
+      const candidateCenterX = x + width / 2;
+      const candidateCenterY = y + height / 2;
+      const minSpacingSq = minSpacing * minSpacing;
+      const tooClose = existingCoins.some((coin) => {
+        const otherWidth = coin.width ?? width;
+        const otherHeight = coin.height ?? height;
+        const otherCenterX = coin.x + otherWidth / 2;
+        const otherCenterY = coin.y + otherHeight / 2;
+        const dx = otherCenterX - candidateCenterX;
+        const dy = otherCenterY - candidateCenterY;
+        return dx * dx + dy * dy < minSpacingSq;
+      });
+      if (tooClose) return false;
+    }
+
+    return true;
   }
 
   /** ---------- HUD POPUP ---------- */

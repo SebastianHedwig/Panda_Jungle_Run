@@ -5,7 +5,8 @@ import { Enemy2 } from "../entities/enemies/enemy2.class.js";
 import { Enemy3 } from "../entities/enemies/enemy3.class.js";
 import { WORLD_WIDTH } from "../../config/config.js";
 
-const MIN_COIN_X = 200;
+const MIN_COIN_X = 200; // avoid placing coins too close to level start
+const BOSS_AREA_START = WORLD_WIDTH * 0.9; // last 10% of the level
 
 /** ---------- PLATFORM SETUP ---------- */
 export function createLevel1Platforms(sprites) {
@@ -58,10 +59,15 @@ export function createLevel1Platforms(sprites) {
 /** ---------- RANDOM + PLATFORM COINS ---------- */
 export function generateCoinsMixed(
   world,
-  totalCount = 20,
+  totalCount = 60,
   ratioAbovePlatforms = 0.5
 ) {
   const coins = [];
+  const minCoinSpacing = 60;
+  const rowSpacing = 60;
+  const minRowPlatformWidth = 220;
+  const maxRowLength = 6;
+  const rowProbability = 0.7;
   const coinsAbove = Math.floor(totalCount * ratioAbovePlatforms);
   const minPlatformWidth = 100;
   const maxRightMargin = 60;
@@ -72,43 +78,89 @@ export function generateCoinsMixed(
   const randomYMin = 220;
   const randomYRange = 380;
   const worldRightMargin = 100;
+  const firstThirdEndX = world.width / 3;
+  const platformEarlyShare = 0.4; // share of platform coins placed in the first third
+  const randomEarlyShare = 0.4;   // share of random coins placed in the first third
 
-  /** ----- COINS ----- */
-  for (let spawnAttempt = 0; spawnAttempt < coinsAbove; spawnAttempt++) {
-    const platform =
-      world.platforms[Math.floor(Math.random() * world.platforms.length)];
-    const width = platform.right - platform.left;
+  /** ----- PLATFORM COINS ----- */
+  const earlyPlatformCoins = Math.floor(coinsAbove * platformEarlyShare);
+  const latePlatformCoins = coinsAbove - earlyPlatformCoins;
 
-    if (width < minPlatformWidth) continue;
+  const placePlatformCoins = (count, maxXLimit) => {
+    for (let spawnAttempt = 0; spawnAttempt < count; spawnAttempt++) {
+      const platform =
+        world.platforms[Math.floor(Math.random() * world.platforms.length)];
+      const width = platform.right - platform.left;
 
-    const minX = Math.max(platform.left, MIN_COIN_X);
-    const maxX = platform.right - maxRightMargin;
-    if (maxX <= minX) continue;
+      if (width < minPlatformWidth) continue;
 
-    const x = minX + Math.random() * (maxX - minX);
-    const y = platform.y - platformCoinYOffset;
+      const worldXMin = Math.max(platform.left, MIN_COIN_X);
+      const worldXMax = Math.min(
+        platform.right - maxRightMargin,
+        maxXLimit - maxRightMargin,
+        BOSS_AREA_START - maxRightMargin
+      );
+      if (worldXMax <= worldXMin) continue;
 
-    if (world.coinPositionIsValid(x, y, coinWidth, coinHeight)) {
-      coins.push(new CollectableItem(x, y, "coin"));
+      const shouldPlaceRow =
+        width >= minRowPlatformWidth &&
+        worldXMax - worldXMin > rowSpacing &&
+        Math.random() < rowProbability;
+
+      if (shouldPlaceRow) {
+        const rowCoinCount = Math.min(
+          maxRowLength,
+          Math.floor((worldXMax - worldXMin) / rowSpacing)
+        );
+        const startWorldX = worldXMin + rowSpacing / 2;
+        const worldY = platform.y - platformCoinYOffset;
+        for (let coinIndex = 0; coinIndex < rowCoinCount; coinIndex++) {
+          const worldX = startWorldX + coinIndex * rowSpacing;
+          if (world.coinPositionIsValid(worldX, worldY, coinWidth, coinHeight, coins, minCoinSpacing)) {
+            coins.push(new CollectableItem(worldX, worldY, "coin"));
+          }
+        }
+      } else {
+        const worldX = worldXMin + Math.random() * (worldXMax - worldXMin);
+        const worldY = platform.y - platformCoinYOffset;
+
+        if (world.coinPositionIsValid(worldX, worldY, coinWidth, coinHeight, coins, minCoinSpacing)) {
+          coins.push(new CollectableItem(worldX, worldY, "coin"));
+        }
+      }
     }
-  }
+  };
+
+  placePlatformCoins(earlyPlatformCoins, firstThirdEndX);
+  placePlatformCoins(latePlatformCoins, BOSS_AREA_START);
 
   /** ----- RANDOM COINS ----- */
   let placementAttempts = 0;
-  while (coins.length < totalCount && placementAttempts < maxPlacementAttempts) {
-    const xMin = MIN_COIN_X;
-    const xMax = world.width - worldRightMargin;
-    if (xMax <= xMin) break;
+  const randomCoinsTarget = totalCount - coins.length;
+  const earlyRandomCoins = Math.floor(randomCoinsTarget * randomEarlyShare);
+  const lateRandomCoins = randomCoinsTarget - earlyRandomCoins;
 
-    const x = xMin + Math.random() * (xMax - xMin);
-    const y = randomYMin + Math.random() * randomYRange;
+  const placeRandomCoins = (count, xMaxLimit) => {
+    let placed = 0;
+    while (placed < count && placementAttempts < maxPlacementAttempts) {
+      const worldXMin = MIN_COIN_X;
+      const worldXMax = Math.min(world.width - worldRightMargin, xMaxLimit - worldRightMargin, BOSS_AREA_START - worldRightMargin);
+      if (worldXMax <= worldXMin) break;
 
-    if (world.coinPositionIsValid(x, y, coinWidth, coinHeight)) {
-      coins.push(new CollectableItem(x, y, "coin"));
+      const worldX = worldXMin + Math.random() * (worldXMax - worldXMin);
+      const worldY = randomYMin + Math.random() * randomYRange;
+
+      if (world.coinPositionIsValid(worldX, worldY, coinWidth, coinHeight, coins, minCoinSpacing)) {
+        coins.push(new CollectableItem(worldX, worldY, "coin"));
+        placed++;
+      }
+
+      placementAttempts++;
     }
+  };
 
-    placementAttempts++;
-  }
+  placeRandomCoins(earlyRandomCoins, firstThirdEndX);
+  placeRandomCoins(lateRandomCoins, BOSS_AREA_START);
 
   return coins;
 }
@@ -124,7 +176,8 @@ export function generateCoinArcs(world, maxArcs = 4) {
   const minHeightDiff = 10;
   const arcWidthScale = 0.85;
   const arcWidthMax = 350;
-  const arcCoinSpacing = 70;
+  const arcCoinSpacing = 55;
+  const minCoinSpacing = 55;
   const arcXOffset = 25;
   const arcYOffset = 110;
   const arcAmplitude = 160;
@@ -151,14 +204,15 @@ export function generateCoinArcs(world, maxArcs = 4) {
     for (let coinIndex = 0; coinIndex < coinsInArc; coinIndex++) {
       const arcProgress = coinIndex / (coinsInArc - 1);
 
-      const x = currentPlatform.right + gap * arcProgress - arcXOffset;
-      const y = currentPlatform.top - arcYOffset - Math.sin(arcProgress * Math.PI) * arcAmplitude +
+      const worldX = currentPlatform.right + gap * arcProgress - arcXOffset;
+      const worldY = currentPlatform.top - arcYOffset - Math.sin(arcProgress * Math.PI) * arcAmplitude +
         (nextPlatform.top - currentPlatform.top) * arcProgress;
 
-      if (x < MIN_COIN_X) continue;
+      if (worldX < MIN_COIN_X) continue;
+      if (worldX >= BOSS_AREA_START) continue;
 
-      if (world.coinPositionIsValid(x, y, coinWidth, coinHeight)) {
-        arcs.push(new CollectableItem(x, y, "coin"));
+      if (world.coinPositionIsValid(worldX, worldY, coinWidth, coinHeight, arcs, minCoinSpacing)) {
+        arcs.push(new CollectableItem(worldX, worldY, "coin"));
       }
     }
 
@@ -185,17 +239,13 @@ export function placeGuns(world, count = 4) {
         y: collectable.y + collectable.height / 2,
       })) || [];
 
-  const farFromHearts = (x, y) =>
+  const farFromHearts = (worldX, worldY) =>
     heartCenters.every((heartCenter) => {
-      return Math.hypot(heartCenter.x - x, heartCenter.y - y) >= minHeartDistance;
+      return Math.hypot(heartCenter.x - worldX, heartCenter.y - worldY) >= minHeartDistance;
     });
 
-  const targets = [
-    WORLD_WIDTH * 0.15,
-    WORLD_WIDTH * 0.38,
-    WORLD_WIDTH * 0.62,
-    WORLD_WIDTH * 0.86,
-  ].slice(0, count);
+  const gunTargetFractions = [0.15, 0.38, 0.62, 0.86];
+  const targets = gunTargetFractions.map((fraction) => WORLD_WIDTH * fraction).slice(0, count);
 
   targets.forEach((targetX) => {
     const platformUnderTarget = world.platforms.find(
@@ -203,10 +253,14 @@ export function placeGuns(world, count = 4) {
     );
     if (!platformUnderTarget) return;
 
-    const platformMinX = platformUnderTarget.left + 10;
-    const platformMaxX = platformUnderTarget.right - 60;
+    const gunPaddingLeft = 10;
+    const gunPaddingRight = 60;
+    const gunYOffset = 80;
+    const gunHalfSize = 25;
+    const platformMinX = platformUnderTarget.left + gunPaddingLeft;
+    const platformMaxX = platformUnderTarget.right - gunPaddingRight;
     const baseX = Math.min(Math.max(targetX, platformMinX), platformMaxX);
-    const gunY = platformUnderTarget.top - 80;
+    const gunY = platformUnderTarget.top - gunYOffset;
 
     // try base position first, then shift left/right to avoid hearts range
     const placementOffsets = [0, 150, -150, 250, -250];
@@ -217,10 +271,10 @@ export function placeGuns(world, count = 4) {
         Math.max(baseX + offset, platformMinX),
         platformMaxX
       );
-      const centerX = placementX + 25;
-      const centerY = gunY + 25;
+      const centerWorldX = placementX + gunHalfSize;
+      const centerWorldY = gunY + gunHalfSize;
 
-      if (farFromHearts(centerX, centerY)) {
+      if (farFromHearts(centerWorldX, centerWorldY)) {
         guns.push(new CollectableItem(placementX, gunY, "gun"));
         placed = true;
         break;
@@ -247,11 +301,15 @@ export function placeEnemiesMixed(
   const totalRequested = Math.max(0, (enemy1Count || 0) + (enemy2Count || 0) + (enemy3Count || 0));
   if (totalRequested === 0) return;
 
+  const minPlatformWidthForEnemies = 80;
+  const minPlatformLeftMargin = 200;
+  const bossAreaBuffer = 1000;
+
   const platforms = world.platforms
-    .filter((platform) => platform.width > 80 && platform.top <= world.baseGround)
+    .filter((platform) => platform.width > minPlatformWidthForEnemies && platform.top <= world.baseGround)
     .filter((platform) => platform.supportsLanding)
-    .filter((platform) => platform.left > 200)
-    .filter((platform) => platform.right <= WORLD_WIDTH - 1000);
+    .filter((platform) => platform.left > minPlatformLeftMargin)
+    .filter((platform) => platform.right <= WORLD_WIDTH - bossAreaBuffer);
 
   // Shuffle platforms to randomize placement order
   for (let platformIndex = platforms.length - 1; platformIndex > 0; platformIndex--) {
@@ -274,8 +332,15 @@ export function placeEnemiesMixed(
   const usable = Math.min(platforms.length, enemyMix.length);
   for (let placementIndex = 0; placementIndex < usable; placementIndex++) {
     const platform = platforms[placementIndex];
-    const enemyX = Math.min(Math.max(platform.left + 60, platform.left + 20), platform.right - 120);
-    const enemyY = platform.top - 110;
+    const enemyPaddingLeft = 60;
+    const enemyPaddingRight = 120;
+    const enemyMinLeftPadding = 20;
+    const enemyYOffset = 110;
+    const enemyX = Math.min(
+      Math.max(platform.left + enemyPaddingLeft, platform.left + enemyMinLeftPadding),
+      platform.right - enemyPaddingRight
+    );
+    const enemyY = platform.top - enemyYOffset;
     const enemyType = enemyMix[placementIndex];
 
     if (enemyType === "e2" && enemy2Sprites) {
@@ -294,43 +359,47 @@ export function placeHearts(world, count = 4) {
   const validHearts = [];
   const heartYOffset = 80;
 
-  const spawnMinX = WORLD_WIDTH * 0.25;
-  const spawnMidX = WORLD_WIDTH * 0.5;
-  const spawnMaxX = WORLD_WIDTH * 0.95;
-  const maxHeartX = WORLD_WIDTH - 50;
-
+  const heartSpawnMin1 = 0.25;
+  const heartSpawnRange1 = 0.20;
+  const heartSpawnMin2 = 0.50;
+  const heartSpawnRange2 = 0.25;
+  const heartSpawnMin3 = 0.95;
+  const heartSpawnRange3 = 0.10;
+  const heartEdgePadding = 50;
+  const maxHeartX = WORLD_WIDTH - heartEdgePadding;
+  
   const positions = [
-    Math.random() * (WORLD_WIDTH * 0.2) + spawnMinX,
-    Math.random() * (WORLD_WIDTH * 0.25) + spawnMidX,
-    Math.random() * (WORLD_WIDTH * 0.1) + spawnMaxX,
+    WORLD_WIDTH * heartSpawnMin1 + Math.random() * (WORLD_WIDTH * heartSpawnRange1),
+    WORLD_WIDTH * heartSpawnMin2 + Math.random() * (WORLD_WIDTH * heartSpawnRange2),
+    WORLD_WIDTH * heartSpawnMin3 + Math.random() * (WORLD_WIDTH * heartSpawnRange3),
   ];
 
   for (let heartIndex = 0; heartIndex < count; heartIndex++) {
-    const x = Math.min(positions[heartIndex], maxHeartX);
+    const worldX = Math.min(positions[heartIndex], maxHeartX);
 
     const platform = world.platforms.find(
-      (platform) => x >= platform.x && x <= platform.x + platform.width
+      (platform) => worldX >= platform.x && worldX <= platform.x + platform.width
     );
 
     if (!platform) continue;
 
-    const y = platform.y - heartYOffset;
+    const worldY = platform.y - heartYOffset;
 
-    if (!isInsidePlatform(world, x, y)) {
-      validHearts.push(new CollectableItem(x, y, "heart"));
+    if (!isInsidePlatform(world, worldX, worldY)) {
+      validHearts.push(new CollectableItem(worldX, worldY, "heart"));
     }
   }
 
   world.addCollectables(validHearts);
 }
 
-function isInsidePlatform(world, heartX, heartY) {
+function isInsidePlatform(world, heartWorldX, heartWorldY) {
   const heartSize = 30;
   return world.platforms.some(
     (platform) =>
-      heartX + heartSize > platform.x &&
-      heartX < platform.x + platform.width &&
-      heartY + heartSize > platform.y &&
-      heartY < platform.y + platform.height
+      heartWorldX + heartSize > platform.x &&
+      heartWorldX < platform.x + platform.width &&
+      heartWorldY + heartSize > platform.y &&
+      heartWorldY < platform.y + platform.height
   );
 }
