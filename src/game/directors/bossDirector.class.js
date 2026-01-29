@@ -92,7 +92,7 @@ export class BossDirector {
     this.bossRef = boss;
     this.bossSpawned = true;
 
-    this.gameAudio?.stop?.();
+    this.gameAudio?.stopCrossfadeAndCleanup?.();
     this.bossAudioPlayer = new BossAudio({ playbackRate: BOSS_MUSIC_PLAYBACK_RATE });
     this.bossAudioPlayer.play();
     this.world.bossAudioPlayer = this.bossAudioPlayer;

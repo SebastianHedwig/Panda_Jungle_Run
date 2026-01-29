@@ -127,8 +127,8 @@ export function startDeath(player, playerAudio) {
   if (typeof player.onDeath === "function") {
     player.onDeath(player);
   }
-  player.world?.audio?.stop?.();
-  player.world?.bossAudioPlayer?.stop?.();
+  player.world?.audio?.stopCrossfadeAndCleanup?.();
+  player.world?.bossAudioPlayer?.stopAndCleanupBossAudio?.();
   if (!player.deathSoundPlayed) {
     playerAudio.playDead();
     player.deathSoundPlayed = true;
