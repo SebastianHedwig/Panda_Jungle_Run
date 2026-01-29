@@ -12,17 +12,36 @@ export function cloneOrRestart(cachedBaseAudioInstance, { volume } = {}) {
   return audio;
 }
 
-export function playWhenReady(audio, { beforePlay } = {}) {
+export function createAudioElement(
+  src,
+  { loop = false, volume = 1, preload = "auto", autoplay = false, playbackRate } = {}
+) {
+  const audioElement = new Audio(src);
+  audioElement.loop = loop;
+  audioElement.volume = volume;
+  audioElement.preload = preload;
+  audioElement.autoplay = autoplay;
+  if (typeof playbackRate === "number") audioElement.playbackRate = playbackRate;
+  return audioElement;
+}
+
+export function playWhenReady(audio, { beforePlay, onMetadata } = {}) {
   if (!audio) return;
-  const start = () => {
+
+  if (typeof onMetadata === "function") {
+    audio.addEventListener("loadedmetadata", onMetadata, { once: true });
+  }
+
+  const startAudio = () => {
     beforePlay?.();
     audio.play();
   };
+
   if (audio.readyState >= 2) { // readyState >= 2 => HAVE_CURRENT_DATA, can start immediately
-    start();
+    startAudio();
   } else {
-    audio.addEventListener("canplaythrough", start, { once: true });
-    audio.addEventListener("loadeddata", start, { once: true });
+    audio.addEventListener("canplaythrough", startAudio, { once: true });
+    audio.addEventListener("loadeddata", startAudio, { once: true });
     audio.load();
   }
 }

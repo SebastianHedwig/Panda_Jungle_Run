@@ -4,7 +4,7 @@ import {
   MUSIC_VOLUME,
   SFX_VOLUME,
 } from "../../config/config.js";
-import { cloneOrRestart, playWhenReady } from "./audioUtils.js";
+import { cloneOrRestart, createAudioElement, playWhenReady } from "./audioUtils.js";
 
 const BOSS_GONG = "./assets/music/boss-gong.mp3";
 const BOSS_MUSIC = "./assets/music/boss-music.mp3";
@@ -31,10 +31,10 @@ export class BossAudio {
     hitSrc = BOSS_HIT,
     volume = MUSIC_VOLUME,
     sfxVolume = SFX_VOLUME,
-    gongPlayDuration = 3,
-    fadeDuration = 1,
     musicLoopCut = BOSS_MUSIC_LOOP_CUT,
     playbackRate = BOSS_MUSIC_PLAYBACK_RATE,
+    gongPlayDuration = 3,
+    fadeDuration = 1,
   } = {}) {
     this.gongSrc = gongSrc;
     this.musicSrc = musicSrc;
@@ -46,10 +46,14 @@ export class BossAudio {
     this.hitSrc = hitSrc;
     this.volume = volume;
     this.sfxVolume = sfxVolume;
+    this.hitBoostVolume = 0.2;
     this.gongPlayDuration = gongPlayDuration;
     this.fadeDuration = fadeDuration;
+    this.minFadeDurationMs = 100;
+    this.loudnessStepMs = 50;
     this.musicLoopCut = musicLoopCut;
     this.playbackRate = playbackRate;
+    this.maxVolumeCap = 1;
 
     this.gongAudio = null;
     this.musicAudio = null;
@@ -70,12 +74,7 @@ export class BossAudio {
   }
 
   createAudio(src, loop = false, volume = this.volume) {
-    const el = new Audio(src);
-    el.loop = loop;
-    el.volume = volume;
-    el.preload = "auto";
-    el.autoplay = false;
-    return el;
+    return createAudioElement(src, { loop, volume });
   }
 
   createSfxAudio(src) {
@@ -83,24 +82,25 @@ export class BossAudio {
   }
 
   createMusicAudio(volume = 0) {
-    const el = this.createAudio(this.musicSrc, false, volume);
-    el.playbackRate = this.playbackRate;
-    return el;
+    return createAudioElement(this.musicSrc, {
+      volume,
+      playbackRate: this.playbackRate,
+    });
   }
 
   playWhimper() {
     if (!this.whimperSrcs?.length) return;
-    const idx = Math.floor(Math.random() * this.whimperSrcs.length);
-    const src = this.whimperSrcs[idx];
+    const randomWhimperIndex = Math.floor(Math.random() * this.whimperSrcs.length);
+    const src = this.whimperSrcs[randomWhimperIndex];
     if (!src) return;
 
-    let base = this.whimperCache.get(src);
-    if (!base) {
-      base = this.createSfxAudio(src);
-      this.whimperCache.set(src, base);
+    let cachedWhimperAudio = this.whimperCache.get(src);
+    if (!cachedWhimperAudio) {
+      cachedWhimperAudio = this.createSfxAudio(src);
+      this.whimperCache.set(src, cachedWhimperAudio);
     }
 
-    const audio = cloneOrRestart(base, { volume: this.sfxVolume });
+    const audio = cloneOrRestart(cachedWhimperAudio, { volume: this.sfxVolume });
     playWhenReady(audio);
     this.bindUnlock();
   }
@@ -128,29 +128,26 @@ export class BossAudio {
       this.hitAudio = this.createAudio(
         this.hitSrc,
         false,
-        Math.min(1, this.sfxVolume + 0.2)
+        Math.min(this.maxVolumeCap, this.sfxVolume + this.hitBoostVolume)
       );
     } else {
       this.hitAudio.currentTime = 0;
     }
-    const vol = Math.min(1, this.sfxVolume + 0.2);
+    const vol = Math.min(this.maxVolumeCap, this.sfxVolume + this.hitBoostVolume);
     const audio = cloneOrRestart(this.hitAudio, { volume: vol });
     playWhenReady(audio);
     this.bindUnlock();
   }
 
   play() {
-    this.stop();
+    this.stopAndCleanupBossAudio();
     this.isPlaying = true;
 
     this.gongAudio = this.createAudio(this.gongSrc, false, this.volume);
     playWhenReady(this.gongAudio);
     this.bindUnlock();
 
-    const fadeStartMs = Math.max(
-      0,
-      (this.gongPlayDuration - this.fadeDuration) * msPerSecond
-    );
+    const fadeStartMs = Math.max(0, (this.gongPlayDuration - this.fadeDuration) * msPerSecond);
     this.fadeStartTimer = setTimeout(
       () => this.startFadeToMusic(),
       fadeStartMs
@@ -175,21 +172,21 @@ export class BossAudio {
       },
     });
 
-    const durationMs = Math.max(100, this.fadeDuration * msPerSecond);
-    const stepMs = 50;
-    let elapsed = 0;
+    const durationMs = Math.max(this.minFadeDurationMs, this.fadeDuration * msPerSecond);
+    const loudnessStepMs = this.loudnessStepMs;
+    let elapsedMs = 0;
     this.fadeInterval = setInterval(() => {
-      elapsed += stepMs;
-      const t = Math.min(elapsed / durationMs, 1);
-      music.volume = this.volume * t;
-      if (t >= 1 && this.fadeInterval) {
+      elapsedMs += loudnessStepMs;
+      const fadeProgress = Math.min(elapsedMs / durationMs, 1);
+      music.volume = this.volume * fadeProgress;
+      if (fadeProgress >= 1 && this.fadeInterval) {
         clearInterval(this.fadeInterval);
         this.fadeInterval = null;
       }
-    }, stepMs);
+    }, loudnessStepMs);
   }
 
-  stop() {
+  stopAndCleanupBossAudio() {
     this.isPlaying = false;
     if (this.fadeStartTimer) {
       clearTimeout(this.fadeStartTimer);
@@ -251,9 +248,9 @@ export class BossAudio {
   bindUnlock() {
     if (this.unlockHandler) return;
     this.unlockHandler = () => {
-      this.gongAudio?.play().catch(() => {});
-      this.musicAudio?.play().catch(() => {});
-      this.defeatAudio?.play().catch(() => {});
+      this.gongAudio?.play();
+      this.musicAudio?.play();
+      this.defeatAudio?.play();
       this.unbindUnlock();
     };
     window.addEventListener("pointerdown", this.unlockHandler, { once: true });
@@ -269,35 +266,35 @@ export class BossAudio {
     this.unlockHandler = null;
   }
 
-  attachMusicLoopWatcher(audioEl) {
+  attachMusicLoopWatcher(audioElement) {
     const handler = () => {
-      if (!audioEl.duration || !isFinite(audioEl.duration)) return;
-      const cutoff = Math.max(0, audioEl.duration - this.musicLoopCut);
+      if (!audioElement.duration || !isFinite(audioElement.duration)) return;
+      const cutoff = Math.max(0, audioElement.duration - this.musicLoopCut);
       const overlapStart = Math.max(0, cutoff - this.fadeDuration);
       if (
         !this.nextMusicAudio &&
         this.musicLoopCut > 0 &&
-        audioEl.currentTime >= overlapStart
+        audioElement.currentTime >= overlapStart
       ) {
-        this.startNextMusicLoop(audioEl);
+        this.startNextMusicLoop(audioElement);
       }
       if (
         this.nextMusicAudio &&
         this.fadeInterval === null &&
-        audioEl.currentTime >= cutoff
+        audioElement.currentTime >= cutoff
       ) {
-        this.completeMusicSwitch(audioEl);
+        this.completeMusicSwitch(audioElement);
       }
     };
-    audioEl.addEventListener("timeupdate", handler);
-    this.loopHandlers.set(audioEl, handler);
+    audioElement.addEventListener("timeupdate", handler);
+    this.loopHandlers.set(audioElement, handler);
   }
 
-  detachLoopWatcher(audioEl) {
-    const handler = this.loopHandlers.get(audioEl);
+  detachLoopWatcher(audioElement) {
+    const handler = this.loopHandlers.get(audioElement);
     if (handler) {
-      audioEl.removeEventListener("timeupdate", handler);
-      this.loopHandlers.delete(audioEl);
+      audioElement.removeEventListener("timeupdate", handler);
+      this.loopHandlers.delete(audioElement);
     }
   }
 
@@ -315,18 +312,18 @@ export class BossAudio {
 
   beginMusicCrossfade(current, next) {
     this.clearFadeInterval();
-    const durationMs = Math.max(100, this.fadeDuration * msPerSecond);
-    const stepMs = 50;
-    let elapsed = 0;
+    const durationMs = Math.max(this.minFadeDurationMs, this.fadeDuration * msPerSecond);
+    const loudnessStepMs = this.loudnessStepMs;
+    let elapsedMs = 0;
     this.fadeInterval = setInterval(() => {
-      elapsed += stepMs;
-      const t = Math.min(elapsed / durationMs, 1);
-      if (current) current.volume = this.volume * (1 - t);
-      if (next) next.volume = this.volume * t;
-      if (t >= 1) {
+      elapsedMs += loudnessStepMs;
+      const fadeProgress = Math.min(elapsedMs / durationMs, 1); // 0..1 volume blend
+      if (current) current.volume = this.volume * (1 - fadeProgress);
+      if (next) next.volume = this.volume * fadeProgress;
+      if (fadeProgress >= 1) {
         this.completeMusicSwitch(current);
       }
-    }, stepMs);
+    }, loudnessStepMs);
   }
 
   clearFadeInterval() {
@@ -373,11 +370,7 @@ export class BossAudio {
     const defeat = this.createAudio(this.defeatSrc, false, 0);
     this.defeatAudio = defeat;
     const howl = this.howlEndSrc
-      ? this.createAudio(
-          this.howlEndSrc,
-          false,
-          Math.min(1, this.sfxVolume + 0.2)
-        )
+      ? this.createAudio(this.howlEndSrc, false, Math.min(this.maxVolumeCap, this.sfxVolume + this.hitBoostVolume))
       : null;
     this.howlEndAudio = howl;
     playWhenReady(defeat);
@@ -397,18 +390,18 @@ export class BossAudio {
       return defeat;
     }
 
-    const durationMs = Math.max(100, this.fadeDuration * msPerSecond);
-    const stepMs = 50;
-    let elapsed = 0;
+    const durationMs = Math.max(this.minFadeDurationMs, this.fadeDuration * msPerSecond);
+    const loudnessStepMs = this.loudnessStepMs;
+    let elapsedMs = 0;
     this.fadeInterval = setInterval(() => {
-      elapsed += stepMs;
-      const t = Math.min(elapsed / durationMs, 1);
-      const inv = 1 - t;
+      elapsedMs += loudnessStepMs;
+      const fadeProgress = Math.min(elapsedMs / durationMs, 1); // 0..1 volume blend
+      const invertFadeProgress = 1 - fadeProgress; // 1..0 volume blend
       for (const track of fadingTracks) {
-        track.volume = this.volume * inv;
+        track.volume = this.volume * invertFadeProgress;
       }
-      defeat.volume = this.volume * t;
-      if (t >= 1) {
+      defeat.volume = this.volume * fadeProgress;
+      if (fadeProgress >= 1) {
         this.clearFadeInterval();
         fadingTracks.forEach((track) => {
           track.pause();
@@ -421,7 +414,7 @@ export class BossAudio {
         }
         this.gongAudio = null;
       }
-    }, stepMs);
+    }, loudnessStepMs);
 
     return defeat;
   }

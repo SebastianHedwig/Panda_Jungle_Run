@@ -65,7 +65,7 @@ export function createGame({ canvasId = "game" } = {}) {
     window.__preloadedGameAudio = null;
     world.audio = audio;
 
-    const musicReadyPromise = (audio.ready ? Promise.resolve(true) : audio.init()).then(() => audio.play());
+    const musicReadyPromise = (audio.ready ? Promise.resolve(true) : audio.init()).then(() => audio.playAudio());
     requestAnimationFrame(renderLoading);
 
     const assets = createGameAssets();
@@ -228,7 +228,7 @@ export function createGame({ canvasId = "game" } = {}) {
     gameWonOverlay = new GameWonOverlay();
     gameWonOverlay.setCoinImage?.(assets.hudCoinImg);
 
-    audio?.play();
+    audio?.playAudio?.();
     isLoading = false;
     canvas.addEventListener("mousemove", updateSettingsPointer);
     canvas.addEventListener("mouseleave", clearSettingsPointer);

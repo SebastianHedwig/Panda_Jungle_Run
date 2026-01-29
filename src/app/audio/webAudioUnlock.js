@@ -38,7 +38,7 @@ export function createWebAudioUnlock({ src, volume = MUSIC_VOLUME ?? 0.2 } = {})
       .catch(() => {
         audio.muted = getGlobalMuted();
         audio.volume = volume;
-        bindUnlock(() => audio.play().catch(() => {}));
+        bindUnlock(() => audio.play());
         return false;
       });
   };
@@ -65,7 +65,7 @@ export function createWebAudioUnlock({ src, volume = MUSIC_VOLUME ?? 0.2 } = {})
       audio.load();
     }
 
-    bindUnlock(() => audio.play().catch(() => {}));
+    bindUnlock(() => audio.play());
     return audio;
   };
 

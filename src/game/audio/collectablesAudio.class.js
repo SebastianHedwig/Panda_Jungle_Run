@@ -1,5 +1,6 @@
 import { SFX_VOLUME } from "../../config/config.js";
 import { mobileAudioUnlock } from "../../app/audio/mobileAudioUnlock.js";
+import { createAudioElement, playWhenReady } from "./audioUtils.js";
 
 const COIN_PICKUP = "./assets/sfx/coin/coin-pickup.mp3";
 const HEART_PICKUP = "./assets/sfx/heart/heart-pickup.mp3";
@@ -16,51 +17,40 @@ export class CollectablesAudio {
     this.heartSrc = heartSrc;
     this.weaponSrc = weaponSrc;
     this.volume = volume;
-    this.poolSize = 3;
-    this.cache = new Map(); // key -> { pool: Audio[], idx: number }
+    this.soundPoolSize = 3;
+    this.cache = new Map(); // key: soundKey, value: { soundPool: Audio[], roundPointer: number }
 
     mobileAudioUnlock.addAudios(() => this.collectWarmupAudios());
     mobileAudioUnlock.bind();
   }
 
   createAudio(src) {
-    const el = new Audio(src);
-    el.loop = false;
-    el.volume = this.volume;
-    el.preload = "auto";
-    el.autoplay = false;
-    return el;
+    return createAudioElement(src, { volume: this.volume });
   }
 
-  ensurePool(key, src) {
-    let entry = this.cache.get(key);
-    if (!entry) {
-      const pool = Array.from({ length: this.poolSize }, () => this.createAudio(src));
-      entry = { pool, idx: 0 };
-      this.cache.set(key, entry);
+  ensureSoundPool(soundKey, src) {
+    let soundPoolEntry = this.cache.get(soundKey);
+    if (!soundPoolEntry) {
+      const soundPool = Array.from({ length: this.soundPoolSize }, () => this.createAudio(src));
+      soundPoolEntry = { soundPool, roundPointer: 0 };
+      this.cache.set(soundKey, soundPoolEntry);
     }
-    return entry;
+    return soundPoolEntry;
   }
 
-  nextAudioFromPool(key, src) {
-    const entry = this.ensurePool(key, src);
-    const audio = entry.pool[entry.idx];
-    entry.idx = (entry.idx + 1) % entry.pool.length;
+  nextAudioFromPool(soundKey, src) { // Round-Robin selection from soundPool
+    const soundPoolEntry = this.ensureSoundPool(soundKey, src);
+    const audio = soundPoolEntry.soundPool[soundPoolEntry.roundPointer];
+    soundPoolEntry.roundPointer =
+      (soundPoolEntry.roundPointer + 1) % soundPoolEntry.soundPool.length;
     audio.volume = this.volume;
     audio.currentTime = 0;
     return audio;
   }
 
-  playSound(key, src) {
-    const audio = this.nextAudioFromPool(key, src);
-
-    const start = () => audio.play().catch(() => {});
-    if (audio.readyState >= 2) start();
-    else {
-      audio.addEventListener("canplaythrough", start, { once: true });
-      audio.addEventListener("loadeddata", start, { once: true });
-    }
-    audio.load();
+  playSound(soundKey, src) {
+    const audio = this.nextAudioFromPool(soundKey, src);
+    playWhenReady(audio);
   }
 
   playCoin() {
@@ -77,9 +67,9 @@ export class CollectablesAudio {
 
   collectWarmupAudios() {
     return [
-      this.ensurePool("coin", this.coinSrc).pool[0],
-      this.ensurePool("heart", this.heartSrc).pool[0],
-      this.ensurePool("weapon", this.weaponSrc).pool[0],
+      this.ensureSoundPool("coin", this.coinSrc).soundPool[0],
+      this.ensureSoundPool("heart", this.heartSrc).soundPool[0],
+      this.ensureSoundPool("weapon", this.weaponSrc).soundPool[0],
     ];
   }
 }

@@ -1,4 +1,5 @@
 import { MUSIC_LOOP_CUT, MUSIC_VOLUME } from "../../config/config.js";
+import { playWhenReady } from "./audioUtils.js";
 
 const msPerSecond = 1000;
 
@@ -12,6 +13,9 @@ export class GameAudio {
     this.loopCut = MUSIC_LOOP_CUT ?? 0;
     this.volume = MUSIC_VOLUME ?? 0.35;
     this.overlapDuration = 1;
+    this.minCutoff = 0.01;
+    this.loadTimeoutMs = 3000;
+    this.minCrossfadeMs = 100; // avoid abrupt volume transitions
     this.cutoff = 0;
     this.overlapStart = 0;
     this.crossfadeTimer = null;
@@ -39,11 +43,10 @@ export class GameAudio {
         resolve(true);
       };
 
-      this.audio.addEventListener(
-        "loadedmetadata",
+      this.audio.addEventListener("loadedmetadata",
         () => {
           const duration = this.audio.duration || 0;
-          this.cutoff = Math.max(0.01, duration - this.loopCut);
+          this.cutoff = Math.max(this.minCutoff, duration - this.loopCut);
           this.overlapStart = Math.max(0, this.cutoff - this.overlapDuration);
           this.attachLoopWatcher(this.audio);
         },
@@ -57,34 +60,34 @@ export class GameAudio {
       this.audio.load();
       this.bindPlaybackUnlock();
 
-      setTimeout(() => resolve(false), 3000);
+      setTimeout(() => resolve(false), this.loadTimeoutMs);
     });
 
     return this.readyPromise;
   }
 
-  attachLoopWatcher(audioEl) {
+  attachLoopWatcher(audioElement) {
     const onTimeUpdate = () => {
-      if (audioEl !== this.audio) return;
+      if (audioElement !== this.audio) return;
 
       if (
         !this.nextAudio &&
         this.cutoff > 0 &&
-        audioEl.currentTime >= this.overlapStart
+        audioElement.currentTime >= this.overlapStart
       ) {
-        this.startNextAudio();
+        this.audioLoopPreparation();
       }
 
-      if (this.cutoff > 0 && audioEl.currentTime >= this.cutoff) {
+      if (this.cutoff > 0 && audioElement.currentTime >= this.cutoff) {
         this.completeLoop();
       }
     };
 
-    audioEl.addEventListener("timeupdate", onTimeUpdate);
-    this.loopListeners.set(audioEl, onTimeUpdate);
+    audioElement.addEventListener("timeupdate", onTimeUpdate);
+    this.loopListeners.set(audioElement, onTimeUpdate);
   }
 
-  startNextAudio() {
+  audioLoopPreparation() {
     if (this.nextAudio || !this.audio) return;
 
     this.nextAudio = this.createAudioElement();
@@ -92,32 +95,24 @@ export class GameAudio {
     next.volume = 0;
     this.attachLoopWatcher(next);
 
-    const playNext = () => next.play().catch(() => {});
-    if (next.readyState >= 2) {
-      playNext();
-    } else {
-      next.addEventListener("canplaythrough", playNext, { once: true });
-      next.addEventListener("loadeddata", playNext, { once: true });
-    }
-
-    next.load();
+    playWhenReady(next);
     this.beginCrossfade(this.audio, next);
   }
 
   beginCrossfade(current, next) {
     this.clearCrossfade();
-    const durationMs = Math.max(100, this.overlapDuration * msPerSecond);
-    const stepMs = 50;
+    const durationMs = Math.max(this.minCrossfadeMs, this.overlapDuration * msPerSecond);
+    const loudnessStepMs = 50;
     let elapsed = 0;
 
     this.crossfadeTimer = setInterval(() => {
-      elapsed += stepMs;
-      const t = Math.min(elapsed / durationMs, 1);
-      if (current) current.volume = this.volume * (1 - t);
-      if (next) next.volume = this.volume * t;
+      elapsed += loudnessStepMs;
+      const fadeProgress = Math.min(elapsed / durationMs, 1); // 0..1 volume blend
+      if (current) current.volume = this.volume * (1 - fadeProgress);
+      if (next) next.volume = this.volume * fadeProgress;
 
-      if (t >= 1) this.clearCrossfade();
-    }, stepMs);
+      if (fadeProgress >= 1) this.clearCrossfade();
+    }, loudnessStepMs);
   }
 
   clearCrossfade() {
@@ -130,11 +125,11 @@ export class GameAudio {
   completeLoop() {
     this.clearCrossfade();
 
-    const oldAudio = this.audio;
-    const handler = this.loopListeners.get(oldAudio);
+    const outgoingAudio = this.audio;
+    const handler = this.loopListeners.get(outgoingAudio);
     if (handler) {
-      oldAudio.removeEventListener("timeupdate", handler);
-      this.loopListeners.delete(oldAudio);
+      outgoingAudio.removeEventListener("timeupdate", handler);
+      this.loopListeners.delete(outgoingAudio);
     }
 
     if (this.nextAudio) {
@@ -144,23 +139,21 @@ export class GameAudio {
       this.audio.currentTime = 0;
     }
 
-    if (oldAudio && oldAudio !== this.audio) {
-      oldAudio.pause();
-      oldAudio.currentTime = 0;
+    if (outgoingAudio && outgoingAudio !== this.audio) {
+      outgoingAudio.pause();
+      outgoingAudio.currentTime = 0;
     }
 
     if (this.audio) {
       this.audio.volume = this.volume;
-      if (this.audio.paused) this.audio.play().catch(() => {});
+      if (this.audio.paused) this.audio.play();
     }
   }
 
-  play() {
-    if (!this.audio) return Promise.resolve(false);
-    return this.audio
-      .play()
-      .then(() => true)
-      .catch(() => false);
+  async playAudio() {
+    if (!this.audio) return false;
+    await this.audio.play();
+    return true;
   }
 
   ensureVolume() {
@@ -176,7 +169,7 @@ export class GameAudio {
   bindPlaybackUnlock() {
     if (this.unlockHandler) return;
     this.unlockHandler = () => {
-      this.play().finally(() => {
+      this.playAudio().finally(() => {
         window.removeEventListener("pointerdown", this.unlockHandler);
         window.removeEventListener("keydown", this.unlockHandler);
         window.removeEventListener("touchstart", this.unlockHandler);
@@ -188,7 +181,7 @@ export class GameAudio {
     window.addEventListener("touchstart", this.unlockHandler, { once: true });
   }
 
-  stop() {
+  stopCrossfadeAndCleanup() {
     this.clearCrossfade();
     if (this.audio) {
       const handler = this.loopListeners.get(this.audio);

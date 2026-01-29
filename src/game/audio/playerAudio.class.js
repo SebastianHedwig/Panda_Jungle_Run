@@ -1,4 +1,5 @@
 import { SFX_VOLUME } from "../../config/config.js";
+import { createAudioElement, playWhenReady } from "./audioUtils.js";
 
 const PLAYER_DEAD = "./assets/sfx/player/player-dead.mp3";
 const PLAYER_PUNCH = [
@@ -61,12 +62,7 @@ export class PlayerAudio {
   }
 
   createAudio(src) {
-    const audioElement = new Audio(src);
-    audioElement.loop = false;
-    audioElement.volume = this.volume;
-    audioElement.preload = "auto";
-    audioElement.autoplay = false;
-    return audioElement;
+    return createAudioElement(src, { volume: this.volume });
   }
 
   ensureBase(propertyName, src) {
@@ -105,17 +101,13 @@ export class PlayerAudio {
 
     const startAudio = () => {
       setOffset();
-      audio.play();
     };
 
-    // readyState >= 2 => HAVE_CURRENT_DATA, can start immediately
-    if (audio.readyState >= 2) startAudio();
-    else {
-      audio.addEventListener("canplaythrough", startAudio, { once: true });
-      audio.addEventListener("loadeddata", startAudio, { once: true });
-      audio.addEventListener("loadedmetadata", setOffset, { once: true });
-      audio.load();
-    }
+    
+    playWhenReady(audio, {
+      beforePlay: startAudio,
+      onMetadata: setOffset,
+    });
 
     this.bindUnlock();
     return audio;
@@ -186,7 +178,7 @@ export class PlayerAudio {
     audio.preload = "auto";
     audio.autoplay = false;
 
-    const start = () => {
+    const setLandingOffset = () => {
       const landingEndSafetyMargin = 0.05;
       const duration = audio.duration;
       if (Number.isFinite(duration)) {
@@ -199,16 +191,12 @@ export class PlayerAudio {
       } else {
         audio.currentTime = 0;
       }
-      audio.play();
     };
 
-    if (audio.readyState >= 2) start();  // readyState >= 2 => HAVE_CURRENT_DATA, can start immediately
-    else {
-      audio.addEventListener("canplaythrough", start, { once: true });
-      audio.addEventListener("loadeddata", start, { once: true });
-      audio.addEventListener("loadedmetadata", start, { once: true });
-    }
-    audio.load();
+    playWhenReady(audio, {
+      beforePlay: setLandingOffset,
+      onMetadata: setLandingOffset,
+    });
     this.bindUnlock();
   }
 
