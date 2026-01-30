@@ -1,6 +1,6 @@
 import { MUSIC_VOLUME } from "../../config/config.js";
 
-export function createWebAudioUnlock({ src, volume = MUSIC_VOLUME ?? 0.2 } = {}) {
+export function createWebAudioUnlock({ src, volume = MUSIC_VOLUME } = {}) {
   let audio = null;
   let unlockHandlers = [];
 
