@@ -1,4 +1,5 @@
 import { OverlayRenderer } from "./overlayBase.class.js";
+import { renderBackButton } from "./overlayUtils.js";
 
 const DEFAULT_CONTROLS = [
   { label: "Move", value: "A / D or Arrow keys" },
@@ -9,12 +10,26 @@ const DEFAULT_CONTROLS = [
   { label: "Pause / Menu", value: "Escape or Menu-Button" },
 ];
 
+const TITLE_BASELINE_RATIO = 0.2;
+const TITLE_OFFSET_Y = 30;
+const LIST_START_OFFSET = 100;
+const LINE_HEIGHT_MAX = 64;
+const LINE_HEIGHT_RATIO = 0.065;
+const LABEL_OFFSET_X = 105;
+const COLON_SPACING = 27;
+const BACK_BUTTON_TARGET_SIZE = 50;
+const BACK_BUTTON_MARGIN = 22;
+const BACK_BUTTON_EXTRA_OFFSET_Y = 6;
+const BACK_BUTTON_HOVER_SCALE = 1.2;
+const BACK_BUTTON_SPRITE = { x: 713, y: 660, w: 200, h: 200 };
+const BACK_BUTTON_SHADOW = { color: "rgba(0, 0, 0, 0.45)", blur: 10, offsetX: 0, offsetY: 3 };
+
 export class ControlsOverlay {
   constructor({ showBackButton = true } = {}) {
     this.renderer = new OverlayRenderer();
     this.assets = { bgImage: null, uiImage: null };
     this.controls = DEFAULT_CONTROLS;
-    this.backButtonSprite = { x: 713, y: 660, w: 200, h: 200 };
+    this.backButtonSprite = BACK_BUTTON_SPRITE;
     this.pointer = null;
     this.backButtonHover = false;
     this.backButtonBounds = null;
@@ -44,8 +59,8 @@ export class ControlsOverlay {
   handleBackClick(x, y) {
     if (!this.showBackButton) return false;
     if (!this.backButtonBounds) return false;
-    const { x: bx, y: by, w, h } = this.backButtonBounds;
-    return x >= bx && x <= bx + w && y >= by && y <= by + h;
+    const { x: boundsX, y: boundsY, w, h } = this.backButtonBounds;
+    return x >= boundsX && x <= boundsX + w && y >= boundsY && y <= boundsY + h;
   }
 
   isHovering() {
@@ -64,75 +79,51 @@ export class ControlsOverlay {
       return;
     }
 
-    const { x, y, width, height } = panelRect;
-    const titleY = y + height * 0.2 + 30;
+    const { x, y, height } = panelRect;
+    const titleY = y + height * TITLE_BASELINE_RATIO + TITLE_OFFSET_Y;
     const canvasCenterX = canvas.width / 2;
     this.renderer.applyTitleStyle(ctx, canvas.width);
     ctx.fillText("Controls", canvasCenterX, titleY);
 
-    const listStartY = titleY + 100;
-    const lineHeight = Math.min(64, canvas.height * 0.065);
-    const labelX = canvasCenterX - 105;
-    const colonX = labelX + 27;
-    const valueX = colonX + 27;
+    const listStartY = titleY + LIST_START_OFFSET;
+    const lineHeight = Math.min(LINE_HEIGHT_MAX, canvas.height * LINE_HEIGHT_RATIO);
+    const labelX = canvasCenterX - LABEL_OFFSET_X;
+    const colonX = labelX + COLON_SPACING;
+    const valueX = colonX + COLON_SPACING;
 
     this.renderer.applyBodyStyle(ctx, canvas.width);
     this.controls.forEach((item, index) => {
-      const yPos = listStartY + index * lineHeight;
+      const itemYPosition = listStartY + index * lineHeight;
       ctx.textAlign = "right";
-      ctx.fillText(item.label, labelX, yPos);
+      ctx.fillText(item.label, labelX, itemYPosition);
       ctx.textAlign = "center";
-      ctx.fillText(":", colonX, yPos);
+      ctx.fillText(":", colonX, itemYPosition);
       ctx.textAlign = "left";
-      ctx.fillText(item.value, valueX, yPos);
+      ctx.fillText(item.value, valueX, itemYPosition);
     });
 
     if (this.assets.uiImage?.naturalWidth && this.showBackButton) {
-      this.drawBackButton(ctx, panelRect);
+      this.drawBackButton(ctx, { x, y, height });
     }
     ctx.restore();
   }
 
-  drawBackButton(ctx, { x, y, width, height }) {
-    const sprite = this.backButtonSprite;
-    const targetSize = 50;
-    const scale = targetSize / sprite.w;
-    const iconW = sprite.w * scale;
-    const iconH = sprite.h * scale;
-    const margin = 22;
-    const iconX = x + margin;
-    const iconY = y + height - iconH - margin - 6;
-
-    const isHover = this.pointer
-      ? this.pointer.x >= iconX &&
-        this.pointer.x <= iconX + iconW &&
-        this.pointer.y >= iconY &&
-        this.pointer.y <= iconY + iconH
-      : false;
+  drawBackButton(ctx, { x, y, height }) {
+    const { bounds, isHover } = renderBackButton({
+      ctx,
+      uiImage: this.assets.uiImage,
+      sprite: this.backButtonSprite,
+      pointer: this.pointer,
+      containerX: x,
+      containerY: y,
+      containerHeight: height,
+      targetSize: BACK_BUTTON_TARGET_SIZE,
+      margin: BACK_BUTTON_MARGIN,
+      extraOffsetY: BACK_BUTTON_EXTRA_OFFSET_Y,
+      hoverScale: BACK_BUTTON_HOVER_SCALE,
+      shadow: BACK_BUTTON_SHADOW,
+    });
     this.backButtonHover = isHover;
-    const hoverScale = isHover ? 1.2 : 1;
-    const drawW = iconW * hoverScale;
-    const drawH = iconH * hoverScale;
-    const drawX = iconX - (drawW - iconW) / 2;
-    const drawY = iconY - (drawH - iconH) / 2;
-
-    ctx.save();
-    ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 3;
-    ctx.drawImage(
-      this.assets.uiImage,
-      sprite.x,
-      sprite.y,
-      sprite.w,
-      sprite.h,
-      drawX,
-      drawY,
-      drawW,
-      drawH
-    );
-    ctx.restore();
-    this.backButtonBounds = { x: drawX, y: drawY, w: drawW, h: drawH };
+    this.backButtonBounds = bounds;
   }
 }

@@ -1,4 +1,5 @@
 import { OverlayRenderer } from "./overlayBase.class.js";
+import { renderBackButton } from "./overlayUtils.js";
 
 const MOBILE_CONTROLS = [
   {
@@ -33,12 +34,34 @@ const MOBILE_CONTROLS = [
   }
 ];
 
+const TITLE_BASELINE_RATIO = 0.2;
+const TITLE_OFFSET_Y = 30;
+const ICON_SIZE_MAX = 32;
+const ICON_SIZE_RATIO = 0.05;
+const LIST_START_OFFSET = 75;
+const LINE_HEIGHT_EXTRA = 14;
+const LINE_HEIGHT_MAX = 68;
+const LINE_HEIGHT_RATIO = 0.065;
+const ICON_X_OFFSET = 100;
+const VALUE_X_PADDING = 30;
+const ICON_INNER_SIZE_RATIO = 0.7;
+const ICON_CENTERING_RATIO = 0.5;
+const FULL_CIRCLE_RADIANS = Math.PI * 2;
+const ICON_GRADIENT_START = "rgba(0, 200, 200, 0.65)";
+const ICON_GRADIENT_END = "rgba(0, 80, 80, 0.65)";
+const BACK_BUTTON_TARGET_SIZE = 50;
+const BACK_BUTTON_MARGIN = 22;
+const BACK_BUTTON_EXTRA_OFFSET_Y = 6;
+const BACK_BUTTON_HOVER_SCALE = 1.2;
+const BACK_BUTTON_SPRITE = { x: 713, y: 660, w: 200, h: 200 };
+const BACK_BUTTON_SHADOW = { color: "rgba(0, 0, 0, 0.45)", blur: 10, offsetX: 0, offsetY: 3 };
+
 export class ControlsOverlayMobile {
   constructor({ showBackButton = true } = {}) {
     this.renderer = new OverlayRenderer();
     this.assets = { bgImage: null, uiImage: null };
     this.controls = MOBILE_CONTROLS;
-    this.backButtonSprite = { x: 713, y: 660, w: 200, h: 200 };
+    this.backButtonSprite = BACK_BUTTON_SPRITE;
     this.pointer = null;
     this.backButtonHover = false;
     this.backButtonBounds = null;
@@ -74,8 +97,8 @@ export class ControlsOverlayMobile {
   handleBackClick(x, y) {
     if (!this.showBackButton) return false;
     if (!this.backButtonBounds) return false;
-    const { x: bx, y: by, w, h } = this.backButtonBounds;
-    return x >= bx && x <= bx + w && y >= by && y <= by + h;
+    const { x: boundsX, y: boundsY, w, h } = this.backButtonBounds;
+    return x >= boundsX && x <= boundsX + w && y >= boundsY && y <= boundsY + h;
   }
 
   isHovering() {
@@ -95,16 +118,16 @@ export class ControlsOverlayMobile {
     }
 
     const { x, y, width, height } = panelRect;
-    const titleY = y + height * 0.2 + 30;
+    const titleY = y + height * TITLE_BASELINE_RATIO + TITLE_OFFSET_Y;
     const canvasCenterX = canvas.width / 2;
     this.renderer.applyTitleStyle(ctx, canvas.width);
     ctx.fillText("Mobile Controls", canvasCenterX, titleY);
 
-    const iconSize = Math.min(32, canvas.width * 0.05);
-    const listStartY = titleY + 75;
-    const lineHeight = Math.max(iconSize + 14, Math.min(68, canvas.height * 0.065));
-    const iconX = canvasCenterX - 100;
-    const valueX = iconX + iconSize + 30;
+    const iconSize = Math.min(ICON_SIZE_MAX, canvas.width * ICON_SIZE_RATIO);
+    const listStartY = titleY + LIST_START_OFFSET;
+    const lineHeight = Math.max(iconSize + LINE_HEIGHT_EXTRA, Math.min(LINE_HEIGHT_MAX, canvas.height * LINE_HEIGHT_RATIO));
+    const iconX = canvasCenterX - ICON_X_OFFSET;
+    const valueX = iconX + iconSize + VALUE_X_PADDING;
 
     this.renderer.applyBodyStyle(ctx, canvas.width);
     ctx.textBaseline = "middle";
@@ -113,22 +136,26 @@ export class ControlsOverlayMobile {
 
       const img = this.getIcon(item.icon);
       const drawX = iconX;
-      const drawY = rowCenterY - iconSize * 0.5;
+      const drawY = rowCenterY - iconSize * ICON_CENTERING_RATIO;
       ctx.save();
 
       const grad = ctx.createLinearGradient(drawX, drawY, drawX + iconSize, drawY + iconSize);
-      grad.addColorStop(0, "rgba(0, 200, 200, 0.65)");
-      grad.addColorStop(1, "rgba(0, 80, 80, 0.65)");
+      grad.addColorStop(0, ICON_GRADIENT_START);
+      grad.addColorStop(1, ICON_GRADIENT_END);
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.arc(drawX + iconSize / 2, drawY + iconSize / 2, iconSize / 2, 0, Math.PI * 2);
+      ctx.arc(drawX + iconSize / 2, drawY + iconSize / 2, iconSize / 2, 0, FULL_CIRCLE_RADIANS);
       ctx.fill();
 
-      const innerSize = iconSize * 0.7;
-      const maxDim = Math.max(img?.naturalWidth || 1, img?.naturalHeight || 1);
-      const scale = innerSize / maxDim;
-      const imgW = (img?.naturalWidth || innerSize) * scale;
-      const imgH = (img?.naturalHeight || innerSize) * scale;
+      const innerSize = iconSize * ICON_INNER_SIZE_RATIO;
+      if (!img?.naturalWidth || !img?.naturalHeight) {
+        ctx.restore();
+        return;
+      }
+      const maxIconDimension = Math.max(img.naturalWidth, img.naturalHeight);
+      const iconScale = innerSize / maxIconDimension;
+      const imgW = img.naturalWidth * iconScale;
+      const imgH = img.naturalHeight * iconScale;
       const imgX = drawX + (iconSize - imgW) / 2;
       const imgY = drawY + (iconSize - imgH) / 2;
       ctx.drawImage(img, imgX, imgY, imgW, imgH);
@@ -139,52 +166,28 @@ export class ControlsOverlayMobile {
     });
 
     if (this.assets.uiImage?.naturalWidth && this.showBackButton) {
-      this.drawBackButton(ctx, panelRect);
+      this.drawBackButton(ctx, { x, y, width, height });
     }
     ctx.restore();
   }
 
-  drawBackButton(ctx, { x, y, width, height }) {
-    const sprite = this.backButtonSprite;
-    const targetSize = 50;
-    const scale = targetSize / sprite.w;
-    const iconW = sprite.w * scale;
-    const iconH = sprite.h * scale;
-    const margin = 22;
-    const iconX = x + margin;
-    const iconY = y + height - iconH - margin - 6;
-
-    const isHover = this.pointer
-      ? this.pointer.x >= iconX &&
-        this.pointer.x <= iconX + iconW &&
-        this.pointer.y >= iconY &&
-        this.pointer.y <= iconY + iconH
-      : false;
+  drawBackButton(ctx, { x, y, height }) {
+    const { bounds, isHover } = renderBackButton({
+      ctx,
+      uiImage: this.assets.uiImage,
+      sprite: this.backButtonSprite,
+      pointer: this.pointer,
+      containerX: x,
+      containerY: y,
+      containerHeight: height,
+      targetSize: BACK_BUTTON_TARGET_SIZE,
+      margin: BACK_BUTTON_MARGIN,
+      extraOffsetY: BACK_BUTTON_EXTRA_OFFSET_Y,
+      hoverScale: BACK_BUTTON_HOVER_SCALE,
+      shadow: BACK_BUTTON_SHADOW,
+    });
     this.backButtonHover = isHover;
-    const hoverScale = isHover ? 1.2 : 1;
-    const drawW = iconW * hoverScale;
-    const drawH = iconH * hoverScale;
-    const drawX = iconX - (drawW - iconW) / 2;
-    const drawY = iconY - (drawH - iconH) / 2;
-
-    ctx.save();
-    ctx.shadowColor = "rgba(0, 0, 0, 0.45)";
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 3;
-    ctx.drawImage(
-      this.assets.uiImage,
-      sprite.x,
-      sprite.y,
-      sprite.w,
-      sprite.h,
-      drawX,
-      drawY,
-      drawW,
-      drawH
-    );
-    ctx.restore();
-    this.backButtonBounds = { x: drawX, y: drawY, w: drawW, h: drawH };
+    this.backButtonBounds = bounds;
   }
 
   getIcon(src) {

@@ -1,5 +1,8 @@
 import { GameOverlayBase } from "./gameOverlayBase.class.js";
 
+const BUTTONS_TITLE_GAP_FACTOR = 0.9;
+const BUTTONS_BASE_Y_OFFSET_RATIO = 0.08;
+
 export class GameOverOverlay extends GameOverlayBase {
   constructor() {
     super();
@@ -10,23 +13,9 @@ export class GameOverOverlay extends GameOverlayBase {
     if (!ctx || !canvas) return;
     const { easeOut, scale } = this.startFrame(ctx, canvas);
 
-    const { titleY, drawFontSize } = this.drawTitle(
-      ctx,
-      canvas,
-      this.title,
-      {
-        maxWidthRatio: 0.78,
-        maxHeightRatio: 0.26,
-        baseSizeRatio: 0.14,
-        baseSizeCap: 140,
-        minSize: 48,
-        yOffsetRatio: -0.06,
-      },
-      easeOut,
-      scale
-    );
+    const { titleY, drawFontSize } = this.drawTitle(ctx, canvas, this.title, null, easeOut, scale);
 
-    const buttonsBaseY = titleY + drawFontSize * 0.9 + canvas.height * 0.08;
+    const buttonsBaseY = titleY + drawFontSize * BUTTONS_TITLE_GAP_FACTOR + canvas.height * BUTTONS_BASE_Y_OFFSET_RATIO;
     this.drawButtons(ctx, canvas, buttonsBaseY, scale, easeOut);
 
     this.finishFrame(ctx);

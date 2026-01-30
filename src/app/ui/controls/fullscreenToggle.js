@@ -19,7 +19,7 @@ export function setupFullscreenToggle({
     const src = isFullscreen
       ? "./assets/icons/fullscreen-off.png"
       : "./assets/icons/fullscreen-on.png";
-    const alt = isFullscreen ? "Fullscreen schliessen" : "Fullscreen starten";
+    const alt = isFullscreen ? "close fullscreen" : "fullscreen";
     const text = isFullscreen ? "close fullscreen" : "fullscreen";
 
     icon.src = src;
