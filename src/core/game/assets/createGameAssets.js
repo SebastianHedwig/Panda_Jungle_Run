@@ -31,26 +31,10 @@ export function createGameAssets() {
     walk: loadFrames("./assets/img/Character/Character_Sprites/walk/", "walk_", 10),
     run: loadFrames("./assets/img/Character/Character_Sprites/run/", "Run_", 8),
     jump: loadFrames("./assets/img/Character/Character_Sprites/jump/", "Jump_", 5),
-    slide: loadFrames(
-      "./assets/img/Character/Character_Sprites/slide/",
-      "Sliding_",
-      4
-    ),
-    attack: loadFrames(
-      "./assets/img/Character/Character_Sprites/throw/",
-      "Throw_Attack_",
-      5
-    ),
-    shoot: loadFrames(
-      "./assets/img/Character/Character_Sprites/shoot/",
-      "Shoot_",
-      6
-    ),
-    dizzy: loadFrames(
-      "./assets/img/Character/Character_Sprites/dizzy/",
-      "Dizzy_",
-      3
-    ),
+    slide: loadFrames("./assets/img/Character/Character_Sprites/slide/", "Sliding_", 4),
+    attack: loadFrames("./assets/img/Character/Character_Sprites/throw/", "Throw_Attack_",5),
+    shoot: loadFrames("./assets/img/Character/Character_Sprites/shoot/", "Shoot_", 6),
+    dizzy: loadFrames("./assets/img/Character/Character_Sprites/dizzy/", "Dizzy_", 3),  
     hurt: loadFrames("./assets/img/Character/Character_Sprites/hurt/", "hurt_", 2),
     die: loadFrames("./assets/img/Character/Character_Sprites/die/", "Die_", 10),
     hitStars: loadFrames("./assets/img/Character/Spriter_files/", "Star_", 3),

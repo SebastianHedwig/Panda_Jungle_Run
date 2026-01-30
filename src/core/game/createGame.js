@@ -36,7 +36,7 @@ import { createGameAssets } from "./assets/createGameAssets.js";
 export function createGame({ canvasId = "game" } = {}) {
   let canvas, ctx;
   let background, camera, player, input, world;
-  let lastTime = 0;
+  let lastTimeHigh = 0;
   let audio;
   let isLoading = true;
   let loadingAnimTime = 0;
@@ -50,6 +50,27 @@ export function createGame({ canvasId = "game" } = {}) {
   let gameWonOverlay;
   let isGameOver = false;
   let isGameWon = false;
+
+  const MAX_FRAME_TIME = 0.05;
+  const CAMERA_FOLLOW_LERP = 0.08;
+  const PLAYER_SPAWN_X = 25;
+  const PLAYER_SPAWN_HEIGHT_RATIO = 0.5;
+  const PLAYER_SPAWN_GROUND_OFFSET = 200;
+  const PARALLAX_LAYERS = [
+    { imageIndex: 0, parallaxFactor: 0.1, swaySpeed: 0.01 },
+    { imageIndex: 1, parallaxFactor: 0.3, swaySpeed: 0.03 },
+    { imageIndex: 2, parallaxFactor: 0.6, swaySpeed: 0.06 },
+    { imageIndex: 3, parallaxFactor: 1.0, swaySpeed: 0.1 },
+  ];
+  const LOADING_SPINNER_ROTATE_MS = 500;
+  const LOADING_ARC_SWEEP = Math.PI * 1.5;
+  const LOADING_STROKE_WIDTH = 8;
+  const LOADING_FILL_STYLE = "rgba(10, 16, 20, 0.85)";
+  const LOADING_STROKE_STYLE = "rgba(0, 200, 200, 0.9)";
+  const LOADING_TEXT_COLOR = "#e5f7ff";
+  const LOADING_FONT = "32px ComixLoud, sans-serif";
+  const LOADING_TEXT_OFFSET_Y = 80;
+  const FULL_CIRCLE_RADIANS = Math.PI * 2;
 
   function init() {
     canvas = document.getElementById(canvasId);
@@ -147,19 +168,19 @@ export function createGame({ canvasId = "game" } = {}) {
     try {
       window.localStorage?.setItem?.("panda_autostart", "1");
     } catch (_err) {
-      // ignore
+      // ignore DOMExceptions from storage (e.g.: blocked/readonly/incognito)
     }
     window.location.reload();
   }
 
   function start(assets) {
     const [bg1, bg2, bg3, bg4, cloud1, cloud2] = assets.bgImages;
+    const parallaxImages = [bg1, bg2, bg3, bg4];
 
-    background.addLayer(bg1, 0.1, 0.01);
+    PARALLAX_LAYERS.forEach(({ imageIndex, parallaxFactor, swaySpeed }) => {
+      background.addLayer(parallaxImages[imageIndex], parallaxFactor, swaySpeed);
+    });
     background.spawnClouds(cloud1, cloud2);
-    background.addLayer(bg2, 0.3, 0.03);
-    background.addLayer(bg3, 0.6, 0.06);
-    background.addLayer(bg4, 1.0, 0.1);
 
     const platforms = createLevel1Platforms(assets.platformSprites);
     world.addPlatforms(platforms);
@@ -168,7 +189,7 @@ export function createGame({ canvasId = "game" } = {}) {
     const collectables = [
       ...createLevel1Collectables(),
       ...generateCoinsMixed(world, LEVEL1_COIN_COUNT, LEVEL1_COIN_RATIO_ABOVE),
-      ...generateCoinArcs(world, 6),
+      ...generateCoinArcs(world),
     ];
     world.addCollectables(collectables);
     placeHearts(world, LEVEL1_HEART_COUNT);
@@ -183,9 +204,9 @@ export function createGame({ canvasId = "game" } = {}) {
       LEVEL1_ENEMY3_COUNT
     );
 
-    const spawnX = 25;
+    const spawnX = PLAYER_SPAWN_X;
     const groundTop = world.baseGround ?? canvas.height;
-    const spawnY = Math.min(canvas.height * 0.5, groundTop - 200);
+    const spawnY = Math.min(canvas.height * PLAYER_SPAWN_HEIGHT_RATIO, groundTop - PLAYER_SPAWN_GROUND_OFFSET);
 
     player = new Player(
       spawnX,
@@ -233,18 +254,19 @@ export function createGame({ canvasId = "game" } = {}) {
     canvas.addEventListener("mousemove", updateSettingsPointer);
     canvas.addEventListener("mouseleave", clearSettingsPointer);
     canvas.addEventListener("click", handleMenuClick, true);
-    requestAnimationFrame(loop);
+    requestAnimationFrame(loopHighRes);
   }
 
-  function loop(t) {
-    if (!lastTime) lastTime = t;
-    const dt = Math.min((t - lastTime) / 1000, 0.05);
-    lastTime = t;
+  function loopHighRes(timeStamp) {
+    const msPerSecond = 1000;
+    if (!lastTimeHigh) lastTimeHigh = timeStamp;
+    const dt = Math.min((timeStamp - lastTimeHigh) / msPerSecond, MAX_FRAME_TIME);
+    lastTimeHigh = timeStamp;
 
     if (!isPaused) update(dt);
     draw();
     input.endFrame();
-    requestAnimationFrame(loop);
+    requestAnimationFrame(loopHighRes);
   }
 
   function update(dt) {
@@ -260,12 +282,12 @@ export function createGame({ canvasId = "game" } = {}) {
 
     player.update(dt, input);
     audio?.ensureVolume?.();
-    camera.follow(player, 0.08, dt);
+    camera.follow(player, CAMERA_FOLLOW_LERP, dt);
     background.update(camera.x, camera.y, dt);
 
     world.applyPlatformCollisions(player);
     player.handleLandingAudio?.();
-    world.collectables.forEach((c) => c.update(dt));
+    world.collectables.forEach((collectable) => collectable.update(dt));
     world.updateEnemies(dt, player);
     world.updateProjectiles(dt, world.enemies ?? []);
     world.updateHitEffects(dt);
@@ -274,19 +296,19 @@ export function createGame({ canvasId = "game" } = {}) {
 
     hud?.update(dt, player);
 
-    world.hudPopups = world.hudPopups.filter((p) => {
-      p.update(dt);
-      return p.opacity > 0;
+    world.hudPopups = world.hudPopups.filter((popup) => {
+      popup.update(dt);
+      return popup.opacity > 0;
     });
   }
 
   function checkCollectables() {
-    world.collectables = world.collectables.filter((c) => {
-      if (!c.collected && c.isColliding(player)) {
-        c.collect(player);
+    world.collectables = world.collectables.filter((collectable) => {
+      if (!collectable.collected && collectable.isColliding(player)) {
+        collectable.collect(player);
         return true;
       }
-      return !c.pickupAnimating || c.opacity > 0;
+      return !collectable.pickupAnimating || collectable.opacity > 0;
     });
   }
 
@@ -297,9 +319,9 @@ export function createGame({ canvasId = "game" } = {}) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     background.render(ctx, camera);
-    world.platforms.forEach((p) => p.render(ctx, camera));
-    world.collectables.forEach((c) => c.draw(ctx, camera));
-    world.hudPopups.forEach((p) => p.draw(ctx, camera));
+    world.platforms.forEach((platform) => platform.render(ctx, camera));
+    world.collectables.forEach((collectable) => collectable.draw(ctx, camera));
+    world.hudPopups.forEach((popup) => popup.draw(ctx, camera));
     world.renderProjectiles(ctx, camera);
     world.renderEnemies(ctx, camera);
     player.render(ctx, camera);
@@ -325,29 +347,29 @@ export function createGame({ canvasId = "game" } = {}) {
     }
   }
 
-  function renderLoading(t) {
+  function renderLoading(timeStamp) {
     if (!isLoading) return;
-    loadingAnimTime = t || 0;
+    loadingAnimTime = timeStamp || 0;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = "rgba(10, 16, 20, 0.85)";
+    ctx.fillStyle = LOADING_FILL_STYLE;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const canvasCenterX = canvas.width / 2;
     const canvasCenterY = canvas.height / 2;
     const radius = 40;
-    const angle = (loadingAnimTime / 500) % (Math.PI * 2);
-    ctx.lineWidth = 8;
-    ctx.strokeStyle = "rgba(0, 200, 200, 0.9)";
+    const spinnerAngle = (loadingAnimTime / LOADING_SPINNER_ROTATE_MS) % FULL_CIRCLE_RADIANS;
+    ctx.lineWidth = LOADING_STROKE_WIDTH;
+    ctx.strokeStyle = LOADING_STROKE_STYLE;
     ctx.beginPath();
-    ctx.arc(canvasCenterX, canvasCenterY, radius, angle, angle + Math.PI * 1.5);
+    ctx.arc(canvasCenterX, canvasCenterY, radius, spinnerAngle, spinnerAngle + LOADING_ARC_SWEEP);
     ctx.stroke();
 
-    ctx.fillStyle = "#e5f7ff";
-    ctx.font = "32px ComixLoud, sans-serif";
+    ctx.fillStyle = LOADING_TEXT_COLOR;
+    ctx.font = LOADING_FONT;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("Loading...", canvasCenterX, canvasCenterY + 80);
+    ctx.fillText("Loading...", canvasCenterX, canvasCenterY + LOADING_TEXT_OFFSET_Y);
 
     requestAnimationFrame(renderLoading);
   }
