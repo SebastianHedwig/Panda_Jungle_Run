@@ -1,12 +1,12 @@
 import { OverlayRenderer } from "./overlayBase.class.js";
 
 const DEFAULT_CONTROLS = [
-  { label: "Move", value: "A / D oder Pfeiltasten" },
-  { label: "Sprint", value: "Shift halten" },
-  { label: "Jump", value: "Leertaste" },
-  { label: "Slide", value: "Shift + S / Pfeil runter" },
+  { label: "Move", value: "A / D or Arrow keys" },
+  { label: "Sprint", value: "Hold Shift" },
+  { label: "Jump", value: "Space" },
+  { label: "Slide", value: "Shift + S / Arrow down" },
   { label: "Attack / Shoot", value: "Enter" },
-  { label: "Pause / Menu", value: "Escape oder Menu-Button" },
+  { label: "Pause / Menu", value: "Escape or Menu-Button" },
 ];
 
 export class ControlsOverlay {

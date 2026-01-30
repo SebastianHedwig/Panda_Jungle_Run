@@ -1,4 +1,28 @@
-﻿export class Platform {
+const SIDE_TRIMS = {
+  small:       { left: 0.25, right: 0.25 },
+  startLong:   { left: 0.10, right: 0.10 },
+  middleLong:  { left: 0.045, right: 0.045 },
+  endLong:     { left: 0.10, right: 0.10 },
+  startShort:  { left: 0.08, right: 0.04 },
+  middleShort: { left: 0.12, right: 0.12 },
+  endShort:    { left: 0.04, right: 0.08 },
+  filler:      { left: 0.08, right: 0.08 },
+};
+
+const DEFAULT_SIDE_TRIM = { left: 0.045, right: 0.045 };
+
+const CORNER_CUTS = {
+  small:     { left: 0.5, right: 0.5 },
+  startLong: { left: 0.5, right: 0.0 },
+  endLong:   { left: 0.0, right: 0.5 },
+};
+
+const DEFAULT_CORNER_CUT = { left: 0, right: 0 };
+
+const FULL_RATIO = 1; // 100% of the dimension
+const SIDE_WALL_GAP_RATIO = 0.30; // 30% of the collider height
+
+export class Platform {
   constructor(image, x, y, type = "generic") {
     this.img = image;
     this.x = x;
@@ -13,38 +37,23 @@
     this.supportsLanding = type !== "filler";
     this.hasSideWalls = true;
 
-    const typeSideTrims = {
-      small:       { left: 0.25, right: 0.25 },
-      startLong:   { left: 0.10, right: 0.10 },
-      middleLong:  { left: 0.045, right: 0.045 },
-      endLong:     { left: 0.10, right: 0.10 },
-      startShort:  { left: 0.08, right: 0.04 },
-      middleShort: { left: 0.12, right: 0.12 },
-      endShort:    { left: 0.04, right: 0.08 },
-      filler:      { left: 0.08, right: 0.08 }
-    };
-    const trims = typeSideTrims[type] || { left: 0.045, right: 0.045 };
+    const trims = SIDE_TRIMS[type] || DEFAULT_SIDE_TRIM;
     this.sideTrimLeft = trims.left;
     this.sideTrimRight = trims.right;
 
-    const typeCornerCuts = {
-      small:     { left: 0.5, right: 0.5 },
-      startLong: { left: 0.5, right: 0.0 },
-      endLong:   { left: 0.0, right: 0.5 },
-    };
-    const cuts = typeCornerCuts[type] || { left: 0, right: 0 };
+    const cuts = CORNER_CUTS[type] || DEFAULT_CORNER_CUT;
     this.cornerCutLeft = cuts.left;
     this.cornerCutRight = cuts.right;
 
     this.colliderOffset = Math.floor(this.height * this.decorRatio);
     this.colliderHeight = Math.floor(
-      this.height * (1 - this.decorRatio - this.bottomTrim)
+      this.height * (FULL_RATIO - this.decorRatio - this.bottomTrim)
     );
     this.colliderWidth = Math.floor(
-      this.width * (1 - this.sideTrimLeft - this.sideTrimRight)
+      this.width * (FULL_RATIO - this.sideTrimLeft - this.sideTrimRight)
     );
 
-    this.sideWallGap = Math.floor(this.colliderHeight * 0.30);
+    this.sideWallGap = Math.floor(this.colliderHeight * SIDE_WALL_GAP_RATIO);
 
     this.top = this.y + this.colliderOffset;
     this.bottom = this.top + this.colliderHeight;
@@ -57,7 +66,7 @@
       x: this.left,
       y: this.top,
       width: this.colliderWidth,
-      height: this.colliderHeight
+      height: this.colliderHeight,
     };
   }
 

@@ -14,7 +14,7 @@ const MOBILE_CONTROLS = [
   {
     icon: "./assets/icons/mobileControls/button-fast-forward-inactive.png",
     alt: "toggle Walk/Run",
-    value: "Walk / Run",
+    value: "Walk / Run (toggle)",
   },
   {
     icon: "./assets/icons/mobileControls/button-jump.png",

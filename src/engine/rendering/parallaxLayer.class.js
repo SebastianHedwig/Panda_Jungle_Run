@@ -14,20 +14,20 @@ export class ParallaxLayer {
   }
 
   render(ctx) {
-    const W = this.canvas.width;
-    const H = this.canvas.height;
-    const aspect = this.image.width / this.image.height;
+    const canvasWidth = this.canvas.width;
+    const canvasHeight = this.canvas.height;
+    const imageAspectRatio = this.image.width / this.image.height;
 
-    let drawW = W;
-    let drawH = W / aspect;
+    let drawW = canvasWidth;
+    let drawH = canvasWidth / imageAspectRatio;
 
-    if (drawH < H) {
-      drawH = H;
-      drawW = H * aspect;
+    if (drawH < canvasHeight) {
+      drawH = canvasHeight;
+      drawW = canvasHeight * imageAspectRatio;
     }
 
-    const startX = Math.floor(this.x % drawW);
-    ctx.drawImage(this.image, startX, Math.floor(this.y), drawW, drawH);
-    ctx.drawImage(this.image, startX + Math.floor(drawW), Math.floor(this.y), Math.floor(drawW), Math.floor(drawH));
+    const tileStartX = Math.floor(this.x % drawW); // Calculate starting X position for tiling
+    ctx.drawImage(this.image, tileStartX, Math.floor(this.y), drawW, drawH); // Draw first tile
+    ctx.drawImage(this.image, tileStartX + Math.floor(drawW), Math.floor(this.y), Math.floor(drawW), Math.floor(drawH)); // Draw second tile to cover gap
   }
 }

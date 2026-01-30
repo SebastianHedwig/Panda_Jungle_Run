@@ -55,11 +55,11 @@ export class MovableObject {
   }
 
   applyApexGravity(dt) {
-    const up = this.velocityY < 0;
-    const near = Math.abs(this.velocityY) < this.apexThreshold;
+    const isMovingUpwards = this.velocityY < 0;
+    const isNearApex = Math.abs(this.velocityY) < this.apexThreshold;
 
-    this.velocityY += (up ? this.gravityUp : this.gravityDown) * dt;
-    if (up && near) this.velocityY *= this.apexBoost;
+    this.velocityY += (isMovingUpwards ? this.gravityUp : this.gravityDown) * dt;
+    if (isMovingUpwards && isNearApex) this.velocityY *= this.apexBoost;
 
     this.y += this.velocityY * dt;
   }

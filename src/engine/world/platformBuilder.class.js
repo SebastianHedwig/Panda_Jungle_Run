@@ -4,10 +4,11 @@ export class PlatformBuilder {
   constructor(platformArray, sprites) {
     this.platforms = platformArray;
     this.sprites = sprites;
+    this.startLongOffset = 40;
   }
 
   /* ============================================================
-     BASIS-CALL – fügt EINE Plattform ein
+     BASE CALL – inserts ONE platform
      ============================================================ */
 
   add(type, x, y) {
@@ -17,10 +18,10 @@ export class PlatformBuilder {
   }
 
   /* ============================================================
-     PLATTFORM TEILE (Manuelles Levelbuilding)
+     PLATFORM PARTS (manual level building)
      ============================================================ */
 
-  startLong(x, y)  { return this.add("startLong", x + 40, y); }
+  startLong(x, y)  { return this.add("startLong", x + this.startLongOffset, y); }
   middleLong(x, y) { return this.add("middleLong", x, y); }
   endLong(x, y)    { return this.add("endLong", x, y); }
   startShort(x, y)  { return this.add("startShort", x, y); }
@@ -30,28 +31,28 @@ export class PlatformBuilder {
   filler(x, y) { return this.add("filler", x, y); }
 
   /* ============================================================
-     FREIE REIHEN – nur Middle-Elemente
+     FREE ROWS – only middle elements
      ============================================================ */
 
   row(x, y, count, type) {
     let offset = 0;
-    for (let i = 0; i < count; i++) {
+    for (let segmentIndex = 0; segmentIndex < count; segmentIndex++) {
       offset += this.add(type, x + offset, y);
     }
     return offset;
   }
 
   stackFiller(x, y, rows = 1, count = 1, width) {
-    const h = this.sprites.filler.height;
-    for (let c = 0; c < count; c++) {
-      for (let r = 0; r < rows; r++) {
-        this.filler(x + c * width, y + (r + 1) * h);
+    const fillerHeight = this.sprites.filler.height;
+    for (let columnIndex = 0; columnIndex < count; columnIndex++) {
+      for (let rowIndex = 0; rowIndex < rows; rowIndex++) {
+        this.filler(x + columnIndex * width, y + (rowIndex + 1) * fillerHeight);
       }
     }
   }
 
   /* ============================================================
-     VORGEFERTIGTE SEGMENTE – Levelbuilding in Sekunden
+     PREBUILT SEGMENTS – level building
      ============================================================ */
 
   islandSmall(x, y) {
@@ -59,17 +60,17 @@ export class PlatformBuilder {
   }
 
 
-  stairUp(x, y, steps = 3, h = 40, type = "middleLong") {
+  stairUp(x, y, steps = 3, stepHeight = 40, type = "middleLong") {
     let offset = 0;
-    for (let i = 0; i < steps; i++) {
-      offset += this.add(type, x + offset, y - i * h);
+    for (let stepIndex = 0; stepIndex < steps; stepIndex++) {
+      offset += this.add(type, x + offset, y - stepIndex * stepHeight);
     }
   }
 
-  stairDown(x, y, steps = 3, h = 40, type = "middleLong") {
+  stairDown(x, y, steps = 3, stepHeight = 40, type = "middleLong") {
     let offset = 0;
-    for (let i = 0; i < steps; i++) {
-      offset += this.add(type, x + offset, y + i * h);
+    for (let stepIndex = 0; stepIndex < steps; stepIndex++) {
+      offset += this.add(type, x + offset, y + stepIndex * stepHeight);
     }
   }
 }

@@ -1,15 +1,20 @@
+const CLOUD_SCALE_MIN = 0.1;
+const CLOUD_SCALE_MAX = 0.4;
+const CLOUD_PARALLAX_MIN = 0.02;
+const CLOUD_PARALLAX_MAX = 0.12;
+
 export class Cloud {
-  constructor(image, x, y, speed) {
+  constructor(image, x, y, horizontalSpeed) {
     this.image = image;
     this.x = x;
     this.y = y;
-    this.speed = speed;
-    this.scale = Math.random() * 0.3 + 0.1;
-    this.parallax = Math.random() * 0.1 + 0.02;
+    this.horizontalSpeed = horizontalSpeed;
+    this.scale = Math.random() * (CLOUD_SCALE_MAX - CLOUD_SCALE_MIN) + CLOUD_SCALE_MIN;
+    this.parallax = Math.random() * (CLOUD_PARALLAX_MAX - CLOUD_PARALLAX_MIN) + CLOUD_PARALLAX_MIN;
   }
 
   update(dt, cameraX) {
-    this.x -= this.speed * dt;
+    this.x -= this.horizontalSpeed * dt;
     this.screenX = this.x - cameraX * this.parallax;
   }
 
