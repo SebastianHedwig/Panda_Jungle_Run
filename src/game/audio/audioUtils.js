@@ -25,23 +25,31 @@ export function createAudioElement(
   return audioElement;
 }
 
-export function playWhenReady(audio, { beforePlay, onMetadata } = {}) {
-  if (!audio) return;
+function addMetadataListenerIfNeeded(audio, onMetadata) {
+  if (typeof onMetadata !== "function") return;
+  audio.addEventListener("loadedmetadata", onMetadata, { once: true });
+}
 
-  if (typeof onMetadata === "function") {
-    audio.addEventListener("loadedmetadata", onMetadata, { once: true });
-  }
-
-  const startAudio = () => {
+function createStartAudioHandler(audio, beforePlay) {
+  return () => {
     beforePlay?.();
     audio.play();
   };
+}
 
+function startAudioWhenReady(audio, startAudio) {
   if (audio.readyState >= 2) { // readyState >= 2 => HAVE_CURRENT_DATA, can start immediately
     startAudio();
-  } else {
-    audio.addEventListener("canplaythrough", startAudio, { once: true });
-    audio.addEventListener("loadeddata", startAudio, { once: true });
-    audio.load();
+    return;
   }
+  audio.addEventListener("canplaythrough", startAudio, { once: true });
+  audio.addEventListener("loadeddata", startAudio, { once: true });
+  audio.load();
+}
+
+export function playWhenReady(audio, { beforePlay, onMetadata } = {}) {
+  if (!audio) return;
+  addMetadataListenerIfNeeded(audio, onMetadata);
+  const startAudio = createStartAudioHandler(audio, beforePlay);
+  startAudioWhenReady(audio, startAudio);
 }

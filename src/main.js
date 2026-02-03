@@ -11,10 +11,15 @@ import { setupMobileControls } from "./app/ui/controls/mobileControls.js";
 const audioTracking = installAudioTracking({ initiallyMuted: MUTE_TOGGLE_GAMESTART });
 
 setupSoundToggle({ audioTracking, initialMuted: MUTE_TOGGLE_GAMESTART });
+
 togglePauseState({ getPaused, setPaused });
+
 setupFullscreenToggle();
+
 applyAutoFullscreen({ enabled: SET_FULLSCREEN });
+
 window.addEventListener("resize", () => applyAutoFullscreen({ enabled: SET_FULLSCREEN }));
+
 setupMobileControls();
 
 new ViewportManagement({ setPaused, getPaused });

@@ -23,37 +23,48 @@ export class DizzyEffect {
 
   update(dt) {
     if (this.isFinished) return;
+    this.advanceFrameTime(dt);
+    this.applyFloat(dt);
+    this.advanceFrameIfNeeded();
+  }
 
+  advanceFrameTime(dt) {
     this.frameElapsed += dt;
+  }
+
+  applyFloat(dt) {
     this.y += this.floatSpeed * dt;
+  }
 
-    if (this.frameElapsed >= this.frameDuration) {
-      this.frameElapsed = 0;
-      this.currentFrameIndex++;
+  advanceFrameIfNeeded() {
+    if (this.frameElapsed >= this.frameDuration) this.advanceFrame();
+  }
 
-      if (this.currentFrameIndex >= this.frames.length) {
-        this.currentFrameIndex = 0;
-        this.completedLoops++;
-        if (this.completedLoops >= this.maxLoops) {
-          this.isFinished = true;
-          return;
-        }
-      }
-    }
+  advanceFrame() {
+    this.frameElapsed = 0;
+    this.currentFrameIndex++;
+    if (this.currentFrameIndex >= this.frames.length) this.handleCompletedLoop();
+  }
+
+  handleCompletedLoop() {
+    this.currentFrameIndex = 0;
+    this.completedLoops++;
+    if (this.completedLoops >= this.maxLoops) this.isFinished = true;
   }
 
   render(ctx, camera) {
     if (this.isFinished) return;
-    const img = this.frames[this.currentFrameIndex];
+    const img = this.getCurrentFrame();
     if (!img) return;
+    this.drawFrame(ctx, camera, img);
+  }
 
+  getCurrentFrame() {
+    return this.frames[this.currentFrameIndex];
+  }
+
+  drawFrame(ctx, camera, img) {
     const size = BASE_SPRITE_SIZE * this.scaleFactor;
-    ctx.drawImage(
-      img,
-      this.x - camera.x - size / 2,
-      this.y - camera.y - size / 2,
-      size,
-      size
-    );
+    ctx.drawImage(img, this.x - camera.x - size / 2, this.y - camera.y - size / 2, size, size);
   }
 }

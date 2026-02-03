@@ -47,41 +47,53 @@ export class BulletAudio {
 
   playImpact() {
     const audio = this.nextImpactAudio();
+    const fadeConfig = this.getImpactFadeConfig();
+    const stopAndResetImpact = () => this.stopAndResetImpactAudio(audio);
+    const startImpact = () => this.scheduleImpactTimers(audio, stopAndResetImpact, fadeConfig);
+    playWhenReady(audio, { beforePlay: startImpact });
+  }
 
-    const stopAndResetImpact = () => {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.volume = this.volume;
+  stopAndResetImpactAudio(audio) {
+    audio.pause();
+    audio.currentTime = 0;
+    audio.volume = this.volume;
+  }
+
+  getImpactFadeConfig() {
+    const impactTotalMs = this.impactDurationMs;
+    const fadeOutDurationMs = Math.max(0, Math.min(this.fadeOutMs, impactTotalMs));
+    const fadeStartMs = Math.max(0, impactTotalMs - fadeOutDurationMs);
+    return { impactTotalMs, fadeOutDurationMs, fadeStartMs };
+  }
+
+  scheduleImpactTimers(audio, stopAndResetImpact, fadeConfig) {
+    let fadeIntervalId = null;
+    const startFade = () => {
+      fadeIntervalId = this.startFadeOut(audio, fadeConfig.fadeOutDurationMs);
     };
+    setTimeout(startFade, fadeConfig.fadeStartMs);
+    setTimeout(
+      () => this.finishImpact(fadeIntervalId, stopAndResetImpact),
+      fadeConfig.impactTotalMs
+    );
+  }
 
-    const start = () => {
-      const impactTotalMs = this.impactDurationMs;
-      const fadeOutDurationMs = Math.max(0, Math.min(this.fadeOutMs, impactTotalMs));
-      const fadeStartMs = Math.max(0, impactTotalMs - fadeOutDurationMs);
-      let fadeIntervalId = null;
+  startFadeOut(audio, fadeOutDurationMs) {
+    if (fadeOutDurationMs <= 0) return null;
+    const loudnessStepMs = 50;
+    let elapsedMs = 0;
+    const fadeIntervalId = setInterval(() => {
+      elapsedMs += loudnessStepMs;
+      const fadeProgress = Math.min(elapsedMs / fadeOutDurationMs, 1); // 0..1 volume blend
+      audio.volume = this.volume * (1 - fadeProgress);
+      if (fadeProgress >= 1) clearInterval(fadeIntervalId);
+    }, loudnessStepMs);
+    return fadeIntervalId;
+  }
 
-      const startFade = () => {
-        if (fadeOutDurationMs <= 0) return;
-        const loudnessStepMs = 50;
-        let elapsedMs = 0;
-        fadeIntervalId = setInterval(() => {
-          elapsedMs += loudnessStepMs;
-          const fadeProgress = Math.min(elapsedMs / fadeOutDurationMs, 1); // 0..1 volume blend
-          audio.volume = this.volume * (1 - fadeProgress);
-          if (fadeProgress >= 1) {
-            clearInterval(fadeIntervalId);
-          }
-        }, loudnessStepMs);
-      };
-
-      setTimeout(startFade, fadeStartMs);
-      setTimeout(() => {
-        if (fadeIntervalId) clearInterval(fadeIntervalId);
-        stopAndResetImpact();
-      }, impactTotalMs);
-    };
-
-    playWhenReady(audio, { beforePlay: start });
+  finishImpact(fadeIntervalId, stopAndResetImpact) {
+    if (fadeIntervalId) clearInterval(fadeIntervalId);
+    stopAndResetImpact();
   }
 
   getWarmupAudios() {
