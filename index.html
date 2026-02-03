@@ -17,30 +17,31 @@
         <canvas id="game" class="canvas"></canvas>
 
         <div class="mobile-control-container mobile-control-container-left">
-            <button class="mobile-control-button" type="button">
+            <button class="mobile-control-button" type="button" data-control="left">
                 <img src="./assets/icons/mobileControls/arrow-backward.png" alt="Nach links">
             </button>
             <button
                 class="mobile-control-button mobile-control-button--fast-forward mobile-control-button--no-scale"
                 type="button"
+                data-control="fast-forward"
                 data-src-inactive="./assets/icons/mobileControls/button-fast-forward-inactive.png"
                 data-src-active="./assets/icons/mobileControls/button-fast-forward.active.png"
             >
                 <img id="mobile-fast-forward-icon" src="./assets/icons/mobileControls/button-fast-forward-inactive.png" alt="Sprinten">
             </button>
-            <button class="mobile-control-button" type="button">
+            <button class="mobile-control-button" type="button" data-control="right">
                 <img src="./assets/icons/mobileControls/arrow-forward.png" alt="Nach rechts">
             </button>
         </div>
 
         <div class="mobile-control-container mobile-control-container-right">
-            <button class="mobile-control-button" type="button">
+            <button class="mobile-control-button" type="button" data-control="attack">
                 <img src="./assets/icons/mobileControls/button-attack.png" alt="Angriff">
             </button>
-            <button class="mobile-control-button" type="button">
+            <button class="mobile-control-button" type="button" data-control="jump">
                 <img src="./assets/icons/mobileControls/button-jump.png" alt="Springen">
             </button>
-            <button class="mobile-control-button" type="button">
+            <button class="mobile-control-button" type="button" data-control="slide">
                 <img src="./assets/icons/mobileControls/button-slide.png" alt="Rutschen">
             </button>
         </div>

@@ -23,44 +23,53 @@ const IMPRESSUM_PARAGRAPHS = [
   "Imprint from WebsiteWissen.com, the guide for WordPress websites, WordPress hosting, and website costs, based on a template by Kanzlei Hasselbach Rechtsanwälte.",
 ];
 
+const IMPRESSUM_LINK_TEXT = "Click here";
+
 const impressumScreenBase = new LegalScreenBase({
   title: "Legal Notice",
   paragraphs: IMPRESSUM_PARAGRAPHS,
 });
 
+const getImpressumLinkParts = (lineEntry, linkText) => {
+  const before = lineEntry.text.split(linkText)[0];
+  const after = lineEntry.text.substring(lineEntry.text.indexOf(linkText) + linkText.length);
+  return { before, after };
+};
+
+const measureImpressumLink = (renderCtx, before, linkText) => {
+  const beforeWidth = renderCtx.measureText(before).width;
+  const linkWidth = renderCtx.measureText(linkText).width;
+  return { beforeWidth, linkWidth };
+};
+
+const drawImpressumLink = ({ renderCtx, position, fonts, before, after, beforeWidth, linkText, linkWidth }) => {
+  renderCtx.fillText(before, position.x, position.y);
+  renderCtx.save();
+  renderCtx.font = `bold ${fonts.bodyFontSize}px sans-serif`;
+  renderCtx.fillText(linkText, position.x + beforeWidth, position.y);
+  renderCtx.restore();
+  if (after?.length) {
+    renderCtx.fillText(after, position.x + beforeWidth + linkWidth, position.y);
+  }
+};
+
+const createImpressumLinkBounds = ({ position, beforeWidth, linkWidth, lineHeight }) => ({
+  x: position.x + beforeWidth,
+  y: position.y,
+  w: linkWidth,
+  h: lineHeight,
+});
+
+const renderImpressumLink = ({ ctx: renderCtx, lineEntry, lineHeight, position, fonts }) => {
+  const linkText = IMPRESSUM_LINK_TEXT;
+  const isLink = lineEntry.text.includes(linkText);
+  if (!isLink) return null;
+  const { before, after } = getImpressumLinkParts(lineEntry, linkText);
+  const { beforeWidth, linkWidth } = measureImpressumLink(renderCtx, before, linkText);
+  drawImpressumLink({ renderCtx, position, fonts, before, after, beforeWidth, linkText, linkWidth });
+  return { handled: true, linkBounds: createImpressumLinkBounds({ position, beforeWidth, linkWidth, lineHeight }) };
+};
+
 export function renderImpressumScreen({ ctx, canvas, scroll = 0 }) {
-  return impressumScreenBase.render({
-    ctx,
-    canvas,
-    scroll,
-    onLineRender: ({ ctx: renderCtx, lineEntry, lineHeight, position, fonts }) => {
-      const linkText = "Click here";
-      const isLink = lineEntry.text.includes(linkText);
-      if (!isLink) return null;
-
-      const before = lineEntry.text.split(linkText)[0];
-      const after = lineEntry.text.substring(lineEntry.text.indexOf(linkText) + linkText.length);
-      const beforeWidth = renderCtx.measureText(before).width;
-      const linkWidth = renderCtx.measureText(linkText).width;
-
-      renderCtx.fillText(before, position.x, position.y);
-      renderCtx.save();
-      renderCtx.font = `bold ${fonts.bodyFontSize}px sans-serif`;
-      renderCtx.fillText(linkText, position.x + beforeWidth, position.y);
-      renderCtx.restore();
-      if (after?.length) {
-        renderCtx.fillText(after, position.x + beforeWidth + linkWidth, position.y);
-      }
-
-      return {
-        handled: true,
-        linkBounds: {
-          x: position.x + beforeWidth,
-          y: position.y,
-          w: linkWidth,
-          h: lineHeight,
-        },
-      };
-    },
-  });
+  return impressumScreenBase.render({ ctx, canvas, scroll, onLineRender: renderImpressumLink });
 }

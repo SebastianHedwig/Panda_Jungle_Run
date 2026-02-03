@@ -2,6 +2,7 @@ import { LegalScreenBase } from "./legalScreenBase.class.js";
 
 const PRIVACY_PARAGRAPHS = [
   "1. Data Protection at a Glance",
+  "",
   "General Information",
   "The following information provides a simple overview of what happens to your personal data when you visit this website. Personal data is any data by which you can be personally identified. Detailed information on the subject of data protection can be found in our privacy policy listed below this text.",
   "",
@@ -18,6 +19,7 @@ const PRIVACY_PARAGRAPHS = [
   "You can contact us at any time with questions about this or other data protection issues.",
   "",
   "2. General Information and Mandatory Information",
+  "",
   "Data Protection",
   "The operators of these pages take the protection of your personal data very seriously. We treat your personal data confidentially and in accordance with statutory data protection regulations and this privacy policy.",
   "",

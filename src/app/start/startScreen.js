@@ -36,252 +36,306 @@ const BUTTON_SHADOW_COLOR = "rgba(255,255,255,0.7)";
 const BUTTON_SHADOW_BLUR = 14;
 const BUTTON_SHADOW_OFFSET_Y = 2;
 
-export function setupStartScreen({ canvasId = "game", onStart } = {}) {
+const getCanvasAndContext = (canvasId) => {
   const canvas = document.getElementById(canvasId);
   const ctx = canvas?.getContext("2d");
-  if (!canvas || !ctx) return;
+  if (!canvas || !ctx) return null;
+  return { canvas, ctx };
+};
 
-  mobileAudioUnlock.bind();
-
-  const autoStart = (() => {
-    try {
-      return window.localStorage?.getItem?.(AUTOSTART_KEY) === "1"; // "1" = simple Autostart-Flag set by handleRetry().
-    } catch (_err) {
-      return false;
-    }
-  })();
-  if (autoStart) {
-    try {window.localStorage?.removeItem?.(AUTOSTART_KEY);
-    } catch (_err) {}
-    onStart?.();
-    return;
+const getAutoStartFlag = () => {
+  try {
+    return window.localStorage?.getItem?.(AUTOSTART_KEY) === "1"; // "1" = simple Autostart-Flag set by handleRetry().
+  } catch (_err) {
+    return false;
   }
+};
 
-  const settingsToggle = document.getElementById("settings-toggle");
-  const settingsLabel = settingsToggle?.querySelector(".hud-label");
-  const settingsIcon = settingsToggle?.querySelector("img");
-  const defaultSettingsLabel = settingsLabel?.textContent ?? "settings";
-  const settingsIconDefaultSrc = SETTINGS_ICON_DEFAULT_SRC;
-  const settingsIconControllerSrc = SETTINGS_ICON_CONTROLLER_SRC;
+const clearAutoStartFlag = () => {
+  try {
+    window.localStorage?.removeItem?.(AUTOSTART_KEY);
+  } catch (_err) {}
+};
+
+const handleAutoStart = (onStart) => {
+  const autoStart = getAutoStartFlag();
+  if (!autoStart) return false;
+  clearAutoStartFlag();
+  onStart?.();
+  return true;
+};
+
+const applySettingsToggleDefaults = ({ settingsLabel, settingsToggle, settingsIcon, settingsIconControllerSrc }) => {
   if (settingsLabel) settingsLabel.textContent = "controls";
   settingsToggle?.classList.remove("settings-toggle--spin");
   if (settingsIcon) {
     settingsIcon.src = settingsIconControllerSrc;
     settingsIcon.alt = "Settings";
   }
+};
 
-  const controlsOverlayDesktop = new ControlsOverlay({ showBackButton: false });
-  const controlsOverlayMobile = new ControlsOverlayMobile({ showBackButton: false });
-  controlsOverlayDesktop.setOnIconLoad?.(() => drawStartScreen());
-  controlsOverlayMobile.setOnIconLoad?.(() => drawStartScreen());
+const getSettingsContext = () => {
+  const settingsToggle = document.getElementById("settings-toggle");
+  const settingsLabel = settingsToggle?.querySelector(".hud-label");
+  const settingsIcon = settingsToggle?.querySelector("img");
+  const defaultSettingsLabel = settingsLabel?.textContent ?? "settings";
+  const settingsIconDefaultSrc = SETTINGS_ICON_DEFAULT_SRC;
+  const settingsIconControllerSrc = SETTINGS_ICON_CONTROLLER_SRC;
+  applySettingsToggleDefaults({ settingsLabel, settingsToggle, settingsIcon, settingsIconControllerSrc });
+  return { settingsToggle, settingsLabel, settingsIcon, defaultSettingsLabel, settingsIconDefaultSrc, settingsIconControllerSrc };
+};
 
-  const impressumLink = document.querySelector(".impressum");
-  const privacyPolicyLink = document.querySelector(".privacyPolicy");
-  const startScreenState = {
-    startScreenActive: true,
-    startButtonBounds: null,
-    startButtonHover: false,
-    settingsOpen: false,
-    startAssets: null,
-    legalPage: null, // "impressum" | "privacy" | null
-    legalScroll: 0,
-    legalMaxScroll: 0,
-    legalReturnHover: false,
-    touchScrollStartY: null,
-    impressumLinkBounds: null,
-    legalReturnBounds: null,
-  };
+const createControlsOverlays = () => ({
+  controlsOverlayDesktop: new ControlsOverlay({ showBackButton: false }),
+  controlsOverlayMobile: new ControlsOverlayMobile({ showBackButton: false }),
+});
 
-  const getActiveControlsOverlay = () => {
-    const container = document.getElementById("game-container");
-    const useMobile = container?.classList?.contains("auto-fullscreen");
-    return useMobile ? controlsOverlayMobile : controlsOverlayDesktop;
-  };
+const createActiveControlsOverlayGetter = ({ controlsOverlayDesktop, controlsOverlayMobile }) => () => {
+  const container = document.getElementById("game-container");
+  const useMobile = container?.classList?.contains("auto-fullscreen");
+  return useMobile ? controlsOverlayMobile : controlsOverlayDesktop;
+};
 
-  const { start: startMenuMusic, stop: stopMenuMusic } = startMusicController;
+const createStartScreenState = () => ({
+  startScreenActive: true,
+  startButtonBounds: null,
+  startButtonHover: false,
+  settingsOpen: false,
+  startAssets: null,
+  legalPage: null, // "impressum" | "privacy" | null
+  legalScroll: 0,
+  legalMaxScroll: 0,
+  legalReturnHover: false,
+  touchScrollStartY: null,
+  impressumLinkBounds: null,
+  legalReturnBounds: null,
+});
 
-  startMenuMusic();
+const getLegalRenderer = (legalPage) =>
+  legalPage === "impressum" ? renderImpressumScreen : legalPage === "privacy" ? renderPrivacyPolicyScreen : null;
 
-  const drawLegalPage = () => {
-    const isImpressum = startScreenState.legalPage === "impressum";
-    const renderer =
-      startScreenState.legalPage === "impressum"
-        ? renderImpressumScreen
-        : startScreenState.legalPage === "privacy"
-        ? renderPrivacyPolicyScreen
-        : null;
+const resetLegalBounds = (startScreenState) => {
+  startScreenState.impressumLinkBounds = null;
+  startScreenState.legalReturnBounds = null;
+};
 
-    startScreenState.impressumLinkBounds = null;
-    startScreenState.legalReturnBounds = null;
-    if (!renderer) return;
+const applyLegalRenderResult = ({ renderResult, startScreenState, isImpressum }) => {
+  const { maxScroll, closeTextBounds, linkBounds } = renderResult;
+  startScreenState.legalMaxScroll = maxScroll;
+  startScreenState.legalScroll = Math.min(startScreenState.legalScroll, startScreenState.legalMaxScroll);
+  if (isImpressum) startScreenState.impressumLinkBounds = linkBounds || null;
+  return closeTextBounds;
+};
 
-    const { maxScroll, closeTextBounds, linkBounds } = renderer({
-      ctx,
-      canvas,
-      scroll: startScreenState.legalScroll,
-    });
-    startScreenState.legalMaxScroll = maxScroll;
-    startScreenState.legalScroll = Math.min(startScreenState.legalScroll, startScreenState.legalMaxScroll);
-    if (isImpressum) startScreenState.impressumLinkBounds = linkBounds || null;
+const getLegalReturnScale = (startScreenState) =>
+  startScreenState.legalReturnHover ? LEGAL_RETURN_HOVER_SCALE : 1;
 
-    const drawClose = (closeTextBounds) => {
-      ctx.font = `bold ${closeTextBounds.fontSize}px sans-serif`;
-      ctx.fillStyle = startScreenState.legalReturnHover ? LEGAL_RETURN_HOVER_COLOR : LEGAL_RETURN_COLOR;
-      ctx.textAlign = "left";
-      ctx.textBaseline = "top";
-      ctx.save();
-      const scale = startScreenState.legalReturnHover ? LEGAL_RETURN_HOVER_SCALE : 1;
-      ctx.translate(closeTextBounds.x, closeTextBounds.y);
-      ctx.scale(scale, scale);
-      ctx.fillText(closeTextBounds.text, 0, 0);
-      ctx.restore();
-      const returnTextWidth = ctx.measureText(closeTextBounds.text).width;
-      startScreenState.legalReturnBounds = {
-        x: closeTextBounds.x,
-        y: closeTextBounds.y,
-        w: returnTextWidth,
-        h: closeTextBounds.h,
-      };
-    };
+const drawScaledCloseText = ({ ctx, closeTextBounds, scale }) => {
+  ctx.save();
+  ctx.translate(closeTextBounds.x, closeTextBounds.y);
+  ctx.scale(scale, scale);
+  ctx.fillText(closeTextBounds.text, 0, 0);
+  ctx.restore();
+};
 
-    if (closeTextBounds) drawClose(closeTextBounds);
-  };
+const getLegalReturnBounds = (ctx, closeTextBounds) => {
+  const returnTextWidth = ctx.measureText(closeTextBounds.text).width;
+  return { x: closeTextBounds.x, y: closeTextBounds.y, w: returnTextWidth, h: closeTextBounds.h };
+};
 
-  const drawStartScreen = () => {
-    if (!startScreenState.startAssets) return;
+const drawLegalCloseText = ({ ctx, closeTextBounds, startScreenState }) => {
+  if (!closeTextBounds) return;
+  ctx.font = `bold ${closeTextBounds.fontSize}px sans-serif`;
+  ctx.fillStyle = startScreenState.legalReturnHover ? LEGAL_RETURN_HOVER_COLOR : LEGAL_RETURN_COLOR;
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  const scale = getLegalReturnScale(startScreenState);
+  drawScaledCloseText({ ctx, closeTextBounds, scale });
+  startScreenState.legalReturnBounds = getLegalReturnBounds(ctx, closeTextBounds);
+};
 
-    canvas.width = GAME_WIDTH;
-    canvas.height = GAME_HEIGHT;
-    const canvasCenterX = canvas.width / 2;
+const createDrawLegalPage = ({ ctx, canvas, startScreenState }) => () => {
+  const isImpressum = startScreenState.legalPage === "impressum";
+  const renderer = getLegalRenderer(startScreenState.legalPage);
+  resetLegalBounds(startScreenState);
+  if (!renderer) return;
+  const renderResult = renderer({ ctx, canvas, scroll: startScreenState.legalScroll });
+  const closeTextBounds = applyLegalRenderResult({ renderResult, startScreenState, isImpressum });
+  drawLegalCloseText({ ctx, closeTextBounds, startScreenState });
+};
 
-    const { bg, ui } = startScreenState.startAssets;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+const prepareStartScreenCanvas = (canvas, ctx) => {
+  canvas.width = GAME_WIDTH;
+  canvas.height = GAME_HEIGHT;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  return canvas.width / 2;
+};
 
-    const scale = Math.max(canvas.width / bg.width, canvas.height / bg.height);
-    const drawW = bg.width * scale;
-    const drawH = bg.height * scale;
-    const bgDrawX = (canvas.width - drawW) / 2;
-    const bgDrawY = (canvas.height - drawH) / 2;
-    ctx.drawImage(bg, bgDrawX, bgDrawY, drawW, drawH);
+const drawBackgroundImage = ({ ctx, canvas, bg }) => {
+  const scale = Math.max(canvas.width / bg.width, canvas.height / bg.height);
+  const drawW = bg.width * scale;
+  const drawH = bg.height * scale;
+  const bgDrawX = (canvas.width - drawW) / 2;
+  const bgDrawY = (canvas.height - drawH) / 2;
+  ctx.drawImage(bg, bgDrawX, bgDrawY, drawW, drawH);
+};
 
-    const title = "Panda Jungle Run";
-    ctx.font = `small-caps ${Math.min(TITLE_MAX_FONT_SIZE, canvas.width * TITLE_FONT_SCALE)}px "ComixLoud", sans-serif`;
-    ctx.fillStyle = TITLE_FILL_COLOR;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.shadowColor = TITLE_SHADOW_COLOR;
-    ctx.shadowBlur = TITLE_SHADOW_BLUR;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = TITLE_SHADOW_OFFSET_Y;
-    ctx.lineWidth = TITLE_STROKE_WIDTH;
-    ctx.strokeStyle = TITLE_STROKE_COLOR;
-    ctx.strokeText(title, canvasCenterX, canvas.height * TITLE_Y_RATIO);
-    ctx.fillText(title, canvasCenterX, canvas.height * TITLE_Y_RATIO);
-    ctx.shadowBlur = 0;
+const applyTitleStyles = ({ ctx, canvas }) => {
+  ctx.font = `small-caps ${Math.min(TITLE_MAX_FONT_SIZE, canvas.width * TITLE_FONT_SCALE)}px "ComixLoud", sans-serif`;
+  ctx.fillStyle = TITLE_FILL_COLOR;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.shadowColor = TITLE_SHADOW_COLOR;
+  ctx.shadowBlur = TITLE_SHADOW_BLUR;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = TITLE_SHADOW_OFFSET_Y;
+  ctx.lineWidth = TITLE_STROKE_WIDTH;
+  ctx.strokeStyle = TITLE_STROKE_COLOR;
+};
 
-    if (startScreenState.legalPage) {
-      startScreenState.startButtonBounds = null;
-      drawLegalPage();
-      return;
-    }
+const drawStartTitle = ({ ctx, canvas, canvasCenterX }) => {
+  const title = "Panda Jungle Run";
+  applyTitleStyles({ ctx, canvas });
+  ctx.strokeText(title, canvasCenterX, canvas.height * TITLE_Y_RATIO);
+  ctx.fillText(title, canvasCenterX, canvas.height * TITLE_Y_RATIO);
+  ctx.shadowBlur = 0;
+};
 
-    const startButtonSprite = START_BUTTON_SPRITE;
-    const buttonWidth = Math.min(canvas.width * START_BUTTON_WIDTH_RATIO, START_BUTTON_MAX_WIDTH);
-    const buttonHeight = (startButtonSprite.h / startButtonSprite.w) * buttonWidth;
-    const baseCenterX = (canvas.width - buttonWidth) / 2 + buttonWidth / 2;
-    const baseCenterY = canvas.height * START_BUTTON_BASE_Y_RATIO + START_BUTTON_Y_OFFSET + buttonHeight / 2;
-    const hoverScale = startScreenState.startButtonHover ? START_BUTTON_HOVER_SCALE : 1;
-    const buttonWidthScaled = buttonWidth * hoverScale;
-    const buttonHeightScaled = buttonHeight * hoverScale;
-    const buttonDrawX = baseCenterX - buttonWidthScaled / 2;
-    const buttonDrawY = baseCenterY - buttonHeightScaled / 2;
+const getStartButtonDimensions = (canvas) => {
+  const buttonWidth = Math.min(canvas.width * START_BUTTON_WIDTH_RATIO, START_BUTTON_MAX_WIDTH);
+  const buttonHeight = (START_BUTTON_SPRITE.h / START_BUTTON_SPRITE.w) * buttonWidth;
+  return { buttonWidth, buttonHeight };
+};
 
-    ctx.save();
-    ctx.shadowColor = BUTTON_SHADOW_COLOR;
-    ctx.shadowBlur = BUTTON_SHADOW_BLUR;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = BUTTON_SHADOW_OFFSET_Y;
-    ctx.drawImage(
-      ui,
-      startButtonSprite.x,
-      startButtonSprite.y,
-      startButtonSprite.w,
-      startButtonSprite.h,
-      buttonDrawX,
-      buttonDrawY,
-      buttonWidthScaled,
-      buttonHeightScaled
-    );
-    ctx.restore();
+const getStartButtonBaseCenter = (canvas, buttonWidth, buttonHeight) => {
+  const baseCenterX = (canvas.width - buttonWidth) / 2 + buttonWidth / 2;
+  const baseCenterY = canvas.height * START_BUTTON_BASE_Y_RATIO + START_BUTTON_Y_OFFSET + buttonHeight / 2;
+  return { baseCenterX, baseCenterY };
+};
 
-    startScreenState.startButtonBounds = {
-      x: buttonDrawX,
-      y: buttonDrawY,
-      w: buttonWidthScaled,
-      h: buttonHeightScaled,
-    };
+const getScaledButtonRect = ({ baseCenterX, baseCenterY, buttonWidth, buttonHeight, hoverScale }) => {
+  const buttonWidthScaled = buttonWidth * hoverScale;
+  const buttonHeightScaled = buttonHeight * hoverScale;
+  const buttonDrawX = baseCenterX - buttonWidthScaled / 2;
+  const buttonDrawY = baseCenterY - buttonHeightScaled / 2;
+  return { buttonDrawX, buttonDrawY, buttonWidthScaled, buttonHeightScaled };
+};
 
-    if (startScreenState.settingsOpen && startScreenState.startAssets.menuBg) {
-      const overlay = getActiveControlsOverlay();
-      overlay.setAssets({ bgImage: startScreenState.startAssets.menuBg, uiImage: startScreenState.startAssets.ui });
-      overlay.render(ctx, canvas);
-      setOverlayActive(true);
-    }
-  };
+const applyButtonShadow = (ctx) => {
+  ctx.shadowColor = BUTTON_SHADOW_COLOR;
+  ctx.shadowBlur = BUTTON_SHADOW_BLUR;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = BUTTON_SHADOW_OFFSET_Y;
+};
 
-  const showLegalPage = (page) => {
-    startScreenState.legalPage = page;
-    startScreenState.legalScroll = 0;
-    startScreenState.legalMaxScroll = 0;
-    startScreenState.impressumLinkBounds = null;
-    startScreenState.legalReturnBounds = null;
-    startScreenState.settingsOpen = false;
-    startScreenState.startButtonHover = false;
-    setOverlayActive(false);
-    canvas.style.cursor = "pointer";
-    startScreenState.legalReturnHover = false;
-    drawStartScreen();
-  };
+const drawButtonSpriteImage = ({ ctx, ui, startButtonSprite, buttonDrawX, buttonDrawY, buttonWidthScaled, buttonHeightScaled }) =>
+  ctx.drawImage(
+    ui,
+    startButtonSprite.x,
+    startButtonSprite.y,
+    startButtonSprite.w,
+    startButtonSprite.h,
+    buttonDrawX,
+    buttonDrawY,
+    buttonWidthScaled,
+    buttonHeightScaled
+  );
 
-  const {
-    handleClick,
-    handleMove,
-    handleLeave,
-    handleSettingsClick,
-    handleKeyDown,
-    handleWheel,
-    handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
-  } = createStartScreenHandlers({
-    canvas,
-    settingsToggle,
-    settingsLabel,
-    settingsIcon,
-    defaultSettingsLabel,
-    settingsIconDefaultSrc,
-    getActiveControlsOverlay,
-    drawStartScreen,
-    showLegalPage,
-    stopMenuMusic,
-    onStart,
-    mobileAudioUnlock,
-    state: startScreenState,
-  });
+const drawStartButtonSprite = ({ ctx, ui, startButtonSprite, buttonDrawX, buttonDrawY, buttonWidthScaled, buttonHeightScaled }) => {
+  ctx.save();
+  applyButtonShadow(ctx);
+  drawButtonSpriteImage({ ctx, ui, startButtonSprite, buttonDrawX, buttonDrawY, buttonWidthScaled, buttonHeightScaled });
+  ctx.restore();
+};
 
+const createStartButtonBounds = ({ buttonDrawX, buttonDrawY, buttonWidthScaled, buttonHeightScaled }) => ({
+  x: buttonDrawX,
+  y: buttonDrawY,
+  w: buttonWidthScaled,
+  h: buttonHeightScaled,
+});
+
+const drawStartButton = ({ ctx, canvas, ui, startScreenState }) => {
+  const startButtonSprite = START_BUTTON_SPRITE;
+  const { buttonWidth, buttonHeight } = getStartButtonDimensions(canvas);
+  const { baseCenterX, baseCenterY } = getStartButtonBaseCenter(canvas, buttonWidth, buttonHeight);
+  const hoverScale = startScreenState.startButtonHover ? START_BUTTON_HOVER_SCALE : 1;
+  const { buttonDrawX, buttonDrawY, buttonWidthScaled, buttonHeightScaled } = getScaledButtonRect({ baseCenterX, baseCenterY, buttonWidth, buttonHeight, hoverScale });
+  drawStartButtonSprite({ ctx, ui, startButtonSprite, buttonDrawX, buttonDrawY, buttonWidthScaled, buttonHeightScaled });
+  return createStartButtonBounds({ buttonDrawX, buttonDrawY, buttonWidthScaled, buttonHeightScaled });
+};
+
+const drawSettingsOverlay = ({ ctx, canvas, startScreenState, getActiveControlsOverlay }) => {
+  if (!startScreenState.settingsOpen || !startScreenState.startAssets.menuBg) return;
+  const overlay = getActiveControlsOverlay();
+  overlay.setAssets({ bgImage: startScreenState.startAssets.menuBg, uiImage: startScreenState.startAssets.ui });
+  overlay.render(ctx, canvas);
+  setOverlayActive(true);
+};
+
+const drawLegalStartScreen = ({ startScreenState, drawLegalPage }) => {
+  startScreenState.startButtonBounds = null;
+  drawLegalPage();
+};
+
+const createDrawStartScreen = ({ ctx, canvas, startScreenState, drawLegalPage, getActiveControlsOverlay }) => () => {
+  if (!startScreenState.startAssets) return;
+  const { bg, ui } = startScreenState.startAssets;
+  const canvasCenterX = prepareStartScreenCanvas(canvas, ctx);
+  drawBackgroundImage({ ctx, canvas, bg });
+  drawStartTitle({ ctx, canvas, canvasCenterX });
+  if (startScreenState.legalPage) return drawLegalStartScreen({ startScreenState, drawLegalPage });
+  startScreenState.startButtonBounds = drawStartButton({ ctx, canvas, ui, startScreenState });
+  drawSettingsOverlay({ ctx, canvas, startScreenState, getActiveControlsOverlay });
+};
+
+const applyLegalPageState = ({ startScreenState, page }) => {
+  startScreenState.legalPage = page;
+  startScreenState.legalScroll = 0;
+  startScreenState.legalMaxScroll = 0;
+  startScreenState.impressumLinkBounds = null;
+  startScreenState.legalReturnBounds = null;
+  startScreenState.settingsOpen = false;
+  startScreenState.startButtonHover = false;
+  startScreenState.legalReturnHover = false;
+};
+
+const createShowLegalPage = ({ canvas, startScreenState, drawStartScreen }) => (page) => {
+  applyLegalPageState({ startScreenState, page });
+  setOverlayActive(false);
+  canvas.style.cursor = "pointer";
+  drawStartScreen();
+};
+
+const loadStartAssets = () =>
   Promise.all([
     loadStartImage("./assets/img/canvas-start-game_BG.jpg"),
     loadStartImage("./assets/img/Gui/Game-UI.png"),
     loadStartImage("./assets/img/menu_BG.png"),
     loadFont("ComixLoud", "4rem"),
-  ])
+  ]);
+
+const applyLoadedAssets = ({ bg, ui, menuBg, startScreenState }) => {
+  startScreenState.startAssets = { bg, ui, menuBg };
+  document.body?.classList.add("start-screen-active");
+};
+
+const loadAndRenderStartAssets = ({ startScreenState, drawStartScreen }) => {
+  loadStartAssets()
     .then(([bg, ui, menuBg, _fontLoaded]) => {
-      startScreenState.startAssets = { bg, ui, menuBg };
-      document.body?.classList.add("start-screen-active");
+      applyLoadedAssets({ bg, ui, menuBg, startScreenState });
       drawStartScreen();
     })
     .catch((err) => console.error("Failed to load start assets", err));
+};
 
+const createLegalLinkHandler = (page, showLegalPage) => (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  showLegalPage(page);
+};
+
+const bindCanvasEvents = ({ canvas, handleClick, handleMove, handleLeave, handleWheel, handleTouchStart, handleTouchMove, handleTouchEnd }) => {
   canvas.addEventListener("click", handleClick);
   canvas.addEventListener("mousemove", handleMove);
   canvas.addEventListener("mouseleave", handleLeave);
@@ -290,16 +344,76 @@ export function setupStartScreen({ canvasId = "game", onStart } = {}) {
   canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
   canvas.addEventListener("touchend", handleTouchEnd);
   canvas.addEventListener("touchcancel", handleTouchEnd);
+};
+
+const bindSettingsEvents = ({ settingsToggle, handleSettingsClick, handleKeyDown }) => {
   settingsToggle?.addEventListener("click", handleSettingsClick, true);
   window.addEventListener("keydown", handleKeyDown, true);
-  impressumLink?.addEventListener("click", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    showLegalPage("impressum");
-  });
-  privacyPolicyLink?.addEventListener("click", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    showLegalPage("privacy");
-  });
+};
+
+const bindLegalLinkEvents = ({ impressumLink, privacyPolicyLink, showLegalPage }) => {
+  const handleImpressumClick = createLegalLinkHandler("impressum", showLegalPage);
+  const handlePrivacyClick = createLegalLinkHandler("privacy", showLegalPage);
+  impressumLink?.addEventListener("click", handleImpressumClick);
+  privacyPolicyLink?.addEventListener("click", handlePrivacyClick);
+};
+
+const bindStartScreenEvents = (deps) => {
+  bindCanvasEvents(deps);
+  bindSettingsEvents(deps);
+  bindLegalLinkEvents(deps);
+};
+
+const buildStartScreenContext = ({ canvasId, onStart }) => {
+  const canvasContext = getCanvasAndContext(canvasId);
+  if (!canvasContext) return null;
+  mobileAudioUnlock.bind();
+  if (handleAutoStart(onStart)) return null;
+  const settingsContext = getSettingsContext();
+  const overlays = createControlsOverlays();
+  const getActiveControlsOverlay = createActiveControlsOverlayGetter(overlays);
+  const startScreenState = createStartScreenState();
+  const { start: startMenuMusic, stop: stopMenuMusic } = startMusicController;
+  startMenuMusic();
+  return { ...canvasContext, onStart, ...settingsContext, ...overlays, getActiveControlsOverlay, startScreenState, stopMenuMusic };
+};
+
+const createLegalLinks = () => ({
+  impressumLink: document.querySelector(".impressum"),
+  privacyPolicyLink: document.querySelector(".privacyPolicy"),
+});
+
+const bindOverlayIconLoad = ({ controlsOverlayDesktop, controlsOverlayMobile, drawStartScreen }) => {
+  controlsOverlayDesktop.setOnIconLoad?.(() => drawStartScreen());
+  controlsOverlayMobile.setOnIconLoad?.(() => drawStartScreen());
+};
+
+const createStartScreenDependencies = ({ startScreenContext, drawStartScreen, showLegalPage, onStart }) => ({
+  canvas: startScreenContext.canvas,
+  settingsToggle: startScreenContext.settingsToggle,
+  settingsLabel: startScreenContext.settingsLabel,
+  settingsIcon: startScreenContext.settingsIcon,
+  defaultSettingsLabel: startScreenContext.defaultSettingsLabel,
+  settingsIconDefaultSrc: startScreenContext.settingsIconDefaultSrc,
+  getActiveControlsOverlay: startScreenContext.getActiveControlsOverlay,
+  drawStartScreen,
+  showLegalPage,
+  stopMenuMusic: startScreenContext.stopMenuMusic,
+  onStart,
+  mobileAudioUnlock,
+  state: startScreenContext.startScreenState,
+});
+
+export function setupStartScreen({ canvasId = "game", onStart }) {
+  const startScreenContext = buildStartScreenContext({ canvasId, onStart });
+  if (!startScreenContext) return;
+  const { impressumLink, privacyPolicyLink } = createLegalLinks();
+  const drawLegalPage = createDrawLegalPage(startScreenContext);
+  const drawStartScreen = createDrawStartScreen({ ...startScreenContext, drawLegalPage });
+  bindOverlayIconLoad({ ...startScreenContext, drawStartScreen });
+  const showLegalPage = createShowLegalPage({ ...startScreenContext, drawStartScreen });
+  const startScreenDependencies = createStartScreenDependencies({ startScreenContext, drawStartScreen, showLegalPage, onStart });
+  const handlers = createStartScreenHandlers(startScreenDependencies);
+  loadAndRenderStartAssets({ startScreenState: startScreenContext.startScreenState, drawStartScreen });
+  bindStartScreenEvents({ ...handlers, ...startScreenContext, showLegalPage, impressumLink, privacyPolicyLink });
 }

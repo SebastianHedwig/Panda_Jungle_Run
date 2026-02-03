@@ -5,6 +5,7 @@ export const WORLD_HEIGHT = 720;
 export const SET_FULLSCREEN = true;
 export const AUTO_FULLSCREEN_MAX_WIDTH = 1368;
 export const AUTO_FULLSCREEN_MAX_HEIGHT = 912;
+
 export const FACING_LEFT = -1;
 export const FACING_RIGHT = 1;
 
@@ -28,7 +29,7 @@ export const MUSIC_LOOP_CUT = 4;
 export const MUSIC_VOLUME = 0.2;
 export const SFX_VOLUME = 0.2;
 export const BOSS_MUSIC_LOOP_CUT = 1;
-export const BOSS_MUSIC_PLAYBACK_RATE = 1.2;
+export const BOSS_MUSIC_PLAYBACK_RATE = 1.6;
 
 export const LEVEL1_COIN_COUNT = 30;
 export const LEVEL1_COIN_RATIO_ABOVE = 0.5;
