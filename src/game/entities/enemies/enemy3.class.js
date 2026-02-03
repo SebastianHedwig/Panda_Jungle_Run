@@ -1,18 +1,6 @@
 import { Enemy2 } from "./enemy2.class.js";
 import { EnemyBase } from "./enemyBase.class.js";
-import { CollectableItem } from "../../items/collectableItem.class.js";
-import {
-  ENEMY3_ATTACK1_DAMAGE,
-  ENEMY3_ATTACK2_DAMAGE,
-  ENEMY3_HEALTH,
-  ENEMY3_SLIDE_DAMAGE,
-  ENEMY3_COIN_DROP_COUNT,
-  ENEMY3_GUN_DROP_COUNT,
-  ENEMY3_SPEED,
-  ENEMY3_SLIDE_SPEED,
-  ENEMY_WIDTH,
-  ENEMY_HEIGHT,
-} from "../../../config/config.js";
+import { ENEMY3_ATTACK1_DAMAGE, ENEMY3_ATTACK2_DAMAGE, ENEMY3_HEALTH, ENEMY3_SLIDE_DAMAGE, ENEMY3_COIN_DROP_COUNT, ENEMY3_GUN_DROP_COUNT, ENEMY3_SPEED, ENEMY3_SLIDE_SPEED, ENEMY_WIDTH, ENEMY_HEIGHT } from "../../../config/config.js";
 import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
 export function loadEnemy3Sprites() {
@@ -29,30 +17,39 @@ export function loadEnemy3Sprites() {
 
 export class Enemy3 extends Enemy2 {
   constructor(x, y, sprites, world = null) {
-    super(
-      x,
-      y,
-      { ...sprites, walk: sprites.run, attack: sprites.attack1 },
-      world,
-      ENEMY_WIDTH,
-      ENEMY_HEIGHT
-    );
+    super(x, y, buildEnemy3SpriteSet(sprites), world, ENEMY_WIDTH, ENEMY_HEIGHT);
+    this.initializeEnemy3State(sprites);
+  }
+
+  initializeEnemy3State(sprites) {
+    this.initializeEnemy3Frames(sprites);
+    this.initializeEnemy3Damage();
+    this.initializeEnemy3Movement();
+    this.health = ENEMY3_HEALTH;
+    this.slideCooldown = 0;
+    this.slideCooldownDuration = 5;
+    this.hasDroppedLoot = false;
+  }
+
+  initializeEnemy3Frames(sprites) {
     this.runFrames = sprites.run;
     this.walkFrames = sprites.run;
     this.attack1Frames = sprites.attack1;
     this.attack2Frames = sprites.attack2;
     this.slideFrames = sprites.slide;
+  }
+
+  initializeEnemy3Damage() {
     this.attack1Damage = ENEMY3_ATTACK1_DAMAGE;
     this.attack2Damage = ENEMY3_ATTACK2_DAMAGE;
     this.slideDamage = ENEMY3_SLIDE_DAMAGE;
     this.slideRange = 220;
     this.slideHeightTolerance = this.attackHeightTolerance + 10;
+  }
+
+  initializeEnemy3Movement() {
     this.speed = ENEMY3_SPEED;
     this.slideSpeed = ENEMY3_SLIDE_SPEED;
-    this.health = ENEMY3_HEALTH;
-    this.slideCooldown = 0;
-    this.slideCooldownDuration = 5;
-    this.hasDroppedLoot = false;
   }
 
   update(dt, player) {
@@ -68,24 +65,27 @@ export class Enemy3 extends Enemy2 {
   }
 
   tryStartAttack(playerInfo, player) {
+    if (this.canStartSlideAttack(playerInfo, player)) return this.startSlideAttack(playerInfo, player);
+    return super.tryStartAttack(playerInfo, player);
+  }
+
+  canStartSlideAttack(playerInfo, player) {
     if (!playerInfo || !player || player.isDead) return false;
     const deltaX = playerInfo.deltaX;
     const absoluteDeltaY = playerInfo.absoluteDeltaY;
-
-    if (
-      this.onGround &&
+    return this.onGround &&
       Math.abs(deltaX) > this.attackRange &&
       Math.abs(deltaX) <= this.slideRange &&
       absoluteDeltaY <= this.slideHeightTolerance &&
-      this.slideCooldown <= 0
-    ) {
-      const frames = this.slideFrames || this.attack2Frames || this.attack1Frames;
-      this.startMeleeAttack(deltaX, frames, this.slideDamage, player, this.slideSpeed);
-      this.slideCooldown = this.slideCooldownDuration;
-      return true;
-    }
+      this.slideCooldown <= 0;
+  }
 
-    return super.tryStartAttack(playerInfo, player);
+  startSlideAttack(playerInfo, player) {
+    const deltaX = playerInfo.deltaX;
+    const frames = this.slideFrames || this.attack2Frames || this.attack1Frames;
+    this.startMeleeAttack(deltaX, frames, this.slideDamage, player, this.slideSpeed);
+    this.slideCooldown = this.slideCooldownDuration;
+    return true;
   }
 
   takeDamage(amount = 1, hitContext = {}) {
@@ -101,4 +101,8 @@ export class Enemy3 extends Enemy2 {
   dropGun(count = ENEMY3_GUN_DROP_COUNT) {
     this.dropCollectables("gun", count);
   }
+}
+
+function buildEnemy3SpriteSet(sprites) {
+  return { ...sprites, walk: sprites.run, attack: sprites.attack1 };
 }

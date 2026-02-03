@@ -1,10 +1,6 @@
 import { MovableObject } from "../../../engine/physics/movableObject.class.js";
 import { HudPopup } from "../../effects/hudPopup.class.js";
-import {
-  DEBUG_MODE,
-  FACING_LEFT,
-  FACING_RIGHT,
-} from "../../../config/config.js";
+import { DEBUG_MODE, FACING_LEFT, FACING_RIGHT } from "../../../config/config.js";
 import { CollectableItem } from "../../items/collectableItem.class.js";
 
 export const DEBUG_ENEMY_HITBOX = DEBUG_MODE;
@@ -13,25 +9,20 @@ export class EnemyBase extends MovableObject {
   constructor(x, y, width, height, world = null) {
     super(x, y, width, height);
     this.world = world;
+    this.initializeMovementDefaults(x, y);
+    this.initializeCombatHelpers();
+  }
 
-    /** Movement / chase defaults */
-    this.patrolDirection = FACING_LEFT;
-    this.patrolRange = 800;
-    this.spawnX = x;
-    this.currentPlatform = null;
-    this.lastGroundY = y;
-    this.hitStun = 0;
-    this.edgeMargin = 5;
-    this.isChasing = false;
-    this.lastMoveDirection = FACING_LEFT;
-    this.chaseCooldown = 0;
-    this.chaseCooldownDuration = 2;
-    this.chaseRangeX = 300;
-    this.chaseRangeXExit = 360;
-    this.chaseRangeY = 200;
-    this.chaseRangeYExit = 260;
+  initializeMovementDefaults(x, y) {
+    Object.assign(this, {
+      patrolDirection: FACING_LEFT, patrolRange: 800, spawnX: x, currentPlatform: null,
+      lastGroundY: y, hitStun: 0, edgeMargin: 5, isChasing: false,
+      lastMoveDirection: FACING_LEFT, chaseCooldown: 0, chaseCooldownDuration: 2,
+      chaseRangeX: 300, chaseRangeXExit: 360, chaseRangeY: 200, chaseRangeYExit: 260,
+    });
+  }
 
-    /** Combat helpers */
+  initializeCombatHelpers() {
     this.hasHitDuringAttack = false;
     this.recentSlideHit = 0;
     this.attackDamageCurrent = this.damage ?? 1;
@@ -40,45 +31,13 @@ export class EnemyBase extends MovableObject {
     this.hitboxShrinkYFactor = 0.2;
   }
 
-  /** ----- DAMAGE / HITBOX ----- */
   takeDamage(amount = 1, hitContext = {}) {
-    const recentSlideHitDuration = 0.4;
-    const hitStunMinDuration = 1.5;
-
     if (this.isDead) return;
-    this.health -= amount;
-
-    if (hitContext?.source === "slide") {
-      this.recentSlideHit = Math.max(this.recentSlideHit, recentSlideHitDuration);
-    }
-
-    if (this.world?.hudPopups) {
-      const popupX = this.x + this.width * 0.5;
-      const popupY = this.y - 20;
-      this.world.hudPopups.push(new HudPopup(`-${amount}`, popupX, popupY, "damage"));
-    }
-
-    if (this.health <= 0) {
-      this.isDead = true;
-      this.setAnimation?.(this.dieFrames);
-      this.currentFrame = 0;
-      this.frameTime = 0;
-      this.velocityX = 0;
-      this.velocityY = 0;
-      this.deathTimer = 5;
-      this.blinkTimer = 0.9; // 3 blinks at 0.3s
-      this.onDeath?.();
-      return;
-    }
-
-    if (!hitContext.skipStun) {
-      this.hitStun = Math.max(this.hitStun, hitStunMinDuration);
-      this.velocityX = 0;
-      this.velocityY = 0;
-      this.setAnimation?.(this.idleFrames);
-      this.currentFrame = 0;
-      this.frameTime = 0;
-    }
+    applyDamageAmount(this, amount);
+    applyRecentSlideHit(this, hitContext);
+    addEnemyDamagePopup(this, amount);
+    if (handleEnemyDeath(this)) return;
+    applyHitStun(this, hitContext);
   }
 
   getHitbox() {
@@ -87,46 +46,21 @@ export class EnemyBase extends MovableObject {
     const hitboxHeight = enemyHeight * (1 - this.hitboxShrinkYFactor);
     const hitboxX = x + (enemyWidth - hitboxWidth) / 2;
     const hitboxY = y + (enemyHeight - hitboxHeight);
-    return {
-      x: hitboxX,
-      y: hitboxY,
-      width: hitboxWidth,
-      height: hitboxHeight,
-    };
+    return { x: hitboxX, y: hitboxY, width: hitboxWidth, height: hitboxHeight };
   }
 
   renderHitbox(ctx, camera) {
     const hitbox = this.getHitbox();
     ctx.strokeStyle = "rgba(0,120,255,0.6)";
     ctx.lineWidth = 2;
-    ctx.strokeRect(
-      hitbox.x - camera.x,
-      hitbox.y - camera.y,
-      hitbox.width,
-      hitbox.height
-    );
+    ctx.strokeRect(hitbox.x - camera.x, hitbox.y - camera.y, hitbox.width, hitbox.height);
   }
 
-  /** ----- PLAYER DELTA / CHASE ----- */
   getPlayerDelta(player) {
     if (!player) return null;
-    const enemyCenterX = this.x + this.width / 2;
-    const enemyCenterY = this.y + this.height / 2;
-    const playerCenterX = player.x + player.width / 2;
-    const playerCenterY = player.y + player.height / 2;
-    const deltaX = playerCenterX - enemyCenterX;
-    const deltaY = playerCenterY - enemyCenterY;
-    return {
-      deltaX,
-      deltaY,
-      absoluteDeltaX: Math.abs(deltaX),
-      absoluteDeltaY: Math.abs(deltaY),
-      playerCenterX,
-      playerCenterY,
-      enemyCenterX,
-      enemyCenterY,
-      playerWidth: player.width,
-    };
+    const enemyCenter = getActorCenter(this);
+    const playerCenter = getActorCenter(player);
+    return buildPlayerDelta(player, enemyCenter, playerCenter);
   }
 
   shouldChasePlayer(playerInfo, wasChasing = false) {
@@ -137,21 +71,14 @@ export class EnemyBase extends MovableObject {
     return horizGap <= maxX && playerInfo.absoluteDeltaY <= maxY;
   }
 
-  /** ----- PATROL ----- */
   patrol() {
     const minX = this.spawnX - this.patrolRange / 2;
     const maxX = this.spawnX + this.patrolRange / 2;
-
-    if (this.x <= minX) {
-      this.patrolDirection = FACING_RIGHT;
-    } else if (this.x >= maxX) {
-      this.patrolDirection = FACING_LEFT;
-    }
-
+    if (this.x <= minX) this.patrolDirection = FACING_RIGHT;
+    else if (this.x >= maxX) this.patrolDirection = FACING_LEFT;
     this.facing = this.patrolDirection;
   }
 
-  /** ----- PLATFORM HELPERS ----- */
   isOnLowestPlatform() {
     const platformLevelTolerance = 0.5;
     if (!this.currentPlatform || !this.world?.platforms?.length) return false;
@@ -164,10 +91,8 @@ export class EnemyBase extends MovableObject {
   }
 
   getPlatformUnderfoot() {
-    const footProbeOffset = 2;
-    const platformBottomTolerance = 5;
-
     if (!this.world?.platforms?.length) return null;
+    const footProbeOffset = 2, platformBottomTolerance = 5;
     const footX = this.x + this.width / 2;
     const footY = this.y + this.height + footProbeOffset;
     return this.world.platforms.find(
@@ -195,58 +120,17 @@ export class EnemyBase extends MovableObject {
   }
 
   hasAdjacentPlatform(currentPlatform, moveDirection, footX) {
-    const adjacentPlatformLookaheadFactor = 3;
-    const minAdjacentPlatformToleranceY = 4;
-
     if (!this.world?.platforms?.length) return false;
-    const toleranceY = Math.max(minAdjacentPlatformToleranceY, this.edgeMargin);
-    const boundary =
-      moveDirection > 0 ? currentPlatform.right : currentPlatform.left;
-    const lookStart = boundary - this.edgeMargin;
-    const lookEnd =
-      boundary + this.edgeMargin * adjacentPlatformLookaheadFactor * moveDirection;
-    const minX = Math.min(lookStart, lookEnd, footX - this.edgeMargin);
-    const maxX = Math.max(lookStart, lookEnd, footX + this.edgeMargin);
-    return this.world.platforms.some(
-      (platform) =>
-        platform !== currentPlatform &&
-        platform.supportsLanding &&
-        Math.abs(platform.top - currentPlatform.top) <= toleranceY &&
-        platform.right >= minX &&
-        platform.left <= maxX
+    const searchContext = getAdjacentPlatformSearch(this, currentPlatform, moveDirection, footX);
+    return this.world.platforms.some((platform) =>
+      isAdjacentPlatform(platform, currentPlatform, searchContext)
     );
   }
 
   handlePlatformLanding(previousBottom, currentBottom) {
     if (!this.world?.platforms?.length) return;
-    const footX = this.x + this.width / 2;
-
-    for (const platform of this.world.platforms) {
-      if (!platform.supportsLanding) continue;
-      const overlapsX = this.x + this.width > platform.left && this.x < platform.right;
-
-      if (
-        overlapsX &&
-        this.velocityY > 0 &&
-        previousBottom <= platform.top &&
-        currentBottom >= platform.top
-      ) {
-        this.y = platform.top - this.height;
-        this.velocityY = 0;
-        this.onGround = true;
-        this.currentPlatform = platform;
-        this.lastGroundY = this.y;
-        return;
-      }
-    }
-
-    this.onGround = false;
-    const canvasH = this.world?.canvas?.height;
-    if (currentBottom > canvasH + this.height) {
-      this.y = this.lastGroundY;
-      this.velocityY = 0;
-      this.onGround = true;
-    }
+    if (tryLandOnPlatform(this, previousBottom, currentBottom)) return;
+    handleFallBelowCanvas(this, currentBottom);
   }
 
   applyAttackPhysics(dt) {
@@ -256,58 +140,15 @@ export class EnemyBase extends MovableObject {
     this.handlePlatformLanding(previousBottom, currentBottom);
   }
 
-  /** ----- EDGE / DROP HANDLING ----- */
   adjustForEdges(moveDirection, dt, platform, onLowestPlatform, fromChasing) {
-    const platformBelow = this.findPlatformBelowAt(
-      this.x + this.width / 2,
-      platform.top
-    );
-    const currentFootX = this.x + this.width / 2;
-    const nextX = this.x + moveDirection * this.speed * dt;
-    const footX = nextX + this.width / 2;
-    const beyondEdge =
-      footX < platform.left + this.edgeMargin ||
-      footX > platform.right - this.edgeMargin;
-    const returningInside =
-      (currentFootX >= platform.right - this.edgeMargin && moveDirection <= 0) ||
-      (currentFootX <= platform.left + this.edgeMargin && moveDirection >= 0);
-    const allowDrop = this.isChasing && !onLowestPlatform && !!platformBelow;
-    const hasAdjacentFloor =
-      onLowestPlatform &&
-      this.hasAdjacentPlatform(platform, moveDirection, footX);
-
-    if (beyondEdge && !returningInside && !allowDrop && !hasAdjacentFloor) {
-      this.patrolDirection = moveDirection > 0 ? FACING_LEFT : FACING_RIGHT;
-      this.isChasing = false;
-      if (fromChasing) {
-        this.chaseCooldown = Math.max(
-          this.chaseCooldown,
-          this.chaseCooldownDuration
-        );
-      }
-      moveDirection = this.patrolDirection;
-      this.facing = moveDirection;
-    }
-
+    const edgeContext = buildEdgeContext(this, moveDirection, dt, platform, onLowestPlatform);
+    if (shouldTurnAround(edgeContext)) return applyEdgeTurn(this, edgeContext, fromChasing);
     return moveDirection;
   }
 
-  /** ----- ATTACK HANDLERS (DEFAULT) ----- */
   tryStartAttack(playerInfo, player) {
-    if (!playerInfo || !player || player.isDead) return false;
-    const deltaX = playerInfo.deltaX;
-    const absoluteDeltaY = playerInfo.absoluteDeltaY;
-    if (
-      Math.abs(deltaX) <= this.attackRange &&
-      absoluteDeltaY <= this.attackHeightTolerance
-    ) {
-      const frames = this.attackFrames;
-      if (frames) {
-        this.startMeleeAttack(deltaX, frames, this.damage, player);
-        return true;
-      }
-    }
-    return false;
+    if (!canStartEnemyAttack(playerInfo, player)) return false;
+    return tryStartMeleeAttack(this, playerInfo, player);
   }
 
   startMeleeAttack(deltaX, frames, damage, player, moveSpeed = 0) {
@@ -326,37 +167,9 @@ export class EnemyBase extends MovableObject {
 
   dropCollectables(itemType, count = 0) {
     if (!this.world?.collectables || count <= 0) return;
-
-    const spawnOffsetYFactor = 0.2;
-    const baseRadius = 30;
-    const radiusScattering = 20;
-    const minAngle = Math.PI / 3; // 60°
-    const angleRange = Math.PI / 6; // up to 90°
-    const baseSpeedX = 120;
-    const speedXScattering = 60;
-    const baseSpeedY = 400;
-    const speedYScattering = 150;
-
-    const drops = [];
-    const baseX = this.x + this.width / 2;
-    const baseY = this.y + this.height * spawnOffsetYFactor;
-    for (let dropIndex = 0; dropIndex < count; dropIndex++) {
-      const isEvenDropIndex = dropIndex % 2 === 0; // drop left/right alternation
-      const dropDirection = isEvenDropIndex ? FACING_LEFT : FACING_RIGHT;
-      const radius = baseRadius + Math.random() * radiusScattering;
-      const angle = minAngle + Math.random() * angleRange;
-      const dropX = baseX + dropDirection * radius * Math.cos(angle);
-      const dropY = baseY - radius * Math.sin(angle);
-      const velocityX = dropDirection * (baseSpeedX + Math.random() * speedXScattering);
-      const velocityY = -(baseSpeedY + Math.random() * speedYScattering);
-      const item = new CollectableItem(dropX, dropY, itemType, this.world);
-      item.startDrop(velocityX, velocityY);
-      drops.push(item);
-    }
-
-    this.world.addCollectables
-      ? this.world.addCollectables(drops)
-      : this.world.collectables.push(...drops);
+    const dropConfig = getCollectableDropConfig(this);
+    const drops = createCollectableDrops(this, itemType, count, dropConfig);
+    addCollectablesToWorld(this.world, drops);
   }
 
   dropCoins(count = 0) {
@@ -373,4 +186,235 @@ export class EnemyBase extends MovableObject {
       selfBox.y + selfBox.height > targetBox.y
     );
   }
+}
+
+function applyDamageAmount(enemy, amount) {
+  enemy.health -= amount;
+}
+
+function applyRecentSlideHit(enemy, hitContext) {
+  const recentSlideHitDuration = 0.4;
+  if (hitContext?.source === "slide") {
+    enemy.recentSlideHit = Math.max(enemy.recentSlideHit, recentSlideHitDuration);
+  }
+}
+
+function addEnemyDamagePopup(enemy, amount) {
+  if (!enemy.world?.hudPopups) return;
+  const popupX = enemy.x + enemy.width * 0.5;
+  const popupY = enemy.y - 20;
+  enemy.world.hudPopups.push(new HudPopup(`-${amount}`, popupX, popupY, "damage"));
+}
+
+function handleEnemyDeath(enemy) {
+  if (enemy.health > 0) return false;
+  markEnemyDead(enemy);
+  setDeathAnimation(enemy);
+  resetDeathVelocity(enemy);
+  initDeathTimers(enemy);
+  enemy.onDeath?.();
+  return true;
+}
+
+function markEnemyDead(enemy) {
+  enemy.isDead = true;
+}
+
+function setDeathAnimation(enemy) {
+  enemy.setAnimation?.(enemy.dieFrames);
+  enemy.currentFrame = 0;
+  enemy.frameTime = 0;
+}
+
+function resetDeathVelocity(enemy) {
+  enemy.velocityX = 0;
+  enemy.velocityY = 0;
+}
+
+function initDeathTimers(enemy) {
+  enemy.deathTimer = 5;
+  enemy.blinkTimer = 0.9; // 3 blinks at 0.3s
+}
+
+function applyHitStun(enemy, hitContext) {
+  if (hitContext.skipStun) return;
+  const hitStunMinDuration = 1.5;
+  enemy.hitStun = Math.max(enemy.hitStun, hitStunMinDuration);
+  enemy.velocityX = 0;
+  enemy.velocityY = 0;
+  enemy.setAnimation?.(enemy.idleFrames);
+  enemy.currentFrame = 0;
+  enemy.frameTime = 0;
+}
+
+function getActorCenter(actor) {
+  const centerX = actor.x + actor.width / 2;
+  const centerY = actor.y + actor.height / 2;
+  return { centerX, centerY };
+}
+
+function buildPlayerDelta(player, enemyCenter, playerCenter) {
+  const enemyCenterX = enemyCenter.centerX;
+  const enemyCenterY = enemyCenter.centerY;
+  const playerCenterX = playerCenter.centerX;
+  const playerCenterY = playerCenter.centerY;
+  const deltaX = playerCenterX - enemyCenterX;
+  const deltaY = playerCenterY - enemyCenterY;
+  return { deltaX, deltaY, absoluteDeltaX: Math.abs(deltaX), absoluteDeltaY: Math.abs(deltaY), playerCenterX, playerCenterY, enemyCenterX, enemyCenterY, playerWidth: player.width };
+}
+
+function getAdjacentPlatformSearch(enemy, currentPlatform, moveDirection, footX) {
+  const adjacentPlatformLookaheadFactor = 3;
+  const minAdjacentPlatformToleranceY = 4;
+  const toleranceY = Math.max(minAdjacentPlatformToleranceY, enemy.edgeMargin);
+  const boundary = moveDirection > 0 ? currentPlatform.right : currentPlatform.left;
+  const lookStart = boundary - enemy.edgeMargin;
+  const lookEnd = boundary + enemy.edgeMargin * adjacentPlatformLookaheadFactor * moveDirection;
+  const minX = Math.min(lookStart, lookEnd, footX - enemy.edgeMargin);
+  const maxX = Math.max(lookStart, lookEnd, footX + enemy.edgeMargin);
+  return { toleranceY, minX, maxX };
+}
+
+function isAdjacentPlatform(platform, currentPlatform, searchContext) {
+  return (
+    platform !== currentPlatform &&
+    platform.supportsLanding &&
+    Math.abs(platform.top - currentPlatform.top) <= searchContext.toleranceY &&
+    platform.right >= searchContext.minX &&
+    platform.left <= searchContext.maxX
+  );
+}
+
+function tryLandOnPlatform(enemy, previousBottom, currentBottom) {
+  const footX = enemy.x + enemy.width / 2;
+  for (const platform of enemy.world.platforms) {
+    if (!platform.supportsLanding) continue;
+    if (!isPlatformLanding(enemy, platform, previousBottom, currentBottom)) continue;
+    applyPlatformLanding(enemy, platform, footX);
+    return true;
+  }
+  return false;
+}
+
+function isPlatformLanding(enemy, platform, previousBottom, currentBottom) {
+  const overlapsX = enemy.x + enemy.width > platform.left && enemy.x < platform.right;
+  return overlapsX && enemy.velocityY > 0 && previousBottom <= platform.top && currentBottom >= platform.top;
+}
+
+function applyPlatformLanding(enemy, platform) {
+  enemy.y = platform.top - enemy.height;
+  enemy.velocityY = 0;
+  enemy.onGround = true;
+  enemy.currentPlatform = platform;
+  enemy.lastGroundY = enemy.y;
+}
+
+function handleFallBelowCanvas(enemy, currentBottom) {
+  enemy.onGround = false;
+  const canvasH = enemy.world?.canvas?.height;
+  if (currentBottom > canvasH + enemy.height) {
+    enemy.y = enemy.lastGroundY;
+    enemy.velocityY = 0;
+    enemy.onGround = true;
+  }
+}
+
+function buildEdgeContext(enemy, moveDirection, dt, platform, onLowestPlatform) {
+  const platformBelow = enemy.findPlatformBelowAt(enemy.x + enemy.width / 2, platform.top);
+  const currentFootX = enemy.x + enemy.width / 2;
+  const nextX = enemy.x + moveDirection * enemy.speed * dt;
+  const footX = nextX + enemy.width / 2;
+  const beyondEdge = isBeyondPlatformEdge(enemy, platform, footX);
+  const returningInside = isReturningInside(enemy, platform, currentFootX, moveDirection);
+  const allowDrop = enemy.isChasing && !onLowestPlatform && !!platformBelow;
+  const hasAdjacentFloor = onLowestPlatform && enemy.hasAdjacentPlatform(platform, moveDirection, footX);
+  return { moveDirection, beyondEdge, returningInside, allowDrop, hasAdjacentFloor };
+}
+
+function isBeyondPlatformEdge(enemy, platform, footX) {
+  return footX < platform.left + enemy.edgeMargin || footX > platform.right - enemy.edgeMargin;
+}
+
+function isReturningInside(enemy, platform, currentFootX, moveDirection) {
+  return (
+    (currentFootX >= platform.right - enemy.edgeMargin && moveDirection <= 0) ||
+    (currentFootX <= platform.left + enemy.edgeMargin && moveDirection >= 0)
+  );
+}
+
+function shouldTurnAround(edgeContext) {
+  return edgeContext.beyondEdge && !edgeContext.returningInside && !edgeContext.allowDrop && !edgeContext.hasAdjacentFloor;
+}
+
+function applyEdgeTurn(enemy, edgeContext, fromChasing) {
+  enemy.patrolDirection = edgeContext.moveDirection > 0 ? FACING_LEFT : FACING_RIGHT;
+  enemy.isChasing = false;
+  if (fromChasing) applyChaseCooldown(enemy);
+  const moveDirection = enemy.patrolDirection;
+  enemy.facing = moveDirection;
+  return moveDirection;
+}
+
+function applyChaseCooldown(enemy) {
+  enemy.chaseCooldown = Math.max(enemy.chaseCooldown, enemy.chaseCooldownDuration);
+}
+
+function canStartEnemyAttack(playerInfo, player) {
+  return !!playerInfo && !!player && !player.isDead;
+}
+
+function tryStartMeleeAttack(enemy, playerInfo, player) {
+  const deltaX = playerInfo.deltaX;
+  const absoluteDeltaY = playerInfo.absoluteDeltaY;
+  if (!isPlayerInRange(enemy, deltaX, absoluteDeltaY)) return false;
+  const frames = enemy.attackFrames;
+  if (!frames) return false;
+  enemy.startMeleeAttack(deltaX, frames, enemy.damage, player);
+  return true;
+}
+
+function isPlayerInRange(enemy, deltaX, absoluteDeltaY) {
+  return Math.abs(deltaX) <= enemy.attackRange && absoluteDeltaY <= enemy.attackHeightTolerance;
+}
+
+function getCollectableDropConfig(enemy) {
+  const spawnOffsetYFactor = 0.2;
+  const baseRadius = 30;
+  const radiusScattering = 20;
+  const minAngle = Math.PI / 3; // 60°
+  const angleRange = Math.PI / 6; // up to 90°
+  const baseSpeedX = 120;
+  const speedXScattering = 60;
+  const baseSpeedY = 400;
+  const speedYScattering = 150;
+  const baseX = enemy.x + enemy.width / 2;
+  const baseY = enemy.y + enemy.height * spawnOffsetYFactor;
+  return { spawnOffsetYFactor, baseRadius, radiusScattering, minAngle, angleRange, baseSpeedX, speedXScattering, baseSpeedY, speedYScattering, baseX, baseY };
+}
+
+function createCollectableDrops(enemy, itemType, count, dropConfig) {
+  const drops = [];
+  for (let dropIndex = 0; dropIndex < count; dropIndex++) {
+    const item = createCollectableDrop(enemy, itemType, dropIndex, dropConfig);
+    drops.push(item);
+  }
+  return drops;
+}
+
+function createCollectableDrop(enemy, itemType, dropIndex, dropConfig) {
+  const isEvenDropIndex = dropIndex % 2 === 0; // drop left/right alternation
+  const dropDirection = isEvenDropIndex ? FACING_LEFT : FACING_RIGHT;
+  const radius = dropConfig.baseRadius + Math.random() * dropConfig.radiusScattering;
+  const angle = dropConfig.minAngle + Math.random() * dropConfig.angleRange;
+  const dropX = dropConfig.baseX + dropDirection * radius * Math.cos(angle);
+  const dropY = dropConfig.baseY - radius * Math.sin(angle);
+  const velocityX = dropDirection * (dropConfig.baseSpeedX + Math.random() * dropConfig.speedXScattering);
+  const velocityY = -(dropConfig.baseSpeedY + Math.random() * dropConfig.speedYScattering);
+  const item = new CollectableItem(dropX, dropY, itemType, enemy.world);
+  item.startDrop(velocityX, velocityY);
+  return item;
+}
+
+function addCollectablesToWorld(world, drops) {
+  world.addCollectables ? world.addCollectables(drops) : world.collectables.push(...drops);
 }

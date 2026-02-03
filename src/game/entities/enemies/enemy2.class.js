@@ -1,14 +1,6 @@
 import { Enemy1 } from "./enemy1.class.js";
 import { EnemyBase } from "./enemyBase.class.js";
-import {
-  ENEMY2_ATTACK1_DAMAGE,
-  ENEMY2_ATTACK2_DAMAGE,
-  ENEMY2_HEALTH,
-  ENEMY2_SPEED,
-  ENEMY_WIDTH,
-  ENEMY_HEIGHT,
-  ENEMY2_COIN_DROP_COUNT,
-} from "../../../config/config.js";
+import { ENEMY2_ATTACK1_DAMAGE, ENEMY2_ATTACK2_DAMAGE, ENEMY2_HEALTH, ENEMY2_SPEED, ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY2_COIN_DROP_COUNT } from "../../../config/config.js";
 import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
 export function loadEnemy2Sprites() {
@@ -24,14 +16,11 @@ export function loadEnemy2Sprites() {
 
 export class Enemy2 extends Enemy1 {
   constructor(x, y, sprites, world = null) {
-    super(
-      x,
-      y,
-      { ...sprites, walk: sprites.run, attack: sprites.attack1 },
-      world,
-      ENEMY_WIDTH,
-      ENEMY_HEIGHT
-    );
+    super(x, y, buildEnemy2SpriteSet(sprites), world, ENEMY_WIDTH, ENEMY_HEIGHT);
+    this.initializeEnemy2State(sprites);
+  }
+
+  initializeEnemy2State(sprites) {
     this.runFrames = sprites.run;
     this.walkFrames = sprites.run;
     this.attack1Frames = sprites.attack1;
@@ -66,4 +55,8 @@ export class Enemy2 extends Enemy1 {
       this.hasDroppedLoot = true;
     }
   }
+}
+
+function buildEnemy2SpriteSet(sprites) {
+  return { ...sprites, walk: sprites.run, attack: sprites.attack1 };
 }
