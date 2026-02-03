@@ -335,8 +335,8 @@ const createLegalLinkHandler = (page, showLegalPage) => (event) => {
   showLegalPage(page);
 };
 
-const bindCanvasEvents = ({ canvas, handleClick, handleMove, handleLeave, handleWheel, handleTouchStart, handleTouchMove, handleTouchEnd }) => {
-  canvas.addEventListener("click", handleClick);
+const bindCanvasEvents = ({ canvas, handleCanvasClick, handleMove, handleLeave, handleWheel, handleTouchStart, handleTouchMove, handleTouchEnd }) => {
+  canvas.addEventListener("click", handleCanvasClick);
   canvas.addEventListener("mousemove", handleMove);
   canvas.addEventListener("mouseleave", handleLeave);
   canvas.addEventListener("wheel", handleWheel, { passive: false });

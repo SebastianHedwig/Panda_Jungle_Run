@@ -44,37 +44,57 @@ export class GameWonOverlay extends GameOverlayBase {
 
   render(ctx, canvas) {
     if (!ctx || !canvas) return;
-    const { easeOut, scale } = this.startFrame(ctx, canvas);
-
-    const { titleY, drawFontSize } = this.drawTitle(
-      ctx,
-      canvas,
-      this.title,
-      {
-        maxWidthRatio: TITLE_MAX_WIDTH_RATIO_WIN,
-        maxHeightRatio: TITLE_MAX_HEIGHT_RATIO_WIN,
-        baseSizeRatio: TITLE_BASE_SIZE_RATIO_WIN,
-        baseSizeCap: TITLE_BASE_SIZE_CAP_WIN,
-        minSize: TITLE_MIN_SIZE_WIN,
-        yOffsetRatio: TITLE_Y_OFFSET_RATIO_WIN,
-      },
-      easeOut,
-      scale
-    );
-
-    const scoreY = titleY + drawFontSize * SCORE_TITLE_SCALE + canvas.height * SCORE_Y_SPACING_RATIO;
-    const buttonsBaseY = this.drawHighscore(ctx, canvas, scoreY, easeOut);
-
-    this.drawButtons(ctx, canvas, buttonsBaseY, scale, easeOut);
-
+    const frameState = this.startFrame(ctx, canvas);
+    const titleMetrics = this.drawWinTitle(ctx, canvas, frameState);
+    const scoreY = this.getScoreY(titleMetrics, canvas);
+    const buttonsBaseY = this.drawHighscore(ctx, canvas, scoreY, frameState.easeOut);
+    this.drawButtons(ctx, canvas, buttonsBaseY, frameState.scale, frameState.easeOut);
     this.finishFrame(ctx);
   }
 
+  drawWinTitle(ctx, canvas, frameState) {
+    return this.drawTitle(ctx, canvas, this.title, this.getWinTitleOptions(), frameState.easeOut, frameState.scale);
+  }
+
+  getWinTitleOptions() {
+    return {
+      maxWidthRatio: TITLE_MAX_WIDTH_RATIO_WIN,
+      maxHeightRatio: TITLE_MAX_HEIGHT_RATIO_WIN,
+      baseSizeRatio: TITLE_BASE_SIZE_RATIO_WIN,
+      baseSizeCap: TITLE_BASE_SIZE_CAP_WIN,
+      minSize: TITLE_MIN_SIZE_WIN,
+      yOffsetRatio: TITLE_Y_OFFSET_RATIO_WIN,
+    };
+  }
+
+  getScoreY({ titleY, drawFontSize }, canvas) {
+    return titleY + drawFontSize * SCORE_TITLE_SCALE + canvas.height * SCORE_Y_SPACING_RATIO;
+  }
+
   drawHighscore(ctx, canvas, y, easeOut) {
-    const fontSize = Math.min(SCORE_FONT_SIZE_MAX, canvas.width * SCORE_FONT_SIZE_RATIO);
-    const labelText = "Highscore:";
-    const valueText = `${this.coins}`;
+    const fontSize = this.getScoreFontSize(canvas);
+    const scoreText = this.getScoreText();
     ctx.save();
+    this.applyScoreTextStyle(ctx, fontSize, easeOut);
+    const layout = this.getScoreLayout(ctx, canvas, scoreText, fontSize);
+    ctx.textAlign = "left";
+    this.drawScoreText(ctx, scoreText.labelText, layout.startX, y);
+    const valueX = layout.startX + layout.labelWidth + layout.gap;
+    this.drawScoreText(ctx, scoreText.valueText, valueX, y);
+    this.drawScoreCoin(ctx, valueX, layout, y);
+    ctx.restore();
+    return y + fontSize + canvas.height * SCORE_Y_SPACING_RATIO;
+  }
+
+  getScoreFontSize(canvas) {
+    return Math.min(SCORE_FONT_SIZE_MAX, canvas.width * SCORE_FONT_SIZE_RATIO);
+  }
+
+  getScoreText() {
+    return { labelText: "Highscore:", valueText: `${this.coins}` };
+  }
+
+  applyScoreTextStyle(ctx, fontSize, easeOut) {
     ctx.font = `800 ${fontSize}px "ComixLoud", sans-serif`;
     ctx.textBaseline = "middle";
     ctx.fillStyle = SCORE_FILL_COLOR;
@@ -84,37 +104,29 @@ export class GameWonOverlay extends GameOverlayBase {
     ctx.shadowOffsetY = SCORE_SHADOW_OFFSET_Y * easeOut;
     ctx.strokeStyle = SCORE_STROKE_COLOR;
     ctx.lineWidth = Math.max(SCORE_STROKE_WIDTH_MIN, fontSize * SCORE_STROKE_WIDTH_RATIO);
+  }
 
+  getScoreLayout(ctx, canvas, { labelText, valueText }, fontSize) {
     const labelWidth = ctx.measureText(labelText).width;
     const valueWidth = ctx.measureText(valueText).width;
     const coinSize = fontSize * SCORE_COIN_SIZE_RATIO;
     const padding = Math.min(SCORE_PADDING_MAX, coinSize * SCORE_PADDING_RATIO);
     const gap = Math.min(SCORE_GAP_MAX, coinSize * SCORE_GAP_RATIO);
     const totalWidth = labelWidth + gap + valueWidth + padding + coinSize;
-    const canvasCenterX = canvas.width / 2;
-    const startX = canvasCenterX - totalWidth / 2;
+    const startX = canvas.width / 2 - totalWidth / 2;
+    return { labelWidth, valueWidth, coinSize, padding, gap, startX };
+  }
 
-    ctx.textAlign = "left";
-    ctx.strokeText(labelText, startX, y);
-    ctx.fillText(labelText, startX, y);
+  drawScoreText(ctx, text, x, y) {
+    ctx.strokeText(text, x, y);
+    ctx.fillText(text, x, y);
+  }
 
-    const valueX = startX + labelWidth + gap;
-    ctx.strokeText(valueText, valueX, y);
-    ctx.fillText(valueText, valueX, y);
-
+  drawScoreCoin(ctx, valueX, layout, y) {
     const coinImg = this.coinImage;
-    if (coinImg?.naturalWidth) {
-      const coinX = valueX + valueWidth + padding;
-      ctx.drawImage(
-        coinImg,
-        coinX,
-        y - coinSize / 2 - Math.min(COIN_VERTICAL_OFFSET_MAX, coinSize * COIN_VERTICAL_OFFSET_RATIO),
-        coinSize,
-        coinSize
-      );
-    }
-    ctx.restore();
-
-    return y + fontSize + canvas.height * SCORE_Y_SPACING_RATIO;
+    if (!coinImg?.naturalWidth) return;
+    const coinX = valueX + layout.valueWidth + layout.padding;
+    const coinY = y - layout.coinSize / 2 - Math.min(COIN_VERTICAL_OFFSET_MAX, layout.coinSize * COIN_VERTICAL_OFFSET_RATIO);
+    ctx.drawImage(coinImg, coinX, coinY, layout.coinSize, layout.coinSize);
   }
 }

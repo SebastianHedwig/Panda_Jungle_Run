@@ -58,53 +58,87 @@ export class OverlayClose {
     this.hovering = false;
   }
 
-  isHovering() {
-    return this.hovering;
+  clearRenderState() {
+    this.bounds = null;
+    this.hovering = false;
   }
 
-  handleClick(x, y) {
-    if (!this.bounds) return false;
-    const inside = x >= this.bounds.x && x <= this.bounds.x + this.bounds.w && y >= this.bounds.y && y <= this.bounds.y + this.bounds.h;
-    if (inside) this.hovering = false;
-    return inside;
-  }
-
-  render(ctx, uiImage, { x, y, width, height }) {
+  canRender(ctx, uiImage) {
     if (!ctx || !uiImage?.naturalWidth) {
-      this.bounds = null;
-      this.hovering = false;
-      return;
+      this.clearRenderState();
+      return false;
     }
+    return true;
+  }
 
+  getBaseRect(x, y, width) {
     const sprite = this.sprite;
     const baseScale = this.targetSize / sprite.w;
     const baseH = sprite.h * baseScale;
     const baseX = x + width - this.targetSize - this.margin - this.offsetX;
     const baseY = y + this.margin + this.offsetY;
+    return { baseScale, baseH, baseX, baseY };
+  }
 
+  getHoverState({ baseX, baseY, baseH }) {
     const pointer = this.pointer;
-    const isHover =
+    return (
       !!pointer &&
       pointer.x >= baseX &&
       pointer.x <= baseX + this.targetSize &&
       pointer.y >= baseY &&
-      pointer.y <= baseY + baseH;
+      pointer.y <= baseY + baseH
+    );
+  }
+
+  getDrawRect({ baseScale, baseH, baseX, baseY }, isHover) {
+    const sprite = this.sprite;
     const iconScale = baseScale * (isHover ? this.hoverScale : 1);
     const iconW = sprite.w * iconScale;
     const iconH = sprite.h * iconScale;
     const iconX = baseX - (iconW - this.targetSize) / 2;
     const iconY = baseY - (iconH - baseH) / 2;
+    return { x: iconX, y: iconY, w: iconW, h: iconH };
+  }
 
+  drawIcon(ctx, uiImage, rect) {
+    const sprite = this.sprite;
     ctx.save();
     ctx.shadowColor = this.shadow.color;
     ctx.shadowBlur = this.shadow.blur;
     ctx.shadowOffsetX = this.shadow.offsetX;
     ctx.shadowOffsetY = this.shadow.offsetY;
-    ctx.drawImage(uiImage, sprite.x, sprite.y, sprite.w, sprite.h, iconX, iconY, iconW, iconH);
+    ctx.drawImage(uiImage, sprite.x, sprite.y, sprite.w, sprite.h, rect.x, rect.y, rect.w, rect.h);
     ctx.restore();
+  }
 
-    this.bounds = { x: iconX, y: iconY, w: iconW, h: iconH };
+  updateRenderState(rect, isHover) {
+    this.bounds = rect;
     this.hovering = isHover;
+  }
+
+  isInsideBounds(x, y, bounds) {
+    return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
+  }
+
+  isHovering() {
+    return this.hovering;
+  }
+
+  handleCloseButtonClick(x, y) {
+    if (!this.bounds) return false;
+    const inside = this.isInsideBounds(x, y, this.bounds);
+    if (inside) this.hovering = false;
+    return inside;
+  }
+
+  render(ctx, uiImage, { x, y, width, height }) {
+    if (!this.canRender(ctx, uiImage)) return;
+    const baseRect = this.getBaseRect(x, y, width);
+    const isHover = this.getHoverState(baseRect);
+    const drawRect = this.getDrawRect(baseRect, isHover);
+    this.drawIcon(ctx, uiImage, drawRect);
+    this.updateRenderState(drawRect, isHover);
   }
 }
 
@@ -121,8 +155,8 @@ export class OverlayRenderer {
     this.closeOverlay.clearPointer();
   }
 
-  handleClick(x, y) {
-    return this.closeOverlay.handleClick(x, y);
+  handleCloseButtonClick(x, y) {
+    return this.closeOverlay.handleCloseButtonClick(x, y);
   }
 
   isHovering() {
@@ -130,12 +164,26 @@ export class OverlayRenderer {
   }
 
   renderPanel(ctx, { canvas, bgImage, uiImage }) {
-    if (!ctx || !canvas || !bgImage?.naturalWidth) return null;
-
+    if (!this.canRenderPanel(ctx, canvas, bgImage)) return null;
     ctx.save();
+    this.drawBackdrop(ctx, canvas);
+    const panelRect = this.getPanelRect(canvas, bgImage);
+    this.drawPanelImage(ctx, bgImage, panelRect);
+    this.updateCloseOverlay(ctx, uiImage, panelRect);
+    ctx.restore();
+    return panelRect;
+  }
+
+  canRenderPanel(ctx, canvas, bgImage) {
+    return !!ctx && !!canvas && !!bgImage?.naturalWidth;
+  }
+
+  drawBackdrop(ctx, canvas) {
     ctx.fillStyle = OVERLAY_BACKDROP_COLOR;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
 
+  getPanelRect(canvas, bgImage) {
     const maxW = canvas.width * PANEL_MAX_WIDTH_RATIO;
     const maxH = canvas.height * PANEL_MAX_HEIGHT_RATIO;
     const panelScale = Math.min(maxW / bgImage.naturalWidth, maxH / bgImage.naturalHeight, PANEL_MAX_SCALE);
@@ -143,17 +191,19 @@ export class OverlayRenderer {
     const drawH = bgImage.naturalHeight * panelScale;
     const x = (canvas.width - drawW) / 2;
     const y = (canvas.height - drawH) / 2;
+    return { x, y, width: drawW, height: drawH };
+  }
 
-    ctx.drawImage(bgImage, x, y, drawW, drawH);
+  drawPanelImage(ctx, bgImage, panelRect) {
+    ctx.drawImage(bgImage, panelRect.x, panelRect.y, panelRect.width, panelRect.height);
+  }
 
+  updateCloseOverlay(ctx, uiImage, panelRect) {
     if (uiImage?.naturalWidth) {
-      this.closeOverlay.render(ctx, uiImage, { x, y, width: drawW, height: drawH });
+      this.closeOverlay.render(ctx, uiImage, panelRect);
     } else {
       this.closeOverlay.clearPointer();
     }
-
-    ctx.restore();
-    return { x, y, width: drawW, height: drawH };
   }
 
   applyTitleStyle(ctx, canvasWidth) {

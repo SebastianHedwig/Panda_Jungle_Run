@@ -5,27 +5,32 @@ import { DizzyEffect } from "../game/effects/hitEffect.class.js";
 export class World {
   constructor(canvas) {
     this.canvas = canvas;
+    this.setupWorldBounds();
+    this.setupLevelObjects();
+    this.setupProjectiles();
+  }
 
+  setupWorldBounds() {
     this.width = WORLD_WIDTH;
     this.left = 0;
     this.right = this.width;
+    this.baseGround = this.canvas.height;
+  }
 
-    this.baseGround = canvas.height;
-
-    /** ----- LEVEL OBJECTS ----- */
+  setupLevelObjects() {
     this.platforms = [];
     this.collectables = [];
     this.hudPopups = [];
     this.enemies = [];
     this.hitEffects = [];
     this.hitEffectFrames = null;
+  }
 
-    /** ----- PROJECTILES & FX ----- */
+  setupProjectiles() {
     this.bullets = [];
     this.explosions = [];
   }
 
-  /** ---------- ADD PLATFORMS ---------- */
   addPlatforms(platforms) {
     this.platforms.push(...platforms);
     const landingSurfaces = this.platforms.filter((platform) => platform.supportsLanding);
@@ -33,140 +38,158 @@ export class World {
     if (Number.isFinite(highestLandingY)) this.baseGround = highestLandingY;
   }
 
-  /** ---------- ADD COLLECTABLES ---------- */
   addCollectables(items) {
     this.collectables.push(...items);
   }
 
-  /** ---------- ADD ENEMIES ---------- */
   addEnemies(enemies) {
     this.enemies.push(...enemies);
   }
 
-  /** ---------- PLATFORM COLLISION LOGIC ---------- */
   applyPlatformCollisions(player) {
-    if (player?.isDead || player?.collisionDisabled) return;
-    const landingEdgePadding = 2;
-    const headBumpMaxPadding = 20;
-    const headBumpPaddingRatio = 0.2;
-    const groundedTolerancePx = 4;
-    const slideBlockMovementThreshold = 0.5;
+    if (this.shouldSkipCollision(player)) return;
+    const collisionState = this.getCollisionState(player);
+    for (const platform of this.platforms) {
+      const overlaps = this.getPlatformOverlapState(platform, collisionState);
+      if (this.applyLandingCollision(platform, player, collisionState, overlaps)) continue;
+      this.applySideWallCollision(platform, player, collisionState, overlaps);
+    }
+    this.applyPostCollisionEffects(player, collisionState);
+  }
 
+  shouldSkipCollision(player) {
+    return player?.isDead || player?.collisionDisabled;
+  }
+
+  getCollisionConfig() {
+    return {
+      landingEdgePadding: 2,
+      headBumpMaxPadding: 20,
+      headBumpPaddingRatio: 0.2,
+      groundedTolerancePx: 4,
+      slideBlockMovementThreshold: 0.5,
+    };
+  }
+
+  getPlayerCollisionMetrics(player) {
     const wasOnGroundBefore = player.onGround;
-    player.onGround = false;
-    player.landedOnPlatform = false;
-    let isGrounded = false;
     const previousX = player?._preCollisionX ?? player.x;
-
     const playerLeft = player.x;
     const playerRight = player.x + player.width;
     const previousBottom = player.y + player.height - player.velocityY;
     const currentBottom = player.y + player.height;
     const currentTop = player.y;
     const playerBox = player.getHitbox ? player.getHitbox() : player;
+    return { wasOnGroundBefore, previousX, playerLeft, playerRight, previousBottom, currentBottom, currentTop, playerBox };
+  }
 
-    for (const platform of this.platforms) {
-      const overlapsY = currentBottom > platform.top && currentTop < platform.bottom;
-      const overlapsX =
-        playerRight > platform.left && playerLeft < platform.right;
-      const overlapsXLanding =
-        playerRight > platform.left - landingEdgePadding &&
-        playerLeft < platform.right + landingEdgePadding;
-      const headBumpPadding = Math.min(
-        headBumpMaxPadding,
-        Math.max(0, (platform.right - platform.left) * headBumpPaddingRatio)
-      );
-      const overlapsXHead =
-        playerBox.x + playerBox.width > platform.left + headBumpPadding &&
-        playerBox.x < platform.right - headBumpPadding;
-      const overlapsXSprite =
-        playerBox.x + playerBox.width > platform.x &&
-        playerBox.x < platform.x + platform.width;
+  resetPlayerGroundState(player) {
+    player.onGround = false;
+    player.landedOnPlatform = false;
+  }
 
-      // LANDING FROM ABOVE
-      if (platform.supportsLanding && overlapsY && overlapsXLanding) {
-        if (player.velocityY > 0 && previousBottom <= platform.top && currentBottom >= platform.top) {
-          player.y = platform.top - player.height;
-          player.velocityY = 0;
-          player.onGround = true;
-          isGrounded = true;
-          if (!wasOnGroundBefore) {
-            player.justLanded = true;
-            player.landedOnPlatform = true;
-          }
-          continue;
-        }
+  getCollisionState(player) {
+    const collisionConfig = this.getCollisionConfig();
+    const playerMetrics = this.getPlayerCollisionMetrics(player);
+    this.resetPlayerGroundState(player);
+    return { ...collisionConfig, ...playerMetrics, isGrounded: false };
+  }
 
-        // Stay grounded while walking on the platform
-        if (
-          player.velocityY >= 0 &&
-          currentBottom >= platform.top &&
-          currentBottom <= platform.top + groundedTolerancePx
-        ) {
-          player.y = platform.top - player.height;
-          player.velocityY = 0;
-          player.onGround = true;
-          isGrounded = true;
-          continue;
-        }
+  getPlatformOverlapState(platform, collisionState) {
+    const overlapsY = collisionState.currentBottom > platform.top && collisionState.currentTop < platform.bottom;
+    const overlapsX = collisionState.playerRight > platform.left && collisionState.playerLeft < platform.right;
+    const overlapsXLanding = collisionState.playerRight > platform.left - collisionState.landingEdgePadding && collisionState.playerLeft < platform.right + collisionState.landingEdgePadding;
+    const headBumpPadding = Math.min(collisionState.headBumpMaxPadding, Math.max(0, (platform.right - platform.left) * collisionState.headBumpPaddingRatio));
+    const overlapsXHead = collisionState.playerBox.x + collisionState.playerBox.width > platform.left + headBumpPadding && collisionState.playerBox.x < platform.right - headBumpPadding;
+    const overlapsXSprite = collisionState.playerBox.x + collisionState.playerBox.width > platform.x && collisionState.playerBox.x < platform.x + platform.width;
+    return { overlapsY, overlapsX, overlapsXLanding, overlapsXHead, overlapsXSprite };
+  }
 
-        // HEAD BUMP
-        if (
-          player.velocityY < 0 &&
-          platform.type !== "middleShort" &&
-          (overlapsXHead || overlapsXSprite) &&
-          currentTop <= platform.bottom &&
-          currentTop - player.velocityY >= platform.bottom
-        ) {
-          player.y = platform.bottom;
-          player.velocityY = 0;
-          continue;
-        }
-      }
+  applyLandingCollision(platform, player, collisionState, overlaps) {
+    if (!platform.supportsLanding || !overlaps.overlapsY || !overlaps.overlapsXLanding) return false;
+    if (this.applyLandingFromAbove(player, platform, collisionState)) return true;
+    if (this.applyStayGrounded(player, platform, collisionState)) return true;
+    if (this.applyHeadBump(player, platform, collisionState, overlaps)) return true;
+    return false;
+  }
 
-      /** ----- SIDE WALLS ----- */
-      if (
-        platform.hasSideWalls &&
-        overlapsY &&
-        overlapsX &&
-        currentBottom > platform.top + platform.sideWallGap &&
-        player.velocityY >= 0
-      ) {
-        if (player.x + player.width > platform.left && player.x <= platform.left) {
-          player.x = platform.left - player.width;
-        }
-        if (player.x < platform.right && player.x + player.width >= platform.right) {
-          player.x = platform.right;
-        }
-      }
+  applyLandingFromAbove(player, platform, collisionState) {
+    if (player.velocityY <= 0 || collisionState.previousBottom > platform.top || collisionState.currentBottom < platform.top) return false;
+    player.y = platform.top - player.height;
+    player.velocityY = 0;
+    player.onGround = true;
+    collisionState.isGrounded = true;
+    if (!collisionState.wasOnGroundBefore) {
+      player.justLanded = true;
+      player.landedOnPlatform = true;
     }
+    return true;
+  }
 
-    /** ----- FALL OFF WORLD ----- */
-    if (isGrounded && player.markSafePosition) player.markSafePosition();
-    player.handleFallOffWorld(isGrounded, currentBottom, this.canvas.height);
+  applyStayGrounded(player, platform, collisionState) {
+    if (player.velocityY < 0) return false;
+    if (
+      collisionState.currentBottom < platform.top || collisionState.currentBottom > platform.top + collisionState.groundedTolerancePx
+    ) return false;
+    player.y = platform.top - player.height;
+    player.velocityY = 0;
+    player.onGround = true;
+    collisionState.isGrounded = true;
+    return true;
+  }
 
-    /** ----- WORLD HORIZONTAL LIMITS ----- */
+  applyHeadBump(player, platform, collisionState, overlaps) {
+    if (player.velocityY >= 0) return false;
+    if (platform.type === "middleShort") return false;
+    if (!overlaps.overlapsXHead && !overlaps.overlapsXSprite) return false;
+    if (
+      collisionState.currentTop > platform.bottom || collisionState.currentTop - player.velocityY < platform.bottom
+    ) return false;
+    player.y = platform.bottom;
+    player.velocityY = 0;
+    return true;
+  }
+
+  applySideWallCollision(platform, player, collisionState, overlaps) {
+    if (!platform.hasSideWalls || !overlaps.overlapsY || !overlaps.overlapsX) return;
+    if (collisionState.currentBottom <= platform.top + platform.sideWallGap) return;
+    if (player.velocityY < 0) return;
+    if (player.x + player.width > platform.left && player.x <= platform.left) {
+      player.x = platform.left - player.width;
+    }
+    if (player.x < platform.right && player.x + player.width >= platform.right) {
+      player.x = platform.right;
+    }
+  }
+
+  applyPostCollisionEffects(player, collisionState) {
+    if (collisionState.isGrounded && player.markSafePosition)
+      player.markSafePosition();
+      player.handleFallOffWorld(collisionState.isGrounded, collisionState.currentBottom, this.canvas.height);
+      this.applyHorizontalLimits(player);
+      this.stopSlideIfBlocked(player, collisionState.previousX, collisionState.slideBlockMovementThreshold);
+  }
+
+  applyHorizontalLimits(player) {
     if (player.x < this.left) player.x = this.left;
-    if (player.x > this.right - player.width)
-      player.x = this.right - player.width;
+    if (player.x > this.right - player.width) player.x = this.right - player.width;
+  }
 
-    // stop slide if horizontal movement was blocked (e.g., wall/edge)
+  stopSlideIfBlocked(player, previousX, slideBlockMovementThreshold) {
     const deltaX = Math.abs(player.x - previousX);
     if (player.isSliding && player.slideBlockGrace <= 0 && deltaX < slideBlockMovementThreshold) {
       player.isSliding = false;
     }
   }
 
-  /** ---------- VALID COIN SPAWN CHECK ---------- */
-  coinPositionIsValid(
-    x,
-    y,
-    width = 50,
-    height = 50,
-    existingCoins = [],
-    minSpacing = 0
-  ) {
-    const overlapsPlatform = this.platforms.some((platform) => {
+  coinPositionIsValid(x, y, width = 50, height = 50, existingCoins = [], minSpacing = 0) {
+    if (this.hasPlatformOverlap(x, y, width, height)) return false;
+    if (this.isTooCloseToCoins(x, y, width, height, existingCoins, minSpacing)) return false;
+    return true;
+  }
+
+  hasPlatformOverlap(x, y, width, height) {
+    return this.platforms.some((platform) => {
       const platformLeft = platform.x;
       const platformRight = platform.x + platform.width;
       const platformTop = platform.y;
@@ -177,36 +200,27 @@ export class World {
       const overlapsY = coinBottom > platformTop && coinTop < platformBottom;
       return overlapsX && overlapsY;
     });
-
-    if (overlapsPlatform) return false;
-
-    if (minSpacing > 0 && existingCoins?.length) {
-      const candidateCenterX = x + width / 2;
-      const candidateCenterY = y + height / 2;
-      const minSpacingSquared = minSpacing * minSpacing;
-      const tooClose = existingCoins.some((coin) => {
-        const otherWidth = coin.width ?? width;
-        const otherHeight = coin.height ?? height;
-        const otherCenterX = coin.x + otherWidth / 2;
-        const otherCenterY = coin.y + otherHeight / 2;
-        const deltaX = otherCenterX - candidateCenterX;
-        const deltaY = otherCenterY - candidateCenterY;
-        return deltaX * deltaX + deltaY * deltaY < minSpacingSquared;
-      });
-      if (tooClose) return false;
-    }
-
-    return true;
   }
 
-  /** ---------- HUD POPUP ---------- */
+  isTooCloseToCoins(x, y, width, height, existingCoins, minSpacing) {
+    if (minSpacing <= 0 || !existingCoins?.length) return false;
+    const candidateCenterX = x + width / 2;
+    const candidateCenterY = y + height / 2;
+    const minSpacingSquared = minSpacing * minSpacing;
+    return existingCoins.some((coin) => {
+      const otherWidth = coin.width ?? width;
+      const otherHeight = coin.height ?? height;
+      const otherCenterX = coin.x + otherWidth / 2;
+      const otherCenterY = coin.y + otherHeight / 2;
+      const deltaX = otherCenterX - candidateCenterX;
+      const deltaY = otherCenterY - candidateCenterY;
+      return deltaX * deltaX + deltaY * deltaY < minSpacingSquared;
+    });
+  }
+
   addPopup(popup) {
     this.hudPopups.push(popup);
   }
-
-  /* ===========================================================
-     BULLET & FX HANDLING
-     =========================================================== */
 
   setHitEffectFrames(frames) {
     this.hitEffectFrames = frames;
@@ -228,7 +242,6 @@ export class World {
     this.hitEffects.push(new DizzyEffect(headX, headY, this.hitEffectFrames));
   }
 
-  /** ---------- UPDATE BULLETS & EXPLOSIONS ---------- */
   updateProjectiles(dt, enemies = []) {
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update(dt, enemies);
@@ -241,7 +254,6 @@ export class World {
     });
   }
 
-  /** ---------- UPDATE HIT EFFECTS ---------- */
   updateHitEffects(dt) {
     this.hitEffects = this.hitEffects.filter((effect) => {
       effect.update(dt);
@@ -249,18 +261,15 @@ export class World {
     });
   }
 
-  /** ---------- RENDER PROJECTILES & EXPLOSIONS ---------- */
   renderProjectiles(ctx, camera) {
     this.bullets.forEach((bullet) => bullet.render(ctx, camera));
     this.explosions.forEach((explosion) => explosion.render(ctx, camera));
   }
 
-  /** ---------- RENDER HIT EFFECTS ---------- */
   renderHitEffects(ctx, camera) {
     this.hitEffects.forEach((effect) => effect.render(ctx, camera));
   }
 
-  /** ---------- UPDATE & RENDER ENEMIES ---------- */
   updateEnemies(dt, player) {
     this.enemies = this.enemies.filter((enemy) => {
       enemy.update(dt, player);

@@ -37,7 +37,7 @@ const handleLegalClick = ({ state, x, y, showLegalPage, canvas, drawStartScreen 
 const handleSettingsOverlayClick = ({ state, x, y, getActiveControlsOverlay, canvas, drawStartScreen }) => {
   if (!state.settingsOpen) return false;
   const overlay = getActiveControlsOverlay();
-  if (!overlay.handleClick(x, y)) return true;
+  if (!overlay.handleCloseButtonClick(x, y)) return true;
   state.settingsOpen = false;
   overlay.clearPointer();
   setOverlayActive(false);
@@ -53,8 +53,8 @@ const isInsideStartButton = ({ state, x, y }) => {
   return inside;
 };
 
-const removeStartScreenListeners = ({ canvas, settingsToggle, handleClick, handleMove, handleLeave, handleSettingsClick, handleKeyDown }) => {
-  canvas.removeEventListener("click", handleClick);
+const removeStartScreenListeners = ({ canvas, settingsToggle, handleCanvasClick, handleMove, handleLeave, handleSettingsClick, handleKeyDown }) => {
+  canvas.removeEventListener("click", handleCanvasClick);
   canvas.removeEventListener("mousemove", handleMove);
   canvas.removeEventListener("mouseleave", handleLeave);
   settingsToggle?.removeEventListener("click", handleSettingsClick, true);
@@ -171,7 +171,7 @@ const closeSettingsOnEscape = ({ state, event, getActiveControlsOverlay, drawSta
   drawStartScreen();
 };
 
-const createHandleClick = (dependencies, handlerRefs) => (event) => {
+const createHandleCanvasClick = (dependencies, handlerRefs) => (event) => {
   if (!dependencies.state.startScreenActive) return;
   const { x, y } = getCanvasPoint(dependencies.canvas, event);
   if (handleLegalClick({ ...dependencies, x, y })) return;
@@ -245,7 +245,7 @@ const createHandleTouchEnd = (dependencies) => () => {
 
 const buildStartScreenHandlers = (dependencies) => {
   const handlerRefs = {};
-  handlerRefs.handleClick = createHandleClick(dependencies, handlerRefs);
+  handlerRefs.handleCanvasClick = createHandleCanvasClick(dependencies, handlerRefs);
   handlerRefs.handleMove = createHandleMove(dependencies);
   handlerRefs.handleLeave = createHandleLeave(dependencies);
   handlerRefs.handleSettingsClick = createHandleSettingsClick(dependencies);

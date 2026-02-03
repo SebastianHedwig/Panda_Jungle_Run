@@ -10,16 +10,23 @@ export function loadFrames(path, prefix, count, { pad = 3 } = {}) {
   );
 }
 
+function isImageValid(img) {
+  return img.naturalWidth > 0 && img.naturalHeight > 0;
+}
+
+function handleImageError(img, finish) {
+  console.warn("Image failed to load", img?.src || img);
+  finish(false);
+}
+
 export function waitForImage(img) {
   return new Promise((resolve) => {
     const finish = (ok) => resolve({ ok, img });
-    if (img.complete) {finish(img.naturalWidth > 0 && img.naturalHeight > 0);
+    if (img.complete) {
+      finish(isImageValid(img));
       return;
     }
     img.onload = () => finish(true);
-    img.onerror = () => {
-      console.warn("Image failed to load", img?.src || img);
-      finish(false);
-    };
+    img.onerror = () => handleImageError(img, finish);
   });
 }

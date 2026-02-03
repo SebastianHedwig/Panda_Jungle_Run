@@ -52,8 +52,8 @@ export class ControlsOverlay {
     this.renderer.clearPointer();
   }
 
-  handleClick(x, y) {
-    return this.renderer.handleClick(x, y);
+  handleCloseButtonClick(x, y) {
+    return this.renderer.handleCloseButtonClick(x, y);
   }
 
   handleBackClick(x, y) {
@@ -67,7 +67,7 @@ export class ControlsOverlay {
     return this.renderer.isHovering() || (this.showBackButton && this.backButtonHover);
   }
 
-  render(ctx, canvas) {
+  startRender(ctx, canvas) {
     ctx.save();
     const panelRect = this.renderer.renderPanel(ctx, {
       canvas,
@@ -76,40 +76,77 @@ export class ControlsOverlay {
     });
     if (!panelRect) {
       ctx.restore();
-      return;
+      return null;
     }
+    return panelRect;
+  }
 
-    const { x, y, height } = panelRect;
-    const titleY = y + height * TITLE_BASELINE_RATIO + TITLE_OFFSET_Y;
+  getTitleY({ y, height }) {
+    return y + height * TITLE_BASELINE_RATIO + TITLE_OFFSET_Y;
+  }
+
+  getListLayout(canvas, titleY) {
     const canvasCenterX = canvas.width / 2;
-    this.renderer.applyTitleStyle(ctx, canvas.width);
-    ctx.fillText("Controls", canvasCenterX, titleY);
-
     const listStartY = titleY + LIST_START_OFFSET;
     const lineHeight = Math.min(LINE_HEIGHT_MAX, canvas.height * LINE_HEIGHT_RATIO);
     const labelX = canvasCenterX - LABEL_OFFSET_X;
     const colonX = labelX + COLON_SPACING;
     const valueX = colonX + COLON_SPACING;
+    return { canvasCenterX, listStartY, lineHeight, labelX, colonX, valueX };
+  }
 
+  drawTitle(ctx, canvas, titleY) {
+    const canvasCenterX = canvas.width / 2;
+    this.renderer.applyTitleStyle(ctx, canvas.width);
+    ctx.fillText("Controls", canvasCenterX, titleY);
+  }
+
+  drawControlsList(ctx, canvas, layout) {
     this.renderer.applyBodyStyle(ctx, canvas.width);
     this.controls.forEach((item, index) => {
-      const itemYPosition = listStartY + index * lineHeight;
-      ctx.textAlign = "right";
-      ctx.fillText(item.label, labelX, itemYPosition);
-      ctx.textAlign = "center";
-      ctx.fillText(":", colonX, itemYPosition);
-      ctx.textAlign = "left";
-      ctx.fillText(item.value, valueX, itemYPosition);
+      this.drawControlRow(ctx, item, index, layout);
     });
+  }
 
+  drawControlRow(ctx, item, index, { listStartY, lineHeight, labelX, colonX, valueX }) {
+    const itemYPosition = listStartY + index * lineHeight;
+    ctx.textAlign = "right";
+    ctx.fillText(item.label, labelX, itemYPosition);
+    ctx.textAlign = "center";
+    ctx.fillText(":", colonX, itemYPosition);
+    ctx.textAlign = "left";
+    ctx.fillText(item.value, valueX, itemYPosition);
+  }
+
+  drawBackButtonIfNeeded(ctx, panelRect) {
     if (this.assets.uiImage?.naturalWidth && this.showBackButton) {
-      this.drawBackButton(ctx, { x, y, height });
+      this.drawBackButton(ctx, panelRect);
     }
+  }
+
+  render(ctx, canvas) {
+    const panelRect = this.startRender(ctx, canvas);
+    if (!panelRect) return;
+    const titleY = this.getTitleY(panelRect);
+    const layout = this.getListLayout(canvas, titleY);
+    this.drawTitle(ctx, canvas, titleY);
+    this.drawControlsList(ctx, canvas, layout);
+    this.drawBackButtonIfNeeded(ctx, panelRect);
     ctx.restore();
   }
 
-  drawBackButton(ctx, { x, y, height }) {
-    const { bounds, isHover } = renderBackButton({
+  getBackButtonOptions() {
+    return {
+      targetSize: BACK_BUTTON_TARGET_SIZE,
+      margin: BACK_BUTTON_MARGIN,
+      extraOffsetY: BACK_BUTTON_EXTRA_OFFSET_Y,
+      hoverScale: BACK_BUTTON_HOVER_SCALE,
+      shadow: BACK_BUTTON_SHADOW,
+    };
+  }
+
+  getBackButtonArgs(ctx, { x, y, height }) {
+    return {
       ctx,
       uiImage: this.assets.uiImage,
       sprite: this.backButtonSprite,
@@ -117,13 +154,17 @@ export class ControlsOverlay {
       containerX: x,
       containerY: y,
       containerHeight: height,
-      targetSize: BACK_BUTTON_TARGET_SIZE,
-      margin: BACK_BUTTON_MARGIN,
-      extraOffsetY: BACK_BUTTON_EXTRA_OFFSET_Y,
-      hoverScale: BACK_BUTTON_HOVER_SCALE,
-      shadow: BACK_BUTTON_SHADOW,
-    });
+      ...this.getBackButtonOptions(),
+    };
+  }
+
+  updateBackButtonState({ bounds, isHover }) {
     this.backButtonHover = isHover;
     this.backButtonBounds = bounds;
+  }
+
+  drawBackButton(ctx, panelRect) {
+    const renderState = renderBackButton(this.getBackButtonArgs(ctx, panelRect));
+    this.updateBackButtonState(renderState);
   }
 }

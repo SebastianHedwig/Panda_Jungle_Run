@@ -90,8 +90,8 @@ export class ControlsOverlayMobile {
     this.renderer.clearPointer();
   }
 
-  handleClick(x, y) {
-    return this.renderer.handleClick(x, y);
+  handleCloseButtonClick(x, y) {
+    return this.renderer.handleCloseButtonClick(x, y);
   }
 
   handleBackClick(x, y) {
@@ -105,7 +105,7 @@ export class ControlsOverlayMobile {
     return this.renderer.isHovering() || (this.showBackButton && this.backButtonHover);
   }
 
-  render(ctx, canvas) {
+  startRender(ctx, canvas) {
     ctx.save();
     const panelRect = this.renderer.renderPanel(ctx, {
       canvas,
@@ -114,65 +114,120 @@ export class ControlsOverlayMobile {
     });
     if (!panelRect) {
       ctx.restore();
-      return;
+      return null;
     }
+    return panelRect;
+  }
 
-    const { x, y, width, height } = panelRect;
-    const titleY = y + height * TITLE_BASELINE_RATIO + TITLE_OFFSET_Y;
+  getTitleY({ y, height }) {
+    return y + height * TITLE_BASELINE_RATIO + TITLE_OFFSET_Y;
+  }
+
+  getLayout(canvas, titleY) {
     const canvasCenterX = canvas.width / 2;
-    this.renderer.applyTitleStyle(ctx, canvas.width);
-    ctx.fillText("Mobile Controls", canvasCenterX, titleY);
-
     const iconSize = Math.min(ICON_SIZE_MAX, canvas.width * ICON_SIZE_RATIO);
     const listStartY = titleY + LIST_START_OFFSET;
     const lineHeight = Math.max(iconSize + LINE_HEIGHT_EXTRA, Math.min(LINE_HEIGHT_MAX, canvas.height * LINE_HEIGHT_RATIO));
     const iconX = canvasCenterX - ICON_X_OFFSET;
     const valueX = iconX + iconSize + VALUE_X_PADDING;
+    return { canvasCenterX, iconSize, listStartY, lineHeight, iconX, valueX };
+  }
 
+  drawTitle(ctx, canvas, titleY) {
+    const canvasCenterX = canvas.width / 2;
+    this.renderer.applyTitleStyle(ctx, canvas.width);
+    ctx.fillText("Mobile Controls", canvasCenterX, titleY);
+  }
+
+  drawControls(ctx, canvas, layout) {
     this.renderer.applyBodyStyle(ctx, canvas.width);
     ctx.textBaseline = "middle";
     this.controls.forEach((item, index) => {
-      const rowCenterY = listStartY + index * lineHeight + lineHeight / 2;
-
-      const img = this.getIcon(item.icon);
-      const drawX = iconX;
-      const drawY = rowCenterY - iconSize * ICON_CENTERING_RATIO;
-      ctx.save();
-
-      const grad = ctx.createLinearGradient(drawX, drawY, drawX + iconSize, drawY + iconSize);
-      grad.addColorStop(0, ICON_GRADIENT_START);
-      grad.addColorStop(1, ICON_GRADIENT_END);
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(drawX + iconSize / 2, drawY + iconSize / 2, iconSize / 2, 0, FULL_CIRCLE_RADIANS);
-      ctx.fill();
-
-      const innerSize = iconSize * ICON_INNER_SIZE_RATIO;
-      if (!img?.naturalWidth || !img?.naturalHeight) {
-        ctx.restore();
-        return;
-      }
-      const maxIconDimension = Math.max(img.naturalWidth, img.naturalHeight);
-      const iconScale = innerSize / maxIconDimension;
-      const imgW = img.naturalWidth * iconScale;
-      const imgH = img.naturalHeight * iconScale;
-      const imgX = drawX + (iconSize - imgW) / 2;
-      const imgY = drawY + (iconSize - imgH) / 2;
-      ctx.drawImage(img, imgX, imgY, imgW, imgH);
-      ctx.restore();
-
-      ctx.textAlign = "left";
-      ctx.fillText(item.value, valueX, rowCenterY);
+      this.drawControlRow(ctx, item, index, layout);
     });
+  }
 
-    if (this.assets.uiImage?.naturalWidth && this.showBackButton) {
-      this.drawBackButton(ctx, { x, y, width, height });
+  getRowCenterY({ listStartY, lineHeight }, index) {
+    return listStartY + index * lineHeight + lineHeight / 2;
+  }
+
+  getIconLayout(rowCenterY, { iconSize, iconX }) {
+    const drawX = iconX;
+    const drawY = rowCenterY - iconSize * ICON_CENTERING_RATIO;
+    return { drawX, drawY, iconSize };
+  }
+
+  drawIconBackground(ctx, { drawX, drawY, iconSize }) {
+    const grad = ctx.createLinearGradient(drawX, drawY, drawX + iconSize, drawY + iconSize);
+    grad.addColorStop(0, ICON_GRADIENT_START);
+    grad.addColorStop(1, ICON_GRADIENT_END);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(drawX + iconSize / 2, drawY + iconSize / 2, iconSize / 2, 0, FULL_CIRCLE_RADIANS);
+    ctx.fill();
+  }
+
+  getIconImageRect(img, { drawX, drawY, iconSize }) {
+    const innerSize = iconSize * ICON_INNER_SIZE_RATIO;
+    const maxIconDimension = Math.max(img.naturalWidth, img.naturalHeight);
+    const iconScale = innerSize / maxIconDimension;
+    const imgW = img.naturalWidth * iconScale;
+    const imgH = img.naturalHeight * iconScale;
+    const imgX = drawX + (iconSize - imgW) / 2;
+    const imgY = drawY + (iconSize - imgH) / 2;
+    return { imgX, imgY, imgW, imgH };
+  }
+
+  drawControlValue(ctx, value, valueX, rowCenterY) {
+    ctx.textAlign = "left";
+    ctx.fillText(value, valueX, rowCenterY);
+  }
+
+  drawControlRow(ctx, item, index, layout) {
+    const rowCenterY = this.getRowCenterY(layout, index);
+    const iconLayout = this.getIconLayout(rowCenterY, layout);
+    const img = this.getIcon(item.icon);
+    ctx.save();
+    this.drawIconBackground(ctx, iconLayout);
+    if (!img?.naturalWidth || !img?.naturalHeight) {
+      ctx.restore();
+      return;
     }
+    const imageRect = this.getIconImageRect(img, iconLayout);
+    ctx.drawImage(img, imageRect.imgX, imageRect.imgY, imageRect.imgW, imageRect.imgH);
+    ctx.restore();
+    this.drawControlValue(ctx, item.value, layout.valueX, rowCenterY);
+  }
+
+  drawBackButtonIfNeeded(ctx, panelRect) {
+    if (this.assets.uiImage?.naturalWidth && this.showBackButton) {
+      this.drawBackButton(ctx, panelRect);
+    }
+  }
+
+  render(ctx, canvas) {
+    const panelRect = this.startRender(ctx, canvas);
+    if (!panelRect) return;
+    const titleY = this.getTitleY(panelRect);
+    const layout = this.getLayout(canvas, titleY);
+    this.drawTitle(ctx, canvas, titleY);
+    this.drawControls(ctx, canvas, layout);
+    this.drawBackButtonIfNeeded(ctx, panelRect);
     ctx.restore();
   }
 
-  drawBackButton(ctx, { x, y, height }) {
-    const { bounds, isHover } = renderBackButton({
+  getBackButtonOptions() {
+    return {
+      targetSize: BACK_BUTTON_TARGET_SIZE,
+      margin: BACK_BUTTON_MARGIN,
+      extraOffsetY: BACK_BUTTON_EXTRA_OFFSET_Y,
+      hoverScale: BACK_BUTTON_HOVER_SCALE,
+      shadow: BACK_BUTTON_SHADOW,
+    };
+  }
+
+  getBackButtonArgs(ctx, { x, y, height }) {
+    return {
       ctx,
       uiImage: this.assets.uiImage,
       sprite: this.backButtonSprite,
@@ -180,14 +235,18 @@ export class ControlsOverlayMobile {
       containerX: x,
       containerY: y,
       containerHeight: height,
-      targetSize: BACK_BUTTON_TARGET_SIZE,
-      margin: BACK_BUTTON_MARGIN,
-      extraOffsetY: BACK_BUTTON_EXTRA_OFFSET_Y,
-      hoverScale: BACK_BUTTON_HOVER_SCALE,
-      shadow: BACK_BUTTON_SHADOW,
-    });
+      ...this.getBackButtonOptions(),
+    };
+  }
+
+  updateBackButtonState({ bounds, isHover }) {
     this.backButtonHover = isHover;
     this.backButtonBounds = bounds;
+  }
+
+  drawBackButton(ctx, panelRect) {
+    const renderState = renderBackButton(this.getBackButtonArgs(ctx, panelRect));
+    this.updateBackButtonState(renderState);
   }
 
   getIcon(src) {

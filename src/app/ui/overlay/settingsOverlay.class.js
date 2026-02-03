@@ -63,49 +63,169 @@ export class SettingsOverlay {
     this.controlsOverlayMobile.clearPointer();
   }
 
-  handleClick(x, y) {
-    if (this.showControls) {
-      const activeOverlay = this.getActiveControlsOverlay();
-      if (activeOverlay.handleBackClick?.(x, y)) {
-        this.showControls = false;
-        activeOverlay.clearPointer();
-        this.renderer.clearPointer();
-        return false;
-      }
-      if (activeOverlay.handleClick(x, y)) {
-        this.showControls = false;
-        return true;
-      }
-      return false;
-    }
+  isInsideBounds(x, y, bounds) {
+    return x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
+  }
 
-    if (this.renderer.handleClick(x, y)) return true;
+  isPointerInsideBounds(bounds) {
+    const pointer = this.pointer;
+    return !!pointer && this.isInsideBounds(pointer.x, pointer.y, bounds);
+  }
 
-    const hitIndex = this.itemBounds.findIndex(
-      (bounds) =>
-        x >= bounds.x &&
-        x <= bounds.x + bounds.w &&
-        y >= bounds.y &&
-        y <= bounds.y + bounds.h
-    );
-    if (hitIndex === 0) {
-      this.showControls = true;
-      this.renderer.clearPointer();
-      this.controlsOverlayDesktop.clearPointer();
-      this.controlsOverlayMobile.clearPointer();
-      return false;
-    }
-    if (hitIndex === 1) {
+  exitControlsOverlay(activeOverlay) {
+    this.showControls = false;
+    activeOverlay.clearPointer();
+    this.renderer.clearPointer();
+    return false;
+  }
+
+  handleControlsClick(x, y) {
+    const activeOverlay = this.getActiveControlsOverlay();
+    if (activeOverlay.handleBackClick?.(x, y)) return this.exitControlsOverlay(activeOverlay);
+    if (activeOverlay.handleCloseButtonClick(x, y)) {
       this.showControls = false;
-      this.clearPointer();
-      this.onQuit?.();
       return true;
     }
     return false;
   }
 
+  getItemHitIndex(x, y) {
+    return this.itemBounds.findIndex((bounds) => this.isInsideBounds(x, y, bounds));
+  }
+
+  openControls() {
+    this.showControls = true;
+    this.renderer.clearPointer();
+    this.controlsOverlayDesktop.clearPointer();
+    this.controlsOverlayMobile.clearPointer();
+    return false;
+  }
+
+  quitGame() {
+    this.showControls = false;
+    this.clearPointer();
+    this.onQuit?.();
+    return true;
+  }
+
+  handleMenuItemHit(hitIndex) {
+    if (hitIndex === 0) return this.openControls();
+    if (hitIndex === 1) return this.quitGame();
+    return false;
+  }
+
+  handleSettingsOverlayClick(x, y) {
+    if (this.showControls) return this.handleControlsClick(x, y);
+    if (this.renderer.handleCloseButtonClick(x, y)) return true;
+    const hitIndex = this.getItemHitIndex(x, y);
+    return this.handleMenuItemHit(hitIndex);
+  }
+
   textStyle(ctx) {
     applyOverlayTextStyle(ctx, { fill: OVERLAY_TEXT_COLOR });
+  }
+
+  renderControlsLayer(ctx, canvas) {
+    const activeOverlay = this.getActiveControlsOverlay();
+    activeOverlay.setAssets({
+      bgImage: this.assets.bgImage,
+      uiImage: this.assets.uiImage,
+    });
+    activeOverlay.render(ctx, canvas);
+    if (canvas) canvas.style.cursor = activeOverlay.isHovering() ? "pointer" : "default";
+    ctx.restore();
+  }
+
+  getTitleY({ y, height }) {
+    return y + height * TITLE_BASELINE_RATIO + TITLE_OFFSET_Y;
+  }
+
+  drawSettingsTitle(ctx, canvas, titleY) {
+    const canvasCenterX = canvas.width / 2;
+    this.renderer.applyTitleStyle(ctx, canvas.width);
+    ctx.fillText("SETTINGS", canvasCenterX, titleY);
+  }
+
+  drawPausedText(ctx, canvas, titleY) {
+    const pausedY = titleY + Math.min(PAUSED_MAX_OFFSET, canvas.height * PAUSED_HEIGHT_RATIO) + PAUSED_EXTRA_OFFSET_Y;
+    ctx.font = `${TITLE_FONT_WEIGHT} ${Math.min(PAUSED_MAX_FONT, canvas.width * PAUSED_FONT_SCALE)}px "ComixLoud", sans-serif`;
+    this.textStyle(ctx);
+    ctx.fillText("(game paused)", canvas.width / 2, pausedY);
+    return pausedY;
+  }
+
+  getListLayout(canvas, pausedY) {
+    const listStartY = pausedY + Math.min(LIST_MAX_OFFSET, canvas.height * LIST_OFFSET_RATIO) + LIST_EXTRA_OFFSET_Y;
+    const lineHeight = Math.min(LIST_MAX_LINE_HEIGHT, canvas.height * LIST_LINE_HEIGHT_RATIO);
+    const canvasCenterX = canvas.width / 2;
+    return { listStartY, lineHeight, canvasCenterX };
+  }
+
+  applyMenuFont(ctx, canvas) {
+    const bodyFont = `${TITLE_FONT_WEIGHT} ${Math.min(BODY_FONT_MAX, canvas.width * BODY_FONT_SCALE)}px "ComixLoud", sans-serif`;
+    ctx.font = bodyFont;
+    this.textStyle(ctx);
+  }
+
+  getMenuItems() {
+    return ["CONTROLS", "QUIT GAME"];
+  }
+
+  getMenuItemLayout(ctx, item, index, { listStartY, lineHeight, canvasCenterX }) {
+    const itemYPosition = listStartY + index * lineHeight;
+    const textWidth = ctx.measureText(item).width;
+    const padding = DEFAULT_BUTTON_PADDING;
+    const bounds = {
+      x: canvasCenterX - textWidth / 2 - padding / 2,
+      y: itemYPosition - lineHeight / 2,
+      w: textWidth + padding,
+      h: lineHeight,
+    };
+    const isHover = this.isPointerInsideBounds(bounds);
+    const hoverScale = isHover ? HOVER_SCALE : 1;
+    return { bounds, itemYPosition, hoverScale, isHover };
+  }
+
+  drawMenuItem(ctx, item, { itemYPosition, hoverScale }, canvasCenterX) {
+    ctx.save();
+    ctx.translate(canvasCenterX, itemYPosition);
+    ctx.scale(hoverScale, hoverScale);
+    ctx.textAlign = "center";
+    ctx.fillText(item, 0, 0);
+    ctx.restore();
+  }
+
+  renderMenuItems(ctx, items, layout) {
+    this.itemBounds = [];
+    let hoverAny = false;
+    items.forEach((item, index) => {
+      const itemLayout = this.getMenuItemLayout(ctx, item, index, layout);
+      this.itemBounds.push(itemLayout.bounds);
+      this.drawMenuItem(ctx, item, itemLayout, layout.canvasCenterX);
+      hoverAny = hoverAny || itemLayout.isHover;
+    });
+    return hoverAny;
+  }
+
+  renderMenuLayer(ctx, canvas) {
+    const panelRect = this.renderer.renderPanel(ctx, {
+      canvas,
+      bgImage: this.assets.bgImage,
+      uiImage: this.assets.uiImage,
+    });
+    if (!panelRect) return;
+    const hoverAny = this.renderMenuContent(ctx, canvas, panelRect);
+    if (canvas) canvas.style.cursor = hoverAny ? "pointer" : "default";
+    ctx.restore();
+  }
+
+  renderMenuContent(ctx, canvas, panelRect) {
+    const titleY = this.getTitleY(panelRect);
+    this.drawSettingsTitle(ctx, canvas, titleY);
+    const pausedY = this.drawPausedText(ctx, canvas, titleY);
+    const listLayout = this.getListLayout(canvas, pausedY);
+    this.applyMenuFont(ctx, canvas);
+    return this.renderMenuItems(ctx, this.getMenuItems(), listLayout);
   }
 
   render(ctx, canvas) {
@@ -113,73 +233,9 @@ export class SettingsOverlay {
 
     ctx.save();
     if (this.showControls) {
-      const activeOverlay = this.getActiveControlsOverlay();
-      activeOverlay.setAssets({
-        bgImage: this.assets.bgImage,
-        uiImage: this.assets.uiImage,
-      });
-      activeOverlay.render(ctx, canvas);
-      if (canvas) canvas.style.cursor = activeOverlay.isHovering() ? "pointer" : "default";
-      ctx.restore();
+      this.renderControlsLayer(ctx, canvas);
       return;
     }
-
-    const panelRect = this.renderer.renderPanel(ctx, {
-      canvas,
-      bgImage: this.assets.bgImage,
-      uiImage: this.assets.uiImage,
-    });
-    if (!panelRect) return;
-
-    const { y, height } = panelRect;
-    const titleY = y + height * TITLE_BASELINE_RATIO + TITLE_OFFSET_Y;
-    const canvasCenterX = canvas.width / 2;
-    this.renderer.applyTitleStyle(ctx, canvas.width);
-    ctx.fillText("SETTINGS", canvasCenterX, titleY);
-
-    const pausedY = titleY + Math.min(PAUSED_MAX_OFFSET, canvas.height * PAUSED_HEIGHT_RATIO) + PAUSED_EXTRA_OFFSET_Y;
-    ctx.font = `${TITLE_FONT_WEIGHT} ${Math.min(PAUSED_MAX_FONT, canvas.width * PAUSED_FONT_SCALE)}px "ComixLoud", sans-serif`;
-    this.textStyle(ctx);
-    ctx.fillText("(game paused)", canvasCenterX, pausedY);
-
-    const listStartY = pausedY + Math.min(LIST_MAX_OFFSET, canvas.height * LIST_OFFSET_RATIO) + LIST_EXTRA_OFFSET_Y;
-    const lineHeight = Math.min(LIST_MAX_LINE_HEIGHT, canvas.height * LIST_LINE_HEIGHT_RATIO);
-    const bodyFont = `${TITLE_FONT_WEIGHT} ${Math.min(BODY_FONT_MAX, canvas.width * BODY_FONT_SCALE)}px "ComixLoud", sans-serif`;
-    ctx.font = bodyFont;
-    this.textStyle(ctx);
-
-    const items = ["CONTROLS", "QUIT GAME"];
-    this.itemBounds = [];
-    let hoverAny = false;
-    items.forEach((item, index) => {
-      const itemYPosition = listStartY + index * lineHeight;
-      const textWidth = ctx.measureText(item).width;
-      const padding = DEFAULT_BUTTON_PADDING;
-      const bounds = {
-        x: canvasCenterX - textWidth / 2 - padding / 2,
-        y: itemYPosition - lineHeight / 2,
-        w: textWidth + padding,
-        h: lineHeight,
-      };
-      this.itemBounds.push(bounds);
-
-      const isHover =
-        !!this.pointer &&
-        this.pointer.x >= bounds.x &&
-        this.pointer.x <= bounds.x + bounds.w &&
-        this.pointer.y >= bounds.y &&
-        this.pointer.y <= bounds.y + bounds.h;
-      const hoverScale = isHover ? HOVER_SCALE : 1;
-      hoverAny = hoverAny || isHover;
-
-      ctx.save();
-      ctx.translate(canvasCenterX, itemYPosition);
-      ctx.scale(hoverScale, hoverScale);
-      ctx.textAlign = "center";
-      ctx.fillText(item, 0, 0);
-      ctx.restore();
-    });
-    if (canvas) canvas.style.cursor = hoverAny ? "pointer" : "default";
-    ctx.restore();
+    this.renderMenuLayer(ctx, canvas);
   }
 }

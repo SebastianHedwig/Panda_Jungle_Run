@@ -3,27 +3,8 @@ import { Background } from "../../engine/rendering/background.class.js";
 import { Camera } from "../../engine/world/camera.class.js";
 import { World } from "../world.class.js";
 import { Player } from "../../game/entities/player/player.class.js";
-import {
-  createLevel1Platforms,
-  createLevel1Collectables,
-  generateCoinsMixed,
-  generateCoinArcs,
-  placeHearts,
-  placeGuns,
-  placeEnemiesMixed,
-} from "../../game/levels/level1.js";
-import {
-  GAME_HEIGHT,
-  GAME_WIDTH,
-  LEVEL1_COIN_COUNT,
-  LEVEL1_COIN_RATIO_ABOVE,
-  LEVEL1_ENEMY1_COUNT,
-  LEVEL1_ENEMY2_COUNT,
-  LEVEL1_ENEMY3_COUNT,
-  LEVEL1_GUN_COUNT,
-  LEVEL1_HEART_COUNT,
-  WORLD_WIDTH,
-} from "../../config/config.js";
+import { createLevel1Platforms, createLevel1Collectables, generateCoinsMixed, generateCoinArcs, placeHearts, placeGuns, placeEnemiesMixed } from "../../game/levels/level1.js";
+import { GAME_HEIGHT, GAME_WIDTH, LEVEL1_COIN_COUNT, LEVEL1_COIN_RATIO_ABOVE, LEVEL1_ENEMY1_COUNT, LEVEL1_ENEMY2_COUNT, LEVEL1_ENEMY3_COUNT, LEVEL1_GUN_COUNT, LEVEL1_HEART_COUNT, WORLD_WIDTH } from "../../config/config.js";
 import { waitForImage } from "./assets/assetLoader.js";
 import { GameAudio } from "../../game/audio/gameAudio.class.js";
 import { Hud } from "../../game/ui/hud.class.js";
@@ -72,27 +53,51 @@ export function createGame({ canvasId = "game" } = {}) {
   const LOADING_TEXT_OFFSET_Y = 80;
   const FULL_CIRCLE_RADIANS = Math.PI * 2;
 
-  function init() {
+  function setupCanvas() {
     canvas = document.getElementById(canvasId);
     ctx = canvas.getContext("2d");
     canvas.width = GAME_WIDTH;
     canvas.height = GAME_HEIGHT;
+  }
 
+  function setupCoreSystems() {
     input = new Input();
     world = new World(canvas);
     camera = new Camera(canvas, WORLD_WIDTH);
     background = new Background(canvas);
+  }
+
+  function setupAudio() {
     audio = window.__preloadedGameAudio ?? new GameAudio();
     window.__preloadedGameAudio = null;
     world.audio = audio;
+  }
 
-    const musicReadyPromise = (audio.ready ? Promise.resolve(true) : audio.init()).then(() => audio.playAudio());
+  function getMusicReadyPromise() {
+    return (audio.ready ? Promise.resolve(true) : audio.init()).then(() => audio.playAudio());
+  }
+
+  function startLoadingRender() {
     requestAnimationFrame(renderLoading);
+  }
 
-    const assets = createGameAssets();
-    const assetsReady = Promise.allSettled(assets.images.map(waitForImage));
+  function getAssetsReady(assets) {
+    return Promise.allSettled(assets.images.map(waitForImage));
+  }
 
+  function startWhenReady(assets, assetsReady, musicReadyPromise) {
     Promise.all([assetsReady, musicReadyPromise]).then(() => start(assets));
+  }
+
+  function init() {
+    setupCanvas();
+    setupCoreSystems();
+    setupAudio();
+    const musicReadyPromise = getMusicReadyPromise();
+    startLoadingRender();
+    const assets = createGameAssets();
+    const assetsReady = getAssetsReady(assets);
+    startWhenReady(assets, assetsReady, musicReadyPromise);
   }
 
   function setPaused(paused) {
@@ -112,21 +117,36 @@ export function createGame({ canvasId = "game" } = {}) {
     const toggle = document.getElementById("settings-toggle");
   }
 
-  function updateSettingsPointer(event) {
-    if (!canvas) return;
+  function getCanvasPointer(event) {
     const rect = canvas.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
     const y = ((event.clientY - rect.top) / rect.height) * canvas.height;
-    if (isGameWon) {
-      gameWonOverlay?.setPointer?.(x, y);
-      return;
-    }
-    if (isGameOver) {
-      gameOverOverlay?.setPointer?.(x, y);
-      return;
-    }
+    return { x, y };
+  }
+
+  function setGameWonPointer(x, y) {
+    gameWonOverlay?.setPointer?.(x, y);
+  }
+
+  function setGameOverPointer(x, y) {
+    gameOverOverlay?.setPointer?.(x, y);
+  }
+
+  function setMenuPointer(x, y) {
     menuPointer = { x, y };
     if (isPaused) menu?.setPointer?.(x, y);
+  }
+
+  function applyMenuPointer(x, y) {
+    if (isGameWon) return setGameWonPointer(x, y);
+    if (isGameOver) return setGameOverPointer(x, y);
+    setMenuPointer(x, y);
+  }
+
+  function updateSettingsPointer(event) {
+    if (!canvas) return;
+    const { x, y } = getCanvasPointer(event);
+    applyMenuPointer(x, y);
   }
 
   function clearSettingsPointer() {
@@ -136,27 +156,35 @@ export function createGame({ canvasId = "game" } = {}) {
     gameWonOverlay?.clearPointer?.();
   }
 
-  function handleMenuClick(event) {
-    const rect = canvas.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
-    const y = ((event.clientY - rect.top) / rect.height) * canvas.height;
+  function handleGameOverlayAction(action) {
+    if (action === "retry") handleRetry();
+    if (action === "quit") handleQuit();
+  }
+
+  function handleEndGameClick(x, y) {
     if (isGameWon) {
-      const action = gameWonOverlay?.handleClick?.(x, y);
-      if (action === "retry") handleRetry();
-      if (action === "quit") handleQuit();
-      return;
+      handleGameOverlayAction(gameWonOverlay?.handleGameOverlayButtonClick?.(x, y));
+      return true;
     }
     if (isGameOver) {
-      const action = gameOverOverlay?.handleClick?.(x, y);
-      if (action === "retry") handleRetry();
-      if (action === "quit") handleQuit();
-      return;
+      handleGameOverlayAction(gameOverOverlay?.handleGameOverlayButtonClick?.(x, y));
+      return true;
     }
+    return false;
+  }
+
+  function stopMenuClickEvent(event) {
+    event.stopImmediatePropagation?.();
+    event.preventDefault?.();
+  }
+
+  function handleMenuClick(event) {
+    const { x, y } = getCanvasPointer(event);
+    if (handleEndGameClick(x, y)) return;
     if (!isPaused || !menu) return;
-    if (menu.handleClick?.(x, y)) {
+    if (menu.handleSettingsOverlayClick?.(x, y)) {
       setSettingsOpen(false);
-      event.stopImmediatePropagation?.();
-      event.preventDefault?.();
+      stopMenuClickEvent(event);
     }
   }
 
@@ -173,27 +201,48 @@ export function createGame({ canvasId = "game" } = {}) {
     window.location.reload();
   }
 
-  function start(assets) {
+  function getBackgroundAssets(assets) {
     const [bg1, bg2, bg3, bg4, cloud1, cloud2] = assets.bgImages;
-    const parallaxImages = [bg1, bg2, bg3, bg4];
+    return { parallaxImages: [bg1, bg2, bg3, bg4], cloud1, cloud2 };
+  }
 
+  function addParallaxLayers(parallaxImages) {
     PARALLAX_LAYERS.forEach(({ imageIndex, parallaxFactor, swaySpeed }) => {
       background.addLayer(parallaxImages[imageIndex], parallaxFactor, swaySpeed);
     });
-    background.spawnClouds(cloud1, cloud2);
+  }
 
+  function setupBackgroundAssets(assets) {
+    const { parallaxImages, cloud1, cloud2 } = getBackgroundAssets(assets);
+    addParallaxLayers(parallaxImages);
+    background.spawnClouds(cloud1, cloud2);
+  }
+
+  function setupWorldPlatforms(assets) {
     const platforms = createLevel1Platforms(assets.platformSprites);
     world.addPlatforms(platforms);
     world.camera = camera;
+  }
 
-    const collectables = [
+  function getCollectables() {
+    return [
       ...createLevel1Collectables(),
       ...generateCoinsMixed(world, LEVEL1_COIN_COUNT, LEVEL1_COIN_RATIO_ABOVE),
       ...generateCoinArcs(world),
     ];
+  }
+
+  function addCollectables() {
+    const collectables = getCollectables();
     world.addCollectables(collectables);
+  }
+
+  function placePickups() {
     placeHearts(world, LEVEL1_HEART_COUNT);
     placeGuns(world, LEVEL1_GUN_COUNT);
+  }
+
+  function placeEnemies(assets) {
     placeEnemiesMixed(
       world,
       assets.enemySprites.enemy1Sprites,
@@ -203,14 +252,17 @@ export function createGame({ canvasId = "game" } = {}) {
       LEVEL1_ENEMY2_COUNT,
       LEVEL1_ENEMY3_COUNT
     );
+  }
 
+  function getSpawnPosition() {
     const spawnX = PLAYER_SPAWN_X;
     const groundTop = world.baseGround ?? canvas.height;
     const spawnY = Math.min(canvas.height * PLAYER_SPAWN_HEIGHT_RATIO, groundTop - PLAYER_SPAWN_GROUND_OFFSET);
+    return { spawnX, spawnY };
+  }
 
-    player = new Player(
-      spawnX,
-      spawnY,
+  function getPlayerFrames(assets) {
+    return [
       assets.playerFrames.idle,
       assets.playerFrames.walk,
       assets.playerFrames.run,
@@ -220,41 +272,82 @@ export function createGame({ canvasId = "game" } = {}) {
       assets.playerFrames.shoot,
       assets.playerFrames.dizzy,
       assets.playerFrames.hurt,
-      assets.playerFrames.die
-    );
+      assets.playerFrames.die,
+    ];
+  }
+
+  function createPlayerInstance(assets, spawnX, spawnY) {
+    return new Player(spawnX, spawnY, ...getPlayerFrames(assets));
+  }
+
+  function handlePlayerDeath() {
+    isGameOver = true;
+    setPaused(false);
+    menuPointer = null;
+    gameOverOverlay?.reset?.();
+  }
+
+  function setupPlayer(assets) {
+    const { spawnX, spawnY } = getSpawnPosition();
+    player = createPlayerInstance(assets, spawnX, spawnY);
     player.world = world;
-    player.onDeath = () => {
-      isGameOver = true;
-      setPaused(false);
-      menuPointer = null;
-      gameOverOverlay?.reset?.();
-    };
+    player.onDeath = handlePlayerDeath;
     world.setHitEffectFrames(assets.playerFrames.hitStars);
     world.hudPopups = [];
+  }
 
+  function setupBossDirector(assets) {
     bossDirector = new BossDirector({
       world,
       camera,
       gameAudio: audio,
       bossSprites: assets.bossSprites,
     });
+  }
 
+  function setupHud(assets) {
     hud = new Hud({ coinImage: assets.hudCoinImg, gunImage: assets.hudGunImg });
+  }
+
+  function setupMenu(assets) {
     menu = new SettingsOverlay({
       backgroundImage: assets.menuBgImg,
       uiImage: assets.menuUiImg,
       onQuit: handleQuit,
     });
+  }
+
+  function setupOverlays(assets) {
     gameOverOverlay = new GameOverOverlay();
     gameWonOverlay = new GameWonOverlay();
     gameWonOverlay.setCoinImage?.(assets.hudCoinImg);
+  }
 
-    audio?.playAudio?.();
-    isLoading = false;
+  function addMenuListeners() {
     canvas.addEventListener("mousemove", updateSettingsPointer);
     canvas.addEventListener("mouseleave", clearSettingsPointer);
     canvas.addEventListener("click", handleMenuClick, true);
+  }
+
+  function startGameplayLoop() {
+    audio?.playAudio?.();
+    isLoading = false;
+    addMenuListeners();
     requestAnimationFrame(loopHighRes);
+  }
+
+  function start(assets) {
+    setupBackgroundAssets(assets);
+    setupWorldPlatforms(assets);
+    addCollectables();
+    placePickups();
+    placeEnemies(assets);
+    setupPlayer(assets);
+    setupBossDirector(assets);
+    setupHud(assets);
+    setupMenu(assets);
+    setupOverlays(assets);
+    startGameplayLoop();
   }
 
   function loopHighRes(timeStamp) {
@@ -269,37 +362,61 @@ export function createGame({ canvasId = "game" } = {}) {
     requestAnimationFrame(loopHighRes);
   }
 
-  function update(dt) {
+  function setGameWonState() {
+    isGameWon = true;
+    gameWonOverlay?.setCoins?.(player?.coins ?? 0);
+    setPaused(false);
+    menuPointer = null;
+    gameWonOverlay?.reset?.();
+  }
+
+  function handleBossUpdate(dt) {
     const bossResult = bossDirector?.update(dt, player);
     if (!isGameWon && bossResult?.cleared) {
-      isGameWon = true;
-      gameWonOverlay?.setCoins?.(player?.coins ?? 0);
-      setPaused(false);
-      menuPointer = null;
-      gameWonOverlay?.reset?.();
-      return;
+      setGameWonState();
+      return true;
     }
+    return false;
+  }
 
+  function updatePlayerAndCamera(dt) {
     player.update(dt, input);
     audio?.ensureVolume?.();
     camera.follow(player, CAMERA_FOLLOW_LERP, dt);
     background.update(camera.x, camera.y, dt);
+  }
 
-    world.applyPlatformCollisions(player);
-    player.handleLandingAudio?.();
+  function updateCollectableEntities(dt) {
     world.collectables.forEach((collectable) => collectable.update(dt));
+  }
+
+  function updateEnemiesAndProjectiles(dt) {
     world.updateEnemies(dt, player);
     world.updateProjectiles(dt, world.enemies ?? []);
+  }
+
+  function updateWorldEntities(dt) {
+    world.applyPlatformCollisions(player);
+    player.handleLandingAudio?.();
+    updateCollectableEntities(dt);
+    updateEnemiesAndProjectiles(dt);
     world.updateHitEffects(dt);
+  }
 
-    checkCollectables();
-
-    hud?.update(dt, player);
-
+  function updateHudPopups(dt) {
     world.hudPopups = world.hudPopups.filter((popup) => {
       popup.update(dt);
       return popup.opacity > 0;
     });
+  }
+
+  function update(dt) {
+    if (handleBossUpdate(dt)) return;
+    updatePlayerAndCamera(dt);
+    updateWorldEntities(dt);
+    checkCollectables();
+    hud?.update(dt, player);
+    updateHudPopups(dt);
   }
 
   function checkCollectables() {
@@ -312,65 +429,125 @@ export function createGame({ canvasId = "game" } = {}) {
     });
   }
 
-  function draw() {
+  function setCanvasCursorDefault() {
     if (canvas) canvas.style.cursor = "default";
+  }
+
+  function setOverlayActiveState() {
     const overlayActive = isGameWon || isGameOver || isPaused;
     document.body?.classList.toggle("overlay-active", overlayActive);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
 
-    background.render(ctx, camera);
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function renderPlatforms() {
     world.platforms.forEach((platform) => platform.render(ctx, camera));
+  }
+
+  function renderCollectables() {
     world.collectables.forEach((collectable) => collectable.draw(ctx, camera));
+  }
+
+  function renderHudPopups() {
     world.hudPopups.forEach((popup) => popup.draw(ctx, camera));
+  }
+
+  function renderWorld() {
+    background.render(ctx, camera);
+    renderPlatforms();
+    renderCollectables();
+    renderHudPopups();
     world.renderProjectiles(ctx, camera);
     world.renderEnemies(ctx, camera);
     player.render(ctx, camera);
     world.renderHitEffects(ctx, camera);
-
-    hud?.render(ctx, canvas, camera, player, bossDirector?.getBoss());
-
-    if (isGameWon) {
-      gameWonOverlay?.render(ctx, canvas);
-      if (canvas) canvas.style.cursor = gameWonOverlay?.isHovering?.() ? "pointer" : "default";
-      return;
-    }
-
-    if (isGameOver) {
-      gameOverOverlay?.render(ctx, canvas);
-      if (canvas) canvas.style.cursor = gameOverOverlay?.isHovering?.() ? "pointer" : "default";
-      return;
-    }
-
-    if (isPaused) {
-      if (menuPointer) menu.setPointer?.(menuPointer.x, menuPointer.y);
-      menu?.render(ctx, canvas);
-    }
   }
 
-  function renderLoading(timeStamp) {
-    if (!isLoading) return;
-    loadingAnimTime = timeStamp || 0;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  function renderHud() {
+    hud?.render(ctx, canvas, camera, player, bossDirector?.getBoss());
+  }
 
+  function renderGameWonOverlay() {
+    gameWonOverlay?.render(ctx, canvas);
+    if (canvas) canvas.style.cursor = gameWonOverlay?.isHovering?.() ? "pointer" : "default";
+  }
+
+  function renderGameOverOverlay() {
+    gameOverOverlay?.render(ctx, canvas);
+    if (canvas) canvas.style.cursor = gameOverOverlay?.isHovering?.() ? "pointer" : "default";
+  }
+
+  function renderEndGameOverlay() {
+    if (isGameWon) {
+      renderGameWonOverlay();
+      return true;
+    }
+    if (isGameOver) {
+      renderGameOverOverlay();
+      return true;
+    }
+    return false;
+  }
+
+  function renderPausedMenu() {
+    if (!isPaused) return;
+    if (menuPointer) menu.setPointer?.(menuPointer.x, menuPointer.y);
+    menu?.render(ctx, canvas);
+  }
+
+  function draw() {
+    setCanvasCursorDefault();
+    setOverlayActiveState();
+    clearCanvas();
+    renderWorld();
+    renderHud();
+    if (renderEndGameOverlay()) return;
+    renderPausedMenu();
+  }
+
+  function updateLoadingTime(timeStamp) {
+    loadingAnimTime = timeStamp || 0;
+  }
+
+  function drawLoadingBackdrop() {
     ctx.fillStyle = LOADING_FILL_STYLE;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
 
+  function getLoadingSpinnerState() {
     const canvasCenterX = canvas.width / 2;
     const canvasCenterY = canvas.height / 2;
     const radius = 40;
     const spinnerAngle = (loadingAnimTime / LOADING_SPINNER_ROTATE_MS) % FULL_CIRCLE_RADIANS;
+    return { canvasCenterX, canvasCenterY, radius, spinnerAngle };
+  }
+
+  function drawLoadingSpinner({ canvasCenterX, canvasCenterY, radius, spinnerAngle }) {
     ctx.lineWidth = LOADING_STROKE_WIDTH;
     ctx.strokeStyle = LOADING_STROKE_STYLE;
     ctx.beginPath();
     ctx.arc(canvasCenterX, canvasCenterY, radius, spinnerAngle, spinnerAngle + LOADING_ARC_SWEEP);
     ctx.stroke();
+  }
 
+  function drawLoadingText(canvasCenterX, canvasCenterY) {
     ctx.fillStyle = LOADING_TEXT_COLOR;
     ctx.font = LOADING_FONT;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("Loading...", canvasCenterX, canvasCenterY + LOADING_TEXT_OFFSET_Y);
+  }
 
+  function renderLoading(timeStamp) {
+    if (!isLoading) return;
+    updateLoadingTime(timeStamp);
+    clearCanvas();
+    drawLoadingBackdrop();
+    const spinnerState = getLoadingSpinnerState();
+    drawLoadingSpinner(spinnerState);
+    drawLoadingText(spinnerState.canvasCenterX, spinnerState.canvasCenterY);
     requestAnimationFrame(renderLoading);
   }
 
