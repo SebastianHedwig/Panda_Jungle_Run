@@ -23,6 +23,9 @@ body {
   gap: 2rem;
   -webkit-tap-highlight-color: transparent;
 }
+.d_none {
+  display: none !important;
+}
 
 .canvas {
   display: block;
@@ -59,4 +62,31 @@ body {
 #game-container:fullscreen .canvas {
   width: 100%;
   height: 100%;
+}
+
+footer {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  bottom: 0;
+  padding: 1rem 0;
+  width: 100%;
+}
+
+footer,
+footer a {
+  color: rgb(255, 255, 255);
+  font-size: clamp(0.8rem, 1.2vw + 0.6rem, 1.2rem);
+  font-weight: 500;
+  text-decoration: none;
+  text-shadow: 0 0.125rem 1rem rgba(0, 0, 0, 0.2);
+}
+
+footer a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 0.1rem;
+  text-underline-offset: 0.1rem;
 }
