@@ -1,14 +1,4 @@
-import {
-  APEX_BOOST,
-  APEX_THRESHOLD,
-  BASE_SPEED,
-  GRAVITY,
-  GRAVITY_DOWN,
-  GRAVITY_UP,
-  JUMP_FORCE,
-  FACING_LEFT,
-  FACING_RIGHT,
-} from "../../config/config.js";
+import { APEX_BOOST, APEX_THRESHOLD, BASE_SPEED, GRAVITY, GRAVITY_DOWN, GRAVITY_UP, JUMP_FORCE, FACING_LEFT, FACING_RIGHT } from "../../config/config.js";
 
 export class MovableObject {
   constructor(x, y, width, height) {
@@ -26,7 +16,6 @@ export class MovableObject {
 
     this.facing = FACING_RIGHT;
 
-    /** Jump physics defaults */
     this.jumpForce = JUMP_FORCE;
     this.gravityUp = GRAVITY_UP;
     this.gravityDown = GRAVITY_DOWN;

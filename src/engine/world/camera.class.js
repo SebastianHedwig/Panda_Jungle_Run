@@ -29,32 +29,50 @@ export class Camera {
     this.shakeOffsetY = 0;
   }
 
-  follow(target, smoothing = DEFAULT_SMOOTHING, dt) {
-    const playerScreenX = target.x - this.x;
-    const playerScreenY = target.y - this.y;
+  getScreenPosition(target) {
+    return { x: target.x - this.x, y: target.y - this.y };
+  }
 
+  updateHorizontalFollow(playerScreenX, smoothing) {
     if (playerScreenX < this.deadzoneX) {
       this.x -= (this.deadzoneX - playerScreenX) * smoothing;
-    } else if (playerScreenX > this.deadzoneX + this.deadzoneWidth) {
+      return;
+    }
+    if (playerScreenX > this.deadzoneX + this.deadzoneWidth) {
       this.x += (playerScreenX - (this.deadzoneX + this.deadzoneWidth)) * smoothing;
     }
+  }
 
+  updateVerticalFollow(playerScreenY, smoothing) {
     if (playerScreenY < this.deadzoneY) {
       this.y -= (this.deadzoneY - playerScreenY) * smoothing;
-    } else if (playerScreenY > this.deadzoneY + this.deadzoneHeight) {
+      return;
+    }
+    if (playerScreenY > this.deadzoneY + this.deadzoneHeight) {
       this.y += (playerScreenY - (this.deadzoneY + this.deadzoneHeight)) * smoothing;
     }
+  }
 
+  clampHorizontal() {
     if (this.x < 0) this.x = 0;
     if (this.x > this.worldWidth - this.canvas.width) {
       this.x = this.worldWidth - this.canvas.width;
     }
+  }
 
+  clampVertical() {
     if (this.y < 0) this.y = 0;
     if (this.y > this.worldHeight - this.canvas.height) {
       this.y = this.worldHeight - this.canvas.height;
     }
+  }
 
+  follow(target, smoothing = DEFAULT_SMOOTHING, dt) {
+    const playerScreen = this.getScreenPosition(target);
+    this.updateHorizontalFollow(playerScreen.x, smoothing);
+    this.updateVerticalFollow(playerScreen.y, smoothing);
+    this.clampHorizontal();
+    this.clampVertical();
     this.updateShake(dt);
   }
 
@@ -64,24 +82,37 @@ export class Camera {
     this.shakeMagnitude = Math.max(this.shakeMagnitude, magnitude);
   }
 
-  updateShake(dt) { // remove previous offsets before applying new shake
-    if (this.shakeOffsetX || this.shakeOffsetY) {
-      this.x -= this.shakeOffsetX;
-      this.y -= this.shakeOffsetY;
-      this.shakeOffsetX = 0;
-      this.shakeOffsetY = 0;
-    }
-
+  updateShake(dt) {
+    this.clearShakeOffsets();
     if (this.shakeTimer <= 0) return;
-
     this.shakeTimer = Math.max(0, this.shakeTimer - dt);
-    const shakeProgressRatio =
-      this.shakeDuration > 0 ? this.shakeTimer / this.shakeDuration : 0;
-    const currentShakeAmplitude = this.shakeMagnitude * shakeProgressRatio;
+    this.applyShakeOffsets();
+  }
 
-    this.shakeOffsetX = (Math.random() * RANDOM_RANGE_SCALE - RANDOM_RANGE_SHIFT) * currentShakeAmplitude;
-    this.shakeOffsetY = (Math.random() * RANDOM_RANGE_SCALE - RANDOM_RANGE_SHIFT) * currentShakeAmplitude * SHAKE_Y_SCALE;
+  clearShakeOffsets() {
+    if (!this.shakeOffsetX && !this.shakeOffsetY) return;
+    this.x -= this.shakeOffsetX;
+    this.y -= this.shakeOffsetY;
+    this.shakeOffsetX = 0;
+    this.shakeOffsetY = 0;
+  }
 
+  getShakeProgressRatio() {
+    return this.shakeDuration > 0 ? this.shakeTimer / this.shakeDuration : 0;
+  }
+
+  getShakeAmplitude() {
+    return this.shakeMagnitude * this.getShakeProgressRatio();
+  }
+
+  getRandomShakeValue() {
+    return Math.random() * RANDOM_RANGE_SCALE - RANDOM_RANGE_SHIFT;
+  }
+
+  applyShakeOffsets() {
+    const currentShakeAmplitude = this.getShakeAmplitude();
+    this.shakeOffsetX = this.getRandomShakeValue() * currentShakeAmplitude;
+    this.shakeOffsetY = this.getRandomShakeValue() * currentShakeAmplitude * SHAKE_Y_SCALE;
     this.x += this.shakeOffsetX;
     this.y += this.shakeOffsetY;
   }

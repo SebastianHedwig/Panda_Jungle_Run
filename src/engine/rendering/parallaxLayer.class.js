@@ -13,21 +13,38 @@ export class ParallaxLayer {
     this.y = -cameraY * this.speedFactorY;
   }
 
-  render(ctx) {
-    const canvasWidth = this.canvas.width;
-    const canvasHeight = this.canvas.height;
-    const imageAspectRatio = this.image.width / this.image.height;
+  getCanvasSize() {
+    return { canvasWidth: this.canvas.width, canvasHeight: this.canvas.height };
+  }
 
+  getImageAspectRatio() {
+    return this.image.width / this.image.height;
+  }
+
+  getDrawSize(canvasWidth, canvasHeight, imageAspectRatio) {
     let drawW = canvasWidth;
     let drawH = canvasWidth / imageAspectRatio;
-
     if (drawH < canvasHeight) {
       drawH = canvasHeight;
       drawW = canvasHeight * imageAspectRatio;
     }
+    return { drawW, drawH };
+  }
 
-    const tileStartX = Math.floor(this.x % drawW); // Calculate starting X position for tiling
+  getTileStartX(drawW) {
+    return Math.floor(this.x % drawW);
+  }
+
+  drawTiles(ctx, tileStartX, drawW, drawH) {
     ctx.drawImage(this.image, tileStartX, Math.floor(this.y), drawW, drawH); // Draw first tile
     ctx.drawImage(this.image, tileStartX + Math.floor(drawW), Math.floor(this.y), Math.floor(drawW), Math.floor(drawH)); // Draw second tile to cover gap
+  }
+
+  render(ctx) {
+    const { canvasWidth, canvasHeight } = this.getCanvasSize();
+    const imageAspectRatio = this.getImageAspectRatio();
+    const { drawW, drawH } = this.getDrawSize(canvasWidth, canvasHeight, imageAspectRatio);
+    const tileStartX = this.getTileStartX(drawW);
+    this.drawTiles(ctx, tileStartX, drawW, drawH);
   }
 }

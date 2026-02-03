@@ -24,10 +24,10 @@ export class PlatformBuilder {
   startLong(x, y)  { return this.add("startLong", x + this.startLongOffset, y); }
   middleLong(x, y) { return this.add("middleLong", x, y); }
   endLong(x, y)    { return this.add("endLong", x, y); }
-  startShort(x, y)  { return this.add("startShort", x, y); }
+  startShort(x, y) { return this.add("startShort", x, y); }
   middleShort(x, y) { return this.add("middleShort", x, y); }
-  endShort(x, y)    { return this.add("endShort", x, y); }
-  small(x, y)  { return this.add("small", x, y); }
+  endShort(x, y) { return this.add("endShort", x, y); }
+  small(x, y) { return this.add("small", x, y); }
   filler(x, y) { return this.add("filler", x, y); }
 
   /* ============================================================
@@ -37,17 +37,25 @@ export class PlatformBuilder {
   row(x, y, count, type) {
     let offset = 0;
     for (let segmentIndex = 0; segmentIndex < count; segmentIndex++) {
-      offset += this.add(type, x + offset, y);
+      offset = this.addRowSegment(type, x, y, offset);
     }
     return offset;
+  }
+
+  addRowSegment(type, x, y, offset) {
+    return offset + this.add(type, x + offset, y);
   }
 
   stackFiller(x, y, rows = 1, count = 1, width) {
     const fillerHeight = this.sprites.filler.height;
     for (let columnIndex = 0; columnIndex < count; columnIndex++) {
-      for (let rowIndex = 0; rowIndex < rows; rowIndex++) {
-        this.filler(x + columnIndex * width, y + (rowIndex + 1) * fillerHeight);
-      }
+      this.stackFillerColumn(x, y, columnIndex, rows, width, fillerHeight);
+    }
+  }
+
+  stackFillerColumn(x, y, columnIndex, rows, width, fillerHeight) {
+    for (let rowIndex = 0; rowIndex < rows; rowIndex++) {
+      this.filler(x + columnIndex * width, y + (rowIndex + 1) * fillerHeight);
     }
   }
 
@@ -63,14 +71,18 @@ export class PlatformBuilder {
   stairUp(x, y, steps = 3, stepHeight = 40, type = "middleLong") {
     let offset = 0;
     for (let stepIndex = 0; stepIndex < steps; stepIndex++) {
-      offset += this.add(type, x + offset, y - stepIndex * stepHeight);
+      offset = this.addStairStep(type, x, y, offset, stepIndex, -stepHeight);
     }
   }
 
   stairDown(x, y, steps = 3, stepHeight = 40, type = "middleLong") {
     let offset = 0;
     for (let stepIndex = 0; stepIndex < steps; stepIndex++) {
-      offset += this.add(type, x + offset, y + stepIndex * stepHeight);
+      offset = this.addStairStep(type, x, y, offset, stepIndex, stepHeight);
     }
+  }
+
+  addStairStep(type, x, y, offset, stepIndex, stepHeight) {
+    return offset + this.add(type, x + offset, y + stepIndex * stepHeight);
   }
 }

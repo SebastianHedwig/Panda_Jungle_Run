@@ -41,33 +41,57 @@ export class Background {
     }
   }
 
-  update(cameraX, cameraY, dt) {
+  updateLayers(cameraX, cameraY) {
     for (let layer of this.layers) {
       layer.update(cameraX, cameraY);
     }
+  }
 
+  shouldRespawnCloud(cloud) {
+    return cloud.screenX < -cloud.width * cloud.scale - CLOUD_OFFSCREEN_PADDING;
+  }
+
+  respawnCloud(cloud, cameraX) {
+    cloud.x = cameraX + this.canvas.width + Math.random() * CLOUD_RESPAWN_AHEAD_RANGE;
+    cloud.scale = Math.random() * CLOUD_SCALE_RANGE + CLOUD_SCALE_MIN;
+    cloud.y = Math.random() * CLOUD_Y_RANGE + CLOUD_Y_MIN;
+    cloud.horizontalSpeed = Math.random() * CLOUD_SPEED_RANGE + CLOUD_SPEED_MIN;
+  }
+
+  updateClouds(cameraX, dt) {
     for (let cloud of this.clouds) {
       cloud.update(dt, cameraX);
-
-      if (cloud.screenX < -cloud.width * cloud.scale - CLOUD_OFFSCREEN_PADDING) {
-        cloud.x = cameraX + this.canvas.width + Math.random() * CLOUD_RESPAWN_AHEAD_RANGE;
-
-        cloud.scale = Math.random() * CLOUD_SCALE_RANGE + CLOUD_SCALE_MIN;
-        cloud.y = Math.random() * CLOUD_Y_RANGE + CLOUD_Y_MIN;
-        cloud.horizontalSpeed = Math.random() * CLOUD_SPEED_RANGE + CLOUD_SPEED_MIN;
+      if (this.shouldRespawnCloud(cloud)) {
+        this.respawnCloud(cloud, cameraX);
       }
     }
   }
 
-  render(ctx, camera) {
-    this.layers[0].render(ctx);
+  update(cameraX, cameraY, dt) {
+    this.updateLayers(cameraX, cameraY);
+    this.updateClouds(cameraX, dt);
+  }
 
+  renderBaseLayer(ctx) {
+    if (!this.layers.length) return;
+    this.layers[0].render(ctx);
+  }
+
+  renderClouds(ctx, camera) {
     for (let cloud of this.clouds) {
       cloud.render(ctx, camera);
     }
+  }
 
+  renderParallaxLayers(ctx) {
     for (let layerIndex = 1; layerIndex < this.layers.length; layerIndex++) {
       this.layers[layerIndex].render(ctx);
     }
+  }
+
+  render(ctx, camera) {
+    this.renderBaseLayer(ctx);
+    this.renderClouds(ctx, camera);
+    this.renderParallaxLayers(ctx);
   }
 }
