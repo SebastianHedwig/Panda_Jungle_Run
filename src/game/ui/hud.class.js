@@ -53,7 +53,17 @@ export class Hud {
   }
 
   getHeartSettings() {
-    return { heartSize: 32, heartStartX: 30, heartY: 5, heartSpacing: 10, lastHeartPulseAmplitude: 0.07, lastHeartPulseFrequency: 6, baseWaveOffset: 0.5, baseWaveScale: 0.5, hitPulseAmplitude: 0.18, hitPulseFrequency: 14 };
+    return {
+      heartSize: 32,
+      heartStartX: 30,
+      heartY: 5,
+      heartSpacing: 10,
+      lastHeartPulseAmplitude: 0.07,
+      lastHeartPulseFrequency: 6,
+      baseWaveOffset: 0.5,
+      baseWaveScale: 0.5,
+      hitPulseAmplitude: 0.18,
+      hitPulseFrequency: 14 };
   }
 
   getLastFilledIndex(states) {
@@ -100,7 +110,15 @@ export class Hud {
   }
 
   getHeartStyle() {
-    return { topOffsetFactor: 0.35, curveFactor: 0.6, curveTopOffsetFactor: 0.1, outlineWidth: 3, fullHeartColor: "rgba(182, 0, 0, 1)", halfHeartColor: "rgba(192, 69, 69, 0.6)", emptyHeartColor: "rgba(58, 58, 58, 0.2)", outlineColor: "#000" };
+    return {
+      topOffsetFactor: 0.35,
+      curveFactor: 0.6,
+      curveTopOffsetFactor: 0.1,
+      outlineWidth: 3,
+      fullHeartColor: "rgba(182, 0, 0, 1)",
+      halfHeartColor: "rgba(192, 69, 69, 0.6)",
+      emptyHeartColor: "rgba(58, 58, 58, 0.2)",
+      outlineColor: "#000" };
   }
 
   traceHeartPath(ctx, size, heartStyle) {
@@ -148,11 +166,33 @@ export class Hud {
   }
 
   getCoinHudSettings() {
-    return { padding: 20, coinSize: 40, coinOffsetX: 80, coinTextOffsetX: 35, coinTextOffsetY: 25, coinPulseScale: 0.3, coinTextFont: "1.2rem ComixLoud", coinTextStrokeColor: "#000", coinTextFillColor: "rgba(255,255,2,0.9)", coinTextStrokeWidth: 3 };
+    return {
+      padding: 20,
+      coinSize: 40,
+      coinOffsetX: 80,
+      coinTextOffsetX: 35,
+      coinTextOffsetY: 25,
+      coinPulseScale: 0.3,
+      coinTextFont: "1.2rem ComixLoud",
+      coinTextStrokeColor: "#000",
+      coinTextFillColor: "rgba(255,255,2,0.9)",
+      coinTextStrokeWidth: 3 };
   }
 
   getGunHudSettings() {
-    return { padding: 20, gunSize: 40, coinSize: 40, coinOffsetX: 80, gunOffsetX: 80, bulletTextOffsetX: 30, bulletTextOffsetY: 25, gunPulseScale: 0.3, bulletTextFont: "1.2rem ComixLoud", bulletTextStrokeColor: "#000", bulletTextFillColor: "rgba(235, 145, 0, 1)", bulletTextStrokeWidth: 3 };
+    return {
+      padding: 20,
+      gunSize: 40,
+      coinSize: 40,
+      coinOffsetX: 80,
+      gunOffsetX: 80,
+      bulletTextOffsetX: 30,
+      bulletTextOffsetY: 25,
+      gunPulseScale: 0.3,
+      bulletTextFont: "1.2rem ComixLoud",
+      bulletTextStrokeColor: "#000",
+      bulletTextFillColor: "rgba(235, 145, 0, 1)",
+      bulletTextStrokeWidth: 3 };
   }
 
   getCoinPosition(canvas, coinSettings) {

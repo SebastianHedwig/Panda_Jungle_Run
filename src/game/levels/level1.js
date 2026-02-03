@@ -31,21 +31,13 @@ function addFloatingIslands(build) {
   build.islandSmall(9300, 350); build.islandSmall(9800, 300);
 }
 
-/** ---------- PLATFORM SETUP ---------- */
 export function createLevel1Platforms(sprites) {
   const platforms = [];
   const build = new PlatformBuilder(platforms, sprites);
-
-  /* ---- FILLER OFFSETS ---- */
   const fillerWidth = sprites["filler"].width, fillerOffsetLarge = 6, fillerOffsetSmall = 1;
 
-  /* ---- BASE GROUND ---- */
   addBaseGround(build, fillerWidth, fillerOffsetLarge, fillerOffsetSmall);
-
-  /* ---- HIGHER LVL PLATFORMS ---- */
   addHigherLevelPlatforms(build);
-
-  /* ---- FLOATING ISLANDS ---- */
   addFloatingIslands(build);
 
   return platforms;
@@ -168,7 +160,6 @@ function getArcParams(currentPlatform, nextPlatform, config) {
   const heightDiff = Math.abs(nextPlatform.top - currentPlatform.top);
   const mustJump = gap >= config.minJumpGap && gap <= config.maxJumpGap && heightDiff > config.minHeightDiff;
   if (!mustJump) return null;
-  /** ----- ARC PARAMETER ----- */
   const arcWidth = Math.min(gap * config.arcWidthScale, config.arcWidthMax);
   const coinsInArc = Math.floor(arcWidth / config.arcCoinSpacing);
   return { gap, coinsInArc };
@@ -210,7 +201,6 @@ function placeCoinArcs(world, platforms, arcs, config) {
   }
 }
 
-/** ---------- RANDOM + PLATFORM COINS ---------- */
 export function generateCoinsMixed(
   world,
   totalCount = 60,
@@ -218,14 +208,11 @@ export function generateCoinsMixed(
 ) {
   const coins = [];
   const config = buildCoinPlacementConfig(world, totalCount, ratioAbovePlatforms);
-  /** ----- PLATFORM COINS ----- */
   placePlatformCoins(world, coins, config);
-  /** ----- RANDOM COINS ----- */
   placeRandomCoins(world, coins, config);
   return coins;
 }
 
-/** ---------- COIN ARCS ---------- */
 export function generateCoinArcs(world, maxArcs = 4) {
   const arcs = [];
   const config = buildCoinArcConfig(maxArcs);
@@ -234,7 +221,6 @@ export function generateCoinArcs(world, maxArcs = 4) {
   return arcs;
 }
 
-/** ---------- FIXED COINS ---------- */
 export function createLevel1Collectables() {
   return [];
 }
@@ -285,8 +271,7 @@ function placeGunAtTarget(world, guns, targetX, farFromHearts) {
   const platformUnderTarget = findPlatformUnderTarget(world, targetX);
   if (!platformUnderTarget) return;
   const basePlacement = getGunBasePlacement(platformUnderTarget, targetX);
-  // try base position first, then shift left/right to avoid hearts range
-  const placementOffsets = [0, 150, -150, 250, -250];
+  const placementOffsets = [0, 150, -150, 250, -250]; // try base position first, then shift left/right to avoid hearts range
   const placed = tryPlaceGunWithOffsets(guns, placementOffsets, basePlacement, farFromHearts);
   if (!placed) guns.push(new CollectableItem(basePlacement.baseX, basePlacement.gunY, "gun"));
 }
@@ -356,24 +341,13 @@ function placeEnemyMix(world, platforms, enemyMix, enemy1Sprites, enemy2Sprites,
   return enemies;
 }
 
-export function placeEnemiesMixed(
-  world,
-  enemy1Sprites,
-  enemy2Sprites,
-  enemy3Sprites,
-  enemy1Count = 5,
-  enemy2Count = 5,
-  enemy3Count = 2
-) {
+export function placeEnemiesMixed(world, enemy1Sprites, enemy2Sprites, enemy3Sprites, enemy1Count = 5, enemy2Count = 5, enemy3Count = 2) {
   const totalRequested = getTotalRequested(enemy1Count, enemy2Count, enemy3Count);
   if (totalRequested === 0) return;
   const platforms = getEnemyPlatforms(world);
-  // Shuffle platforms to randomize placement order
-  shuffleList(platforms);
-  // (Fisher‑Yates‑Shuffle) 
-  const enemyMix = buildEnemyMix(enemy1Count, enemy2Count, enemy3Count);
-  // Shuffle enemy mix to randomize which type goes where
-  shuffleList(enemyMix);
+  shuffleList(platforms); // Shuffle platforms to randomize placement order
+  const enemyMix = buildEnemyMix(enemy1Count, enemy2Count, enemy3Count); // (Fisher‑Yates‑Shuffle) 
+  shuffleList(enemyMix); // Shuffle enemy mix to randomize which type goes where
   const enemies = placeEnemyMix(world, platforms, enemyMix, enemy1Sprites, enemy2Sprites, enemy3Sprites);
   if (enemies.length) world.addEnemies(enemies);
 }
