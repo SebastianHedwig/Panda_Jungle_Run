@@ -14,6 +14,12 @@ import { GameOverOverlay } from "../../app/ui/overlay/gameOverOverlay.class.js";
 import { GameWonOverlay } from "../../app/ui/overlay/gameWonOverlay.class.js";
 import { createGameAssets } from "./assets/createGameAssets.js";
 
+/**
+ * Creates game. If omitted, default values are used.
+ * Uses options to compute the result.
+ * @param {Object} [options] Configuration options.
+ * @param {string} [options.canvasId] Canvas element id.
+ */
 export function createGame({ canvasId = "game" } = {}) {
   let canvas, ctx;
   let background, camera, player, input, world;
@@ -53,6 +59,10 @@ export function createGame({ canvasId = "game" } = {}) {
   const LOADING_TEXT_OFFSET_Y = 80;
   const FULL_CIRCLE_RADIANS = Math.PI * 2;
 
+  /**
+   * Sets up canvas.
+   * Resolves DOM elements from the document.
+   */
   function setupCanvas() {
     canvas = document.getElementById(canvasId);
     ctx = canvas.getContext("2d");
@@ -60,6 +70,9 @@ export function createGame({ canvasId = "game" } = {}) {
     canvas.height = GAME_HEIGHT;
   }
 
+  /**
+   * Sets up core systems.
+   */
   function setupCoreSystems() {
     input = new Input();
     world = new World(canvas);
@@ -67,28 +80,55 @@ export function createGame({ canvasId = "game" } = {}) {
     background = new Background(canvas);
   }
 
+  /**
+   * Sets up audio.
+   * Updates the world state.
+   */
   function setupAudio() {
     audio = window.__preloadedGameAudio ?? new GameAudio();
     window.__preloadedGameAudio = null;
     world.audio = audio;
   }
 
+  /**
+   * Returns music ready promise.
+   * @returns {*} Music ready promise.
+   */
   function getMusicReadyPromise() {
     return (audio.ready ? Promise.resolve(true) : audio.init()).then(() => audio.playAudio());
   }
 
+  /**
+   * Starts loading render.
+   */
   function startLoadingRender() {
     requestAnimationFrame(renderLoading);
   }
 
+  /**
+   * Returns assets ready.
+   * Uses assets to compute the result.
+   * @param {*} assets Assets.
+   * @returns {*} Assets ready.
+   */
   function getAssetsReady(assets) {
     return Promise.allSettled(assets.images.map(waitForImage));
   }
 
+  /**
+   * Starts when ready.
+   * Uses assets, assetsReady, musicReadyPromise to perform the operation.
+   * @param {*} assets Assets.
+   * @param {boolean} assetsReady Assets ready.
+   * @param {*} musicReadyPromise Music ready promise.
+   */
   function startWhenReady(assets, assetsReady, musicReadyPromise) {
     Promise.all([assetsReady, musicReadyPromise]).then(() => start(assets));
   }
 
+  /**
+   * Initializes.
+   */
   function init() {
     setupCanvas();
     setupCoreSystems();
@@ -100,6 +140,11 @@ export function createGame({ canvasId = "game" } = {}) {
     startWhenReady(assets, assetsReady, musicReadyPromise);
   }
 
+  /**
+   * Sets paused.
+   * Uses paused to perform the operation.
+   * @param {boolean} paused Paused.
+   */
   function setPaused(paused) {
     isPaused = !!paused;
     if (!isPaused) {
@@ -108,15 +153,30 @@ export function createGame({ canvasId = "game" } = {}) {
     }
   }
 
+  /**
+   * Returns paused.
+   * @returns {*} Paused.
+   */
   function getPaused() {
     return isPaused;
   }
 
+  /**
+   * Sets settings open.
+   * Resolves DOM elements from the document.
+   * @param {boolean} open Open.
+   */
   function setSettingsOpen(open) {
     setPaused(open);
     const toggle = document.getElementById("settings-toggle");
   }
 
+  /**
+   * Returns canvas pointer.
+   * Uses event to compute the result.
+   * @param {Event} event Event object.
+   * @returns {Object} Canvas pointer.
+   */
   function getCanvasPointer(event) {
     const rect = canvas.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
@@ -124,31 +184,64 @@ export function createGame({ canvasId = "game" } = {}) {
     return { x, y };
   }
 
+  /**
+   * Sets game won pointer.
+   * Uses x, y to perform the operation.
+   * @param {number} x X.
+   * @param {number} y Y.
+   */
   function setGameWonPointer(x, y) {
     gameWonOverlay?.setPointer?.(x, y);
   }
 
+  /**
+   * Sets game over pointer.
+   * Uses x, y to perform the operation.
+   * @param {number} x X.
+   * @param {number} y Y.
+   */
   function setGameOverPointer(x, y) {
     gameOverOverlay?.setPointer?.(x, y);
   }
 
+  /**
+   * Sets menu pointer.
+   * Uses x, y to perform the operation.
+   * @param {number} x X.
+   * @param {number} y Y.
+   */
   function setMenuPointer(x, y) {
     menuPointer = { x, y };
     if (isPaused) menu?.setPointer?.(x, y);
   }
 
+  /**
+   * Applies menu pointer.
+   * Uses x, y to perform the operation.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @returns {*} Result value.
+   */
   function applyMenuPointer(x, y) {
     if (isGameWon) return setGameWonPointer(x, y);
     if (isGameOver) return setGameOverPointer(x, y);
     setMenuPointer(x, y);
   }
 
+  /**
+   * Updates settings pointer.
+   * Uses event to perform the operation.
+   * @param {Event} event Event object.
+   */
   function updateSettingsPointer(event) {
     if (!canvas) return;
     const { x, y } = getCanvasPointer(event);
     applyMenuPointer(x, y);
   }
 
+  /**
+   * Clears settings pointer.
+   */
   function clearSettingsPointer() {
     menuPointer = null;
     menu?.clearPointer?.();
@@ -156,11 +249,23 @@ export function createGame({ canvasId = "game" } = {}) {
     gameWonOverlay?.clearPointer?.();
   }
 
+  /**
+   * Handles game overlay action.
+   * Uses action to perform the operation.
+   * @param {*} action Action.
+   */
   function handleGameOverlayAction(action) {
     if (action === "retry") handleRetry();
     if (action === "quit") handleQuit();
   }
 
+  /**
+   * Handles end game click.
+   * Uses x, y to perform the operation.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @returns {*} Result value.
+   */
   function handleEndGameClick(x, y) {
     if (isGameWon) {
       handleGameOverlayAction(gameWonOverlay?.handleGameOverlayButtonClick?.(x, y));
@@ -173,11 +278,21 @@ export function createGame({ canvasId = "game" } = {}) {
     return false;
   }
 
+  /**
+   * Stops menu click event.
+   * Uses event to perform the operation.
+   * @param {Event} event Event object.
+   */
   function stopMenuClickEvent(event) {
     event.stopImmediatePropagation?.();
     event.preventDefault?.();
   }
 
+  /**
+   * Handles menu click.
+   * Uses event to perform the operation.
+   * @param {Event} event Event object.
+   */
   function handleMenuClick(event) {
     const { x, y } = getCanvasPointer(event);
     if (handleEndGameClick(x, y)) return;
@@ -188,10 +303,17 @@ export function createGame({ canvasId = "game" } = {}) {
     }
   }
 
+  /**
+   * Handles quit.
+   */
   function handleQuit() {
     window.location.href = window.location.origin + window.location.pathname;
   }
 
+  /**
+   * Handles retry.
+   * Reads or writes browser storage.
+   */
   function handleRetry() {
     try {
       window.localStorage?.setItem?.("panda_autostart", "1");
@@ -201,29 +323,54 @@ export function createGame({ canvasId = "game" } = {}) {
     window.location.reload();
   }
 
+  /**
+   * Returns background assets.
+   * Uses assets to compute the result.
+   * @param {*} assets Assets.
+   * @returns {Object} Background assets.
+   */
   function getBackgroundAssets(assets) {
     const [bg1, bg2, bg3, bg4, cloud1, cloud2] = assets.bgImages;
     return { parallaxImages: [bg1, bg2, bg3, bg4], cloud1, cloud2 };
   }
 
+  /**
+   * Adds parallax layers.
+   * Uses parallaxImages to perform the operation.
+   * @param {*} parallaxImages Parallax images.
+   */
   function addParallaxLayers(parallaxImages) {
     PARALLAX_LAYERS.forEach(({ imageIndex, parallaxFactor, swaySpeed }) => {
       background.addLayer(parallaxImages[imageIndex], parallaxFactor, swaySpeed);
     });
   }
 
+  /**
+   * Sets up background assets.
+   * Spawns visual feedback effects.
+   * @param {*} assets Assets.
+   */
   function setupBackgroundAssets(assets) {
     const { parallaxImages, cloud1, cloud2 } = getBackgroundAssets(assets);
     addParallaxLayers(parallaxImages);
     background.spawnClouds(cloud1, cloud2);
   }
 
+  /**
+   * Sets up world platforms.
+   * Updates the world state.
+   * @param {*} assets Assets.
+   */
   function setupWorldPlatforms(assets) {
     const platforms = createLevel1Platforms(assets.platformSprites);
     world.addPlatforms(platforms);
     world.camera = camera;
   }
 
+  /**
+   * Returns collectables.
+   * @returns {Array<any>} Collectables.
+   */
   function getCollectables() {
     return [
       ...createLevel1Collectables(),
@@ -232,16 +379,28 @@ export function createGame({ canvasId = "game" } = {}) {
     ];
   }
 
+  /**
+   * Adds collectables.
+   * Updates the world state.
+   */
   function addCollectables() {
     const collectables = getCollectables();
     world.addCollectables(collectables);
   }
 
+  /**
+   * Place pickups.
+   */
   function placePickups() {
     placeHearts(world, LEVEL1_HEART_COUNT);
     placeGuns(world, LEVEL1_GUN_COUNT);
   }
 
+  /**
+   * Place enemies.
+   * Uses assets to perform the operation.
+   * @param {*} assets Assets.
+   */
   function placeEnemies(assets) {
     placeEnemiesMixed(
       world,
@@ -254,6 +413,12 @@ export function createGame({ canvasId = "game" } = {}) {
     );
   }
 
+  /**
+   * Returns spawn position.
+   * Updates the world state.
+   * Spawns visual feedback effects.
+   * @returns {Object} Spawn position.
+   */
   function getSpawnPosition() {
     const spawnX = PLAYER_SPAWN_X;
     const groundTop = world.baseGround ?? canvas.height;
@@ -261,6 +426,12 @@ export function createGame({ canvasId = "game" } = {}) {
     return { spawnX, spawnY };
   }
 
+  /**
+   * Returns player frames.
+   * Applies physics updates like gravity and velocity.
+   * @param {*} assets Assets.
+   * @returns {Array<any>} Player frames.
+   */
   function getPlayerFrames(assets) {
     return [
       assets.playerFrames.idle,
@@ -276,10 +447,21 @@ export function createGame({ canvasId = "game" } = {}) {
     ];
   }
 
+  /**
+   * Creates player instance.
+   * Spawns visual feedback effects.
+   * @param {*} assets Assets.
+   * @param {number} spawnX Spawn X.
+   * @param {number} spawnY Spawn Y.
+   * @returns {*} Player instance.
+   */
   function createPlayerInstance(assets, spawnX, spawnY) {
     return new Player(spawnX, spawnY, ...getPlayerFrames(assets));
   }
 
+  /**
+   * Handles player death.
+   */
   function handlePlayerDeath() {
     isGameOver = true;
     setPaused(false);
@@ -287,6 +469,12 @@ export function createGame({ canvasId = "game" } = {}) {
     gameOverOverlay?.reset?.();
   }
 
+  /**
+   * Sets up player.
+   * Updates the player state.
+   * Spawns visual feedback effects.
+   * @param {*} assets Assets.
+   */
   function setupPlayer(assets) {
     const { spawnX, spawnY } = getSpawnPosition();
     player = createPlayerInstance(assets, spawnX, spawnY);
@@ -296,6 +484,11 @@ export function createGame({ canvasId = "game" } = {}) {
     world.hudPopups = [];
   }
 
+  /**
+   * Sets up boss director.
+   * Triggers audio playback or updates audio state.
+   * @param {*} assets Assets.
+   */
   function setupBossDirector(assets) {
     bossDirector = new BossDirector({
       world,
@@ -305,10 +498,20 @@ export function createGame({ canvasId = "game" } = {}) {
     });
   }
 
+  /**
+   * Sets up hud.
+   * Uses assets to perform the operation.
+   * @param {*} assets Assets.
+   */
   function setupHud(assets) {
     hud = new Hud({ coinImage: assets.hudCoinImg, gunImage: assets.hudGunImg });
   }
 
+  /**
+   * Sets up menu.
+   * Uses assets to perform the operation.
+   * @param {*} assets Assets.
+   */
   function setupMenu(assets) {
     menu = new SettingsOverlay({
       backgroundImage: assets.menuBgImg,
@@ -317,18 +520,30 @@ export function createGame({ canvasId = "game" } = {}) {
     });
   }
 
+  /**
+   * Sets up overlays.
+   * Uses assets to perform the operation.
+   * @param {*} assets Assets.
+   */
   function setupOverlays(assets) {
     gameOverOverlay = new GameOverOverlay();
     gameWonOverlay = new GameWonOverlay();
     gameWonOverlay.setCoinImage?.(assets.hudCoinImg);
   }
 
+  /**
+   * Adds menu listeners.
+   * Binds click, mouseleave, mousemove event listeners.
+   */
   function addMenuListeners() {
     canvas.addEventListener("mousemove", updateSettingsPointer);
     canvas.addEventListener("mouseleave", clearSettingsPointer);
     canvas.addEventListener("click", handleMenuClick, true);
   }
 
+  /**
+   * Starts gameplay loop.
+   */
   function startGameplayLoop() {
     audio?.playAudio?.();
     isLoading = false;
@@ -336,6 +551,11 @@ export function createGame({ canvasId = "game" } = {}) {
     requestAnimationFrame(loopHighRes);
   }
 
+  /**
+   * Starts.
+   * Uses assets to perform the operation.
+   * @param {*} assets Assets.
+   */
   function start(assets) {
     setupBackgroundAssets(assets);
     setupWorldPlatforms(assets);
@@ -350,6 +570,11 @@ export function createGame({ canvasId = "game" } = {}) {
     startGameplayLoop();
   }
 
+  /**
+   * Loop high res.
+   * Uses timeStamp to perform the operation.
+   * @param {number} timeStamp Time stamp.
+   */
   function loopHighRes(timeStamp) {
     const msPerSecond = 1000;
     if (!lastTimeHigh) lastTimeHigh = timeStamp;
@@ -362,6 +587,9 @@ export function createGame({ canvasId = "game" } = {}) {
     requestAnimationFrame(loopHighRes);
   }
 
+  /**
+   * Sets game won state.
+   */
   function setGameWonState() {
     isGameWon = true;
     gameWonOverlay?.setCoins?.(player?.coins ?? 0);
@@ -370,6 +598,12 @@ export function createGame({ canvasId = "game" } = {}) {
     gameWonOverlay?.reset?.();
   }
 
+  /**
+   * Handles boss update.
+   * Uses dt to perform the operation.
+   * @param {number} dt Delta time in seconds.
+   * @returns {*} Result value.
+   */
   function handleBossUpdate(dt) {
     const bossResult = bossDirector?.update(dt, player);
     if (!isGameWon && bossResult?.cleared) {
@@ -379,6 +613,11 @@ export function createGame({ canvasId = "game" } = {}) {
     return false;
   }
 
+  /**
+   * Updates player and camera.
+   * Updates the player state.
+   * @param {number} dt Delta time in seconds.
+   */
   function updatePlayerAndCamera(dt) {
     player.update(dt, input);
     audio?.ensureVolume?.();
@@ -386,15 +625,31 @@ export function createGame({ canvasId = "game" } = {}) {
     background.update(camera.x, camera.y, dt);
   }
 
+  /**
+   * Updates collectable entities.
+   * Updates the world state.
+   * @param {number} dt Delta time in seconds.
+   */
   function updateCollectableEntities(dt) {
     world.collectables.forEach((collectable) => collectable.update(dt));
   }
 
+  /**
+   * Updates enemies and projectiles.
+   * Updates the world state.
+   * @param {number} dt Delta time in seconds.
+   */
   function updateEnemiesAndProjectiles(dt) {
     world.updateEnemies(dt, player);
     world.updateProjectiles(dt, world.enemies ?? []);
   }
 
+  /**
+   * Updates world entities.
+   * Updates the player state.
+   * Spawns visual feedback effects.
+   * @param {number} dt Delta time in seconds.
+   */
   function updateWorldEntities(dt) {
     world.applyPlatformCollisions(player);
     player.handleLandingAudio?.();
@@ -403,6 +658,13 @@ export function createGame({ canvasId = "game" } = {}) {
     world.updateHitEffects(dt);
   }
 
+  /**
+   * Updates hud popups.
+   * Updates the world state.
+   * Spawns visual feedback effects.
+   * @param {number} dt Delta time in seconds.
+   * @returns {*} Result value.
+   */
   function updateHudPopups(dt) {
     world.hudPopups = world.hudPopups.filter((popup) => {
       popup.update(dt);
@@ -410,6 +672,11 @@ export function createGame({ canvasId = "game" } = {}) {
     });
   }
 
+  /**
+   * Updates.
+   * Spawns visual feedback effects.
+   * @param {number} dt Delta time in seconds.
+   */
   function update(dt) {
     if (handleBossUpdate(dt)) return;
     updatePlayerAndCamera(dt);
@@ -419,6 +686,11 @@ export function createGame({ canvasId = "game" } = {}) {
     updateHudPopups(dt);
   }
 
+  /**
+   * Checks collectables.
+   * Updates the world state.
+   * @returns {*} Result value.
+   */
   function checkCollectables() {
     world.collectables = world.collectables.filter((collectable) => {
       if (!collectable.collected && collectable.isColliding(player)) {
@@ -429,31 +701,60 @@ export function createGame({ canvasId = "game" } = {}) {
     });
   }
 
+  /**
+   * Sets canvas cursor default.
+   */
   function setCanvasCursorDefault() {
     if (canvas) canvas.style.cursor = "default";
   }
 
+  /**
+   * Sets overlay active state.
+   * Updates CSS classes to reflect the current state.
+   */
   function setOverlayActiveState() {
     const overlayActive = isGameWon || isGameOver || isPaused;
     document.body?.classList.toggle("overlay-active", overlayActive);
   }
 
+  /**
+   * Clears canvas.
+   * Renders to the canvas context.
+   */
   function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
+  /**
+   * Renders platforms.
+   * Updates the world state.
+   */
   function renderPlatforms() {
     world.platforms.forEach((platform) => platform.render(ctx, camera));
   }
 
+  /**
+   * Renders collectables.
+   * Updates the world state.
+   */
   function renderCollectables() {
     world.collectables.forEach((collectable) => collectable.draw(ctx, camera));
   }
 
+  /**
+   * Renders hud popups.
+   * Updates the world state.
+   * Spawns visual feedback effects.
+   */
   function renderHudPopups() {
     world.hudPopups.forEach((popup) => popup.draw(ctx, camera));
   }
 
+  /**
+   * Renders world.
+   * Updates the player state.
+   * Spawns visual feedback effects.
+   */
   function renderWorld() {
     background.render(ctx, camera);
     renderPlatforms();
@@ -465,20 +766,33 @@ export function createGame({ canvasId = "game" } = {}) {
     world.renderHitEffects(ctx, camera);
   }
 
+  /**
+   * Renders hud.
+   */
   function renderHud() {
     hud?.render(ctx, canvas, camera, player, bossDirector?.getBoss());
   }
 
+  /**
+   * Renders game won overlay.
+   */
   function renderGameWonOverlay() {
     gameWonOverlay?.render(ctx, canvas);
     if (canvas) canvas.style.cursor = gameWonOverlay?.isHovering?.() ? "pointer" : "default";
   }
 
+  /**
+   * Renders game over overlay.
+   */
   function renderGameOverOverlay() {
     gameOverOverlay?.render(ctx, canvas);
     if (canvas) canvas.style.cursor = gameOverOverlay?.isHovering?.() ? "pointer" : "default";
   }
 
+  /**
+   * Renders end game overlay.
+   * @returns {*} Result value.
+   */
   function renderEndGameOverlay() {
     if (isGameWon) {
       renderGameWonOverlay();
@@ -491,12 +805,18 @@ export function createGame({ canvasId = "game" } = {}) {
     return false;
   }
 
+  /**
+   * Renders paused menu.
+   */
   function renderPausedMenu() {
     if (!isPaused) return;
     if (menuPointer) menu.setPointer?.(menuPointer.x, menuPointer.y);
     menu?.render(ctx, canvas);
   }
 
+  /**
+   * Draws.
+   */
   function draw() {
     setCanvasCursorDefault();
     setOverlayActiveState();
@@ -507,15 +827,28 @@ export function createGame({ canvasId = "game" } = {}) {
     renderPausedMenu();
   }
 
+  /**
+   * Updates loading time.
+   * Uses timeStamp to perform the operation.
+   * @param {number} timeStamp Time stamp.
+   */
   function updateLoadingTime(timeStamp) {
     loadingAnimTime = timeStamp || 0;
   }
 
+  /**
+   * Draws loading backdrop.
+   * Renders to the canvas context.
+   */
   function drawLoadingBackdrop() {
     ctx.fillStyle = LOADING_FILL_STYLE;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
+  /**
+   * Returns loading spinner state.
+   * @returns {Object} Loading spinner state.
+   */
   function getLoadingSpinnerState() {
     const canvasCenterX = canvas.width / 2;
     const canvasCenterY = canvas.height / 2;
@@ -524,6 +857,15 @@ export function createGame({ canvasId = "game" } = {}) {
     return { canvasCenterX, canvasCenterY, radius, spinnerAngle };
   }
 
+  /**
+   * Draws loading spinner.
+   * Uses options to perform the operation.
+   * @param {Object} options Configuration options.
+   * @param {boolean} [options.canvasCenterX] Canvas center X.
+   * @param {boolean} [options.canvasCenterY] Canvas center Y.
+   * @param {*} [options.radius] Radius.
+   * @param {number} [options.spinnerAngle] Spinner angle.
+   */
   function drawLoadingSpinner({ canvasCenterX, canvasCenterY, radius, spinnerAngle }) {
     ctx.lineWidth = LOADING_STROKE_WIDTH;
     ctx.strokeStyle = LOADING_STROKE_STYLE;
@@ -532,6 +874,12 @@ export function createGame({ canvasId = "game" } = {}) {
     ctx.stroke();
   }
 
+  /**
+   * Draws loading text.
+   * Renders to the canvas context.
+   * @param {boolean} canvasCenterX Canvas center X.
+   * @param {boolean} canvasCenterY Canvas center Y.
+   */
   function drawLoadingText(canvasCenterX, canvasCenterY) {
     ctx.fillStyle = LOADING_TEXT_COLOR;
     ctx.font = LOADING_FONT;
@@ -540,6 +888,11 @@ export function createGame({ canvasId = "game" } = {}) {
     ctx.fillText("Loading...", canvasCenterX, canvasCenterY + LOADING_TEXT_OFFSET_Y);
   }
 
+  /**
+   * Renders loading.
+   * Uses timeStamp to perform the operation.
+   * @param {number} timeStamp Time stamp.
+   */
   function renderLoading(timeStamp) {
     if (!isLoading) return;
     updateLoadingTime(timeStamp);

@@ -20,18 +20,65 @@ const CLOSE_FONT_SIZE = 18;
 const CLOSE_TEXT = "Close";
 const CLOSE_HEIGHT_MULTIPLIER = 1.2;
 
+/**
+ * Creates line entry.
+ * Uses text, height to compute the result.
+ * @param {string} text Text.
+ * @param {number} height Height.
+ * @returns {*} Line entry.
+ */
 const createLineEntry = (text, height) => ({ text, height });
 
+/**
+ * Adds empty line.
+ * Uses wrappedLines, lineHeight to perform the operation.
+ * @param {*} wrappedLines Wrapped lines.
+ * @param {number} lineHeight Line height.
+ * @returns {*} Result value.
+ */
 const addEmptyLine = (wrappedLines, lineHeight) =>
   wrappedLines.push(createLineEntry("", lineHeight * EMPTY_LINE_RATIO));
 
+/**
+ * Append line.
+ * Uses wrappedLines, currentLine, lineHeight to perform the operation.
+ * @param {*} wrappedLines Wrapped lines.
+ * @param {*} currentLine Current line.
+ * @param {number} lineHeight Line height.
+ * @returns {*} Result value.
+ */
 const appendLine = (wrappedLines, currentLine, lineHeight) =>
   wrappedLines.push(createLineEntry(currentLine, lineHeight));
 
+/**
+ * Returns test line.
+ * Uses currentLine, word to compute the result.
+ * @param {*} currentLine Current line.
+ * @param {*} word Word.
+ * @returns {string} Test line.
+ */
 const getTestLine = (currentLine, word) => (currentLine ? `${currentLine} ${word}` : word);
 
+/**
+ * Should wrap line.
+ * Renders to the canvas context.
+ * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+ * @param {number} innerWidth Inner width.
+ * @param {*} testLine Test line.
+ * @returns {boolean} Whether wrap line.
+ */
 const shouldWrapLine = (ctx, innerWidth, testLine) => ctx.measureText(testLine).width > innerWidth;
 
+/**
+ * Wrap words into lines.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {number} [options.innerWidth] Inner width.
+ * @param {number} [options.lineHeight] Line height.
+ * @param {*} [options.words] Words.
+ * @param {*} [options.wrappedLines] Wrapped lines.
+ */
 const wrapWordsIntoLines = ({ ctx, innerWidth, lineHeight, words, wrappedLines }) => {
   let currentLine = "";
   words.forEach((word, wordIndex) => {
@@ -46,6 +93,16 @@ const wrapWordsIntoLines = ({ ctx, innerWidth, lineHeight, words, wrappedLines }
   });
 };
 
+/**
+ * Wrap paragraph text.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {number} [options.innerWidth] Inner width.
+ * @param {number} [options.lineHeight] Line height.
+ * @param {string} [options.paragraphText] Paragraph text.
+ * @param {*} [options.wrappedLines] Wrapped lines.
+ */
 const wrapParagraphText = ({ ctx, innerWidth, lineHeight, paragraphText, wrappedLines }) => {
   if (!paragraphText) {
     addEmptyLine(wrappedLines, lineHeight);
@@ -55,6 +112,12 @@ const wrapParagraphText = ({ ctx, innerWidth, lineHeight, paragraphText, wrapped
   wrapWordsIntoLines({ ctx, innerWidth, lineHeight, words, wrappedLines });
 };
 
+/**
+ * Creates panel metrics.
+ * Uses canvas to compute the result.
+ * @param {HTMLCanvasElement} canvas Target canvas.
+ * @returns {Object} Panel metrics.
+ */
 const createPanelMetrics = (canvas) => {
   const panelPadding = 28;
   const panelWidth = Math.min(canvas.width * PANEL_WIDTH_RATIO);
@@ -65,6 +128,16 @@ const createPanelMetrics = (canvas) => {
   return { panelPadding, panelWidth, panelX, panelY, panelHeight, innerWidth };
 };
 
+/**
+ * Draws panel.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {number} [options.panelX] Panel X.
+ * @param {number} [options.panelY] Panel Y.
+ * @param {number} [options.panelWidth] Panel width.
+ * @param {number} [options.panelHeight] Panel height.
+ */
 const drawPanel = ({ ctx, panelX, panelY, panelWidth, panelHeight }) => {
   ctx.save();
   ctx.fillStyle = PANEL_FILL_COLOR;
@@ -78,6 +151,10 @@ const drawPanel = ({ ctx, panelX, panelY, panelWidth, panelHeight }) => {
   ctx.restore();
 };
 
+/**
+ * Returns font metrics.
+ * @returns {Object} Font metrics.
+ */
 const getFontMetrics = () => {
   const titleFontSize = TITLE_FONT_SIZE;
   const bodyFontSize = BODY_FONT_SIZE;
@@ -85,6 +162,17 @@ const getFontMetrics = () => {
   return { titleFontSize, bodyFontSize, lineHeight };
 };
 
+/**
+ * Draws title text.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {string} [options.title] Title.
+ * @param {number} [options.panelX] Panel X.
+ * @param {number} [options.panelY] Panel Y.
+ * @param {number} [options.panelPadding] Panel padding.
+ * @param {number} [options.titleFontSize] Title font size.
+ */
 const drawTitleText = ({ ctx, title, panelX, panelY, panelPadding, titleFontSize }) => {
   ctx.shadowBlur = 0;
   ctx.shadowColor = "transparent";
@@ -95,12 +183,30 @@ const drawTitleText = ({ ctx, title, panelX, panelY, panelPadding, titleFontSize
   ctx.fillText(title, panelX + panelPadding, panelY + panelPadding);
 };
 
+/**
+ * Applies body font.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {number} [options.bodyFontSize] Body font size.
+ */
 const applyBodyFont = ({ ctx, bodyFontSize }) => {
   ctx.shadowColor = "transparent";
   ctx.font = `${bodyFontSize}px sans-serif`;
   ctx.fillStyle = BODY_COLOR;
 };
 
+/**
+ * Returns scroll metrics.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.wrapped] Wrapped.
+ * @param {number} [options.panelY] Panel Y.
+ * @param {number} [options.panelHeight] Panel height.
+ * @param {number} [options.panelPadding] Panel padding.
+ * @param {number} [options.titleFontSize] Title font size.
+ * @param {*} [options.scroll] Scroll.
+ */
 const getScrollMetrics = ({ wrapped, panelY, panelHeight, panelPadding, titleFontSize, scroll }) => {
   const contentHeight = wrapped.reduce((totalHeight, lineEntry) => totalHeight + lineEntry.height, 0);
   const textStartY = panelY + panelPadding + titleFontSize + TITLE_BODY_GAP;
@@ -110,6 +216,16 @@ const getScrollMetrics = ({ wrapped, panelY, panelHeight, panelPadding, titleFon
   return { contentHeight, textStartY, innerHeight, maxScroll, clampedScroll };
 };
 
+/**
+ * Returns close text bounds.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {number} [options.panelX] Panel X.
+ * @param {number} [options.panelY] Panel Y.
+ * @param {number} [options.panelWidth] Panel width.
+ * @param {number} [options.panelPadding] Panel padding.
+ */
 const getCloseTextBounds = ({ ctx, panelX, panelY, panelWidth, panelPadding }) => {
   const closeFontSize = CLOSE_FONT_SIZE;
   ctx.font = `bold ${closeFontSize}px sans-serif`;
@@ -121,6 +237,18 @@ const getCloseTextBounds = ({ ctx, panelX, panelY, panelWidth, panelPadding }) =
   return { x: closeX, y: closeY, w: closeWidth, h: closeHeight, fontSize: closeFontSize, text: closeText };
 };
 
+/**
+ * Begin content clip.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {number} [options.panelX] Panel X.
+ * @param {number} [options.panelPadding] Panel padding.
+ * @param {number} [options.textStartY] Text start Y.
+ * @param {number} [options.innerWidth] Inner width.
+ * @param {number} [options.innerHeight] Inner height.
+ * @param {number} [options.bodyFontSize] Body font size.
+ */
 const beginContentClip = ({ ctx, panelX, panelPadding, textStartY, innerWidth, innerHeight, bodyFontSize }) => {
   ctx.save();
   ctx.beginPath();
@@ -132,13 +260,49 @@ const beginContentClip = ({ ctx, panelX, panelPadding, textStartY, innerWidth, i
   ctx.fillStyle = "#e4f7f7";
 };
 
+/**
+ * End content clip.
+ * Renders to the canvas context.
+ * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+ * @returns {*} Result value.
+ */
 const endContentClip = (ctx) => ctx.restore();
 
+/**
+ * Is line visible.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {number} [options.currentY] Current Y.
+ * @param {number} [options.panelY] Panel Y.
+ * @param {number} [options.panelPadding] Panel padding.
+ * @param {number} [options.lineHeight] Line height.
+ * @param {number} [options.panelHeight] Panel height.
+ * @returns {boolean} Whether line visible.
+ */
 const isLineVisible = ({ currentY, panelY, panelPadding, lineHeight, panelHeight }) =>
   currentY > panelY + panelPadding - lineHeight && currentY < panelY + panelHeight - panelPadding + lineHeight;
 
+/**
+ * Returns line position.
+ * Uses panelX, panelPadding, currentY to compute the result.
+ * @param {number} panelX Panel X.
+ * @param {number} panelPadding Panel padding.
+ * @param {number} currentY Current Y.
+ * @returns {*} Line position.
+ */
 const getLinePosition = (panelX, panelPadding, currentY) => ({ x: panelX + panelPadding, y: currentY });
 
+/**
+ * Renders line entry.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {*} [options.lineEntry] Line entry.
+ * @param {number} [options.lineHeight] Line height.
+ * @param {*} [options.position] Position.
+ * @param {number} [options.bodyFontSize] Body font size.
+ * @param {Function} [options.onLineRender] On line render.
+ */
 const renderLineEntry = ({ ctx, lineEntry, lineHeight, position, bodyFontSize, onLineRender }) => {
   if (!onLineRender) {
     ctx.fillText(lineEntry.text, position.x, position.y);
@@ -152,8 +316,31 @@ const renderLineEntry = ({ ctx, lineEntry, lineHeight, position, bodyFontSize, o
   return result.linkBounds || null;
 };
 
+/**
+ * Updates link bounds.
+ * Uses linkBounds, nextBounds to perform the operation.
+ * @param {*} linkBounds Link bounds.
+ * @param {*} nextBounds Next bounds.
+ * @returns {*} Result value.
+ */
 const updateLinkBounds = (linkBounds, nextBounds) => (linkBounds || !nextBounds ? linkBounds : nextBounds);
 
+/**
+ * Renders wrapped line.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {*} [options.lineEntry] Line entry.
+ * @param {number} [options.lineHeight] Line height.
+ * @param {number} [options.bodyFontSize] Body font size.
+ * @param {Function} [options.onLineRender] On line render.
+ * @param {number} [options.panelX] Panel X.
+ * @param {number} [options.panelY] Panel Y.
+ * @param {number} [options.panelPadding] Panel padding.
+ * @param {number} [options.panelHeight] Panel height.
+ * @param {number} [options.currentY] Current Y.
+ * @param {*} [options.linkBounds] Link bounds.
+ */
 const renderWrappedLine = ({ ctx, lineEntry, lineHeight, bodyFontSize, onLineRender, panelX, panelY, panelPadding, panelHeight, currentY, linkBounds }) => {
   const visible = isLineVisible({ currentY, panelY, panelPadding, lineHeight, panelHeight });
   if (!lineEntry.text || !visible) return linkBounds;
@@ -162,6 +349,22 @@ const renderWrappedLine = ({ ctx, lineEntry, lineHeight, bodyFontSize, onLineRen
   return updateLinkBounds(linkBounds, newBounds);
 };
 
+/**
+ * Renders wrapped lines.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {*} [options.wrapped] Wrapped.
+ * @param {number} [options.panelX] Panel X.
+ * @param {number} [options.panelY] Panel Y.
+ * @param {number} [options.panelPadding] Panel padding.
+ * @param {number} [options.panelHeight] Panel height.
+ * @param {number} [options.lineHeight] Line height.
+ * @param {number} [options.bodyFontSize] Body font size.
+ * @param {number} [options.textStartY] Text start Y.
+ * @param {*} [options.clampedScroll] Clamped scroll.
+ * @param {Function} [options.onLineRender] On line render.
+ */
 const renderWrappedLines = ({ ctx, wrapped, panelX, panelY, panelPadding, panelHeight, lineHeight, bodyFontSize, textStartY, clampedScroll, onLineRender }) => {
   let linkBounds = null;
   let currentY = textStartY - clampedScroll;
@@ -172,6 +375,24 @@ const renderWrappedLines = ({ ctx, wrapped, panelX, panelY, panelPadding, panelH
   return linkBounds;
 };
 
+/**
+ * Renders content.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {*} [options.wrapped] Wrapped.
+ * @param {number} [options.panelX] Panel X.
+ * @param {number} [options.panelY] Panel Y.
+ * @param {number} [options.panelPadding] Panel padding.
+ * @param {number} [options.panelHeight] Panel height.
+ * @param {number} [options.lineHeight] Line height.
+ * @param {number} [options.bodyFontSize] Body font size.
+ * @param {number} [options.textStartY] Text start Y.
+ * @param {number} [options.innerWidth] Inner width.
+ * @param {number} [options.innerHeight] Inner height.
+ * @param {*} [options.clampedScroll] Clamped scroll.
+ * @param {Function} [options.onLineRender] On line render.
+ */
 const renderContent = ({ ctx, wrapped, panelX, panelY, panelPadding, panelHeight, lineHeight, bodyFontSize, textStartY, innerWidth, innerHeight, clampedScroll, onLineRender }) => {
   beginContentClip({ ctx, panelX, panelPadding, textStartY, innerWidth, innerHeight, bodyFontSize });
   const linkBounds = renderWrappedLines({ ctx, wrapped, panelX, panelY, panelPadding, panelHeight, lineHeight, bodyFontSize, textStartY, clampedScroll, onLineRender });
@@ -180,12 +401,37 @@ const renderContent = ({ ctx, wrapped, panelX, panelY, panelPadding, panelHeight
 };
 
 
+/**
+ * Draws legal layout.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {string} [options.title] Title.
+ * @param {number} [options.panelX] Panel X.
+ * @param {number} [options.panelY] Panel Y.
+ * @param {number} [options.panelWidth] Panel width.
+ * @param {number} [options.panelHeight] Panel height.
+ * @param {number} [options.panelPadding] Panel padding.
+ * @param {number} [options.titleFontSize] Title font size.
+ * @param {number} [options.bodyFontSize] Body font size.
+ */
 const drawLegalLayout = ({ ctx, title, panelX, panelY, panelWidth, panelHeight, panelPadding, titleFontSize, bodyFontSize }) => {
   drawPanel({ ctx, panelX, panelY, panelWidth, panelHeight });
   drawTitleText({ ctx, title, panelX, panelY, panelPadding, titleFontSize });
   applyBodyFont({ ctx, bodyFontSize });
 };
 
+/**
+ * Renders legal screen.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {HTMLCanvasElement} [options.canvas] Target canvas.
+ * @param {*} [options.scroll] Scroll.
+ * @param {Function} [options.onLineRender] On line render.
+ * @param {string} [options.title] Title.
+ * @param {*} [options.wrapParagraphs] Wrap paragraphs.
+ */
 const renderLegalScreen = ({ ctx, canvas, scroll, onLineRender, title, wrapParagraphs }) => {
   if (!ctx || !canvas) return { maxScroll: 0, closeTextBounds: null, linkBounds: null };
   const { panelPadding, panelWidth, panelX, panelY, panelHeight, innerWidth } = createPanelMetrics(canvas);
@@ -199,11 +445,26 @@ const renderLegalScreen = ({ ctx, canvas, scroll, onLineRender, title, wrapParag
 };
 
 export class LegalScreenBase {
+  /**
+   * Creates a new instance.
+   * Uses options to perform the operation.
+   * @param {Object} options Configuration options.
+   * @param {string} [options.title] Title.
+   * @param {*} [options.paragraphs] Paragraphs.
+   */
   constructor({ title, paragraphs }) {
     this.title = title;
     this.paragraphs = paragraphs;
   }
 
+  /**
+   * Wrap paragraphs.
+   * Uses options to perform the operation.
+   * @param {Object} options Configuration options.
+   * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+   * @param {number} [options.innerWidth] Inner width.
+   * @param {number} [options.lineHeight] Line height.
+   */
   wrapParagraphs({ ctx, innerWidth, lineHeight }) {
     const wrappedLines = [];
     this.paragraphs.forEach((paragraphText) => {
@@ -212,6 +473,15 @@ export class LegalScreenBase {
     return wrappedLines;
   }
 
+  /**
+   * Renders. If omitted, default values are used.
+   * Uses options to perform the operation.
+   * @param {Object} [options] Configuration options.
+   * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+   * @param {HTMLCanvasElement} [options.canvas] Target canvas.
+   * @param {*} [options.scroll] Scroll.
+   * @param {Function} [options.onLineRender] On line render.
+   */
   render({ ctx, canvas, scroll = 0, onLineRender }) {
     return renderLegalScreen({
       ctx,

@@ -23,6 +23,10 @@ const ENEMY2_KEYS = ["idle", "run", "attack1", "attack2", "die"];
 const ENEMY3_KEYS = ["idle", "run", "attack1", "attack2", "slide", "die"];
 const BOSS_KEYS = ["idle", "walk", "run", "attack1", "attack2", "hurt", "die", "jump"];
 
+/**
+ * Creates background images.
+ * @returns {Array<any>} Background images.
+ */
 function createBackgroundImages() {
   return [
     loadImage("./assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-1.png"),
@@ -34,6 +38,10 @@ function createBackgroundImages() {
   ];
 }
 
+/**
+ * Creates platform sprites.
+ * @returns {Object} Platform sprites.
+ */
 function createPlatformSprites() {
   return {
     startLong: loadImage("./assets/img/Platforms/platform-start-long.png"),
@@ -48,12 +56,20 @@ function createPlatformSprites() {
   };
 }
 
+/**
+ * Creates player frames.
+ * @returns {*} Player frames.
+ */
 function createPlayerFrames() {
   return Object.fromEntries(
     PLAYER_FRAME_CONFIG.map(([key, path, prefix, count]) => [key, loadFrames(path, prefix, count)])
   );
 }
 
+/**
+ * Creates enemy sprites.
+ * @returns {Object} Enemy sprites.
+ */
 function createEnemySprites() {
   return {
     enemy1Sprites: loadEnemy1Sprites(),
@@ -62,10 +78,18 @@ function createEnemySprites() {
   };
 }
 
+/**
+ * Creates boss sprites.
+ * @returns {*} Boss sprites.
+ */
 function createBossSprites() {
   return loadBossSprites();
 }
 
+/**
+ * Creates hud images.
+ * @returns {Object} Hud images.
+ */
 function createHudImages() {
   return {
     hudCoinImg: loadImage("./assets/img/Coin/Coin_0000000.png"),
@@ -75,10 +99,25 @@ function createHudImages() {
   };
 }
 
+/**
+ * Collect sprites by keys.
+ * Advances animation state and sprites.
+ * @param {HTMLImageElement} spriteSet Sprite set.
+ * @param {*} keys Keys.
+ * @returns {*} Result value.
+ */
 function collectSpritesByKeys(spriteSet, keys) {
   return keys.flatMap((key) => spriteSet[key]);
 }
 
+/**
+ * Collect enemy images.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {import("../../../game/entities/enemies/enemyBase.class.js").EnemyBase} [options.enemy1Sprites] Enemy 1 sprites.
+ * @param {import("../../../game/entities/enemies/enemyBase.class.js").EnemyBase} [options.enemy2Sprites] Enemy 2 sprites.
+ * @param {import("../../../game/entities/enemies/enemyBase.class.js").EnemyBase} [options.enemy3Sprites] Enemy 3 sprites.
+ */
 function collectEnemyImages({ enemy1Sprites, enemy2Sprites, enemy3Sprites }) {
   return [
     ...collectSpritesByKeys(enemy1Sprites, ENEMY1_KEYS),
@@ -87,6 +126,20 @@ function collectEnemyImages({ enemy1Sprites, enemy2Sprites, enemy3Sprites }) {
   ];
 }
 
+/**
+ * Builds image list.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.bgImages] Bg images.
+ * @param {import("../../../engine/world/platform.class.js").Platform} [options.platformSprites] Platform sprites.
+ * @param {import("../../../game/entities/player/player.class.js").Player} [options.playerFrames] Player frames.
+ * @param {import("../../../game/entities/enemies/enemyBase.class.js").EnemyBase} [options.enemySprites] Enemy sprites.
+ * @param {import("../../../game/entities/boss/boss.class.js").Boss} [options.bossSprites] Boss sprites.
+ * @param {HTMLImageElement} [options.hudCoinImg] Hud coin img.
+ * @param {HTMLImageElement} [options.hudGunImg] Hud gun img.
+ * @param {HTMLImageElement} [options.menuBgImg] Menu bg img.
+ * @param {HTMLImageElement} [options.menuUiImg] Menu ui img.
+ */
 function buildImageList({ bgImages, platformSprites, playerFrames, enemySprites, bossSprites, hudCoinImg, hudGunImg, menuBgImg, menuUiImg }) {
   const platformImages = Object.values(platformSprites);
   const playerImages = collectSpritesByKeys(playerFrames, PLAYER_FRAME_KEYS);
@@ -95,6 +148,10 @@ function buildImageList({ bgImages, platformSprites, playerFrames, enemySprites,
   return [...bgImages, ...platformImages, ...playerImages, ...enemyImages, ...bossImages, hudCoinImg, hudGunImg, menuBgImg, menuUiImg];
 }
 
+/**
+ * Builds base assets.
+ * @returns {Object} Base assets.
+ */
 function buildBaseAssets() {
   const bgImages = createBackgroundImages();
   const platformSprites = createPlatformSprites();
@@ -105,6 +162,10 @@ function buildBaseAssets() {
   return { bgImages, platformSprites, playerFrames, enemySprites, bossSprites, ...hudImages };
 }
 
+/**
+ * Creates game assets.
+ * @returns {Object} Game assets.
+ */
 export function createGameAssets() {
   const assetBundle = buildBaseAssets();
   const images = buildImageList(assetBundle);

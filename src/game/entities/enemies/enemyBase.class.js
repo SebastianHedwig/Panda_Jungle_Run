@@ -6,6 +6,16 @@ import { CollectableItem } from "../../items/collectableItem.class.js";
 export const DEBUG_ENEMY_HITBOX = DEBUG_MODE;
 
 export class EnemyBase extends MovableObject {
+  /**
+   * Creates a new instance. If omitted, default values are used.
+   * Updates the instance state.
+   * Initializes movement defaults, combat helpers.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {number} width Width.
+   * @param {number} height Height.
+   * @param {import("../../../core/world.class.js").World} [world] World instance.
+   */
   constructor(x, y, width, height, world = null) {
     super(x, y, width, height);
     this.world = world;
@@ -13,6 +23,12 @@ export class EnemyBase extends MovableObject {
     this.initializeCombatHelpers();
   }
 
+  /**
+   * Initializes movement defaults.
+   * Spawns visual feedback effects.
+   * @param {number} x X.
+   * @param {number} y Y.
+   */
   initializeMovementDefaults(x, y) {
     Object.assign(this, {
       patrolDirection: FACING_LEFT, patrolRange: 800, spawnX: x, currentPlatform: null,
@@ -22,6 +38,11 @@ export class EnemyBase extends MovableObject {
     });
   }
 
+  /**
+   * Initializes combat helpers.
+   * Performs hitbox or collision checks.
+   * Updates the instance state.
+   */
   initializeCombatHelpers() {
     this.hasHitDuringAttack = false;
     this.recentSlideHit = 0;
@@ -31,6 +52,12 @@ export class EnemyBase extends MovableObject {
     this.hitboxShrinkYFactor = 0.2;
   }
 
+  /**
+   * Take damage. If omitted, default values are used.
+   * Uses amount, hitContext to perform the operation.
+   * @param {number} [amount] Amount.
+   * @param {*} [hitContext] Hit context.
+   */
   takeDamage(amount = 1, hitContext = {}) {
     if (this.isDead) return;
     applyDamageAmount(this, amount);
@@ -40,6 +67,12 @@ export class EnemyBase extends MovableObject {
     applyHitStun(this, hitContext);
   }
 
+  /**
+   * Returns hitbox.
+   * Performs hitbox or collision checks.
+   * Updates the instance state.
+   * @returns {Object} Hitbox.
+   */
   getHitbox() {
     const { x, y, width: enemyWidth, height: enemyHeight } = this;
     const hitboxWidth = enemyWidth * (1 - this.hitboxShrinkXFactor);
@@ -49,6 +82,13 @@ export class EnemyBase extends MovableObject {
     return { x: hitboxX, y: hitboxY, width: hitboxWidth, height: hitboxHeight };
   }
 
+  /**
+   * Renders hitbox.
+   * Renders to the canvas context.
+   * Performs hitbox or collision checks.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+   */
   renderHitbox(ctx, camera) {
     const hitbox = this.getHitbox();
     ctx.strokeStyle = "rgba(0,120,255,0.6)";
@@ -56,6 +96,12 @@ export class EnemyBase extends MovableObject {
     ctx.strokeRect(hitbox.x - camera.x, hitbox.y - camera.y, hitbox.width, hitbox.height);
   }
 
+  /**
+   * Returns player delta.
+   * Uses player to compute the result.
+   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @returns {*} Player delta.
+   */
   getPlayerDelta(player) {
     if (!player) return null;
     const enemyCenter = getActorCenter(this);
@@ -63,6 +109,13 @@ export class EnemyBase extends MovableObject {
     return buildPlayerDelta(player, enemyCenter, playerCenter);
   }
 
+  /**
+   * Should chase player. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {import("../player/player.class.js").Player} playerInfo Player info.
+   * @param {boolean} [wasChasing] Whether chasing.
+   * @returns {boolean} Whether chase player.
+   */
   shouldChasePlayer(playerInfo, wasChasing = false) {
     if (!playerInfo) return false;
     const horizGap = playerInfo.absoluteDeltaX;
@@ -71,6 +124,11 @@ export class EnemyBase extends MovableObject {
     return horizGap <= maxX && playerInfo.absoluteDeltaY <= maxY;
   }
 
+  /**
+   * Patrol.
+   * Updates the instance state.
+   * Spawns visual feedback effects.
+   */
   patrol() {
     const minX = this.spawnX - this.patrolRange / 2;
     const maxX = this.spawnX + this.patrolRange / 2;
@@ -79,6 +137,11 @@ export class EnemyBase extends MovableObject {
     this.facing = this.patrolDirection;
   }
 
+  /**
+   * Is on lowest platform.
+   * Updates the world state.
+   * @returns {boolean} Whether on lowest platform.
+   */
   isOnLowestPlatform() {
     const platformLevelTolerance = 0.5;
     if (!this.currentPlatform || !this.world?.platforms?.length) return false;
@@ -90,6 +153,11 @@ export class EnemyBase extends MovableObject {
     return this.currentPlatform.top >= lowestTop - platformLevelTolerance;
   }
 
+  /**
+   * Returns platform underfoot.
+   * Updates the world state.
+   * @returns {*} Platform underfoot.
+   */
   getPlatformUnderfoot() {
     if (!this.world?.platforms?.length) return null;
     const footProbeOffset = 2, platformBottomTolerance = 5;
@@ -105,6 +173,13 @@ export class EnemyBase extends MovableObject {
     );
   }
 
+  /**
+   * Find platform below at.
+   * Updates the world state.
+   * @param {number} footX Foot X.
+   * @param {number} currentTop Current top.
+   * @returns {*} Result value.
+   */
   findPlatformBelowAt(footX, currentTop) {
     if (!this.world?.platforms?.length) return null;
     let nearestPlatformBelow = null;
@@ -119,6 +194,14 @@ export class EnemyBase extends MovableObject {
     return nearestPlatformBelow;
   }
 
+  /**
+   * Has adjacent platform.
+   * Updates the world state.
+   * @param {import("../../../engine/world/platform.class.js").Platform} currentPlatform Current platform.
+   * @param {*} moveDirection Move direction.
+   * @param {number} footX Foot X.
+   * @returns {boolean} Whether adjacent platform.
+   */
   hasAdjacentPlatform(currentPlatform, moveDirection, footX) {
     if (!this.world?.platforms?.length) return false;
     const searchContext = getAdjacentPlatformSearch(this, currentPlatform, moveDirection, footX);
@@ -127,12 +210,24 @@ export class EnemyBase extends MovableObject {
     );
   }
 
+  /**
+   * Handles platform landing.
+   * Updates the instance state.
+   * @param {number} previousBottom Previous bottom.
+   * @param {number} currentBottom Current bottom.
+   */
   handlePlatformLanding(previousBottom, currentBottom) {
     if (!this.world?.platforms?.length) return;
     if (tryLandOnPlatform(this, previousBottom, currentBottom)) return;
     handleFallBelowCanvas(this, currentBottom);
   }
 
+  /**
+   * Applies attack physics.
+   * Applies physics updates like gravity and velocity.
+   * Updates the instance state.
+   * @param {number} dt Delta time in seconds.
+   */
   applyAttackPhysics(dt) {
     const previousBottom = this.y + this.height;
     this.applyApexGravity(dt);
@@ -140,17 +235,44 @@ export class EnemyBase extends MovableObject {
     this.handlePlatformLanding(previousBottom, currentBottom);
   }
 
+  /**
+   * Adjust for edges.
+   * Uses moveDirection, dt, platform, onLowestPlatform, fromChasing to perform the operation.
+   * @param {*} moveDirection Move direction.
+   * @param {number} dt Delta time in seconds.
+   * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+   * @param {Function} onLowestPlatform On lowest platform.
+   * @param {*} fromChasing From chasing.
+   * @returns {*} Result value.
+   */
   adjustForEdges(moveDirection, dt, platform, onLowestPlatform, fromChasing) {
     const edgeContext = buildEdgeContext(this, moveDirection, dt, platform, onLowestPlatform);
     if (shouldTurnAround(edgeContext)) return applyEdgeTurn(this, edgeContext, fromChasing);
     return moveDirection;
   }
 
+  /**
+   * Try start attack.
+   * Uses playerInfo, player to perform the operation.
+   * @param {import("../player/player.class.js").Player} playerInfo Player info.
+   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @returns {*} Result value.
+   */
   tryStartAttack(playerInfo, player) {
     if (!canStartEnemyAttack(playerInfo, player)) return false;
     return tryStartMeleeAttack(this, playerInfo, player);
   }
 
+  /**
+   * Starts melee attack. If omitted, default values are used.
+   * Advances animation state and sprites.
+   * Applies physics updates like gravity and velocity.
+   * @param {number} deltaX Delta X.
+   * @param {*} frames Frames.
+   * @param {number} damage Damage.
+   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @param {number} [moveSpeed] Move speed.
+   */
   startMeleeAttack(deltaX, frames, damage, player, moveSpeed = 0) {
     this.isAttacking = true;
     this.attackTimer = this.attackDuration;
@@ -165,6 +287,12 @@ export class EnemyBase extends MovableObject {
     this.tryDealAttackDamage?.(player, attackPopupDelay);
   }
 
+  /**
+   * Drop collectables. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {string} itemType Item type.
+   * @param {number} [count] Count.
+   */
   dropCollectables(itemType, count = 0) {
     if (!this.world?.collectables || count <= 0) return;
     const dropConfig = getCollectableDropConfig(this);
@@ -172,10 +300,21 @@ export class EnemyBase extends MovableObject {
     addCollectablesToWorld(this.world, drops);
   }
 
+  /**
+   * Drop coins. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {number} [count] Count.
+   */
   dropCoins(count = 0) {
     this.dropCollectables("coin", count);
   }
 
+  /**
+   * Collides with.
+   * Updates the instance state.
+   * @param {*} target Target.
+   * @returns {*} Result value.
+   */
   collidesWith(target) {
     const selfBox = this.getHitbox();
     const targetBox = target.getHitbox ? target.getHitbox() : target;
@@ -188,10 +327,22 @@ export class EnemyBase extends MovableObject {
   }
 }
 
+/**
+ * Applies damage amount.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {number} amount Amount.
+ */
 function applyDamageAmount(enemy, amount) {
   enemy.health -= amount;
 }
 
+/**
+ * Applies recent slide hit.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {*} hitContext Hit context.
+ */
 function applyRecentSlideHit(enemy, hitContext) {
   const recentSlideHitDuration = 0.4;
   if (hitContext?.source === "slide") {
@@ -199,6 +350,13 @@ function applyRecentSlideHit(enemy, hitContext) {
   }
 }
 
+/**
+ * Adds enemy damage popup.
+ * Updates the enemy state.
+ * Spawns visual feedback effects.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {number} amount Amount.
+ */
 function addEnemyDamagePopup(enemy, amount) {
   if (!enemy.world?.hudPopups) return;
   const popupX = enemy.x + enemy.width * 0.5;
@@ -206,6 +364,12 @@ function addEnemyDamagePopup(enemy, amount) {
   enemy.world.hudPopups.push(new HudPopup(`-${amount}`, popupX, popupY, "damage"));
 }
 
+/**
+ * Handles enemy death.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @returns {*} Result value.
+ */
 function handleEnemyDeath(enemy) {
   if (enemy.health > 0) return false;
   markEnemyDead(enemy);
@@ -216,26 +380,55 @@ function handleEnemyDeath(enemy) {
   return true;
 }
 
+/**
+ * Marks enemy dead.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ */
 function markEnemyDead(enemy) {
   enemy.isDead = true;
 }
 
+/**
+ * Sets death animation.
+ * Advances animation state and sprites.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ */
 function setDeathAnimation(enemy) {
   enemy.setAnimation?.(enemy.dieFrames);
   enemy.currentFrame = 0;
   enemy.frameTime = 0;
 }
 
+/**
+ * Resets death velocity.
+ * Applies physics updates like gravity and velocity.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ */
 function resetDeathVelocity(enemy) {
   enemy.velocityX = 0;
   enemy.velocityY = 0;
 }
 
+/**
+ * Initializes death timers.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ */
 function initDeathTimers(enemy) {
   enemy.deathTimer = 5;
   enemy.blinkTimer = 0.9; // 3 blinks at 0.3s
 }
 
+/**
+ * Applies hit stun.
+ * Advances animation state and sprites.
+ * Applies physics updates like gravity and velocity.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {*} hitContext Hit context.
+ */
 function applyHitStun(enemy, hitContext) {
   if (hitContext.skipStun) return;
   const hitStunMinDuration = 1.5;
@@ -247,12 +440,26 @@ function applyHitStun(enemy, hitContext) {
   enemy.frameTime = 0;
 }
 
+/**
+ * Returns actor center.
+ * Uses actor to compute the result.
+ * @param {*} actor Actor.
+ * @returns {Object} Actor center.
+ */
 function getActorCenter(actor) {
   const centerX = actor.x + actor.width / 2;
   const centerY = actor.y + actor.height / 2;
   return { centerX, centerY };
 }
 
+/**
+ * Builds player delta.
+ * Updates the player state.
+ * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemyCenter Enemy center.
+ * @param {import("../player/player.class.js").Player} playerCenter Player center.
+ * @returns {Object} Player delta.
+ */
 function buildPlayerDelta(player, enemyCenter, playerCenter) {
   const enemyCenterX = enemyCenter.centerX;
   const enemyCenterY = enemyCenter.centerY;
@@ -263,6 +470,15 @@ function buildPlayerDelta(player, enemyCenter, playerCenter) {
   return { deltaX, deltaY, absoluteDeltaX: Math.abs(deltaX), absoluteDeltaY: Math.abs(deltaY), playerCenterX, playerCenterY, enemyCenterX, enemyCenterY, playerWidth: player.width };
 }
 
+/**
+ * Returns adjacent platform search.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {import("../../../engine/world/platform.class.js").Platform} currentPlatform Current platform.
+ * @param {*} moveDirection Move direction.
+ * @param {number} footX Foot X.
+ * @returns {Object} Adjacent platform search.
+ */
 function getAdjacentPlatformSearch(enemy, currentPlatform, moveDirection, footX) {
   const adjacentPlatformLookaheadFactor = 3;
   const minAdjacentPlatformToleranceY = 4;
@@ -275,6 +491,14 @@ function getAdjacentPlatformSearch(enemy, currentPlatform, moveDirection, footX)
   return { toleranceY, minX, maxX };
 }
 
+/**
+ * Is adjacent platform.
+ * Uses platform, currentPlatform, searchContext to perform the operation.
+ * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {import("../../../engine/world/platform.class.js").Platform} currentPlatform Current platform.
+ * @param {*} searchContext Search context.
+ * @returns {boolean} Whether adjacent platform.
+ */
 function isAdjacentPlatform(platform, currentPlatform, searchContext) {
   return (
     platform !== currentPlatform &&
@@ -285,6 +509,14 @@ function isAdjacentPlatform(platform, currentPlatform, searchContext) {
   );
 }
 
+/**
+ * Try land on platform.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {number} previousBottom Previous bottom.
+ * @param {number} currentBottom Current bottom.
+ * @returns {*} Result value.
+ */
 function tryLandOnPlatform(enemy, previousBottom, currentBottom) {
   const footX = enemy.x + enemy.width / 2;
   for (const platform of enemy.world.platforms) {
@@ -296,11 +528,28 @@ function tryLandOnPlatform(enemy, previousBottom, currentBottom) {
   return false;
 }
 
+/**
+ * Is platform landing.
+ * Applies physics updates like gravity and velocity.
+ * Performs hitbox or collision checks.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {number} previousBottom Previous bottom.
+ * @param {number} currentBottom Current bottom.
+ * @returns {boolean} Whether platform landing.
+ */
 function isPlatformLanding(enemy, platform, previousBottom, currentBottom) {
   const overlapsX = enemy.x + enemy.width > platform.left && enemy.x < platform.right;
   return overlapsX && enemy.velocityY > 0 && previousBottom <= platform.top && currentBottom >= platform.top;
 }
 
+/**
+ * Applies platform landing.
+ * Applies physics updates like gravity and velocity.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ */
 function applyPlatformLanding(enemy, platform) {
   enemy.y = platform.top - enemy.height;
   enemy.velocityY = 0;
@@ -309,6 +558,13 @@ function applyPlatformLanding(enemy, platform) {
   enemy.lastGroundY = enemy.y;
 }
 
+/**
+ * Handles fall below canvas.
+ * Applies physics updates like gravity and velocity.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {number} currentBottom Current bottom.
+ */
 function handleFallBelowCanvas(enemy, currentBottom) {
   enemy.onGround = false;
   const canvasH = enemy.world?.canvas?.height;
@@ -319,6 +575,16 @@ function handleFallBelowCanvas(enemy, currentBottom) {
   }
 }
 
+/**
+ * Builds edge context.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {*} moveDirection Move direction.
+ * @param {number} dt Delta time in seconds.
+ * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Function} onLowestPlatform On lowest platform.
+ * @returns {Object} Edge context.
+ */
 function buildEdgeContext(enemy, moveDirection, dt, platform, onLowestPlatform) {
   const platformBelow = enemy.findPlatformBelowAt(enemy.x + enemy.width / 2, platform.top);
   const currentFootX = enemy.x + enemy.width / 2;
@@ -331,10 +597,27 @@ function buildEdgeContext(enemy, moveDirection, dt, platform, onLowestPlatform) 
   return { moveDirection, beyondEdge, returningInside, allowDrop, hasAdjacentFloor };
 }
 
+/**
+ * Is beyond platform edge.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {number} footX Foot X.
+ * @returns {boolean} Whether beyond platform edge.
+ */
 function isBeyondPlatformEdge(enemy, platform, footX) {
   return footX < platform.left + enemy.edgeMargin || footX > platform.right - enemy.edgeMargin;
 }
 
+/**
+ * Is returning inside.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {number} currentFootX Current foot X.
+ * @param {*} moveDirection Move direction.
+ * @returns {boolean} Whether returning inside.
+ */
 function isReturningInside(enemy, platform, currentFootX, moveDirection) {
   return (
     (currentFootX >= platform.right - enemy.edgeMargin && moveDirection <= 0) ||
@@ -342,10 +625,24 @@ function isReturningInside(enemy, platform, currentFootX, moveDirection) {
   );
 }
 
+/**
+ * Should turn around.
+ * Uses edgeContext to perform the operation.
+ * @param {*} edgeContext Edge context.
+ * @returns {boolean} Whether turn around.
+ */
 function shouldTurnAround(edgeContext) {
   return edgeContext.beyondEdge && !edgeContext.returningInside && !edgeContext.allowDrop && !edgeContext.hasAdjacentFloor;
 }
 
+/**
+ * Applies edge turn.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {*} edgeContext Edge context.
+ * @param {*} fromChasing From chasing.
+ * @returns {*} Result value.
+ */
 function applyEdgeTurn(enemy, edgeContext, fromChasing) {
   enemy.patrolDirection = edgeContext.moveDirection > 0 ? FACING_LEFT : FACING_RIGHT;
   enemy.isChasing = false;
@@ -355,14 +652,34 @@ function applyEdgeTurn(enemy, edgeContext, fromChasing) {
   return moveDirection;
 }
 
+/**
+ * Applies chase cooldown.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ */
 function applyChaseCooldown(enemy) {
   enemy.chaseCooldown = Math.max(enemy.chaseCooldown, enemy.chaseCooldownDuration);
 }
 
+/**
+ * Can start enemy attack.
+ * Updates the player state.
+ * @param {import("../player/player.class.js").Player} playerInfo Player info.
+ * @param {import("../player/player.class.js").Player} player Player instance.
+ * @returns {boolean} Whether start enemy attack.
+ */
 function canStartEnemyAttack(playerInfo, player) {
   return !!playerInfo && !!player && !player.isDead;
 }
 
+/**
+ * Try start melee attack.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {import("../player/player.class.js").Player} playerInfo Player info.
+ * @param {import("../player/player.class.js").Player} player Player instance.
+ * @returns {*} Result value.
+ */
 function tryStartMeleeAttack(enemy, playerInfo, player) {
   const deltaX = playerInfo.deltaX;
   const absoluteDeltaY = playerInfo.absoluteDeltaY;
@@ -373,10 +690,25 @@ function tryStartMeleeAttack(enemy, playerInfo, player) {
   return true;
 }
 
+/**
+ * Is player in range.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {number} deltaX Delta X.
+ * @param {number} absoluteDeltaY Absolute delta Y.
+ * @returns {boolean} Whether player in range.
+ */
 function isPlayerInRange(enemy, deltaX, absoluteDeltaY) {
   return Math.abs(deltaX) <= enemy.attackRange && absoluteDeltaY <= enemy.attackHeightTolerance;
 }
 
+/**
+ * Returns collectable drop config.
+ * Updates the enemy state.
+ * Spawns visual feedback effects.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @returns {Object} Collectable drop config.
+ */
 function getCollectableDropConfig(enemy) {
   const spawnOffsetYFactor = 0.2;
   const baseRadius = 30;
@@ -392,6 +724,15 @@ function getCollectableDropConfig(enemy) {
   return { spawnOffsetYFactor, baseRadius, radiusScattering, minAngle, angleRange, baseSpeedX, speedXScattering, baseSpeedY, speedYScattering, baseX, baseY };
 }
 
+/**
+ * Creates collectable drops.
+ * Uses enemy, itemType, count, dropConfig to compute the result.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {string} itemType Item type.
+ * @param {number} count Count.
+ * @param {*} dropConfig Drop config.
+ * @returns {*} Collectable drops.
+ */
 function createCollectableDrops(enemy, itemType, count, dropConfig) {
   const drops = [];
   for (let dropIndex = 0; dropIndex < count; dropIndex++) {
@@ -401,6 +742,16 @@ function createCollectableDrops(enemy, itemType, count, dropConfig) {
   return drops;
 }
 
+/**
+ * Creates collectable drop.
+ * Applies physics updates like gravity and velocity.
+ * Updates the enemy state.
+ * @param {import("./enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {string} itemType Item type.
+ * @param {number} dropIndex Drop index.
+ * @param {*} dropConfig Drop config.
+ * @returns {*} Collectable drop.
+ */
 function createCollectableDrop(enemy, itemType, dropIndex, dropConfig) {
   const isEvenDropIndex = dropIndex % 2 === 0; // drop left/right alternation
   const dropDirection = isEvenDropIndex ? FACING_LEFT : FACING_RIGHT;
@@ -415,6 +766,12 @@ function createCollectableDrop(enemy, itemType, dropIndex, dropConfig) {
   return item;
 }
 
+/**
+ * Adds collectables to world.
+ * Updates the world state.
+ * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {*} drops Drops.
+ */
 function addCollectablesToWorld(world, drops) {
   world.addCollectables ? world.addCollectables(drops) : world.collectables.push(...drops);
 }

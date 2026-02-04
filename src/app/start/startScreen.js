@@ -36,6 +36,12 @@ const BUTTON_SHADOW_COLOR = "rgba(255,255,255,0.7)";
 const BUTTON_SHADOW_BLUR = 14;
 const BUTTON_SHADOW_OFFSET_Y = 2;
 
+/**
+ * Returns canvas and context.
+ * Resolves DOM elements from the document.
+ * @param {string} canvasId Canvas element id.
+ * @returns {Object} Canvas and context.
+ */
 const getCanvasAndContext = (canvasId) => {
   const canvas = document.getElementById(canvasId);
   const ctx = canvas?.getContext("2d");
@@ -43,6 +49,11 @@ const getCanvasAndContext = (canvasId) => {
   return { canvas, ctx };
 };
 
+/**
+ * Returns auto start flag.
+ * Reads or writes browser storage.
+ * @returns {*} Auto start flag.
+ */
 const getAutoStartFlag = () => {
   try {
     return window.localStorage?.getItem?.(AUTOSTART_KEY) === "1"; // "1" = simple Autostart-Flag set by handleRetry().
@@ -51,12 +62,22 @@ const getAutoStartFlag = () => {
   }
 };
 
+/**
+ * Clears auto start flag.
+ * Reads or writes browser storage.
+ */
 const clearAutoStartFlag = () => {
   try {
     window.localStorage?.removeItem?.(AUTOSTART_KEY);
   } catch (_err) {}
 };
 
+/**
+ * Handles auto start.
+ * Uses onStart to perform the operation.
+ * @param {Function} onStart On start.
+ * @returns {*} Result value.
+ */
 const handleAutoStart = (onStart) => {
   const autoStart = getAutoStartFlag();
   if (!autoStart) return false;
@@ -65,6 +86,15 @@ const handleAutoStart = (onStart) => {
   return true;
 };
 
+/**
+ * Applies settings toggle defaults.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {string} [options.settingsLabel] Settings label.
+ * @param {HTMLElement} [options.settingsToggle] Settings toggle.
+ * @param {HTMLImageElement} [options.settingsIcon] Settings icon.
+ * @param {string} [options.settingsIconControllerSrc] Settings icon controller src.
+ */
 const applySettingsToggleDefaults = ({ settingsLabel, settingsToggle, settingsIcon, settingsIconControllerSrc }) => {
   if (settingsLabel) settingsLabel.textContent = "controls";
   settingsToggle?.classList.remove("settings-toggle--spin");
@@ -74,6 +104,11 @@ const applySettingsToggleDefaults = ({ settingsLabel, settingsToggle, settingsIc
   }
 };
 
+/**
+ * Returns settings context.
+ * Resolves DOM elements from the document.
+ * @returns {Object} Settings context.
+ */
 const getSettingsContext = () => {
   const settingsToggle = document.getElementById("settings-toggle");
   const settingsLabel = settingsToggle?.querySelector(".hud-label");
@@ -85,17 +120,33 @@ const getSettingsContext = () => {
   return { settingsToggle, settingsLabel, settingsIcon, defaultSettingsLabel, settingsIconDefaultSrc, settingsIconControllerSrc };
 };
 
+/**
+ * Creates controls overlays.
+ * @returns {*} Controls overlays.
+ */
 const createControlsOverlays = () => ({
   controlsOverlayDesktop: new ControlsOverlay({ showBackButton: false }),
   controlsOverlayMobile: new ControlsOverlayMobile({ showBackButton: false }),
 });
 
+/**
+ * Creates active controls overlay getter.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {import("../ui/overlay/overlayBase.class.js").OverlayBase} [options.controlsOverlayDesktop] Controls overlay desktop.
+ * @param {import("../ui/overlay/overlayBase.class.js").OverlayBase} [options.controlsOverlayMobile] Controls overlay mobile.
+ * @returns {*} Active controls overlay getter.
+ */
 const createActiveControlsOverlayGetter = ({ controlsOverlayDesktop, controlsOverlayMobile }) => () => {
   const container = document.getElementById("game-container");
   const useMobile = container?.classList?.contains("auto-fullscreen");
   return useMobile ? controlsOverlayMobile : controlsOverlayDesktop;
 };
 
+/**
+ * Creates start screen state.
+ * @returns {*} Start screen state.
+ */
 const createStartScreenState = () => ({
   startScreenActive: true,
   startButtonBounds: null,
@@ -111,14 +162,33 @@ const createStartScreenState = () => ({
   legalReturnBounds: null,
 });
 
+/**
+ * Returns legal renderer.
+ * Uses legalPage to compute the result.
+ * @param {*} legalPage Legal page.
+ * @returns {*} Legal renderer.
+ */
 const getLegalRenderer = (legalPage) =>
   legalPage === "impressum" ? renderImpressumScreen : legalPage === "privacy" ? renderPrivacyPolicyScreen : null;
 
+/**
+ * Resets legal bounds.
+ * Uses startScreenState to perform the operation.
+ * @param {*} startScreenState Start screen state.
+ */
 const resetLegalBounds = (startScreenState) => {
   startScreenState.impressumLinkBounds = null;
   startScreenState.legalReturnBounds = null;
 };
 
+/**
+ * Applies legal render result.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.renderResult] Render result.
+ * @param {*} [options.startScreenState] Start screen state.
+ * @param {boolean} [options.isImpressum] Whether impressum.
+ */
 const applyLegalRenderResult = ({ renderResult, startScreenState, isImpressum }) => {
   const { maxScroll, closeTextBounds, linkBounds } = renderResult;
   startScreenState.legalMaxScroll = maxScroll;
@@ -127,9 +197,23 @@ const applyLegalRenderResult = ({ renderResult, startScreenState, isImpressum })
   return closeTextBounds;
 };
 
+/**
+ * Returns legal return scale.
+ * Uses startScreenState to compute the result.
+ * @param {*} startScreenState Start screen state.
+ * @returns {*} Legal return scale.
+ */
 const getLegalReturnScale = (startScreenState) =>
   startScreenState.legalReturnHover ? LEGAL_RETURN_HOVER_SCALE : 1;
 
+/**
+ * Draws scaled close text.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {string} [options.closeTextBounds] Close text bounds.
+ * @param {number} [options.scale] Scale.
+ */
 const drawScaledCloseText = ({ ctx, closeTextBounds, scale }) => {
   ctx.save();
   ctx.translate(closeTextBounds.x, closeTextBounds.y);
@@ -138,11 +222,26 @@ const drawScaledCloseText = ({ ctx, closeTextBounds, scale }) => {
   ctx.restore();
 };
 
+/**
+ * Returns legal return bounds.
+ * Renders to the canvas context.
+ * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+ * @param {string} closeTextBounds Close text bounds.
+ * @returns {Object} Legal return bounds.
+ */
 const getLegalReturnBounds = (ctx, closeTextBounds) => {
   const returnTextWidth = ctx.measureText(closeTextBounds.text).width;
   return { x: closeTextBounds.x, y: closeTextBounds.y, w: returnTextWidth, h: closeTextBounds.h };
 };
 
+/**
+ * Draws legal close text.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {string} [options.closeTextBounds] Close text bounds.
+ * @param {*} [options.startScreenState] Start screen state.
+ */
 const drawLegalCloseText = ({ ctx, closeTextBounds, startScreenState }) => {
   if (!closeTextBounds) return;
   ctx.font = `bold ${closeTextBounds.fontSize}px sans-serif`;
@@ -154,6 +253,15 @@ const drawLegalCloseText = ({ ctx, closeTextBounds, startScreenState }) => {
   startScreenState.legalReturnBounds = getLegalReturnBounds(ctx, closeTextBounds);
 };
 
+/**
+ * Creates draw legal page.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {HTMLCanvasElement} [options.canvas] Target canvas.
+ * @param {*} [options.startScreenState] Start screen state.
+ * @returns {*} Draw legal page.
+ */
 const createDrawLegalPage = ({ ctx, canvas, startScreenState }) => () => {
   const isImpressum = startScreenState.legalPage === "impressum";
   const renderer = getLegalRenderer(startScreenState.legalPage);
@@ -164,6 +272,13 @@ const createDrawLegalPage = ({ ctx, canvas, startScreenState }) => () => {
   drawLegalCloseText({ ctx, closeTextBounds, startScreenState });
 };
 
+/**
+ * Prepares start screen canvas.
+ * Renders to the canvas context.
+ * @param {HTMLCanvasElement} canvas Target canvas.
+ * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+ * @returns {*} Result value.
+ */
 const prepareStartScreenCanvas = (canvas, ctx) => {
   canvas.width = GAME_WIDTH;
   canvas.height = GAME_HEIGHT;
@@ -171,15 +286,35 @@ const prepareStartScreenCanvas = (canvas, ctx) => {
   return canvas.width / 2;
 };
 
+/**
+ * Draws background image.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {HTMLCanvasElement} [options.canvas] Target canvas.
+ * @param {*} [options.bg] Bg.
+ */
 const drawBackgroundImage = ({ ctx, canvas, bg }) => {
   const scale = Math.max(canvas.width / bg.width, canvas.height / bg.height);
   const drawW = bg.width * scale;
   const drawH = bg.height * scale;
   const bgDrawX = (canvas.width - drawW) / 2;
+  /**
+   * Bg draw Y.
+   * Uses canvas.height - drawH to perform the operation.
+   * @param {boolean} canvas.height - drawH Canvas height draw H.
+   */
   const bgDrawY = (canvas.height - drawH) / 2;
   ctx.drawImage(bg, bgDrawX, bgDrawY, drawW, drawH);
 };
 
+/**
+ * Applies title styles.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {HTMLCanvasElement} [options.canvas] Target canvas.
+ */
 const applyTitleStyles = ({ ctx, canvas }) => {
   ctx.font = `small-caps ${Math.min(TITLE_MAX_FONT_SIZE, canvas.width * TITLE_FONT_SCALE)}px "ComixLoud", sans-serif`;
   ctx.fillStyle = TITLE_FILL_COLOR;
@@ -193,6 +328,14 @@ const applyTitleStyles = ({ ctx, canvas }) => {
   ctx.strokeStyle = TITLE_STROKE_COLOR;
 };
 
+/**
+ * Draws start title.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {HTMLCanvasElement} [options.canvas] Target canvas.
+ * @param {boolean} [options.canvasCenterX] Canvas center X.
+ */
 const drawStartTitle = ({ ctx, canvas, canvasCenterX }) => {
   const title = "Panda Jungle Run";
   applyTitleStyles({ ctx, canvas });
@@ -201,18 +344,48 @@ const drawStartTitle = ({ ctx, canvas, canvasCenterX }) => {
   ctx.shadowBlur = 0;
 };
 
+/**
+ * Returns start button dimensions.
+ * Uses canvas to compute the result.
+ * @param {HTMLCanvasElement} canvas Target canvas.
+ * @returns {Object} Start button dimensions.
+ */
 const getStartButtonDimensions = (canvas) => {
   const buttonWidth = Math.min(canvas.width * START_BUTTON_WIDTH_RATIO, START_BUTTON_MAX_WIDTH);
+  /**
+   * Button height.
+   * Uses START_BUTTON_SPRITE.h / START_BUTTON_SPRITE.w to perform the operation.
+   * @param {HTMLImageElement} START_BUTTON_SPRITE.h / START_BUTTON_SPRITE.w START BUTTON SPRITE h START BUTTON SPRITE w.
+   * @returns {Object} Result value.
+   */
   const buttonHeight = (START_BUTTON_SPRITE.h / START_BUTTON_SPRITE.w) * buttonWidth;
   return { buttonWidth, buttonHeight };
 };
 
+/**
+ * Returns start button base center.
+ * Uses canvas, buttonWidth, buttonHeight to compute the result.
+ * @param {HTMLCanvasElement} canvas Target canvas.
+ * @param {number} buttonWidth Button width.
+ * @param {number} buttonHeight Button height.
+ * @returns {Object} Start button base center.
+ */
 const getStartButtonBaseCenter = (canvas, buttonWidth, buttonHeight) => {
   const baseCenterX = (canvas.width - buttonWidth) / 2 + buttonWidth / 2;
   const baseCenterY = canvas.height * START_BUTTON_BASE_Y_RATIO + START_BUTTON_Y_OFFSET + buttonHeight / 2;
   return { baseCenterX, baseCenterY };
 };
 
+/**
+ * Returns scaled button rect.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {number} [options.baseCenterX] Base center X.
+ * @param {number} [options.baseCenterY] Base center Y.
+ * @param {number} [options.buttonWidth] Button width.
+ * @param {number} [options.buttonHeight] Button height.
+ * @param {number} [options.hoverScale] Hover scale.
+ */
 const getScaledButtonRect = ({ baseCenterX, baseCenterY, buttonWidth, buttonHeight, hoverScale }) => {
   const buttonWidthScaled = buttonWidth * hoverScale;
   const buttonHeightScaled = buttonHeight * hoverScale;
@@ -221,6 +394,11 @@ const getScaledButtonRect = ({ baseCenterX, baseCenterY, buttonWidth, buttonHeig
   return { buttonDrawX, buttonDrawY, buttonWidthScaled, buttonHeightScaled };
 };
 
+/**
+ * Applies button shadow.
+ * Renders to the canvas context.
+ * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+ */
 const applyButtonShadow = (ctx) => {
   ctx.shadowColor = BUTTON_SHADOW_COLOR;
   ctx.shadowBlur = BUTTON_SHADOW_BLUR;
@@ -228,6 +406,19 @@ const applyButtonShadow = (ctx) => {
   ctx.shadowOffsetY = BUTTON_SHADOW_OFFSET_Y;
 };
 
+/**
+ * Draws button sprite image.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {*} [options.ui] Ui.
+ * @param {HTMLImageElement} [options.startButtonSprite] Start button sprite.
+ * @param {number} [options.buttonDrawX] Button draw X.
+ * @param {number} [options.buttonDrawY] Button draw Y.
+ * @param {number} [options.buttonWidthScaled] Button width scaled.
+ * @param {number} [options.buttonHeightScaled] Button height scaled.
+ * @returns {*} Result value.
+ */
 const drawButtonSpriteImage = ({ ctx, ui, startButtonSprite, buttonDrawX, buttonDrawY, buttonWidthScaled, buttonHeightScaled }) =>
   ctx.drawImage(
     ui,
@@ -241,6 +432,18 @@ const drawButtonSpriteImage = ({ ctx, ui, startButtonSprite, buttonDrawX, button
     buttonHeightScaled
   );
 
+/**
+ * Draws start button sprite.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {*} [options.ui] Ui.
+ * @param {HTMLImageElement} [options.startButtonSprite] Start button sprite.
+ * @param {number} [options.buttonDrawX] Button draw X.
+ * @param {number} [options.buttonDrawY] Button draw Y.
+ * @param {number} [options.buttonWidthScaled] Button width scaled.
+ * @param {number} [options.buttonHeightScaled] Button height scaled.
+ */
 const drawStartButtonSprite = ({ ctx, ui, startButtonSprite, buttonDrawX, buttonDrawY, buttonWidthScaled, buttonHeightScaled }) => {
   ctx.save();
   applyButtonShadow(ctx);
@@ -248,6 +451,16 @@ const drawStartButtonSprite = ({ ctx, ui, startButtonSprite, buttonDrawX, button
   ctx.restore();
 };
 
+/**
+ * Creates start button bounds.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {number} [options.buttonDrawX] Button draw X.
+ * @param {number} [options.buttonDrawY] Button draw Y.
+ * @param {number} [options.buttonWidthScaled] Button width scaled.
+ * @param {number} [options.buttonHeightScaled] Button height scaled.
+ * @returns {*} Start button bounds.
+ */
 const createStartButtonBounds = ({ buttonDrawX, buttonDrawY, buttonWidthScaled, buttonHeightScaled }) => ({
   x: buttonDrawX,
   y: buttonDrawY,
@@ -255,6 +468,15 @@ const createStartButtonBounds = ({ buttonDrawX, buttonDrawY, buttonWidthScaled, 
   h: buttonHeightScaled,
 });
 
+/**
+ * Draws start button.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {HTMLCanvasElement} [options.canvas] Target canvas.
+ * @param {*} [options.ui] Ui.
+ * @param {*} [options.startScreenState] Start screen state.
+ */
 const drawStartButton = ({ ctx, canvas, ui, startScreenState }) => {
   const startButtonSprite = START_BUTTON_SPRITE;
   const { buttonWidth, buttonHeight } = getStartButtonDimensions(canvas);
@@ -265,6 +487,15 @@ const drawStartButton = ({ ctx, canvas, ui, startScreenState }) => {
   return createStartButtonBounds({ buttonDrawX, buttonDrawY, buttonWidthScaled, buttonHeightScaled });
 };
 
+/**
+ * Draws settings overlay.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {HTMLCanvasElement} [options.canvas] Target canvas.
+ * @param {*} [options.startScreenState] Start screen state.
+ * @param {import("../ui/overlay/overlayBase.class.js").OverlayBase} [options.getActiveControlsOverlay] Get active controls overlay.
+ */
 const drawSettingsOverlay = ({ ctx, canvas, startScreenState, getActiveControlsOverlay }) => {
   if (!startScreenState.settingsOpen || !startScreenState.startAssets.menuBg) return;
   const overlay = getActiveControlsOverlay();
@@ -273,11 +504,29 @@ const drawSettingsOverlay = ({ ctx, canvas, startScreenState, getActiveControlsO
   setOverlayActive(true);
 };
 
+/**
+ * Draws legal start screen.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.startScreenState] Start screen state.
+ * @param {*} [options.drawLegalPage] Draw legal page.
+ */
 const drawLegalStartScreen = ({ startScreenState, drawLegalPage }) => {
   startScreenState.startButtonBounds = null;
   drawLegalPage();
 };
 
+/**
+ * Creates draw start screen.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {HTMLCanvasElement} [options.canvas] Target canvas.
+ * @param {*} [options.startScreenState] Start screen state.
+ * @param {*} [options.drawLegalPage] Draw legal page.
+ * @param {import("../ui/overlay/overlayBase.class.js").OverlayBase} [options.getActiveControlsOverlay] Get active controls overlay.
+ * @returns {*} Draw start screen.
+ */
 const createDrawStartScreen = ({ ctx, canvas, startScreenState, drawLegalPage, getActiveControlsOverlay }) => () => {
   if (!startScreenState.startAssets) return;
   const { bg, ui } = startScreenState.startAssets;
@@ -289,6 +538,13 @@ const createDrawStartScreen = ({ ctx, canvas, startScreenState, drawLegalPage, g
   drawSettingsOverlay({ ctx, canvas, startScreenState, getActiveControlsOverlay });
 };
 
+/**
+ * Applies legal page state.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.startScreenState] Start screen state.
+ * @param {*} [options.page] Page.
+ */
 const applyLegalPageState = ({ startScreenState, page }) => {
   startScreenState.legalPage = page;
   startScreenState.legalScroll = 0;
@@ -300,6 +556,15 @@ const applyLegalPageState = ({ startScreenState, page }) => {
   startScreenState.legalReturnHover = false;
 };
 
+/**
+ * Creates show legal page.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {HTMLCanvasElement} [options.canvas] Target canvas.
+ * @param {*} [options.startScreenState] Start screen state.
+ * @param {*} [options.drawStartScreen] Draw start screen.
+ * @returns {*} Show legal page.
+ */
 const createShowLegalPage = ({ canvas, startScreenState, drawStartScreen }) => (page) => {
   applyLegalPageState({ startScreenState, page });
   setOverlayActive(false);
@@ -308,6 +573,10 @@ const createShowLegalPage = ({ canvas, startScreenState, drawStartScreen }) => (
   drawStartScreen();
 };
 
+/**
+ * Loads start assets.
+ * @returns {*} Result value.
+ */
 const loadStartAssets = () =>
   Promise.all([
     loadStartImage("./assets/img/canvas-start-game_BG.jpg"),
@@ -316,11 +585,27 @@ const loadStartAssets = () =>
     loadFont("ComixLoud", "4rem"),
   ]);
 
+/**
+ * Applies loaded assets.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.bg] Bg.
+ * @param {*} [options.ui] Ui.
+ * @param {*} [options.menuBg] Menu bg.
+ * @param {*} [options.startScreenState] Start screen state.
+ */
 const applyLoadedAssets = ({ bg, ui, menuBg, startScreenState }) => {
   startScreenState.startAssets = { bg, ui, menuBg };
   document.body?.classList.add("start-screen-active");
 };
 
+/**
+ * Loads and render start assets.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.startScreenState] Start screen state.
+ * @param {*} [options.drawStartScreen] Draw start screen.
+ */
 const loadAndRenderStartAssets = ({ startScreenState, drawStartScreen }) => {
   loadStartAssets()
     .then(([bg, ui, menuBg, _fontLoaded]) => {
@@ -330,12 +615,32 @@ const loadAndRenderStartAssets = ({ startScreenState, drawStartScreen }) => {
     .catch((err) => console.error("Failed to load start assets", err));
 };
 
+/**
+ * Creates legal link handler.
+ * Uses page, showLegalPage to compute the result.
+ * @param {*} page Page.
+ * @param {*} showLegalPage Show legal page.
+ * @returns {*} Legal link handler.
+ */
 const createLegalLinkHandler = (page, showLegalPage) => (event) => {
   event.preventDefault();
   event.stopPropagation();
   showLegalPage(page);
 };
 
+/**
+ * Binds canvas events.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {HTMLCanvasElement} [options.canvas] Target canvas.
+ * @param {*} [options.handleCanvasClick] Handle canvas click.
+ * @param {*} [options.handleMove] Handle move.
+ * @param {*} [options.handleLeave] Handle leave.
+ * @param {*} [options.handleWheel] Handle wheel.
+ * @param {*} [options.handleTouchStart] Handle touch start.
+ * @param {*} [options.handleTouchMove] Handle touch move.
+ * @param {*} [options.handleTouchEnd] Handle touch end.
+ */
 const bindCanvasEvents = ({ canvas, handleCanvasClick, handleMove, handleLeave, handleWheel, handleTouchStart, handleTouchMove, handleTouchEnd }) => {
   canvas.addEventListener("click", handleCanvasClick);
   canvas.addEventListener("mousemove", handleMove);
@@ -347,11 +652,27 @@ const bindCanvasEvents = ({ canvas, handleCanvasClick, handleMove, handleLeave, 
   canvas.addEventListener("touchcancel", handleTouchEnd);
 };
 
+/**
+ * Binds settings events.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {HTMLElement} [options.settingsToggle] Settings toggle.
+ * @param {*} [options.handleSettingsClick] Handle settings click.
+ * @param {string} [options.handleKeyDown] Handle key down.
+ */
 const bindSettingsEvents = ({ settingsToggle, handleSettingsClick, handleKeyDown }) => {
   settingsToggle?.addEventListener("click", handleSettingsClick, true);
   window.addEventListener("keydown", handleKeyDown, true);
 };
 
+/**
+ * Binds legal link events.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.impressumLink] Impressum link.
+ * @param {*} [options.privacyPolicyLink] Privacy policy link.
+ * @param {*} [options.showLegalPage] Show legal page.
+ */
 const bindLegalLinkEvents = ({ impressumLink, privacyPolicyLink, showLegalPage }) => {
   const handleImpressumClick = createLegalLinkHandler("impressum", showLegalPage);
   const handlePrivacyClick = createLegalLinkHandler("privacy", showLegalPage);
@@ -359,12 +680,24 @@ const bindLegalLinkEvents = ({ impressumLink, privacyPolicyLink, showLegalPage }
   privacyPolicyLink?.addEventListener("click", handlePrivacyClick);
 };
 
+/**
+ * Binds start screen events.
+ * Uses deps to perform the operation.
+ * @param {*} deps Deps.
+ */
 const bindStartScreenEvents = (deps) => {
   bindCanvasEvents(deps);
   bindSettingsEvents(deps);
   bindLegalLinkEvents(deps);
 };
 
+/**
+ * Builds start screen context.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {string} [options.canvasId] Canvas element id.
+ * @param {Function} [options.onStart] On start.
+ */
 const buildStartScreenContext = ({ canvasId, onStart }) => {
   const canvasContext = getCanvasAndContext(canvasId);
   if (!canvasContext) return null;
@@ -379,16 +712,38 @@ const buildStartScreenContext = ({ canvasId, onStart }) => {
   return { ...canvasContext, onStart, ...settingsContext, ...overlays, getActiveControlsOverlay, startScreenState, stopMenuMusic };
 };
 
+/**
+ * Creates legal links.
+ * @returns {*} Legal links.
+ */
 const createLegalLinks = () => ({
   impressumLink: document.querySelector(".impressum"),
   privacyPolicyLink: document.querySelector(".privacyPolicy"),
 });
 
+/**
+ * Binds overlay icon load.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {import("../ui/overlay/overlayBase.class.js").OverlayBase} [options.controlsOverlayDesktop] Controls overlay desktop.
+ * @param {import("../ui/overlay/overlayBase.class.js").OverlayBase} [options.controlsOverlayMobile] Controls overlay mobile.
+ * @param {*} [options.drawStartScreen] Draw start screen.
+ */
 const bindOverlayIconLoad = ({ controlsOverlayDesktop, controlsOverlayMobile, drawStartScreen }) => {
   controlsOverlayDesktop.setOnIconLoad?.(() => drawStartScreen());
   controlsOverlayMobile.setOnIconLoad?.(() => drawStartScreen());
 };
 
+/**
+ * Creates start screen dependencies.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.startScreenContext] Start screen context.
+ * @param {*} [options.drawStartScreen] Draw start screen.
+ * @param {*} [options.showLegalPage] Show legal page.
+ * @param {Function} [options.onStart] On start.
+ * @returns {*} Start screen dependencies.
+ */
 const createStartScreenDependencies = ({ startScreenContext, drawStartScreen, showLegalPage, onStart }) => ({
   canvas: startScreenContext.canvas,
   settingsToggle: startScreenContext.settingsToggle,
@@ -405,6 +760,13 @@ const createStartScreenDependencies = ({ startScreenContext, drawStartScreen, sh
   state: startScreenContext.startScreenState,
 });
 
+/**
+ * Sets up start screen. If omitted, default values are used.
+ * Uses options to perform the operation.
+ * @param {Object} [options] Configuration options.
+ * @param {string} [options.canvasId] Canvas element id.
+ * @param {Function} [options.onStart] On start.
+ */
 export function setupStartScreen({ canvasId = "game", onStart }) {
   const startScreenContext = buildStartScreenContext({ canvasId, onStart });
   if (!startScreenContext) return;

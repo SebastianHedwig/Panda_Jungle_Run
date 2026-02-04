@@ -1,3 +1,15 @@
+/**
+ * Returns back button base rect.
+ * Advances animation state and sprites.
+ * @param {Object} options Configuration options.
+ * @param {HTMLImageElement} [options.sprite] Sprite.
+ * @param {number} [options.targetSize] Target size.
+ * @param {number} [options.containerX] Container X.
+ * @param {number} [options.containerY] Container Y.
+ * @param {number} [options.containerHeight] Container height.
+ * @param {*} [options.margin] Margin.
+ * @param {number} [options.extraOffsetY] Extra offset Y.
+ */
 function getBackButtonBaseRect({ sprite, targetSize, containerX, containerY, containerHeight, margin, extraOffsetY }) {
   const baseScale = targetSize / sprite.w;
   const iconW = sprite.w * baseScale;
@@ -7,10 +19,24 @@ function getBackButtonBaseRect({ sprite, targetSize, containerX, containerY, con
   return { x: iconX, y: iconY, w: iconW, h: iconH };
 }
 
+/**
+ * Is pointer inside rect.
+ * Uses pointer, rect to perform the operation.
+ * @param {*} pointer Pointer.
+ * @param {*} rect Rect.
+ * @returns {boolean} Whether pointer inside rect.
+ */
 function isPointerInsideRect(pointer, rect) {
   return !!pointer && pointer.x >= rect.x && pointer.x <= rect.x + rect.w && pointer.y >= rect.y && pointer.y <= rect.y + rect.h;
 }
 
+/**
+ * Returns scaled rect.
+ * Uses rect, scale to compute the result.
+ * @param {*} rect Rect.
+ * @param {number} scale Scale.
+ * @returns {Object} Scaled rect.
+ */
 function getScaledRect(rect, scale) {
   const drawW = rect.w * scale;
   const drawH = rect.h * scale;
@@ -19,6 +45,16 @@ function getScaledRect(rect, scale) {
   return { x: drawX, y: drawY, w: drawW, h: drawH };
 }
 
+/**
+ * Draws back button sprite.
+ * Renders to the canvas context.
+ * Advances animation state and sprites.
+ * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+ * @param {HTMLImageElement} uiImage Ui image.
+ * @param {HTMLImageElement} sprite Sprite.
+ * @param {*} rect Rect.
+ * @param {*} shadow Shadow.
+ */
 function drawBackButtonSprite(ctx, uiImage, sprite, rect, shadow) {
   ctx.save();
   ctx.shadowColor = shadow.color;
@@ -29,6 +65,23 @@ function drawBackButtonSprite(ctx, uiImage, sprite, rect, shadow) {
   ctx.restore();
 }
 
+/**
+ * Renders back button. If omitted, default values are used.
+ * Advances animation state and sprites.
+ * @param {Object} [options] Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {HTMLImageElement} [options.uiImage] Ui image.
+ * @param {HTMLImageElement} [options.sprite] Sprite.
+ * @param {*} [options.pointer] Pointer.
+ * @param {number} [options.containerX] Container X.
+ * @param {number} [options.containerY] Container Y.
+ * @param {number} [options.containerHeight] Container height.
+ * @param {number} [options.targetSize] Target size.
+ * @param {*} [options.margin] Margin.
+ * @param {number} [options.extraOffsetY] Extra offset Y.
+ * @param {number} [options.hoverScale] Hover scale.
+ * @param {*} [options.shadow] Shadow.
+ */
 export function renderBackButton({
   ctx, uiImage, sprite, pointer, containerX, containerY, containerHeight, targetSize, margin, extraOffsetY = 0, hoverScale = 1,
   shadow = { color: "rgba(0, 0, 0, 0.45)", blur: 10, offsetX: 0, offsetY: 3 },
@@ -43,6 +96,15 @@ export function renderBackButton({
   return { bounds: drawRect, isHover };
 }
 
+/**
+ * Applies overlay text style. If omitted, default values are used.
+ * Uses ctx, options to perform the operation.
+ * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+ * @param {Object} [options] Configuration options.
+ * @param {*} [options.fill] Fill.
+ * @param {string} [options.shadowColor] Shadow color.
+ * @param {*} [options.shadowBlur] Shadow blur.
+ */
 export function applyOverlayTextStyle(
   ctx,
   { fill = "rgb(0, 110, 110)", shadowColor = "rgba(0, 0, 0, 0)", shadowBlur = 0 } = {}

@@ -3,6 +3,11 @@ import { Bullet, Explosion } from "../game/entities/bullet.class.js";
 import { DizzyEffect } from "../game/effects/hitEffect.class.js";
 
 export class World {
+  /**
+   * Creates a new instance.
+   * Updates the instance state.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   */
   constructor(canvas) {
     this.canvas = canvas;
     this.setupWorldBounds();
@@ -10,6 +15,10 @@ export class World {
     this.setupProjectiles();
   }
 
+  /**
+   * Sets up world bounds.
+   * Updates the instance state.
+   */
   setupWorldBounds() {
     this.width = WORLD_WIDTH;
     this.left = 0;
@@ -17,6 +26,10 @@ export class World {
     this.baseGround = this.canvas.height;
   }
 
+  /**
+   * Sets up level objects.
+   * Updates the instance state.
+   */
   setupLevelObjects() {
     this.platforms = [];
     this.collectables = [];
@@ -26,11 +39,20 @@ export class World {
     this.hitEffectFrames = null;
   }
 
+  /**
+   * Sets up projectiles.
+   * Updates the instance state.
+   */
   setupProjectiles() {
     this.bullets = [];
     this.explosions = [];
   }
 
+  /**
+   * Adds platforms.
+   * Updates the instance state.
+   * @param {*} platforms Platforms.
+   */
   addPlatforms(platforms) {
     this.platforms.push(...platforms);
     const landingSurfaces = this.platforms.filter((platform) => platform.supportsLanding);
@@ -38,14 +60,30 @@ export class World {
     if (Number.isFinite(highestLandingY)) this.baseGround = highestLandingY;
   }
 
+  /**
+   * Adds collectables.
+   * Updates the instance state.
+   * @param {*} items Items.
+   */
   addCollectables(items) {
     this.collectables.push(...items);
   }
 
+  /**
+   * Adds enemies.
+   * Updates the instance state.
+   * @param {*} enemies Enemies.
+   */
   addEnemies(enemies) {
     this.enemies.push(...enemies);
   }
 
+  /**
+   * Applies platform collisions.
+   * Performs hitbox or collision checks.
+   * Updates the instance state.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   */
   applyPlatformCollisions(player) {
     if (this.shouldSkipCollision(player)) return;
     const collisionState = this.getCollisionState(player);
@@ -57,10 +95,20 @@ export class World {
     this.applyPostCollisionEffects(player, collisionState);
   }
 
+  /**
+   * Should skip collision.
+   * Performs hitbox or collision checks.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   * @returns {boolean} Whether skip collision.
+   */
   shouldSkipCollision(player) {
     return player?.isDead || player?.collisionDisabled;
   }
 
+  /**
+   * Returns collision config.
+   * @returns {Object} Collision config.
+   */
   getCollisionConfig() {
     return {
       landingEdgePadding: 2,
@@ -71,6 +119,13 @@ export class World {
     };
   }
 
+  /**
+   * Returns player collision metrics.
+   * Applies physics updates like gravity and velocity.
+   * Updates the player state.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   * @returns {Object} Player collision metrics.
+   */
   getPlayerCollisionMetrics(player) {
     const wasOnGroundBefore = player.onGround;
     const previousX = player?._preCollisionX ?? player.x;
@@ -83,11 +138,23 @@ export class World {
     return { wasOnGroundBefore, previousX, playerLeft, playerRight, previousBottom, currentBottom, currentTop, playerBox };
   }
 
+  /**
+   * Resets player ground state.
+   * Updates the player state.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   */
   resetPlayerGroundState(player) {
     player.onGround = false;
     player.landedOnPlatform = false;
   }
 
+  /**
+   * Returns collision state.
+   * Performs hitbox or collision checks.
+   * Updates the instance state.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   * @returns {Object} Collision state.
+   */
   getCollisionState(player) {
     const collisionConfig = this.getCollisionConfig();
     const playerMetrics = this.getPlayerCollisionMetrics(player);
@@ -95,6 +162,13 @@ export class World {
     return { ...collisionConfig, ...playerMetrics, isGrounded: false };
   }
 
+  /**
+   * Returns platform overlap state.
+   * Performs hitbox or collision checks.
+   * @param {import("../engine/world/platform.class.js").Platform} platform Platform.
+   * @param {*} collisionState Collision state.
+   * @returns {Object} Platform overlap state.
+   */
   getPlatformOverlapState(platform, collisionState) {
     const overlapsY = collisionState.currentBottom > platform.top && collisionState.currentTop < platform.bottom;
     const overlapsX = collisionState.playerRight > platform.left && collisionState.playerLeft < platform.right;
@@ -105,6 +179,16 @@ export class World {
     return { overlapsY, overlapsX, overlapsXLanding, overlapsXHead, overlapsXSprite };
   }
 
+  /**
+   * Applies landing collision.
+   * Performs hitbox or collision checks.
+   * Updates the instance state.
+   * @param {import("../engine/world/platform.class.js").Platform} platform Platform.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   * @param {*} collisionState Collision state.
+   * @param {*} overlaps Overlaps.
+   * @returns {*} Result value.
+   */
   applyLandingCollision(platform, player, collisionState, overlaps) {
     if (!platform.supportsLanding || !overlaps.overlapsY || !overlaps.overlapsXLanding) return false;
     if (this.applyLandingFromAbove(player, platform, collisionState)) return true;
@@ -113,6 +197,15 @@ export class World {
     return false;
   }
 
+  /**
+   * Applies landing from above.
+   * Applies physics updates like gravity and velocity.
+   * Performs hitbox or collision checks.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   * @param {import("../engine/world/platform.class.js").Platform} platform Platform.
+   * @param {*} collisionState Collision state.
+   * @returns {*} Result value.
+   */
   applyLandingFromAbove(player, platform, collisionState) {
     if (player.velocityY <= 0 || collisionState.previousBottom > platform.top || collisionState.currentBottom < platform.top) return false;
     player.y = platform.top - player.height;
@@ -126,6 +219,15 @@ export class World {
     return true;
   }
 
+  /**
+   * Applies stay grounded.
+   * Applies physics updates like gravity and velocity.
+   * Performs hitbox or collision checks.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   * @param {import("../engine/world/platform.class.js").Platform} platform Platform.
+   * @param {*} collisionState Collision state.
+   * @returns {*} Result value.
+   */
   applyStayGrounded(player, platform, collisionState) {
     if (player.velocityY < 0) return false;
     if (
@@ -138,6 +240,16 @@ export class World {
     return true;
   }
 
+  /**
+   * Applies head bump.
+   * Applies physics updates like gravity and velocity.
+   * Performs hitbox or collision checks.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   * @param {import("../engine/world/platform.class.js").Platform} platform Platform.
+   * @param {*} collisionState Collision state.
+   * @param {*} overlaps Overlaps.
+   * @returns {*} Result value.
+   */
   applyHeadBump(player, platform, collisionState, overlaps) {
     if (player.velocityY >= 0) return false;
     if (platform.type === "middleShort") return false;
@@ -150,6 +262,15 @@ export class World {
     return true;
   }
 
+  /**
+   * Applies side wall collision.
+   * Applies physics updates like gravity and velocity.
+   * Performs hitbox or collision checks.
+   * @param {import("../engine/world/platform.class.js").Platform} platform Platform.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   * @param {*} collisionState Collision state.
+   * @param {*} overlaps Overlaps.
+   */
   applySideWallCollision(platform, player, collisionState, overlaps) {
     if (!platform.hasSideWalls || !overlaps.overlapsY || !overlaps.overlapsX) return;
     if (collisionState.currentBottom <= platform.top + platform.sideWallGap) return;
@@ -162,6 +283,13 @@ export class World {
     }
   }
 
+  /**
+   * Applies post collision effects.
+   * Performs hitbox or collision checks.
+   * Updates the player state.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   * @param {*} collisionState Collision state.
+   */
   applyPostCollisionEffects(player, collisionState) {
     if (collisionState.isGrounded && player.markSafePosition)
       player.markSafePosition();
@@ -170,11 +298,23 @@ export class World {
       this.stopSlideIfBlocked(player, collisionState.previousX, collisionState.slideBlockMovementThreshold);
   }
 
+  /**
+   * Applies horizontal limits.
+   * Updates the player state.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   */
   applyHorizontalLimits(player) {
     if (player.x < this.left) player.x = this.left;
     if (player.x > this.right - player.width) player.x = this.right - player.width;
   }
 
+  /**
+   * Stops slide if blocked.
+   * Updates the player state.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   * @param {number} previousX Previous X.
+   * @param {*} slideBlockMovementThreshold Slide block movement threshold.
+   */
   stopSlideIfBlocked(player, previousX, slideBlockMovementThreshold) {
     const deltaX = Math.abs(player.x - previousX);
     if (player.isSliding && player.slideBlockGrace <= 0 && deltaX < slideBlockMovementThreshold) {
@@ -182,12 +322,33 @@ export class World {
     }
   }
 
+  /**
+   * Coin position is valid. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {number} [width] Width.
+   * @param {number} [height] Height.
+   * @param {number} [existingCoins] Existing coins.
+   * @param {number} [minSpacing] Min spacing.
+   * @returns {*} Result value.
+   */
   coinPositionIsValid(x, y, width = 50, height = 50, existingCoins = [], minSpacing = 0) {
     if (this.hasPlatformOverlap(x, y, width, height)) return false;
     if (this.isTooCloseToCoins(x, y, width, height, existingCoins, minSpacing)) return false;
     return true;
   }
 
+  /**
+   * Has platform overlap.
+   * Performs hitbox or collision checks.
+   * Updates the instance state.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {number} width Width.
+   * @param {number} height Height.
+   * @returns {boolean} Whether platform overlap.
+   */
   hasPlatformOverlap(x, y, width, height) {
     return this.platforms.some((platform) => {
       const platformLeft = platform.x;
@@ -202,6 +363,17 @@ export class World {
     });
   }
 
+  /**
+   * Is too close to coins.
+   * Uses x, y, width, height, existingCoins, minSpacing to perform the operation.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {number} width Width.
+   * @param {number} height Height.
+   * @param {number} existingCoins Existing coins.
+   * @param {number} minSpacing Min spacing.
+   * @returns {boolean} Whether too close to coins.
+   */
   isTooCloseToCoins(x, y, width, height, existingCoins, minSpacing) {
     if (minSpacing <= 0 || !existingCoins?.length) return false;
     const candidateCenterX = x + width / 2;
@@ -218,22 +390,57 @@ export class World {
     });
   }
 
+  /**
+   * Adds popup.
+   * Updates the instance state.
+   * @param {*} popup Popup.
+   */
   addPopup(popup) {
     this.hudPopups.push(popup);
   }
 
+  /**
+   * Sets hit effect frames.
+   * Updates the instance state.
+   * Spawns visual feedback effects.
+   * @param {*} frames Frames.
+   */
   setHitEffectFrames(frames) {
     this.hitEffectFrames = frames;
   }
 
+  /**
+   * Spawns bullet.
+   * Updates the instance state.
+   * Spawns visual feedback effects.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {*} direction Direction.
+   */
   spawnBullet(x, y, direction) {
     this.bullets.push(new Bullet(x, y, direction, this));
   }
 
+  /**
+   * Spawns explosion.
+   * Updates the instance state.
+   * Spawns visual feedback effects.
+   * @param {number} x X.
+   * @param {number} y Y.
+   */
   spawnExplosion(x, y) {
     this.explosions.push(new Explosion(x, y));
   }
 
+  /**
+   * Spawns hit effect. If omitted, default values are used.
+   * Updates the instance state.
+   * Spawns visual feedback effects.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {number} [width] Width.
+   * @param {number} [height] Height.
+   */
   spawnHitEffect(x, y, width = 0, height = 0) {
     if (!this.hitEffectFrames?.length) return;
     const headOffsetYRatio = 0.05;
@@ -242,6 +449,13 @@ export class World {
     this.hitEffects.push(new DizzyEffect(headX, headY, this.hitEffectFrames));
   }
 
+  /**
+   * Updates projectiles. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {number} dt Delta time in seconds.
+   * @param {*} [enemies] Enemies.
+   * @returns {*} Result value.
+   */
   updateProjectiles(dt, enemies = []) {
     this.bullets = this.bullets.filter((bullet) => {
       bullet.update(dt, enemies);
@@ -254,6 +468,13 @@ export class World {
     });
   }
 
+  /**
+   * Updates hit effects.
+   * Updates the instance state.
+   * Spawns visual feedback effects.
+   * @param {number} dt Delta time in seconds.
+   * @returns {*} Result value.
+   */
   updateHitEffects(dt) {
     this.hitEffects = this.hitEffects.filter((effect) => {
       effect.update(dt);
@@ -261,15 +482,35 @@ export class World {
     });
   }
 
+  /**
+   * Renders projectiles.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {import("../engine/world/camera.class.js").Camera} camera Camera instance.
+   */
   renderProjectiles(ctx, camera) {
     this.bullets.forEach((bullet) => bullet.render(ctx, camera));
     this.explosions.forEach((explosion) => explosion.render(ctx, camera));
   }
 
+  /**
+   * Renders hit effects.
+   * Updates the instance state.
+   * Spawns visual feedback effects.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {import("../engine/world/camera.class.js").Camera} camera Camera instance.
+   */
   renderHitEffects(ctx, camera) {
     this.hitEffects.forEach((effect) => effect.render(ctx, camera));
   }
 
+  /**
+   * Updates enemies.
+   * Updates the enemy state.
+   * @param {number} dt Delta time in seconds.
+   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   * @returns {*} Result value.
+   */
   updateEnemies(dt, player) {
     this.enemies = this.enemies.filter((enemy) => {
       enemy.update(dt, player);
@@ -277,6 +518,12 @@ export class World {
     });
   }
 
+  /**
+   * Renders enemies.
+   * Updates the enemy state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {import("../engine/world/camera.class.js").Camera} camera Camera instance.
+   */
   renderEnemies(ctx, camera) {
     this.enemies.forEach((enemy) => enemy.render(ctx, camera));
   }

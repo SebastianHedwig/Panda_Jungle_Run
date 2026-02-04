@@ -7,6 +7,13 @@ const RANDOM_RANGE_SCALE = 2;
 const RANDOM_RANGE_SHIFT = 1;
 
 export class Camera {
+  /**
+   * Creates a new instance. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {number} worldWidth World width.
+   * @param {number} [worldHeight] World height.
+   */
   constructor(canvas, worldWidth, worldHeight = canvas.height) {
     this.canvas = canvas;
 
@@ -29,10 +36,22 @@ export class Camera {
     this.shakeOffsetY = 0;
   }
 
+  /**
+   * Returns screen position.
+   * Updates the instance state.
+   * @param {*} target Target.
+   * @returns {Object} Screen position.
+   */
   getScreenPosition(target) {
     return { x: target.x - this.x, y: target.y - this.y };
   }
 
+  /**
+   * Updates horizontal follow.
+   * Updates the instance state.
+   * @param {number} playerScreenX Player screen X.
+   * @param {*} smoothing Smoothing.
+   */
   updateHorizontalFollow(playerScreenX, smoothing) {
     if (playerScreenX < this.deadzoneX) {
       this.x -= (this.deadzoneX - playerScreenX) * smoothing;
@@ -43,6 +62,12 @@ export class Camera {
     }
   }
 
+  /**
+   * Updates vertical follow.
+   * Updates the instance state.
+   * @param {number} playerScreenY Player screen Y.
+   * @param {*} smoothing Smoothing.
+   */
   updateVerticalFollow(playerScreenY, smoothing) {
     if (playerScreenY < this.deadzoneY) {
       this.y -= (this.deadzoneY - playerScreenY) * smoothing;
@@ -53,6 +78,10 @@ export class Camera {
     }
   }
 
+  /**
+   * Clamp horizontal.
+   * Updates the instance state.
+   */
   clampHorizontal() {
     if (this.x < 0) this.x = 0;
     if (this.x > this.worldWidth - this.canvas.width) {
@@ -60,6 +89,10 @@ export class Camera {
     }
   }
 
+  /**
+   * Clamp vertical.
+   * Updates the instance state.
+   */
   clampVertical() {
     if (this.y < 0) this.y = 0;
     if (this.y > this.worldHeight - this.canvas.height) {
@@ -67,6 +100,13 @@ export class Camera {
     }
   }
 
+  /**
+   * Follow. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {*} target Target.
+   * @param {*} [smoothing] Smoothing.
+   * @param {number} dt Delta time in seconds.
+   */
   follow(target, smoothing = DEFAULT_SMOOTHING, dt) {
     const playerScreen = this.getScreenPosition(target);
     this.updateHorizontalFollow(playerScreen.x, smoothing);
@@ -76,12 +116,23 @@ export class Camera {
     this.updateShake(dt);
   }
 
+  /**
+   * Shake. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {number} [duration] Duration in seconds.
+   * @param {*} [magnitude] Magnitude.
+   */
   shake(duration = SHAKE_DEFAULT_DURATION, magnitude = SHAKE_DEFAULT_MAGNITUDE) {
     this.shakeDuration = Math.max(this.shakeDuration, duration);
     this.shakeTimer = Math.max(this.shakeTimer, duration);
     this.shakeMagnitude = Math.max(this.shakeMagnitude, magnitude);
   }
 
+  /**
+   * Updates shake.
+   * Updates the instance state.
+   * @param {number} dt Delta time in seconds.
+   */
   updateShake(dt) {
     this.clearShakeOffsets();
     if (this.shakeTimer <= 0) return;
@@ -89,6 +140,10 @@ export class Camera {
     this.applyShakeOffsets();
   }
 
+  /**
+   * Clears shake offsets.
+   * Updates the instance state.
+   */
   clearShakeOffsets() {
     if (!this.shakeOffsetX && !this.shakeOffsetY) return;
     this.x -= this.shakeOffsetX;
@@ -97,18 +152,37 @@ export class Camera {
     this.shakeOffsetY = 0;
   }
 
+  /**
+   * Returns shake progress ratio.
+   * Updates the instance state.
+   * @returns {*} Shake progress ratio.
+   */
   getShakeProgressRatio() {
     return this.shakeDuration > 0 ? this.shakeTimer / this.shakeDuration : 0;
   }
 
+  /**
+   * Returns shake amplitude.
+   * Updates the instance state.
+   * @returns {*} Shake amplitude.
+   */
   getShakeAmplitude() {
     return this.shakeMagnitude * this.getShakeProgressRatio();
   }
 
+  /**
+   * Returns random shake value.
+   * Introduces randomness into the outcome.
+   * @returns {*} Random shake value.
+   */
   getRandomShakeValue() {
     return Math.random() * RANDOM_RANGE_SCALE - RANDOM_RANGE_SHIFT;
   }
 
+  /**
+   * Applies shake offsets.
+   * Updates the instance state.
+   */
   applyShakeOffsets() {
     const currentShakeAmplitude = this.getShakeAmplitude();
     this.shakeOffsetX = this.getRandomShakeValue() * currentShakeAmplitude;

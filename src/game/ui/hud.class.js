@@ -1,4 +1,12 @@
 export class Hud {
+  /**
+   * Creates a new instance. If omitted, default values are used.
+   * Uses options to perform the operation.
+   * @param {Object} [options] Configuration options.
+   * @param {HTMLImageElement} [options.coinImage] Coin image.
+   * @param {HTMLImageElement} [options.gunImage] Gun image.
+   * @param {string} [options.bossName] Boss name.
+   */
   constructor({ coinImage, gunImage, bossName = "LUPO" } = {}) {
     this.coinImage = coinImage || null;
     this.gunImage = gunImage || null;
@@ -8,6 +16,12 @@ export class Hud {
     this.heartPulseTime = 0;
   }
 
+  /**
+   * Updates.
+   * Updates the instance state.
+   * @param {number} dt Delta time in seconds.
+   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   */
   update(dt, player) {
     if (!player) return;
     const { coinLerpSpeed, hudPulseDecaySpeed, healthPulseDecaySpeed } = this.getUpdateSpeeds();
@@ -17,26 +31,65 @@ export class Hud {
     this.decayHealthPulse(player, dt, healthPulseDecaySpeed);
   }
 
+  /**
+   * Returns update speeds.
+   * @returns {Object} Update speeds.
+   */
   getUpdateSpeeds() {
     return { coinLerpSpeed: 10, hudPulseDecaySpeed: 4, healthPulseDecaySpeed: 2 };
   }
 
+  /**
+   * Updates coin display.
+   * Updates the player state.
+   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   * @param {number} dt Delta time in seconds.
+   * @param {number} coinLerpSpeed Coin lerp speed.
+   */
   updateCoinDisplay(player, dt, coinLerpSpeed) {
     this.displayCoinValue += (player.coins - this.displayCoinValue) * dt * coinLerpSpeed;
   }
 
+  /**
+   * Updates pulse times.
+   * Updates the instance state.
+   * @param {number} dt Delta time in seconds.
+   */
   updatePulseTimes(dt) {
     this.heartPulseTime += dt;
   }
 
+  /**
+   * Decay hud pulse.
+   * Updates the player state.
+   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   * @param {number} dt Delta time in seconds.
+   * @param {number} hudPulseDecaySpeed Hud pulse decay speed.
+   */
   decayHudPulse(player, dt, hudPulseDecaySpeed) {
     if (player.hudPulse > 0) player.hudPulse = Math.max(0, player.hudPulse - dt * hudPulseDecaySpeed);
   }
 
+  /**
+   * Decay health pulse.
+   * Updates the player state.
+   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   * @param {number} dt Delta time in seconds.
+   * @param {number} healthPulseDecaySpeed Health pulse decay speed.
+   */
   decayHealthPulse(player, dt, healthPulseDecaySpeed) {
     if (player.healthPulse > 0) player.healthPulse = Math.max(0, player.healthPulse - dt * healthPulseDecaySpeed);
   }
 
+  /**
+   * Renders.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   * @param {import("../entities/boss/boss.class.js").Boss} boss Boss instance.
+   */
   render(ctx, canvas, camera, player, boss) {
     if (!ctx || !canvas || !camera || !player) return;
     this.drawHearts(ctx, player);
@@ -45,6 +98,12 @@ export class Hud {
     this.drawBossIndicator(ctx, canvas, camera, boss);
   }
 
+  /**
+   * Draws hearts.
+   * Updates the player state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   */
   drawHearts(ctx, player) {
     const heartSettings = this.getHeartSettings();
     const states = player.heartStates;
@@ -52,6 +111,10 @@ export class Hud {
     this.drawHeartsFromStates(ctx, states, heartSettings, lastFilledIndex, player);
   }
 
+  /**
+   * Returns heart settings.
+   * @returns {Object} Heart settings.
+   */
   getHeartSettings() {
     return {
       heartSize: 32,
@@ -66,10 +129,25 @@ export class Hud {
       hitPulseFrequency: 14 };
   }
 
+  /**
+   * Returns last filled index.
+   * Uses states to compute the result.
+   * @param {*} states States.
+   * @returns {Array<any>} Last filled index.
+   */
   getLastFilledIndex(states) {
     return [...states].map((state, heartIndex) => ({ state, heartIndex })).filter((heart) => heart.state > 0).pop()?.heartIndex;
   }
 
+  /**
+   * Draws hearts from states.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} states States.
+   * @param {*} heartSettings Heart settings.
+   * @param {number} lastFilledIndex Last filled index.
+   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   */
   drawHeartsFromStates(ctx, states, heartSettings, lastFilledIndex, player) {
     states.forEach((state, heartIndex) => {
       const x = heartSettings.heartStartX + heartIndex * (heartSettings.heartSize + heartSettings.heartSpacing);
@@ -77,6 +155,18 @@ export class Hud {
     });
   }
 
+  /**
+   * Draws heart at index.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} state State.
+   * @param {number} heartIndex Heart index.
+   * @param {number} x X.
+   * @param {*} heartSettings Heart settings.
+   * @param {number} lastFilledIndex Last filled index.
+   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   */
   drawHeartAtIndex(ctx, state, heartIndex, x, heartSettings, lastFilledIndex, player) {
     ctx.save();
     ctx.translate(x + heartSettings.heartSize / 2, heartSettings.heartY + heartSettings.heartSize / 2);
@@ -86,6 +176,15 @@ export class Hud {
     ctx.restore();
   }
 
+  /**
+   * Returns heart scale.
+   * Updates the player state.
+   * @param {number} heartIndex Heart index.
+   * @param {number} lastFilledIndex Last filled index.
+   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   * @param {*} heartSettings Heart settings.
+   * @returns {*} Heart scale.
+   */
   getHeartScale(heartIndex, lastFilledIndex, player, heartSettings) {
     let scale = 1;
     if (heartIndex === lastFilledIndex) {
@@ -100,6 +199,14 @@ export class Hud {
     return scale;
   }
 
+  /**
+   * Draws heart shape.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} heartState Heart state.
+   * @param {number} size Size.
+   */
   drawHeartShape(ctx, heartState, size) {
     const heartStyle = this.getHeartStyle();
     this.traceHeartPath(ctx, size, heartStyle);
@@ -109,6 +216,10 @@ export class Hud {
     ctx.stroke();
   }
 
+  /**
+   * Returns heart style.
+   * @returns {Object} Heart style.
+   */
   getHeartStyle() {
     return {
       topOffsetFactor: 0.35,
@@ -121,6 +232,13 @@ export class Hud {
       outlineColor: "#000" };
   }
 
+  /**
+   * Trace heart path.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} size Size.
+   * @param {*} heartStyle Heart style.
+   */
   traceHeartPath(ctx, size, heartStyle) {
     ctx.beginPath();
     const heartWidth = size, heartHeight = size;
@@ -129,11 +247,25 @@ export class Hud {
     ctx.bezierCurveTo(heartWidth * heartStyle.curveFactor, heartHeight * heartStyle.curveFactor, heartWidth * heartStyle.curveFactor, -heartHeight * heartStyle.curveTopOffsetFactor, 0, heartHeight * heartStyle.topOffsetFactor);
   }
 
+  /**
+   * Applies heart outline.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} heartStyle Heart style.
+   */
   applyHeartOutline(ctx, heartStyle) {
     ctx.lineWidth = heartStyle.outlineWidth;
     ctx.strokeStyle = heartStyle.outlineColor;
   }
 
+  /**
+   * Applies heart fill.
+   * Renders to the canvas context.
+   * Updates the player state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} heartState Heart state.
+   * @param {*} heartStyle Heart style.
+   */
   applyHeartFill(ctx, heartState, heartStyle) {
     // heartState from player.heartStates: 2 = full, 1 = half, 0 = empty.
     if (heartState === 2) ctx.fillStyle = heartStyle.fullHeartColor;
@@ -141,6 +273,13 @@ export class Hud {
     else ctx.fillStyle = heartStyle.emptyHeartColor;
   }
 
+  /**
+   * Draws coins.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   */
   drawCoins(ctx, canvas, player) {
     if (!this.isCoinImageReady()) return;
     const coinSettings = this.getCoinHudSettings();
@@ -149,6 +288,13 @@ export class Hud {
     this.drawCoinValue(ctx, x, y, coinSettings, player);
   }
 
+  /**
+   * Draws bullets.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   */
   drawBullets(ctx, canvas, player) {
     if (!this.isGunImageReady()) return;
     const gunSettings = this.getGunHudSettings();
@@ -157,14 +303,28 @@ export class Hud {
     this.drawBulletValue(ctx, x, y, gunSettings, player);
   }
 
+  /**
+   * Is coin image ready.
+   * Updates the instance state.
+   * @returns {boolean} Whether coin image ready.
+   */
   isCoinImageReady() {
     return this.coinImage && this.coinImage.naturalWidth !== 0;
   }
 
+  /**
+   * Is gun image ready.
+   * Updates the instance state.
+   * @returns {boolean} Whether gun image ready.
+   */
   isGunImageReady() {
     return this.gunImage && this.gunImage.naturalWidth !== 0;
   }
 
+  /**
+   * Returns coin hud settings.
+   * @returns {Object} Coin hud settings.
+   */
   getCoinHudSettings() {
     return {
       padding: 20,
@@ -179,6 +339,10 @@ export class Hud {
       coinTextStrokeWidth: 3 };
   }
 
+  /**
+   * Returns gun hud settings.
+   * @returns {Object} Gun hud settings.
+   */
   getGunHudSettings() {
     return {
       padding: 20,
@@ -195,12 +359,26 @@ export class Hud {
       bulletTextStrokeWidth: 3 };
   }
 
+  /**
+   * Returns coin position.
+   * Uses canvas, coinSettings to compute the result.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {*} coinSettings Coin settings.
+   * @returns {Object} Coin position.
+   */
   getCoinPosition(canvas, coinSettings) {
     const x = canvas.width - coinSettings.coinSize - coinSettings.padding - coinSettings.coinOffsetX;
     const y = coinSettings.padding;
     return { x, y };
   }
 
+  /**
+   * Returns gun position.
+   * Uses canvas, gunSettings to compute the result.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {*} gunSettings Gun settings.
+   * @returns {Object} Gun position.
+   */
   getGunPosition(canvas, gunSettings) {
     const coinX = canvas.width - gunSettings.coinSize - gunSettings.padding - gunSettings.coinOffsetX;
     const coinY = gunSettings.padding;
@@ -209,14 +387,42 @@ export class Hud {
     return { x, y };
   }
 
+  /**
+   * Draws coin image.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {*} coinSettings Coin settings.
+   */
   drawCoinImage(ctx, x, y, coinSettings) {
     ctx.drawImage(this.coinImage, x, y, coinSettings.coinSize, coinSettings.coinSize);
   }
 
+  /**
+   * Draws gun image.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {*} gunSettings Gun settings.
+   */
   drawGunImage(ctx, x, y, gunSettings) {
     ctx.drawImage(this.gunImage, x, y, gunSettings.gunSize, gunSettings.gunSize);
   }
 
+  /**
+   * Draws coin value.
+   * Renders to the canvas context.
+   * Updates the player state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {*} coinSettings Coin settings.
+   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   */
   drawCoinValue(ctx, x, y, coinSettings, player) {
     const baseScale = 1;
     const scale = baseScale + player.hudPulse * coinSettings.coinPulseScale;
@@ -228,6 +434,16 @@ export class Hud {
     ctx.restore();
   }
 
+  /**
+   * Draws bullet value.
+   * Renders to the canvas context.
+   * Updates the player state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {*} gunSettings Gun settings.
+   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   */
   drawBulletValue(ctx, x, y, gunSettings, player) {
     const baseScale = 1;
     const scale = baseScale + (player.gunPulse || 0) * gunSettings.gunPulseScale;
@@ -239,16 +455,40 @@ export class Hud {
     ctx.restore();
   }
 
+  /**
+   * Applies coin text transform.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {*} coinSettings Coin settings.
+   * @param {number} scale Scale.
+   */
   applyCoinTextTransform(ctx, x, y, coinSettings, scale) {
     ctx.translate(x + coinSettings.coinSize + coinSettings.coinTextOffsetX, y + coinSettings.coinTextOffsetY);
     ctx.scale(scale, scale);
   }
 
+  /**
+   * Applies bullet text transform.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {*} gunSettings Gun settings.
+   * @param {number} scale Scale.
+   */
   applyBulletTextTransform(ctx, x, y, gunSettings, scale) {
     ctx.translate(x + gunSettings.gunSize + gunSettings.bulletTextOffsetX, y + gunSettings.bulletTextOffsetY);
     ctx.scale(scale, scale);
   }
 
+  /**
+   * Applies coin text style.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} coinSettings Coin settings.
+   */
   applyCoinTextStyle(ctx, coinSettings) {
     ctx.font = coinSettings.coinTextFont;
     ctx.strokeStyle = coinSettings.coinTextStrokeColor;
@@ -256,6 +496,12 @@ export class Hud {
     ctx.lineWidth = coinSettings.coinTextStrokeWidth;
   }
 
+  /**
+   * Applies bullet text style.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} gunSettings Gun settings.
+   */
   applyBulletTextStyle(ctx, gunSettings) {
     ctx.font = gunSettings.bulletTextFont;
     ctx.strokeStyle = gunSettings.bulletTextStrokeColor;
@@ -263,11 +509,25 @@ export class Hud {
     ctx.lineWidth = gunSettings.bulletTextStrokeWidth;
   }
 
+  /**
+   * Draws hud text value.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {string} text Text.
+   */
   drawHudTextValue(ctx, text) {
     ctx.strokeText(text, 0, 0);
     ctx.fillText(text, 0, 0);
   }
 
+  /**
+   * Draws boss indicator.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {import("../entities/boss/boss.class.js").Boss} boss Boss instance.
+   */
   drawBossIndicator(ctx, canvas, camera, boss) {
     if (!this.shouldRenderBossIndicator(boss)) return;
     const indicatorStyle = this.getBossIndicatorStyle();
@@ -276,14 +536,32 @@ export class Hud {
     this.drawBossIndicatorContent(ctx, placement, indicatorStyle);
   }
 
+  /**
+   * Should render boss indicator.
+   * Updates the boss state.
+   * @param {import("../entities/boss/boss.class.js").Boss} boss Boss instance.
+   * @returns {boolean} Whether render boss indicator.
+   */
   shouldRenderBossIndicator(boss) {
     return boss && !boss.remove && !(boss.isDead && boss.health <= 0);
   }
 
+  /**
+   * Returns boss indicator style.
+   * @returns {Object} Boss indicator style.
+   */
   getBossIndicatorStyle() {
     return { margin: 16, bossTopOffset: 30, bossBarWidthFactor: 0.8, bossBarHeight: 12, arrowSize: 20, arrowYOffset: 9.25, bossNameOffsetX: 16, bossNameColor: "rgba(143, 0, 0, 0.9)", arrowColor: "rgba(0, 0, 0, 0.6)", bossNameFont: "1rem ComixLoud, sans-serif" };
   }
 
+  /**
+   * Draws boss indicator content.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} placement Placement.
+   * @param {*} indicatorStyle Indicator style.
+   */
   drawBossIndicatorContent(ctx, placement, indicatorStyle) {
     ctx.save();
     ctx.fillStyle = indicatorStyle.arrowColor;
@@ -292,24 +570,55 @@ export class Hud {
     ctx.restore();
   }
 
+  /**
+   * Draws side indicator.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} placement Placement.
+   * @param {*} indicatorStyle Indicator style.
+   */
   drawSideIndicator(ctx, placement, indicatorStyle) {
     const angle = placement.offLeft ? Math.PI : 0;
     this.drawIndicatorArrow(ctx, placement.arrowX, placement.arrowY, angle, indicatorStyle.arrowSize);
     this.drawIndicatorLabel(ctx, this.bossName, placement.textX, placement.textY, placement.offLeft ? "left" : "right", indicatorStyle.bossNameFont, indicatorStyle.bossNameColor);
   }
 
+  /**
+   * Draws vertical indicator.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} placement Placement.
+   * @param {*} indicatorStyle Indicator style.
+   */
   drawVerticalIndicator(ctx, placement, indicatorStyle) {
     const angle = placement.offTop ? -Math.PI / 2 : Math.PI / 2;
     this.drawIndicatorArrow(ctx, placement.drawX, placement.arrowY, angle, indicatorStyle.arrowSize);
     this.drawIndicatorLabel(ctx, this.bossName, placement.drawX, placement.textY, "center", indicatorStyle.bossNameFont, indicatorStyle.bossNameColor);
   }
 
+  /**
+   * Returns boss indicator placement.
+   * Updates the instance state.
+   * @param {import("../entities/boss/boss.class.js").Boss} boss Boss instance.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {*} indicatorStyle Indicator style.
+   * @returns {*} Boss indicator placement.
+   */
   getBossIndicatorPlacement(boss, canvas, camera, indicatorStyle) {
     const base = this.getBossIndicatorBase(boss, camera, indicatorStyle);
     const offscreen = this.getBossIndicatorOffscreen(base, canvas, indicatorStyle.margin);
     return this.buildBossIndicatorPlacement(base, offscreen, canvas, indicatorStyle);
   }
 
+  /**
+   * Returns boss indicator base.
+   * Updates the boss state.
+   * @param {import("../entities/boss/boss.class.js").Boss} boss Boss instance.
+   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {*} indicatorStyle Indicator style.
+   * @returns {Object} Boss indicator base.
+   */
   getBossIndicatorBase(boss, camera, indicatorStyle) {
     const centerX = boss.x + boss.width / 2 - camera.x;
     const topY = boss.y - camera.y - indicatorStyle.bossTopOffset;
@@ -318,6 +627,14 @@ export class Hud {
     return { centerX, topY, barW, barH };
   }
 
+  /**
+   * Returns boss indicator offscreen.
+   * Uses base, canvas, margin to compute the result.
+   * @param {*} base Base.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {*} margin Margin.
+   * @returns {Object} Boss indicator offscreen.
+   */
   getBossIndicatorOffscreen(base, canvas, margin) {
     let drawX = base.centerX;
     let drawY = base.topY;
@@ -333,6 +650,15 @@ export class Hud {
     return { drawX, drawY, offLeft, offRight, offTop, offBottom, isOffscreen };
   }
 
+  /**
+   * Builds boss indicator placement.
+   * Uses base, offscreen, canvas, indicatorStyle to compute the result.
+   * @param {*} base Base.
+   * @param {*} offscreen Offscreen.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {*} indicatorStyle Indicator style.
+   * @returns {Object} Boss indicator placement.
+   */
   buildBossIndicatorPlacement(base, offscreen, canvas, indicatorStyle) {
     const barY = offscreen.drawY;
     const arrowY = barY + base.barH + indicatorStyle.arrowYOffset;
@@ -342,6 +668,16 @@ export class Hud {
     return { drawX: offscreen.drawX, drawY: offscreen.drawY, barW: base.barW, barH: base.barH, barY, offLeft: offscreen.offLeft, offRight: offscreen.offRight, offTop: offscreen.offTop, offBottom: offscreen.offBottom, isOffscreen: offscreen.isOffscreen, arrowX, arrowY, textX, textY };
   }
 
+  /**
+   * Draws indicator arrow.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {number} angle Angle.
+   * @param {number} arrowSize Arrow size.
+   */
   drawIndicatorArrow(ctx, x, y, angle, arrowSize) {
     ctx.save();
     ctx.translate(x, y);
@@ -351,6 +687,12 @@ export class Hud {
     ctx.restore();
   }
 
+  /**
+   * Returns arrow geometry.
+   * Uses arrowSize to compute the result.
+   * @param {number} arrowSize Arrow size.
+   * @returns {Object} Arrow geometry.
+   */
   getArrowGeometry(arrowSize) {
     const arrowHeightFactor = 1.5;
     const arrowHalfHeight = arrowSize / arrowHeightFactor;
@@ -361,6 +703,12 @@ export class Hud {
     return { arrowBaseTop, arrowBaseBottom, arrowTipX };
   }
 
+  /**
+   * Draws arrow path.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} arrowGeometry Arrow geometry.
+   */
   drawArrowPath(ctx, arrowGeometry) {
     ctx.beginPath();
     ctx.moveTo(arrowGeometry.arrowBaseTop.x, arrowGeometry.arrowBaseTop.y);
@@ -370,6 +718,17 @@ export class Hud {
     ctx.fill();
   }
 
+  /**
+   * Draws indicator label.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {string} text Text.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {*} align Align.
+   * @param {string} font Font.
+   * @param {string} color Color.
+   */
   drawIndicatorLabel(ctx, text, x, y, align, font, color) {
     ctx.fillStyle = color;
     ctx.font = font;

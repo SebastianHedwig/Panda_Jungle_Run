@@ -74,6 +74,15 @@ const BUTTON_LABEL_STROKE_WIDTH_RATIO = 0.14;
 const MIN_CORNER_RADIUS = 2;
 
 export class GameOverlayBase {
+  /**
+   * Creates a new instance. If omitted, default values are used.
+   * Uses options to perform the operation.
+   * @param {Object} [options] Configuration options.
+   * @param {number} [options.animDuration] Anim duration.
+   * @param {number} [options.minScale] Min scale.
+   * @param {number} [options.maxBgAlpha] Max bg alpha.
+   * @param {*} [options.}] Value.
+   */
   constructor({
     animDuration = DEFAULT_ANIM_DURATION_MS,
     minScale = DEFAULT_MIN_SCALE,
@@ -88,6 +97,10 @@ export class GameOverlayBase {
     this.hovering = false;
   }
 
+  /**
+   * Resets.
+   * Updates the instance state.
+   */
   reset() {
     this.animStart = null;
     this.pointer = null;
@@ -95,20 +108,42 @@ export class GameOverlayBase {
     this.hovering = false;
   }
 
+  /**
+   * Sets pointer.
+   * Updates the instance state.
+   * @param {number} x X.
+   * @param {number} y Y.
+   */
   setPointer(x, y) {
     this.pointer = x == null || y == null ? null : { x, y };
   }
 
+  /**
+   * Clears pointer.
+   * Updates the instance state.
+   */
   clearPointer() {
     this.pointer = null;
     this.buttonBounds = [];
     this.hovering = false;
   }
 
+  /**
+   * Is hovering.
+   * Updates the instance state.
+   * @returns {boolean} Whether hovering.
+   */
   isHovering() {
     return this.hovering;
   }
 
+  /**
+   * Handles game overlay button click.
+   * Updates the instance state.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @returns {*} Result value.
+   */
   handleGameOverlayButtonClick(x, y) {
     const hit = this.buttonBounds.find(
       (bounds) => x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h
@@ -116,6 +151,11 @@ export class GameOverlayBase {
     return hit?.action ?? null;
   }
 
+  /**
+   * Returns animation state.
+   * Updates the instance state.
+   * @returns {Object} Animation state.
+   */
   getAnimationState() {
     const now = performance?.now?.() ?? Date.now();
     if (this.animStart == null) this.animStart = now;
@@ -126,16 +166,36 @@ export class GameOverlayBase {
     return { easeOut, scale, bgAlpha };
   }
 
+  /**
+   * Returns canvas center.
+   * Uses canvas to compute the result.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @returns {Object} Canvas center.
+   */
   getCanvasCenter(canvas) {
     return { centerX: canvas.width / 2, centerY: canvas.height / 2 };
   }
 
+  /**
+   * Draws backdrop.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {number} bgAlpha Bg alpha.
+   */
   drawBackdrop(ctx, canvas, bgAlpha) {
     ctx.save();
     ctx.fillStyle = `rgba(0, 0, 0, ${bgAlpha})`;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
+  /**
+   * Starts frame.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @returns {Object} Result value.
+   */
   startFrame(ctx, canvas) {
     const animationState = this.getAnimationState();
     const canvasCenter = this.getCanvasCenter(canvas);
@@ -143,10 +203,21 @@ export class GameOverlayBase {
     return { easeOut: animationState.easeOut, scale: animationState.scale, centerX: canvasCenter.centerX, centerY: canvasCenter.centerY };
   }
 
+  /**
+   * Finish frame.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   */
   finishFrame(ctx) {
     ctx.restore();
   }
 
+  /**
+   * Returns title options.
+   * Uses opts to compute the result.
+   * @param {*} opts Opts.
+   * @returns {Object} Title options.
+   */
   getTitleOptions(opts) {
     return {
       maxWidthRatio: TITLE_MAX_WIDTH_RATIO,
@@ -159,11 +230,28 @@ export class GameOverlayBase {
     };
   }
 
+  /**
+   * Measure title width.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {string} title Title.
+   * @param {number} size Size.
+   * @returns {*} Result value.
+   */
   measureTitleWidth(ctx, title, size) {
     ctx.font = `900 ${size}px "ComixLoud", sans-serif`;
     return ctx.measureText(title).width;
   }
 
+  /**
+   * Returns title font size.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {string} title Title.
+   * @param {string} titleOptions Title options.
+   * @returns {*} Title font size.
+   */
   getTitleFontSize(ctx, canvas, title, titleOptions) {
     const maxTextWidth = canvas.width * titleOptions.maxWidthRatio;
     const maxTextHeight = canvas.height * titleOptions.maxHeightRatio;
@@ -174,6 +262,13 @@ export class GameOverlayBase {
     return Math.max(titleOptions.minSize, baseSize * fitScale);
   }
 
+  /**
+   * Returns title position.
+   * Uses canvas, yOffsetRatio to compute the result.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {number} yOffsetRatio Y offset ratio.
+   * @returns {Object} Title position.
+   */
   getTitlePosition(canvas, yOffsetRatio) {
     const canvasCenterX = canvas.width / 2;
     const canvasCenterY = canvas.height / 2;
@@ -181,18 +276,42 @@ export class GameOverlayBase {
     return { canvasCenterX, titleY };
   }
 
+  /**
+   * Applies title font.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} drawFontSize Draw font size.
+   */
   applyTitleFont(ctx, drawFontSize) {
     ctx.font = `900 ${drawFontSize}px "ComixLoud", sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
   }
 
+  /**
+   * Returns title gradient.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} titleY Title Y.
+   * @param {number} drawFontSize Draw font size.
+   * @returns {*} Title gradient.
+   */
   getTitleGradient(ctx, titleY, drawFontSize) {
     const gradient = ctx.createLinearGradient(0, titleY - drawFontSize, 0, titleY + drawFontSize * TITLE_GRADIENT_HEIGHT_RATIO);
     TITLE_GRADIENT_STOPS.forEach(({ stop, color }) => gradient.addColorStop(stop, color));
     return gradient;
   }
 
+  /**
+   * Stroke title.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {string} title Title.
+   * @param {boolean} canvasCenterX Canvas center X.
+   * @param {number} titleY Title Y.
+   * @param {number} drawFontSize Draw font size.
+   * @param {*} easeOut Ease out.
+   */
   strokeTitle(ctx, title, canvasCenterX, titleY, drawFontSize, easeOut) {
     ctx.lineWidth = Math.max(TITLE_STROKE_WIDTH_MIN, drawFontSize * TITLE_STROKE_WIDTH_RATIO);
     ctx.strokeStyle = TITLE_STROKE_COLOR;
@@ -203,6 +322,16 @@ export class GameOverlayBase {
     ctx.strokeText(title, canvasCenterX, titleY);
   }
 
+  /**
+   * Fill title.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {string} title Title.
+   * @param {boolean} canvasCenterX Canvas center X.
+   * @param {number} titleY Title Y.
+   * @param {*} gradient Gradient.
+   * @param {*} easeOut Ease out.
+   */
   fillTitle(ctx, title, canvasCenterX, titleY, gradient, easeOut) {
     ctx.shadowColor = TITLE_FILL_SHADOW_COLOR;
     ctx.shadowBlur = TITLE_FILL_SHADOW_BLUR * easeOut;
@@ -210,6 +339,17 @@ export class GameOverlayBase {
     ctx.fillText(title, canvasCenterX, titleY);
   }
 
+  /**
+   * Draws title.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {string} title Title.
+   * @param {*} opts Opts.
+   * @param {*} easeOut Ease out.
+   * @param {number} scale Scale.
+   * @returns {Object} Result value.
+   */
   drawTitle(ctx, canvas, title, opts, easeOut, scale) {
     const titleOptions = this.getTitleOptions(opts);
     const targetFontSize = this.getTitleFontSize(ctx, canvas, title, titleOptions);
@@ -222,6 +362,18 @@ export class GameOverlayBase {
     return { titleY: titlePosition.titleY, drawFontSize };
   }
 
+  /**
+   * Draws subtitle. If omitted, default values are used.
+   * Uses ctx, canvas, text, y, easeOut, options to perform the operation.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {string} text Text.
+   * @param {number} y Y.
+   * @param {*} easeOut Ease out.
+   * @param {Object} [options] Configuration options.
+   * @param {number} [options.fontSizeCap] Font size cap.
+   * @param {number} [options.fontSizeRatio] Font size ratio.
+   */
   drawSubtitle(ctx, canvas, text, y, easeOut, { fontSizeCap = SUBTITLE_FONT_SIZE_CAP, fontSizeRatio = SUBTITLE_FONT_SIZE_RATIO } = {}) {
     const fontSize = this.getSubtitleFontSize(canvas, { fontSizeCap, fontSizeRatio });
     const canvasCenterX = canvas.width / 2;
@@ -231,16 +383,37 @@ export class GameOverlayBase {
     return y + fontSize + canvas.height * SUBTITLE_VERTICAL_SPACING_RATIO;
   }
 
+  /**
+   * Returns subtitle font size.
+   * Uses canvas, options to compute the result.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {Object} options Configuration options.
+   * @param {number} [options.fontSizeCap] Font size cap.
+   * @param {number} [options.fontSizeRatio] Font size ratio.
+   */
   getSubtitleFontSize(canvas, { fontSizeCap, fontSizeRatio }) {
     return Math.min(fontSizeCap, canvas.width * fontSizeRatio);
   }
 
+  /**
+   * Applies subtitle font.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} fontSize Font size.
+   */
   applySubtitleFont(ctx, fontSize) {
     ctx.font = `800 ${fontSize}px "ComixLoud", sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
   }
 
+  /**
+   * Applies subtitle style.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} fontSize Font size.
+   * @param {*} easeOut Ease out.
+   */
   applySubtitleStyle(ctx, fontSize, easeOut) {
     ctx.fillStyle = SUBTITLE_FILL_COLOR;
     ctx.shadowColor = SUBTITLE_SHADOW_COLOR;
@@ -251,11 +424,28 @@ export class GameOverlayBase {
     ctx.lineWidth = Math.max(SUBTITLE_STROKE_WIDTH_MIN, fontSize * SUBTITLE_STROKE_WIDTH_RATIO);
   }
 
+  /**
+   * Draws subtitle text.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {string} text Text.
+   * @param {boolean} canvasCenterX Canvas center X.
+   * @param {number} y Y.
+   */
   drawSubtitleText(ctx, text, canvasCenterX, y) {
     ctx.strokeText(text, canvasCenterX, y);
     ctx.fillText(text, canvasCenterX, y);
   }
 
+  /**
+   * Draws buttons.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {number} baseY Base Y.
+   * @param {number} scale Scale.
+   * @param {*} easeOut Ease out.
+   */
   drawButtons(ctx, canvas, baseY, scale, easeOut) {
     const layout = this.getButtonLayout(canvas, baseY);
     const buttons = this.getButtons(layout);
@@ -269,6 +459,13 @@ export class GameOverlayBase {
     this.hovering = hoverAny;
   }
 
+  /**
+   * Returns button layout.
+   * Uses canvas, baseY to compute the result.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {number} baseY Base Y.
+   * @returns {Object} Button layout.
+   */
   getButtonLayout(canvas, baseY) {
     const baseBtnWidth = Math.min(BUTTON_BASE_WIDTH_MAX, canvas.width * BUTTON_BASE_WIDTH_RATIO);
     const baseBtnHeight = baseBtnWidth * BUTTON_HEIGHT_RATIO;
@@ -279,6 +476,14 @@ export class GameOverlayBase {
     return { baseBtnWidth, baseBtnHeight, btnGap, startX, buttonsY };
   }
 
+  /**
+   * Returns buttons.
+   * Uses options to compute the result.
+   * @param {Object} options Configuration options.
+   * @param {number} [options.baseBtnWidth] Base btn width.
+   * @param {number} [options.btnGap] Btn gap.
+   * @param {number} [options.startX] Start X.
+   */
   getButtons({ baseBtnWidth, btnGap, startX }) {
     return [
       { label: "Retry", action: "retry", x: startX },
@@ -286,6 +491,15 @@ export class GameOverlayBase {
     ];
   }
 
+  /**
+   * Returns button base bounds.
+   * Uses btn, options to compute the result.
+   * @param {*} btn Btn.
+   * @param {Object} options Configuration options.
+   * @param {number} [options.baseBtnWidth] Base btn width.
+   * @param {number} [options.baseBtnHeight] Base btn height.
+   * @param {number} [options.buttonsY] Buttons Y.
+   */
   getButtonBaseBounds(btn, { baseBtnWidth, baseBtnHeight, buttonsY }) {
     return {
       x: btn.x,
@@ -296,6 +510,12 @@ export class GameOverlayBase {
     };
   }
 
+  /**
+   * Is pointer inside button.
+   * Updates the instance state.
+   * @param {*} bounds Bounds.
+   * @returns {boolean} Whether pointer inside button.
+   */
   isPointerInsideButton(bounds) {
     return (
       !!this.pointer &&
@@ -306,6 +526,13 @@ export class GameOverlayBase {
     );
   }
 
+  /**
+   * Returns scaled bounds.
+   * Uses bounds, btnScale to compute the result.
+   * @param {*} bounds Bounds.
+   * @param {number} btnScale Btn scale.
+   * @returns {Object} Scaled bounds.
+   */
   getScaledBounds(bounds, btnScale) {
     const drawW = bounds.w * btnScale;
     const drawH = bounds.h * btnScale;
@@ -314,6 +541,16 @@ export class GameOverlayBase {
     return { ...bounds, x: drawX, y: drawY, w: drawW, h: drawH };
   }
 
+  /**
+   * Draws button.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} btn Btn.
+   * @param {*} layout Layout.
+   * @param {number} scale Scale.
+   * @param {*} easeOut Ease out.
+   * @returns {Object} Result value.
+   */
   drawButton(ctx, btn, layout, scale, easeOut) {
     const bounds = this.getButtonBaseBounds(btn, layout);
     const isHover = this.isPointerInsideButton(bounds);
@@ -324,12 +561,25 @@ export class GameOverlayBase {
     return { bounds: drawBounds, isHover };
   }
 
+  /**
+   * Returns button gradient.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} bounds Bounds.
+   * @returns {*} Button gradient.
+   */
   getButtonGradient(ctx, bounds) {
     const btnGradient = ctx.createLinearGradient(0, bounds.y, 0, bounds.y + bounds.h);
     BUTTON_GRADIENT_STOPS.forEach(({ stop, color }) => btnGradient.addColorStop(stop, color));
     return btnGradient;
   }
 
+  /**
+   * Applies button shadow.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} easeOut Ease out.
+   */
   applyButtonShadow(ctx, easeOut) {
     ctx.save();
     ctx.shadowColor = BG_SHADOW_COLOR;
@@ -338,17 +588,37 @@ export class GameOverlayBase {
     ctx.shadowOffsetY = BUTTON_SHADOW_OFFSET_Y * easeOut;
   }
 
+  /**
+   * Fill button.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} btnGradardient Btn gradardient.
+   */
   fillButton(ctx, btnGradardient) {
     ctx.fillStyle = btnGradardient;
     ctx.fill();
   }
 
+  /**
+   * Stroke button.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} bounds Bounds.
+   */
   strokeButton(ctx, bounds) {
     ctx.lineWidth = Math.max(BUTTON_STROKE_WIDTH_MIN, bounds.h * BUTTON_STROKE_WIDTH_RATIO);
     ctx.strokeStyle = BUTTON_STROKE_COLOR;
     ctx.stroke();
   }
 
+  /**
+   * Draws button shape.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} bounds Bounds.
+   * @param {*} easeOut Ease out.
+   */
   drawButtonShape(ctx, bounds, easeOut) {
     const radius = Math.min(bounds.h / 2, BUTTON_RADIUS_MAX);
     const btnGradient = this.getButtonGradient(ctx, bounds);
@@ -359,6 +629,12 @@ export class GameOverlayBase {
     ctx.restore();
   }
 
+  /**
+   * Returns label size.
+   * Uses bounds to compute the result.
+   * @param {*} bounds Bounds.
+   * @returns {*} Label size.
+   */
   getLabelSize(bounds) {
     return Math.max(
       BUTTON_LABEL_SIZE_MIN,
@@ -366,11 +642,24 @@ export class GameOverlayBase {
     );
   }
 
+  /**
+   * Returns label center Y.
+   * Uses bounds to compute the result.
+   * @param {*} bounds Bounds.
+   * @returns {*} Label center Y.
+   */
   getLabelCenterY(bounds) {
     const labelOffsetY = Math.min(BUTTON_LABEL_OFFSET_Y_MAX, bounds.h * BUTTON_LABEL_OFFSET_Y_RATIO);
     return bounds.y + bounds.h / 2 + labelOffsetY;
   }
 
+  /**
+   * Applies label style.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} labelSize Label size.
+   * @param {*} easeOut Ease out.
+   */
   applyLabelStyle(ctx, labelSize, easeOut) {
     ctx.font = `${BUTTON_LABEL_FONT_WEIGHT} ${labelSize}px "ComixLoud", sans-serif`;
     ctx.textAlign = "center";
@@ -384,6 +673,15 @@ export class GameOverlayBase {
     ctx.shadowOffsetY = BUTTON_LABEL_SHADOW_OFFSET_Y * easeOut;
   }
 
+  /**
+   * Draws button label.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {string} label Label.
+   * @param {*} bounds Bounds.
+   * @param {*} easeOut Ease out.
+   */
   drawButtonLabel(ctx, label, bounds, easeOut) {
     const labelSize = this.getLabelSize(bounds);
     const labelCenterY = this.getLabelCenterY(bounds);
@@ -394,6 +692,16 @@ export class GameOverlayBase {
     ctx.restore();
   }
 
+  /**
+   * Draws rounded rect.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {*} w W.
+   * @param {*} h H.
+   * @param {*} r R.
+   */
   drawRoundedRect(ctx, x, y, w, h, r) { // Draws path for rounded rectangle on the Buttons Retry and Quit
     const radius = Math.max(MIN_CORNER_RADIUS, Math.min(r, Math.min(w, h) / 2));
     ctx.beginPath();

@@ -5,6 +5,14 @@ const bulletAudio = new BulletAudio();
 const EXPLOSION_BASE_SIZE = 64;
 
 export class Bullet {
+  /**
+   * Creates a new instance.
+   * Updates the instance state.
+   * @param {number} startX Start X.
+   * @param {number} startY Start Y.
+   * @param {*} direction Direction.
+   * @param {import("../../core/world.class.js").World} world World instance.
+   */
   constructor(startX, startY, direction, world) {
     this.initPosition(startX, startY, direction);
     this.initDimensions();
@@ -12,29 +20,56 @@ export class Bullet {
     this.initImage();
   }
 
+  /**
+   * Initializes position.
+   * Applies physics updates like gravity and velocity.
+   * Updates the instance state.
+   * @param {number} startX Start X.
+   * @param {number} startY Start Y.
+   * @param {*} direction Direction.
+   */
   initPosition(startX, startY, direction) {
     this.positionX = startX;
     this.positionY = startY;
     this.velocityX = 900 * direction;
   }
 
+  /**
+   * Initializes dimensions.
+   * Updates the instance state.
+   */
   initDimensions() {
     this.width = 32;
     this.height = 16;
     this.scaleFactor = 1.2;
   }
 
+  /**
+   * Initializes state.
+   * Updates the instance state.
+   * @param {*} direction Direction.
+   * @param {import("../../core/world.class.js").World} world World instance.
+   */
   initState(direction, world) {
     this.facingDirection = direction;
     this.world = world;
     this.remove = false;
   }
 
+  /**
+   * Initializes image.
+   * Updates the instance state.
+   */
   initImage() {
     this.image = new Image();
     this.image.src = "assets/img/Bullets/Bullet-1.png";
   }
 
+  /**
+   * Returns bounds.
+   * Updates the instance state.
+   * @returns {Object} Bounds.
+   */
   getBounds() {
     const left = this.positionX;
     const top = this.positionY;
@@ -43,6 +78,13 @@ export class Bullet {
     return { left, top, width, height, right: left + width, bottom: top + height };
   }
 
+  /**
+   * Updates. If omitted, default values are used.
+   * Updates the instance state.
+   * Spawns visual feedback effects.
+   * @param {number} dt Delta time in seconds.
+   * @param {*} [enemies] Enemies.
+   */
   update(dt, enemies = []) {
     this.advancePosition(dt);
     const bounds = this.getBounds();
@@ -52,14 +94,32 @@ export class Bullet {
     this.handleEnemyCollisions(enemies, shouldPlayImpactSound);
   }
 
+  /**
+   * Advances position.
+   * Applies physics updates like gravity and velocity.
+   * Updates the instance state.
+   * @param {number} dt Delta time in seconds.
+   */
   advancePosition(dt) {
     this.positionX += this.velocityX * dt;
   }
 
+  /**
+   * Returns should play impact sound.
+   * Updates the instance state.
+   * @returns {*} Should play impact sound.
+   */
   getShouldPlayImpactSound() {
     return !this.isBeyondCanvasMargin(50);
   }
 
+  /**
+   * Handles platform collision.
+   * Updates the world state.
+   * @param {*} bounds Bounds.
+   * @param {boolean} shouldPlayImpactSound Whether play impact sound.
+   * @returns {*} Result value.
+   */
   handlePlatformCollision(bounds, shouldPlayImpactSound) {
     for (const platform of this.world.platforms || []) {
       if (this.didHitPlatform(bounds, platform)) {
@@ -70,34 +130,78 @@ export class Bullet {
     return false;
   }
 
+  /**
+   * Did hit platform.
+   * Uses bounds, platform to perform the operation.
+   * @param {*} bounds Bounds.
+   * @param {import("../../engine/world/platform.class.js").Platform} platform Platform.
+   * @returns {*} Result value.
+   */
   didHitPlatform(bounds, platform) {
     return bounds.left < platform.right && bounds.right > platform.left &&
       bounds.top < platform.bottom && bounds.bottom > platform.top;
   }
 
+  /**
+   * On platform hit.
+   * Updates the instance state.
+   * Spawns visual feedback effects.
+   * @param {*} bounds Bounds.
+   * @param {boolean} shouldPlayImpactSound Whether play impact sound.
+   */
   onPlatformHit(bounds, shouldPlayImpactSound) {
     this.remove = true;
     this.playImpactIfAllowed(shouldPlayImpactSound);
     this.spawnPlatformExplosion(bounds);
   }
 
+  /**
+   * Plays impact if allowed.
+   * Triggers audio playback or updates audio state.
+   * @param {boolean} shouldPlayImpactSound Whether play impact sound.
+   */
   playImpactIfAllowed(shouldPlayImpactSound) {
     if (shouldPlayImpactSound) bulletAudio.playImpact();
   }
 
+  /**
+   * Spawns platform explosion.
+   * Updates the world state.
+   * Spawns visual feedback effects.
+   * @param {*} bounds Bounds.
+   */
   spawnPlatformExplosion(bounds) {
     this.world.spawnExplosion(this.positionX + bounds.width / 2, this.positionY + bounds.height / 2);
   }
 
+  /**
+   * Should despawn.
+   * Updates the world state.
+   * Spawns visual feedback effects.
+   * @returns {boolean} Whether despawn.
+   */
   shouldDespawn() {
     const horizontalDespawnMargin = 200;
     return this.positionX < -horizontalDespawnMargin || this.positionX > this.world.width + horizontalDespawnMargin;
   }
 
+  /**
+   * Handles enemy collisions.
+   * Updates the instance state.
+   * @param {*} enemies Enemies.
+   * @param {boolean} shouldPlayImpactSound Whether play impact sound.
+   */
   handleEnemyCollisions(enemies, shouldPlayImpactSound) {
     enemies.forEach((enemy) => this.tryHitEnemy(enemy, shouldPlayImpactSound));
   }
 
+  /**
+   * Try hit enemy.
+   * Updates the world state.
+   * Spawns visual feedback effects.
+   * @param {import("./enemies/enemyBase.class.js").EnemyBase} enemy Enemy instance.
+   * @param {boolean} shouldPlayImpactSound Whether play impact sound.
+   */
   tryHitEnemy(enemy, shouldPlayImpactSound) {
     if (!this.collidesWith(enemy)) return;
     this.remove = true;
@@ -107,24 +211,54 @@ export class Bullet {
     this.maybeSpawnHitEffect(enemy);
   }
 
+  /**
+   * Applies enemy damage.
+   * Updates the enemy state.
+   * @param {import("./enemies/enemyBase.class.js").EnemyBase} enemy Enemy instance.
+   */
   applyEnemyDamage(enemy) {
     enemy.takeDamage?.(PLAYER_BULLET_DAMAGE);
   }
 
+  /**
+   * Maybe spawn hit effect.
+   * Updates the instance state.
+   * Spawns visual feedback effects.
+   * @param {import("./enemies/enemyBase.class.js").EnemyBase} enemy Enemy instance.
+   */
   maybeSpawnHitEffect(enemy) {
     if (!this.isHitEffectAllowed(enemy)) return;
     this.spawnHitEffectForEnemy(enemy);
   }
 
+  /**
+   * Is hit effect allowed.
+   * Updates the enemy state.
+   * Spawns visual feedback effects.
+   * @param {import("./enemies/enemyBase.class.js").EnemyBase} enemy Enemy instance.
+   * @returns {boolean} Whether hit effect allowed.
+   */
   isHitEffectAllowed(enemy) {
     return !enemy.isDead && enemy.health > 0 && !enemy.disableHitEffect;
   }
 
+  /**
+   * Spawns hit effect for enemy.
+   * Updates the world state.
+   * Spawns visual feedback effects.
+   * @param {import("./enemies/enemyBase.class.js").EnemyBase} enemy Enemy instance.
+   */
   spawnHitEffectForEnemy(enemy) {
     const { x: enemyX, y: enemyY, width: enemyWidth, height: enemyHeight } = enemy;
     this.world.spawnHitEffect?.(enemyX, enemyY, enemyWidth, enemyHeight);
   }
 
+  /**
+   * Collides with.
+   * Updates the instance state.
+   * @param {*} target Target.
+   * @returns {*} Result value.
+   */
   collidesWith(target) {
     const bounds = this.getBounds();
     const targetBox = target.getHitbox ? target.getHitbox() : target;
@@ -136,6 +270,13 @@ export class Bullet {
     );
   }
 
+  /**
+   * Renders.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   */
   render(ctx, camera) {
     const { screenX, screenY } = this.getScreenPosition(camera);
     ctx.save();
@@ -144,20 +285,44 @@ export class Bullet {
     ctx.restore();
   }
 
+  /**
+   * Returns screen position.
+   * Updates the instance state.
+   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @returns {Object} Screen position.
+   */
   getScreenPosition(camera) {
     const screenX = this.positionX - camera.x;
     const screenY = this.positionY - camera.y;
     return { screenX, screenY };
   }
 
+  /**
+   * Returns scaled width.
+   * Updates the instance state.
+   * @returns {*} Scaled width.
+   */
   getScaledWidth() {
     return this.width * this.scaleFactor;
   }
 
+  /**
+   * Returns scaled height.
+   * Updates the instance state.
+   * @returns {*} Scaled height.
+   */
   getScaledHeight() {
     return this.height * this.scaleFactor;
   }
 
+  /**
+   * Draws flipped.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} screenX Screen X.
+   * @param {number} screenY Screen Y.
+   */
   drawFlipped(ctx, screenX, screenY) {
     const scaledWidth = this.getScaledWidth();
     const scaledHeight = this.getScaledHeight();
@@ -165,12 +330,26 @@ export class Bullet {
     ctx.drawImage(this.image, -(screenX + scaledWidth), screenY, scaledWidth, scaledHeight);
   }
 
+  /**
+   * Draws normal.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} screenX Screen X.
+   * @param {number} screenY Screen Y.
+   */
   drawNormal(ctx, screenX, screenY) {
     const scaledWidth = this.getScaledWidth();
     const scaledHeight = this.getScaledHeight();
     ctx.drawImage(this.image, screenX, screenY, scaledWidth, scaledHeight);
   }
 
+  /**
+   * Is beyond canvas margin. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {*} [margin] Margin.
+   * @returns {boolean} Whether beyond canvas margin.
+   */
   isBeyondCanvasMargin(margin = 0) {
     const canvas = this.world?.canvas;
     if (!canvas) return false;
@@ -179,6 +358,12 @@ export class Bullet {
     return this.isOutsideCanvas(screenX, screenY, bounds, canvas, margin);
   }
 
+  /**
+   * Returns screen bounds.
+   * Updates the instance state.
+   * @param {*} bounds Bounds.
+   * @returns {Object} Screen bounds.
+   */
   getScreenBounds(bounds) {
     const camera = this.world?.camera;
     const cameraX = camera?.x || 0;
@@ -188,6 +373,16 @@ export class Bullet {
     return { screenX, screenY };
   }
 
+  /**
+   * Is outside canvas.
+   * Uses screenX, screenY, bounds, canvas, margin to perform the operation.
+   * @param {number} screenX Screen X.
+   * @param {number} screenY Screen Y.
+   * @param {*} bounds Bounds.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {*} margin Margin.
+   * @returns {boolean} Whether outside canvas.
+   */
   isOutsideCanvas(screenX, screenY, bounds, canvas, margin) {
     return screenX + bounds.width < -margin || screenX > canvas.width + margin ||
       screenY + bounds.height < -margin || screenY > canvas.height + margin;
@@ -195,17 +390,34 @@ export class Bullet {
 }
 
 export class Explosion {
+  /**
+   * Creates a new instance.
+   * Updates the instance state.
+   * @param {number} centerX Center X.
+   * @param {number} centerY Center Y.
+   */
   constructor(centerX, centerY) {
     this.initPosition(centerX, centerY);
     this.initAnimationState();
     this.loadFrames();
   }
 
+  /**
+   * Initializes position.
+   * Updates the instance state.
+   * @param {number} centerX Center X.
+   * @param {number} centerY Center Y.
+   */
   initPosition(centerX, centerY) {
     this.positionX = centerX;
     this.positionY = centerY;
   }
 
+  /**
+   * Initializes animation state.
+   * Advances animation state and sprites.
+   * Updates the instance state.
+   */
   initAnimationState() {
     this.frames = [];
     this.currentFrameIndex = 0;
@@ -215,6 +427,10 @@ export class Explosion {
     this.finished = false;
   }
 
+  /**
+   * Loads frames.
+   * Updates the instance state.
+   */
   loadFrames() {
     for (let frameIndex = 1; frameIndex <= 7; frameIndex++) {
       const img = new Image();
@@ -223,6 +439,12 @@ export class Explosion {
     }
   }
 
+  /**
+   * Updates.
+   * Advances animation state and sprites.
+   * Updates the instance state.
+   * @param {number} dt Delta time in seconds.
+   */
   update(dt) {
     this.frameTime += dt;
 
@@ -237,6 +459,12 @@ export class Explosion {
     }
   }
 
+  /**
+   * Renders.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   */
   render(ctx, camera) {
     if (this.finished) return;
     const img = this.getCurrentFrame();
@@ -244,10 +472,24 @@ export class Explosion {
     this.drawExplosion(ctx, camera, img);
   }
 
+  /**
+   * Returns current frame.
+   * Advances animation state and sprites.
+   * Updates the instance state.
+   * @returns {*} Current frame.
+   */
   getCurrentFrame() {
     return this.frames[this.currentFrameIndex];
   }
 
+  /**
+   * Draws explosion.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {HTMLImageElement} img Img.
+   */
   drawExplosion(ctx, camera, img) {
     const { explosionWidth, explosionHeight } = this.getExplosionSize();
     ctx.drawImage(
@@ -259,6 +501,11 @@ export class Explosion {
     );
   }
 
+  /**
+   * Returns explosion size.
+   * Updates the instance state.
+   * @returns {Object} Explosion size.
+   */
   getExplosionSize() {
     const explosionWidth = EXPLOSION_BASE_SIZE * this.scaleFactor;
     const explosionHeight = explosionWidth;

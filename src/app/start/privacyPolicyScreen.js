@@ -74,6 +74,14 @@ const privacyPolicyScreenBase = new LegalScreenBase({
   paragraphs: PRIVACY_PARAGRAPHS,
 });
 
+/**
+ * Renders privacy policy screen. If omitted, default values are used.
+ * Uses options to perform the operation.
+ * @param {Object} [options] Configuration options.
+ * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
+ * @param {HTMLCanvasElement} [options.canvas] Target canvas.
+ * @param {*} [options.scroll] Scroll.
+ */
 export function renderPrivacyPolicyScreen({ ctx, canvas, scroll = 0 }) {
   return privacyPolicyScreenBase.render({ ctx, canvas, scroll });
 }

@@ -23,6 +23,14 @@ const FULL_RATIO = 1; // 100% of the dimension
 const SIDE_WALL_GAP_RATIO = 0.30; // 30% of the collider height
 
 export class Platform {
+  /**
+   * Creates a new instance. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {HTMLImageElement} image Image.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {string} [type] Type.
+   */
   constructor(image, x, y, type = "generic") {
     this.img = image;
     this.x = x;
@@ -37,11 +45,21 @@ export class Platform {
     this.calculateCollisionBounds();
   }
 
+  /**
+   * Sets dimensions.
+   * Updates the instance state.
+   * @param {HTMLImageElement} image Image.
+   */
   setDimensions(image) {
     this.width = image.width;
     this.height = image.height;
   }
 
+  /**
+   * Sets defaults.
+   * Updates the instance state.
+   * @param {string} type Type.
+   */
   setDefaults(type) {
     this.decorRatio = 0.32;
     this.bottomTrim = 0.3;
@@ -49,18 +67,32 @@ export class Platform {
     this.hasSideWalls = true;
   }
 
+  /**
+   * Applies side trims.
+   * Updates the instance state.
+   * @param {string} type Type.
+   */
   applySideTrims(type) {
     const trims = SIDE_TRIMS[type] || DEFAULT_SIDE_TRIM;
     this.sideTrimLeft = trims.left;
     this.sideTrimRight = trims.right;
   }
 
+  /**
+   * Applies corner cuts.
+   * Updates the instance state.
+   * @param {string} type Type.
+   */
   applyCornerCuts(type) {
     const cuts = CORNER_CUTS[type] || DEFAULT_CORNER_CUT;
     this.cornerCutLeft = cuts.left;
     this.cornerCutRight = cuts.right;
   }
 
+  /**
+   * Calculates collider.
+   * Updates the instance state.
+   */
   calculateCollider() {
     this.colliderOffset = Math.floor(this.height * this.decorRatio);
     this.colliderHeight = Math.floor(this.height * (FULL_RATIO - this.decorRatio - this.bottomTrim));
@@ -68,6 +100,10 @@ export class Platform {
     this.sideWallGap = Math.floor(this.colliderHeight * SIDE_WALL_GAP_RATIO);
   }
 
+  /**
+   * Calculates collision bounds.
+   * Updates the instance state.
+   */
   calculateCollisionBounds() {
     this.top = this.y + this.colliderOffset;
     this.bottom = this.top + this.colliderHeight;
@@ -75,6 +111,11 @@ export class Platform {
     this.right = this.left + this.colliderWidth;
   }
 
+  /**
+   * Rect.
+   * Updates the instance state.
+   * @returns {Object} Result value.
+   */
   get rect() {
     return {
       x: this.left,
@@ -84,6 +125,13 @@ export class Platform {
     };
   }
 
+  /**
+   * Renders.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {import("./camera.class.js").Camera} camera Camera instance.
+   */
   render(ctx, camera) {
     ctx.drawImage(
       this.img,

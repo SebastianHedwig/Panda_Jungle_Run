@@ -27,6 +27,10 @@ const COIN_VERTICAL_OFFSET_MAX = 6;
 const COIN_VERTICAL_OFFSET_RATIO = 0.12;
 
 export class GameWonOverlay extends GameOverlayBase {
+  /**
+   * Creates a new instance.
+   * Updates the instance state.
+   */
   constructor() {
     super();
     this.title = "LEVEL CLEARED";
@@ -34,14 +38,30 @@ export class GameWonOverlay extends GameOverlayBase {
     this.coinImage = null;
   }
 
+  /**
+   * Sets coins. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {number} [amount] Amount.
+   */
   setCoins(amount = 0) {
     this.coins = Math.max(0, Math.floor(amount));
   }
 
+  /**
+   * Sets coin image.
+   * Updates the instance state.
+   * @param {HTMLImageElement} img Img.
+   */
   setCoinImage(img) {
     this.coinImage = img;
   }
 
+  /**
+   * Renders.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   */
   render(ctx, canvas) {
     if (!ctx || !canvas) return;
     const frameState = this.startFrame(ctx, canvas);
@@ -52,10 +72,22 @@ export class GameWonOverlay extends GameOverlayBase {
     this.finishFrame(ctx);
   }
 
+  /**
+   * Draws win title.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {number} frameState Frame state.
+   * @returns {*} Result value.
+   */
   drawWinTitle(ctx, canvas, frameState) {
     return this.drawTitle(ctx, canvas, this.title, this.getWinTitleOptions(), frameState.easeOut, frameState.scale);
   }
 
+  /**
+   * Returns win title options.
+   * @returns {Object} Win title options.
+   */
   getWinTitleOptions() {
     return {
       maxWidthRatio: TITLE_MAX_WIDTH_RATIO_WIN,
@@ -67,10 +99,28 @@ export class GameWonOverlay extends GameOverlayBase {
     };
   }
 
+  /**
+   * Returns score Y.
+   * Uses options, canvas to compute the result.
+   * @param {Object} options Configuration options.
+   * @param {number} [options.titleY] Title Y.
+   * @param {number} [options.drawFontSize] Draw font size.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   */
   getScoreY({ titleY, drawFontSize }, canvas) {
     return titleY + drawFontSize * SCORE_TITLE_SCALE + canvas.height * SCORE_Y_SPACING_RATIO;
   }
 
+  /**
+   * Draws highscore.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {number} y Y.
+   * @param {*} easeOut Ease out.
+   * @returns {*} Result value.
+   */
   drawHighscore(ctx, canvas, y, easeOut) {
     const fontSize = this.getScoreFontSize(canvas);
     const scoreText = this.getScoreText();
@@ -86,14 +136,32 @@ export class GameWonOverlay extends GameOverlayBase {
     return y + fontSize + canvas.height * SCORE_Y_SPACING_RATIO;
   }
 
+  /**
+   * Returns score font size.
+   * Uses canvas to compute the result.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @returns {*} Score font size.
+   */
   getScoreFontSize(canvas) {
     return Math.min(SCORE_FONT_SIZE_MAX, canvas.width * SCORE_FONT_SIZE_RATIO);
   }
 
+  /**
+   * Returns score text.
+   * Updates the instance state.
+   * @returns {Object} Score text.
+   */
   getScoreText() {
     return { labelText: "Highscore:", valueText: `${this.coins}` };
   }
 
+  /**
+   * Applies score text style.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} fontSize Font size.
+   * @param {*} easeOut Ease out.
+   */
   applyScoreTextStyle(ctx, fontSize, easeOut) {
     ctx.font = `800 ${fontSize}px "ComixLoud", sans-serif`;
     ctx.textBaseline = "middle";
@@ -106,6 +174,16 @@ export class GameWonOverlay extends GameOverlayBase {
     ctx.lineWidth = Math.max(SCORE_STROKE_WIDTH_MIN, fontSize * SCORE_STROKE_WIDTH_RATIO);
   }
 
+  /**
+   * Returns score layout.
+   * Uses ctx, canvas, options, fontSize to compute the result.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {Object} options Configuration options.
+   * @param {string} [options.labelText] Label text.
+   * @param {string} [options.valueText] Value text.
+   * @param {number} fontSize Font size.
+   */
   getScoreLayout(ctx, canvas, { labelText, valueText }, fontSize) {
     const labelWidth = ctx.measureText(labelText).width;
     const valueWidth = ctx.measureText(valueText).width;
@@ -117,11 +195,28 @@ export class GameWonOverlay extends GameOverlayBase {
     return { labelWidth, valueWidth, coinSize, padding, gap, startX };
   }
 
+  /**
+   * Draws score text.
+   * Renders to the canvas context.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {string} text Text.
+   * @param {number} x X.
+   * @param {number} y Y.
+   */
   drawScoreText(ctx, text, x, y) {
     ctx.strokeText(text, x, y);
     ctx.fillText(text, x, y);
   }
 
+  /**
+   * Draws score coin.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} valueX Value X.
+   * @param {*} layout Layout.
+   * @param {number} y Y.
+   */
   drawScoreCoin(ctx, valueX, layout, y) {
     const coinImg = this.coinImage;
     if (!coinImg?.naturalWidth) return;

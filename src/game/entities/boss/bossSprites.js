@@ -1,5 +1,10 @@
 import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
+/**
+ * Loads boss sprites.
+ * Applies physics updates like gravity and velocity.
+ * @returns {Object} Result value.
+ */
 export function loadBossSprites() {
   const base = "assets/img/Boss/Boss_Sprites/";
   return {

@@ -4,11 +4,21 @@ const BUTTONS_TITLE_GAP_FACTOR = 0.9;
 const BUTTONS_BASE_Y_OFFSET_RATIO = 0.08;
 
 export class GameOverOverlay extends GameOverlayBase {
+  /**
+   * Creates a new instance.
+   * Updates the instance state.
+   */
   constructor() {
     super();
     this.title = "GAME OVER";
   }
 
+  /**
+   * Renders.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   */
   render(ctx, canvas) {
     if (!ctx || !canvas) return;
     const { easeOut, scale } = this.startFrame(ctx, canvas);

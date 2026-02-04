@@ -1,5 +1,14 @@
 import { FACING_LEFT } from "../../../config/config.js";
 
+/**
+ * Renders player. If omitted, default values are used.
+ * Uses player, ctx, camera, options to perform the operation.
+ * @param {import("./player.class.js").Player} player Player instance.
+ * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+ * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Object} [options] Configuration options.
+ * @param {*} [options.debugHitbox] Debug hitbox.
+ */
 export function renderPlayer(player, ctx, camera, { debugHitbox = false } = {}) {
   if (shouldSkipRender(player)) return;
   ctx.save();
@@ -11,12 +20,24 @@ export function renderPlayer(player, ctx, camera, { debugHitbox = false } = {}) 
   ctx.restore();
 }
 
+/**
+ * Should skip render.
+ * Updates the player state.
+ * @param {import("./player.class.js").Player} player Player instance.
+ * @returns {boolean} Whether skip render.
+ */
 function shouldSkipRender(player) {
   if (player.isDead) return false;
   if (player.invulnerableTimer <= 0 || player.slideInvulWindow > 0) return false;
   return isInvisibleBlinkPhase(player);
 }
 
+/**
+ * Is invisible blink phase.
+ * Updates the player state.
+ * @param {import("./player.class.js").Player} player Player instance.
+ * @returns {boolean} Whether invisible blink phase.
+ */
 function isInvisibleBlinkPhase(player) {
   const blinkPhaseModulo = 2;
   const blinkPhase = Math.floor(
@@ -25,10 +46,25 @@ function isInvisibleBlinkPhase(player) {
   return blinkPhase % blinkPhaseModulo === 0;
 }
 
+/**
+ * Applies facing transform.
+ * Renders to the canvas context.
+ * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+ * @param {boolean} isMirroredFacing Whether mirrored facing.
+ */
 function applyFacingTransform(ctx, isMirroredFacing) {
   if (isMirroredFacing) ctx.scale(-1, 1);
 }
 
+/**
+ * Returns sprite draw position.
+ * Advances animation state and sprites.
+ * Updates the player state.
+ * @param {import("./player.class.js").Player} player Player instance.
+ * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {boolean} isMirroredFacing Whether mirrored facing.
+ * @returns {Object} Sprite draw position.
+ */
 function getSpriteDrawPosition(player, camera, isMirroredFacing) {
   const playerScreenX = player.x - camera.x;
   const playerScreenY = player.y - camera.y;
@@ -39,6 +75,15 @@ function getSpriteDrawPosition(player, camera, isMirroredFacing) {
   return { spriteDrawX, spriteDrawY };
 }
 
+/**
+ * Draws hitbox.
+ * Renders to the canvas context.
+ * Performs hitbox or collision checks.
+ * @param {import("./player.class.js").Player} player Player instance.
+ * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+ * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {boolean} isMirroredFacing Whether mirrored facing.
+ */
 function drawHitbox(player, ctx, camera, isMirroredFacing) {
   const hitbox = player.getHitbox();
   const { hitboxDrawX, hitboxDrawY } = getHitboxDrawPosition(hitbox, camera, isMirroredFacing);
@@ -47,6 +92,14 @@ function drawHitbox(player, ctx, camera, isMirroredFacing) {
   ctx.strokeRect(hitboxDrawX, hitboxDrawY, hitbox.width, hitbox.height);
 }
 
+/**
+ * Returns hitbox draw position.
+ * Performs hitbox or collision checks.
+ * @param {*} hitbox Hitbox.
+ * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {boolean} isMirroredFacing Whether mirrored facing.
+ * @returns {Object} Hitbox draw position.
+ */
 function getHitboxDrawPosition(hitbox, camera, isMirroredFacing) {
   const hitboxScreenX = hitbox.x - camera.x;
   const hitboxScreenY = hitbox.y - camera.y;

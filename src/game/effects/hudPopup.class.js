@@ -22,6 +22,14 @@ const DAMAGE_SHAKE_AMPLITUDE = 3;
 const LINE_WIDTH = 3;
 
 export class HudPopup {
+  /**
+   * Creates a new instance. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {string} [text] Text.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {string} [type] Type.
+   */
   constructor(text = "+10", x, y, type = "coin") {
     this.text = text;
     this.x = x;
@@ -34,6 +42,11 @@ export class HudPopup {
     this.shakeOffset = INITIAL_SHAKE_OFFSET;
   }
 
+  /**
+   * Updates.
+   * Updates the instance state.
+   * @param {number} dt Delta time in seconds.
+   */
   update(dt) {
     this.updateRise(dt);
     this.updateOpacity(dt);
@@ -42,29 +55,59 @@ export class HudPopup {
     this.clampOpacity();
   }
 
+  /**
+   * Updates rise.
+   * Updates the instance state.
+   * @param {number} dt Delta time in seconds.
+   */
   updateRise(dt) {
     this.riseOffset += dt * RISE_SPEED;
   }
 
+  /**
+   * Updates opacity.
+   * Updates the instance state.
+   * @param {number} dt Delta time in seconds.
+   */
   updateOpacity(dt) {
     this.opacity -= dt * OPACITY_FADE_RATE;
   }
 
+  /**
+   * Updates scale.
+   * Updates the instance state.
+   * @param {number} dt Delta time in seconds.
+   */
   updateScale(dt) {
     this.scaleFactor -= dt * SCALE_SHRINK_RATE;
     if (this.scaleFactor < MIN_SCALE_FACTOR) this.scaleFactor = MIN_SCALE_FACTOR;
   }
 
+  /**
+   * Updates shake.
+   * Updates the instance state.
+   */
   updateShake() {
     if (this.type === "damage") {
       this.shakeOffset = Math.sin(Date.now() * DAMAGE_SHAKE_FREQUENCY) * DAMAGE_SHAKE_AMPLITUDE;
     }
   }
 
+  /**
+   * Clamp opacity.
+   * Updates the instance state.
+   */
   clampOpacity() {
     if (this.opacity < 0) this.opacity = 0;
   }
 
+  /**
+   * Draws.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   */
   draw(ctx, camera) {
     if (this.opacity <= 0) return;
     ctx.save();
@@ -76,16 +119,36 @@ export class HudPopup {
     ctx.restore();
   }
 
+  /**
+   * Applies opacity.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   */
   applyOpacity(ctx) {
     ctx.globalAlpha = this.opacity;
   }
 
+  /**
+   * Returns screen position.
+   * Updates the instance state.
+   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @returns {Object} Screen position.
+   */
   getScreenPosition(camera) {
     const screenX = this.x - camera.x + this.shakeOffset;
     const screenY = this.y - camera.y - this.riseOffset;
     return { screenX, screenY };
   }
 
+  /**
+   * Applies transform.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {number} screenX Screen X.
+   * @param {number} screenY Screen Y.
+   */
   applyTransform(ctx, screenX, screenY) {
     ctx.translate(screenX, screenY);
     ctx.scale(this.scaleFactor, this.scaleFactor);
@@ -93,6 +156,12 @@ export class HudPopup {
     ctx.lineWidth = LINE_WIDTH;
   }
 
+  /**
+   * Applies text style.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   */
   applyTextStyle(ctx) {
     const style = POPUP_STYLES[this.type] ?? POPUP_STYLES.coin;
     ctx.font = `${style.fontSize} ComixLoud`;
@@ -100,6 +169,12 @@ export class HudPopup {
     ctx.fillStyle = style.fill;
   }
 
+  /**
+   * Draws text.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   */
   drawText(ctx) {
     ctx.strokeText(this.text, 0, 0);
     ctx.fillText(this.text, 0, 0);

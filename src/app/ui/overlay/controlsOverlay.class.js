@@ -25,6 +25,12 @@ const BACK_BUTTON_SPRITE = { x: 713, y: 660, w: 200, h: 200 };
 const BACK_BUTTON_SHADOW = { color: "rgba(0, 0, 0, 0.45)", blur: 10, offsetX: 0, offsetY: 3 };
 
 export class ControlsOverlay {
+  /**
+   * Creates a new instance. If omitted, default values are used.
+   * Uses options to perform the operation.
+   * @param {Object} [options] Configuration options.
+   * @param {HTMLElement} [options.showBackButton] Show back button.
+   */
   constructor({ showBackButton = true } = {}) {
     this.renderer = new OverlayRenderer();
     this.assets = { bgImage: null, uiImage: null };
@@ -36,15 +42,32 @@ export class ControlsOverlay {
     this.showBackButton = showBackButton;
   }
 
+  /**
+   * Sets assets.
+   * Uses options to perform the operation.
+   * @param {Object} options Configuration options.
+   * @param {HTMLImageElement} [options.bgImage] Bg image.
+   * @param {HTMLImageElement} [options.uiImage] Ui image.
+   */
   setAssets({ bgImage, uiImage }) {
     this.assets = { bgImage, uiImage };
   }
 
+  /**
+   * Sets pointer.
+   * Updates the instance state.
+   * @param {number} x X.
+   * @param {number} y Y.
+   */
   setPointer(x, y) {
     this.pointer = x == null || y == null ? null : { x, y };
     this.renderer.setPointer(x, y);
   }
 
+  /**
+   * Clears pointer.
+   * Updates the instance state.
+   */
   clearPointer() {
     this.pointer = null;
     this.backButtonHover = false;
@@ -52,10 +75,24 @@ export class ControlsOverlay {
     this.renderer.clearPointer();
   }
 
+  /**
+   * Handles close button click.
+   * Updates the instance state.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @returns {*} Result value.
+   */
   handleCloseButtonClick(x, y) {
     return this.renderer.handleCloseButtonClick(x, y);
   }
 
+  /**
+   * Handles back click.
+   * Updates the instance state.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @returns {*} Result value.
+   */
   handleBackClick(x, y) {
     if (!this.showBackButton) return false;
     if (!this.backButtonBounds) return false;
@@ -63,10 +100,23 @@ export class ControlsOverlay {
     return x >= boundsX && x <= boundsX + w && y >= boundsY && y <= boundsY + h;
   }
 
+  /**
+   * Is hovering.
+   * Updates the instance state.
+   * @returns {boolean} Whether hovering.
+   */
   isHovering() {
     return this.renderer.isHovering() || (this.showBackButton && this.backButtonHover);
   }
 
+  /**
+   * Starts render.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @returns {*} Result value.
+   */
   startRender(ctx, canvas) {
     ctx.save();
     const panelRect = this.renderer.renderPanel(ctx, {
@@ -81,10 +131,24 @@ export class ControlsOverlay {
     return panelRect;
   }
 
+  /**
+   * Returns title Y.
+   * Uses options to compute the result.
+   * @param {Object} options Configuration options.
+   * @param {number} [options.y] Y.
+   * @param {number} [options.height] Height.
+   */
   getTitleY({ y, height }) {
     return y + height * TITLE_BASELINE_RATIO + TITLE_OFFSET_Y;
   }
 
+  /**
+   * Returns list layout.
+   * Uses canvas, titleY to compute the result.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {number} titleY Title Y.
+   * @returns {Object} List layout.
+   */
   getListLayout(canvas, titleY) {
     const canvasCenterX = canvas.width / 2;
     const listStartY = titleY + LIST_START_OFFSET;
@@ -95,12 +159,27 @@ export class ControlsOverlay {
     return { canvasCenterX, listStartY, lineHeight, labelX, colonX, valueX };
   }
 
+  /**
+   * Draws title.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {number} titleY Title Y.
+   */
   drawTitle(ctx, canvas, titleY) {
     const canvasCenterX = canvas.width / 2;
     this.renderer.applyTitleStyle(ctx, canvas.width);
     ctx.fillText("Controls", canvasCenterX, titleY);
   }
 
+  /**
+   * Draws controls list.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   * @param {*} layout Layout.
+   */
   drawControlsList(ctx, canvas, layout) {
     this.renderer.applyBodyStyle(ctx, canvas.width);
     this.controls.forEach((item, index) => {
@@ -108,6 +187,19 @@ export class ControlsOverlay {
     });
   }
 
+  /**
+   * Draws control row.
+   * Uses ctx, item, index, options to perform the operation.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {*} item Item.
+   * @param {number} index Index.
+   * @param {Object} options Configuration options.
+   * @param {number} [options.listStartY] List start Y.
+   * @param {number} [options.lineHeight] Line height.
+   * @param {number} [options.labelX] Label X.
+   * @param {number} [options.colonX] Colon X.
+   * @param {number} [options.valueX] Value X.
+   */
   drawControlRow(ctx, item, index, { listStartY, lineHeight, labelX, colonX, valueX }) {
     const itemYPosition = listStartY + index * lineHeight;
     ctx.textAlign = "right";
@@ -118,12 +210,25 @@ export class ControlsOverlay {
     ctx.fillText(item.value, valueX, itemYPosition);
   }
 
+  /**
+   * Draws back button if needed.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLElement} panelRect Panel rect.
+   */
   drawBackButtonIfNeeded(ctx, panelRect) {
     if (this.assets.uiImage?.naturalWidth && this.showBackButton) {
       this.drawBackButton(ctx, panelRect);
     }
   }
 
+  /**
+   * Renders.
+   * Renders to the canvas context.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLCanvasElement} canvas Target canvas.
+   */
   render(ctx, canvas) {
     const panelRect = this.startRender(ctx, canvas);
     if (!panelRect) return;
@@ -135,6 +240,10 @@ export class ControlsOverlay {
     ctx.restore();
   }
 
+  /**
+   * Returns back button options.
+   * @returns {Object} Back button options.
+   */
   getBackButtonOptions() {
     return {
       targetSize: BACK_BUTTON_TARGET_SIZE,
@@ -145,6 +254,15 @@ export class ControlsOverlay {
     };
   }
 
+  /**
+   * Returns back button args.
+   * Uses ctx, options to compute the result.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {Object} options Configuration options.
+   * @param {number} [options.x] X.
+   * @param {number} [options.y] Y.
+   * @param {number} [options.height] Height.
+   */
   getBackButtonArgs(ctx, { x, y, height }) {
     return {
       ctx,
@@ -158,11 +276,24 @@ export class ControlsOverlay {
     };
   }
 
+  /**
+   * Updates back button state.
+   * Uses options to perform the operation.
+   * @param {Object} options Configuration options.
+   * @param {*} [options.bounds] Bounds.
+   * @param {boolean} [options.isHover] Whether hover.
+   */
   updateBackButtonState({ bounds, isHover }) {
     this.backButtonHover = isHover;
     this.backButtonBounds = bounds;
   }
 
+  /**
+   * Draws back button.
+   * Updates the instance state.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {HTMLElement} panelRect Panel rect.
+   */
   drawBackButton(ctx, panelRect) {
     const renderState = renderBackButton(this.getBackButtonArgs(ctx, panelRect));
     this.updateBackButtonState(renderState);

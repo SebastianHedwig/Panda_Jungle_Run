@@ -9,6 +9,15 @@ const DEBUG_BOSS_HITBOX = DEBUG_MODE;
 const bossAudio = new BossAudio();
 
 export class Boss extends EnemyBase {
+  /**
+   * Creates a new instance. If omitted, default values are used.
+   * Advances animation state and sprites.
+   * Updates the instance state.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {*} sprites Sprites.
+   * @param {import("../../../core/world.class.js").World} [world] World instance.
+   */
   constructor(x, y, sprites, world = null) {
     super(x, y, 240, 240, world);
     this.initializeSpriteFrames(sprites);
@@ -21,6 +30,12 @@ export class Boss extends EnemyBase {
     this.initializeAttackConfigurations();
   }
 
+  /**
+   * Initializes sprite frames.
+   * Advances animation state and sprites.
+   * Applies physics updates like gravity and velocity.
+   * @param {*} sprites Sprites.
+   */
   initializeSpriteFrames(sprites) {
     this.idleFrames = sprites.idle;
     this.walkFrames = sprites.walk || sprites.run || sprites.idle;
@@ -32,6 +47,11 @@ export class Boss extends EnemyBase {
     this.jumpFrames = sprites.jump || sprites.run;
   }
 
+  /**
+   * Initializes animation state.
+   * Advances animation state and sprites.
+   * Updates the instance state.
+   */
   initializeAnimationState() {
     this.currentAnimation = this.idleFrames;
     this.currentFrame = 0;
@@ -40,6 +60,10 @@ export class Boss extends EnemyBase {
     this.sprite = this.currentAnimation[0];
   }
 
+  /**
+   * Initializes base stats.
+   * Updates the instance state.
+   */
   initializeBaseStats() {
     this.speed = BOSS_SPEED;
     this.runSpeed = BOSS_RUN_SPEED;
@@ -53,12 +77,20 @@ export class Boss extends EnemyBase {
     this.blinkTimer = 0;
   }
 
+  /**
+   * Initializes combat state.
+   * Updates the instance state.
+   */
   initializeCombatState() {
     this.isAttacking = false;
     this.attackDuration = 1;
     this.attackTimer = 0;
   }
 
+  /**
+   * Initializes range settings.
+   * Updates the instance state.
+   */
   initializeRangeSettings() {
     this.attackRange = 100;
     this.attack1StrikeRange = 60;
@@ -70,6 +102,10 @@ export class Boss extends EnemyBase {
     this.chaseRangeYExit = 250;
   }
 
+  /**
+   * Initializes attack settings.
+   * Updates the instance state.
+   */
   initializeAttackSettings() {
     this.attack1Damage = BOSS_ATTACK1_DAMAGE;
     this.attack2Damage = BOSS_ATTACK2_DAMAGE;
@@ -84,6 +120,11 @@ export class Boss extends EnemyBase {
     this.attack2CooldownDuration = 3;
   }
 
+  /**
+   * Initializes behavior state.
+   * Advances animation state and sprites.
+   * Applies physics updates like gravity and velocity.
+   */
   initializeBehaviorState() {
     Object.assign(this, {
       activeAttackRange: null, activeHeightTolerance: null, lastAttackType: null, runningBurstDuration: 2,
@@ -96,10 +137,20 @@ export class Boss extends EnemyBase {
     });
   }
 
+  /**
+   * Initializes attack configurations.
+   * Updates the instance state.
+   */
   initializeAttackConfigurations() {
     this.attacks = createBossAttacks(this);
   }
 
+  /**
+   * Sets animation.
+   * Advances animation state and sprites.
+   * Updates the instance state.
+   * @param {*} frames Frames.
+   */
   setAnimation(frames) {
     if (!frames || this.currentAnimation === frames) return;
     this.currentAnimation = frames;
@@ -108,6 +159,12 @@ export class Boss extends EnemyBase {
     this.sprite = this.currentAnimation[0];
   }
 
+  /**
+   * Animate.
+   * Advances animation state and sprites.
+   * Updates the instance state.
+   * @param {number} dt Delta time in seconds.
+   */
   animate(dt) {
     this.frameTime += dt;
     if (this.frameTime >= this.frameSpeed) {
@@ -119,16 +176,37 @@ export class Boss extends EnemyBase {
     }
   }
 
+  /**
+   * Starts configured attack. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {*} dx Dx.
+   * @param {*} frames Frames.
+   * @param {number} damage Damage.
+   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @param {number} [moveSpeed] Move speed.
+   * @param {number} [rangeOverride] Range override.
+   * @param {number} [heightOverride] Height override.
+   */
   startConfiguredAttack(dx, frames, damage, player, moveSpeed = 0, rangeOverride = null, heightOverride = null) {
     this.activeAttackRange = rangeOverride ?? this.attackRange;
     this.activeHeightTolerance = heightOverride ?? this.attackHeightTolerance;
     super.startMeleeAttack(dx, frames, damage, player, moveSpeed);
   }
 
+  /**
+   * Initiate attack.
+   * Updates the instance state.
+   * @param {...*} args Args.
+   * @returns {*} Result value.
+   */
   initiateAttack(...args) {
     return this.startConfiguredAttack(...args);
   }
 
+  /**
+   * Patrol.
+   * Updates the instance state.
+   */
   patrol() {
     const minX = this.movementMinX;
     const maxX = this.movementMaxX;
@@ -137,6 +215,16 @@ export class Boss extends EnemyBase {
     this.facing = this.patrolDirection;
   }
 
+  /**
+   * Adjust for edges.
+   * Updates the instance state.
+   * @param {*} moveDirection Move direction.
+   * @param {number} dt Delta time in seconds.
+   * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+   * @param {Function} onLowestPlatform On lowest platform.
+   * @param {*} fromChasing From chasing.
+   * @returns {*} Result value.
+   */
   adjustForEdges(moveDirection, dt, platform, onLowestPlatform, fromChasing) {
     if (Number.isFinite(this.movementMinX) && Number.isFinite(this.movementMaxX)) {
       return moveDirection;
@@ -144,6 +232,13 @@ export class Boss extends EnemyBase {
     return super.adjustForEdges(moveDirection, dt, platform, onLowestPlatform, fromChasing);
   }
 
+  /**
+   * Try start attack.
+   * Updates the instance state.
+   * @param {import("../player/player.class.js").Player} playerInfo Player info.
+   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @returns {*} Result value.
+   */
   tryStartAttack(playerInfo, player) {
     if (!canAttemptBossAttack(playerInfo, player)) return false;
     const deltaX = playerInfo.deltaX;
@@ -156,11 +251,22 @@ export class Boss extends EnemyBase {
     return this.runAttack(choice, deltaX, player, playerInfo);
   }
 
+  /**
+   * Pick boss attack.
+   * Introduces randomness into the outcome.
+   * @returns {*} Result value.
+   */
   pickBossAttack() {
     const attack2Probability = 0.5;
     return Math.random() < attack2Probability ? "attack2" : "attack1";
   }
 
+  /**
+   * Returns available attacks.
+   * Updates the instance state.
+   * @param {number} absoluteDeltaX Absolute delta X.
+   * @returns {Object} Available attacks.
+   */
   getAvailableAttacks(absoluteDeltaX) {
     const attack1 = this.attacks.attack1;
     const attack2 = this.attacks.attack2;
@@ -176,6 +282,14 @@ export class Boss extends EnemyBase {
     return { canAttack1, canAttack2 };
   }
 
+  /**
+   * Run attack.
+   * Updates the instance state.
+   * @param {string} attackId Attack element id.
+   * @param {number} deltaX Delta X.
+   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @returns {*} Result value.
+   */
   runAttack(attackId, deltaX, player) {
     if (!attackId) return false;
     const attackConfiguration = this.attacks[attackId];
@@ -186,10 +300,21 @@ export class Boss extends EnemyBase {
     return true;
   }
 
+  /**
+   * Updates.
+   * Uses dt, player to perform the operation.
+   * @param {number} dt Delta time in seconds.
+   * @param {import("../player/player.class.js").Player} player Player instance.
+   */
   update(dt, player) {
     updateBoss(this, dt, player);
   }
 
+  /**
+   * Updates run state.
+   * Updates the instance state.
+   * @returns {*} Result value.
+   */
   updateRunState() {
     if (!this.isChasing) return resetBossRunState(this);
     if (this.runningBurstTimer > 0) return setBossRunning(this, true);
@@ -197,6 +322,13 @@ export class Boss extends EnemyBase {
     setBossRunning(this, false);
   }
 
+  /**
+   * Try deal attack damage. If omitted, default values are used.
+   * Updates the player state.
+   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @param {*} [popupDelay] Popup delay.
+   * @returns {*} Result value.
+   */
   tryDealAttackDamage(player, popupDelay = 0) {
     if (!canBossDealAttackDamage(this, player)) return false;
     const attackContext = getBossAttackContext(this, player);
@@ -207,12 +339,24 @@ export class Boss extends EnemyBase {
     return true;
   }
 
+  /**
+   * Take damage. If omitted, default values are used.
+   * Uses amount, hitContext to perform the operation.
+   * @param {number} [amount] Amount.
+   * @param {*} [hitContext] Hit context.
+   */
   takeDamage(amount = 1, hitContext = {}) {
     const prevDead = this.isDead;
     super.takeDamage?.(amount, { ...hitContext, skipStun: true });
     handleBossDamageResult(this, prevDead);
   }
 
+  /**
+   * Returns hitbox.
+   * Performs hitbox or collision checks.
+   * Updates the instance state.
+   * @returns {Object} Hitbox.
+   */
   getHitbox() {
     if (this.isDead || this.health <= 0) {
       return { x: 0, y: 0, width: 0, height: 0 };
@@ -227,15 +371,34 @@ export class Boss extends EnemyBase {
     };
   }
 
+  /**
+   * Renders.
+   * Uses ctx, camera to perform the operation.
+   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+   * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+   */
   render(ctx, camera) {
     renderBoss(this, ctx, camera, { debugHitbox: DEBUG_BOSS_HITBOX });
   }
 }
 
+/**
+ * Creates boss attacks.
+ * Uses boss to compute the result.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @returns {Object} Boss attacks.
+ */
 function createBossAttacks(boss) {
   return { attack1: createBossAttack1(boss), attack2: createBossAttack2(boss) };
 }
 
+/**
+ * Creates boss attack 1.
+ * Triggers audio playback or updates audio state.
+ * Updates the boss state.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @returns {Object} Boss attack 1.
+ */
 function createBossAttack1(boss) {
   return {
     frames: boss.attack1Frames,
@@ -252,6 +415,13 @@ function createBossAttack1(boss) {
   };
 }
 
+/**
+ * Creates boss attack 2.
+ * Triggers audio playback or updates audio state.
+ * Updates the boss state.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @returns {Object} Boss attack 2.
+ */
 function createBossAttack2(boss) {
   return {
     frames: boss.attack2Frames,
@@ -268,16 +438,38 @@ function createBossAttack2(boss) {
   };
 }
 
+/**
+ * Can attempt boss attack.
+ * Updates the player state.
+ * @param {import("../player/player.class.js").Player} playerInfo Player info.
+ * @param {import("../player/player.class.js").Player} player Player instance.
+ * @returns {boolean} Whether attempt boss attack.
+ */
 function canAttemptBossAttack(playerInfo, player) {
   return !!playerInfo && !!player && !player.isDead;
 }
 
+/**
+ * Can use boss height.
+ * Updates the boss state.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {number} absoluteDeltaY Absolute delta Y.
+ * @returns {boolean} Whether use boss height.
+ */
 function canUseBossHeight(boss, absoluteDeltaY) {
   const extraHeightTolerance = 30;
   const canUseHeight = absoluteDeltaY <= boss.attackHeightTolerance + extraHeightTolerance;
   return canUseHeight;
 }
 
+/**
+ * Select boss attack.
+ * Updates the boss state.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {boolean} canAttack1 Whether attack 1.
+ * @param {boolean} canAttack2 Whether attack 2.
+ * @returns {*} Result value.
+ */
 function selectBossAttack(boss, canAttack1, canAttack2) {
   let choice = null;
   if (canAttack1 && canAttack2) choice = boss.pickBossAttack();
@@ -286,11 +478,26 @@ function selectBossAttack(boss, canAttack1, canAttack2) {
   return choice;
 }
 
+/**
+ * Returns boss attack height tolerance.
+ * Updates the boss state.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {*} attackConfiguration Attack configuration.
+ * @returns {*} Boss attack height tolerance.
+ */
 function getBossAttackHeightTolerance(boss, attackConfiguration) {
   const heightTolerance = boss.attackHeightTolerance + (attackConfiguration.heightAdd || 0);
   return heightTolerance;
 }
 
+/**
+ * Configure boss attack.
+ * Updates the boss state.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {*} attackConfiguration Attack configuration.
+ * @param {number} heightTolerance Height tolerance.
+ * @param {string} attackId Attack element id.
+ */
 function configureBossAttack(boss, attackConfiguration, heightTolerance, attackId) {
   boss.attackDuration = attackConfiguration.duration;
   boss.activeAttackRange = attackConfiguration.range ?? boss.attackRange;
@@ -300,29 +507,66 @@ function configureBossAttack(boss, attackConfiguration, heightTolerance, attackI
   boss.lastAttackType = attackId;
 }
 
+/**
+ * Resets boss run state.
+ * Updates the boss state.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ */
 function resetBossRunState(boss) {
   boss.isRunning = false;
   boss.runningBurstTimer = 0;
 }
 
+/**
+ * Sets boss running.
+ * Updates the boss state.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {boolean} isRunning Whether running.
+ */
 function setBossRunning(boss, isRunning) {
   boss.isRunning = isRunning;
 }
 
+/**
+ * Should start running burst.
+ * Updates the boss state.
+ * Introduces randomness into the outcome.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @returns {boolean} Whether start running burst.
+ */
 function shouldStartRunningBurst(boss) {
   return boss.runningCooldown <= 0 && Math.random() < boss.runningBurstChance;
 }
 
+/**
+ * Starts boss running burst.
+ * Updates the boss state.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ */
 function startBossRunningBurst(boss) {
   boss.runningBurstTimer = boss.runningBurstDuration;
   boss.runningCooldown = boss.runningCooldownDuration;
   boss.isRunning = true;
 }
 
+/**
+ * Can boss deal attack damage.
+ * Updates the player state.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {import("../player/player.class.js").Player} player Player instance.
+ * @returns {boolean} Whether boss deal attack damage.
+ */
 function canBossDealAttackDamage(boss, player) {
   return !!player && !player.isDead && !boss.isDead && !boss.hasHitDuringAttack;
 }
 
+/**
+ * Returns boss attack context.
+ * Updates the player state.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {import("../player/player.class.js").Player} player Player instance.
+ * @returns {Object} Boss attack context.
+ */
 function getBossAttackContext(boss, player) {
   const bossCenterX = boss.x + boss.width / 2;
   const bossCenterY = boss.y + boss.height / 2;
@@ -336,6 +580,13 @@ function getBossAttackContext(boss, player) {
   return { deltaX, absoluteDeltaY, facingMatches, attackRange, attackHeightTolerance };
 }
 
+/**
+ * Is boss attack contact valid.
+ * Updates the player state.
+ * @param {*} attackContext Attack context.
+ * @param {import("../player/player.class.js").Player} player Player instance.
+ * @returns {boolean} Whether boss attack contact valid.
+ */
 function isBossAttackContactValid(attackContext, player) {
   if (!attackContext.facingMatches) return false;
   if (Math.abs(attackContext.deltaX) > attackContext.attackRange) return false;
@@ -343,6 +594,14 @@ function isBossAttackContactValid(attackContext, player) {
   return player.invulnerableTimer <= 0;
 }
 
+/**
+ * Applies boss attack damage.
+ * Triggers audio playback or updates audio state.
+ * Updates the player state.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {*} popupDelay Popup delay.
+ */
 function applyBossAttackDamage(boss, player, popupDelay) {
   const dmg = boss.attackDamageCurrent ?? boss.damage;
   player.takeDamage?.(dmg, { popupDelay });
@@ -350,12 +609,24 @@ function applyBossAttackDamage(boss, player, popupDelay) {
   applyPlayerInvulnerability(player);
 }
 
+/**
+ * Applies player invulnerability.
+ * Updates the player state.
+ * @param {import("../player/player.class.js").Player} player Player instance.
+ */
 function applyPlayerInvulnerability(player) {
   if (typeof player.invulnerableTimer === "number") {
     player.invulnerableTimer = Math.max(player.invulnerableTimer, PLAYER_HURT_IMMUNITY_TIME);
   }
 }
 
+/**
+ * Handles boss damage result.
+ * Triggers audio playback or updates audio state.
+ * Advances animation state and sprites.
+ * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {boolean} prevDead Prev dead.
+ */
 function handleBossDamageResult(boss, prevDead) {
   if (!prevDead && boss.isDead) {
     boss.deathTimer = Math.max(boss.deathTimer, boss.deathTimerMin);

@@ -3,6 +3,10 @@ import { EnemyBase } from "./enemyBase.class.js";
 import { ENEMY2_ATTACK1_DAMAGE, ENEMY2_ATTACK2_DAMAGE, ENEMY2_HEALTH, ENEMY2_SPEED, ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY2_COIN_DROP_COUNT } from "../../../config/config.js";
 import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
+/**
+ * Loads enemy 2 sprites.
+ * @returns {Object} Result value.
+ */
 export function loadEnemy2Sprites() {
   const base = "assets/img/Enemies/Enemy_Sprites/Character-2/";
   return {
@@ -15,11 +19,26 @@ export function loadEnemy2Sprites() {
 }
 
 export class Enemy2 extends Enemy1 {
+  /**
+   * Creates a new instance. If omitted, default values are used.
+   * Advances animation state and sprites.
+   * Updates the instance state.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {*} sprites Sprites.
+   * @param {import("../../../core/world.class.js").World} [world] World instance.
+   */
   constructor(x, y, sprites, world = null) {
     super(x, y, buildEnemy2SpriteSet(sprites), world, ENEMY_WIDTH, ENEMY_HEIGHT);
     this.initializeEnemy2State(sprites);
   }
 
+  /**
+   * Initializes enemy 2 state.
+   * Advances animation state and sprites.
+   * Updates the instance state.
+   * @param {*} sprites Sprites.
+   */
   initializeEnemy2State(sprites) {
     this.runFrames = sprites.run;
     this.walkFrames = sprites.run;
@@ -32,6 +51,14 @@ export class Enemy2 extends Enemy1 {
     this.hasDroppedLoot = false;
   }
 
+  /**
+   * Try start attack.
+   * Updates the player state.
+   * Introduces randomness into the outcome.
+   * @param {import("../player/player.class.js").Player} playerInfo Player info.
+   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @returns {*} Result value.
+   */
   tryStartAttack(playerInfo, player) {
     if (!playerInfo || !player || player.isDead) return false;
     const deltaX = playerInfo.deltaX;
@@ -47,6 +74,12 @@ export class Enemy2 extends Enemy1 {
     return false;
   }
 
+  /**
+   * Take damage. If omitted, default values are used.
+   * Uses amount, hitContext to perform the operation.
+   * @param {number} [amount] Amount.
+   * @param {*} [hitContext] Hit context.
+   */
   takeDamage(amount = 1, hitContext = {}) {
     const wasDead = this.isDead;
     EnemyBase.prototype.takeDamage.call(this, amount, hitContext);
@@ -57,6 +90,12 @@ export class Enemy2 extends Enemy1 {
   }
 }
 
+/**
+ * Builds enemy 2 sprite set.
+ * Advances animation state and sprites.
+ * @param {*} sprites Sprites.
+ * @returns {Object} Enemy 2 sprite set.
+ */
 function buildEnemy2SpriteSet(sprites) {
   return { ...sprites, walk: sprites.run, attack: sprites.attack1 };
 }

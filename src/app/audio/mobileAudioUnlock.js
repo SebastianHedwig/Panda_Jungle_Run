@@ -1,21 +1,54 @@
+/**
+ * Resolve unlock events. If omitted, default values are used.
+ * Uses options to perform the operation.
+ * @param {Object} [options] Configuration options.
+ * @returns {*} Result value.
+ */
 const resolveUnlockEvents = (options = {}) =>
   Array.isArray(options.events) ? options.events : ["pointerdown", "touchstart", "keydown"];
 
+/**
+ * Restore audio state.
+ * Triggers audio playback or updates audio state.
+ * @param {HTMLAudioElement} audio Audio element.
+ * @param {boolean} prevMuted Prev muted.
+ * @param {number} prevVolume Prev volume.
+ */
 const restoreAudioState = (audio, prevMuted, prevVolume) => {
   audio.muted = prevMuted;
   audio.volume = prevVolume;
 };
 
+/**
+ * Resets audio.
+ * Triggers audio playback or updates audio state.
+ * @param {HTMLAudioElement} audio Audio element.
+ */
 const resetAudio = (audio) => {
   audio.pause();
   audio.currentTime = 0;
 };
 
+/**
+ * Finalize priming.
+ * Uses audio, prevMuted, prevVolume to perform the operation.
+ * @param {HTMLAudioElement} audio Audio element.
+ * @param {boolean} prevMuted Prev muted.
+ * @param {number} prevVolume Prev volume.
+ */
 const finalizePriming = (audio, prevMuted, prevVolume) => {
   resetAudio(audio);
   restoreAudioState(audio, prevMuted, prevVolume);
 };
 
+/**
+ * Handles prime promise.
+ * Uses playPromise, audio, prevMuted, prevVolume to perform the operation.
+ * @param {*} playPromise Play promise.
+ * @param {HTMLAudioElement} audio Audio element.
+ * @param {boolean} prevMuted Prev muted.
+ * @param {number} prevVolume Prev volume.
+ */
 const handlePrimePromise = (playPromise, audio, prevMuted, prevVolume) => {
   if (!playPromise?.then) {
     finalizePriming(audio, prevMuted, prevVolume);
@@ -27,6 +60,11 @@ const handlePrimePromise = (playPromise, audio, prevMuted, prevVolume) => {
     .finally(() => restoreAudioState(audio, prevMuted, prevVolume));
 };
 
+/**
+ * Prime audio.
+ * Triggers audio playback or updates audio state.
+ * @param {HTMLAudioElement} audio Audio element.
+ */
 const primeAudio = (audio) => {
   if (!audio) return;
   const prevMuted = audio.muted;
@@ -41,6 +79,12 @@ const primeAudio = (audio) => {
   }
 };
 
+/**
+ * Collect audio candidates.
+ * Uses audioGetters to perform the operation.
+ * @param {*} audioGetters Audio getters.
+ * @returns {*} Result value.
+ */
 const collectAudioCandidates = (audioGetters) => {
   const audios = [];
   audioGetters.forEach((getter) => {
@@ -53,6 +97,16 @@ const collectAudioCandidates = (audioGetters) => {
   return audios;
 };
 
+/**
+ * Creates unlock.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.audioGetters] Audio getters.
+ * @param {*} [options.primeAudio] Prime audio.
+ * @param {*} [options.unbind] Unbind.
+ * @param {*} [options.getUnlocked] Get unlocked.
+ * @param {*} [options.setUnlocked] Set unlocked.
+ */
 const createUnlock = ({ audioGetters, primeAudio, unbind, getUnlocked, setUnlocked }) => {
   return () => {
     if (getUnlocked()) return;
@@ -63,6 +117,16 @@ const createUnlock = ({ audioGetters, primeAudio, unbind, getUnlocked, setUnlock
   };
 };
 
+/**
+ * Creates bind.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.events] Events.
+ * @param {Function} [options.handler] Handler.
+ * @param {*} [options.getBound] Get bound.
+ * @param {*} [options.getUnlocked] Get unlocked.
+ * @param {*} [options.setBound] Set bound.
+ */
 const createBind = ({ events, handler, getBound, getUnlocked, setBound }) => {
   return () => {
     if (getBound() || getUnlocked()) return;
@@ -74,6 +138,15 @@ const createBind = ({ events, handler, getBound, getUnlocked, setBound }) => {
   };
 };
 
+/**
+ * Creates unbind.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.events] Events.
+ * @param {Function} [options.handler] Handler.
+ * @param {*} [options.getBound] Get bound.
+ * @param {*} [options.setBound] Set bound.
+ */
 const createUnbind = ({ events, handler, getBound, setBound }) => {
   return () => {
     if (!getBound()) return;
@@ -84,6 +157,12 @@ const createUnbind = ({ events, handler, getBound, setBound }) => {
   };
 };
 
+/**
+ * Creates add audios.
+ * Uses audioGetters to compute the result.
+ * @param {*} audioGetters Audio getters.
+ * @returns {*} Add audios.
+ */
 const createAddAudios = (audioGetters) => {
   return (...items) => {
     items.flat().forEach((item) => {
@@ -97,6 +176,16 @@ const createAddAudios = (audioGetters) => {
   };
 };
 
+/**
+ * Creates mobile audio api.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.addAudios] Add audios.
+ * @param {*} [options.bind] Bind.
+ * @param {*} [options.unlock] Unlock.
+ * @param {*} [options.getUnlocked] Get unlocked.
+ * @returns {*} Mobile audio api.
+ */
 const createMobileAudioApi = ({ addAudios, bind, unlock, getUnlocked }) => ({
   addAudios,
   bind,
@@ -104,8 +193,26 @@ const createMobileAudioApi = ({ addAudios, bind, unlock, getUnlocked }) => ({
   isUnlocked: () => getUnlocked(),
 });
 
+/**
+ * Creates mobile audio handlers.
+ * Uses options to compute the result.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.events] Events.
+ * @param {*} [options.audioGetters] Audio getters.
+ * @param {*} [options.getUnlocked] Get unlocked.
+ * @param {*} [options.setUnlocked] Set unlocked.
+ * @param {*} [options.getBound] Get bound.
+ * @param {*} [options.setBound] Set bound.
+ */
 const createMobileAudioHandlers = ({ events, audioGetters, getUnlocked, setUnlocked, getBound, setBound }) => {
+  /**
+   * Unlock.
+   */
   let unlock = () => {};
+  /**
+   * Handler.
+   * @returns {*} Result value.
+   */
   const handler = () => unlock();
   const unbind = createUnbind({ events, handler, getBound, setBound });
   unlock = createUnlock({ audioGetters, primeAudio, unbind, getUnlocked, setUnlocked });
@@ -114,6 +221,11 @@ const createMobileAudioHandlers = ({ events, audioGetters, getUnlocked, setUnloc
   return createMobileAudioApi({ addAudios, bind, unlock, getUnlocked });
 };
 
+/**
+ * Creates mobile audio unlock. If omitted, default values are used.
+ * Uses options to compute the result.
+ * @param {Object} [options] Configuration options.
+ */
 export function createMobileAudioUnlock(options = {}) {
   const events = resolveUnlockEvents(options);
   const audioGetters = new Set();

@@ -3,6 +3,10 @@ import { EnemyBase } from "./enemyBase.class.js";
 import { ENEMY3_ATTACK1_DAMAGE, ENEMY3_ATTACK2_DAMAGE, ENEMY3_HEALTH, ENEMY3_SLIDE_DAMAGE, ENEMY3_COIN_DROP_COUNT, ENEMY3_GUN_DROP_COUNT, ENEMY3_SPEED, ENEMY3_SLIDE_SPEED, ENEMY_WIDTH, ENEMY_HEIGHT } from "../../../config/config.js";
 import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
+/**
+ * Loads enemy 3 sprites.
+ * @returns {Object} Result value.
+ */
 export function loadEnemy3Sprites() {
   const base = "assets/img/Enemies/Enemy_Sprites/Character-3/";
   return {
@@ -16,11 +20,26 @@ export function loadEnemy3Sprites() {
 }
 
 export class Enemy3 extends Enemy2 {
+  /**
+   * Creates a new instance. If omitted, default values are used.
+   * Advances animation state and sprites.
+   * Updates the instance state.
+   * @param {number} x X.
+   * @param {number} y Y.
+   * @param {*} sprites Sprites.
+   * @param {import("../../../core/world.class.js").World} [world] World instance.
+   */
   constructor(x, y, sprites, world = null) {
     super(x, y, buildEnemy3SpriteSet(sprites), world, ENEMY_WIDTH, ENEMY_HEIGHT);
     this.initializeEnemy3State(sprites);
   }
 
+  /**
+   * Initializes enemy 3 state.
+   * Advances animation state and sprites.
+   * Updates the instance state.
+   * @param {*} sprites Sprites.
+   */
   initializeEnemy3State(sprites) {
     this.initializeEnemy3Frames(sprites);
     this.initializeEnemy3Damage();
@@ -31,6 +50,12 @@ export class Enemy3 extends Enemy2 {
     this.hasDroppedLoot = false;
   }
 
+  /**
+   * Initializes enemy 3 frames.
+   * Advances animation state and sprites.
+   * Updates the instance state.
+   * @param {*} sprites Sprites.
+   */
   initializeEnemy3Frames(sprites) {
     this.runFrames = sprites.run;
     this.walkFrames = sprites.run;
@@ -39,6 +64,10 @@ export class Enemy3 extends Enemy2 {
     this.slideFrames = sprites.slide;
   }
 
+  /**
+   * Initializes enemy 3 damage.
+   * Updates the instance state.
+   */
   initializeEnemy3Damage() {
     this.attack1Damage = ENEMY3_ATTACK1_DAMAGE;
     this.attack2Damage = ENEMY3_ATTACK2_DAMAGE;
@@ -47,11 +76,21 @@ export class Enemy3 extends Enemy2 {
     this.slideHeightTolerance = this.attackHeightTolerance + 10;
   }
 
+  /**
+   * Initializes enemy 3 movement.
+   * Updates the instance state.
+   */
   initializeEnemy3Movement() {
     this.speed = ENEMY3_SPEED;
     this.slideSpeed = ENEMY3_SLIDE_SPEED;
   }
 
+  /**
+   * Updates.
+   * Updates the instance state.
+   * @param {number} dt Delta time in seconds.
+   * @param {import("../player/player.class.js").Player} player Player instance.
+   */
   update(dt, player) {
     if (this.slideCooldown > 0) {
       this.slideCooldown = Math.max(0, this.slideCooldown - dt);
@@ -64,11 +103,25 @@ export class Enemy3 extends Enemy2 {
     super.update(dt, player);
   }
 
+  /**
+   * Try start attack.
+   * Updates the instance state.
+   * @param {import("../player/player.class.js").Player} playerInfo Player info.
+   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @returns {*} Result value.
+   */
   tryStartAttack(playerInfo, player) {
     if (this.canStartSlideAttack(playerInfo, player)) return this.startSlideAttack(playerInfo, player);
     return super.tryStartAttack(playerInfo, player);
   }
 
+  /**
+   * Can start slide attack.
+   * Updates the player state.
+   * @param {import("../player/player.class.js").Player} playerInfo Player info.
+   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @returns {boolean} Whether start slide attack.
+   */
   canStartSlideAttack(playerInfo, player) {
     if (!playerInfo || !player || player.isDead) return false;
     const deltaX = playerInfo.deltaX;
@@ -80,6 +133,13 @@ export class Enemy3 extends Enemy2 {
       this.slideCooldown <= 0;
   }
 
+  /**
+   * Starts slide attack.
+   * Updates the instance state.
+   * @param {import("../player/player.class.js").Player} playerInfo Player info.
+   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @returns {*} Result value.
+   */
   startSlideAttack(playerInfo, player) {
     const deltaX = playerInfo.deltaX;
     const frames = this.slideFrames || this.attack2Frames || this.attack1Frames;
@@ -88,6 +148,12 @@ export class Enemy3 extends Enemy2 {
     return true;
   }
 
+  /**
+   * Take damage. If omitted, default values are used.
+   * Uses amount, hitContext to perform the operation.
+   * @param {number} [amount] Amount.
+   * @param {*} [hitContext] Hit context.
+   */
   takeDamage(amount = 1, hitContext = {}) {
     const wasDead = this.isDead;
     EnemyBase.prototype.takeDamage.call(this, amount, hitContext);
@@ -98,11 +164,22 @@ export class Enemy3 extends Enemy2 {
     }
   }
 
+  /**
+   * Drop gun. If omitted, default values are used.
+   * Updates the instance state.
+   * @param {number} [count] Count.
+   */
   dropGun(count = ENEMY3_GUN_DROP_COUNT) {
     this.dropCollectables("gun", count);
   }
 }
 
+/**
+ * Builds enemy 3 sprite set.
+ * Advances animation state and sprites.
+ * @param {*} sprites Sprites.
+ * @returns {Object} Enemy 3 sprite set.
+ */
 function buildEnemy3SpriteSet(sprites) {
   return { ...sprites, walk: sprites.run, attack: sprites.attack1 };
 }

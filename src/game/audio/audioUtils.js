@@ -1,3 +1,10 @@
+/**
+ * Clone or restart. If omitted, default values are used.
+ * Uses cachedBaseAudioInstance, options to perform the operation.
+ * @param {*} cachedBaseAudioInstance Cached base audio instance.
+ * @param {Object} [options] Configuration options.
+ * @param {number} [options.volume }] Volume.
+ */
 export function cloneOrRestart(cachedBaseAudioInstance, { volume } = {}) {
   if (!cachedBaseAudioInstance) return null;
   let audio = cachedBaseAudioInstance;
@@ -12,6 +19,17 @@ export function cloneOrRestart(cachedBaseAudioInstance, { volume } = {}) {
   return audio;
 }
 
+/**
+ * Creates audio element. If omitted, default values are used.
+ * Uses src, options to compute the result.
+ * @param {string} src Source URL.
+ * @param {Object} [options] Configuration options.
+ * @param {boolean} [options.loop] Loop.
+ * @param {number} [options.volume] Volume.
+ * @param {*} [options.preload] Preload.
+ * @param {*} [options.autoplay] Autoplay.
+ * @param {number} [options.playbackRate }] Playback rate.
+ */
 export function createAudioElement(
   src,
   { loop = false, volume = 1, preload = "auto", autoplay = false, playbackRate } = {}
@@ -25,11 +43,24 @@ export function createAudioElement(
   return audioElement;
 }
 
+/**
+ * Adds metadata listener if needed.
+ * Binds loadedmetadata event listeners.
+ * @param {HTMLAudioElement} audio Audio element.
+ * @param {Function} onMetadata On metadata.
+ */
 function addMetadataListenerIfNeeded(audio, onMetadata) {
   if (typeof onMetadata !== "function") return;
   audio.addEventListener("loadedmetadata", onMetadata, { once: true });
 }
 
+/**
+ * Creates start audio handler.
+ * Triggers audio playback or updates audio state.
+ * @param {HTMLAudioElement} audio Audio element.
+ * @param {*} beforePlay Before play.
+ * @returns {*} Start audio handler.
+ */
 function createStartAudioHandler(audio, beforePlay) {
   return () => {
     beforePlay?.();
@@ -37,6 +68,12 @@ function createStartAudioHandler(audio, beforePlay) {
   };
 }
 
+/**
+ * Starts audio when ready.
+ * Binds canplaythrough, loadeddata event listeners.
+ * @param {HTMLAudioElement} audio Audio element.
+ * @param {Function} startAudio Start audio.
+ */
 function startAudioWhenReady(audio, startAudio) {
   if (audio.readyState >= 2) { // readyState >= 2 => HAVE_CURRENT_DATA, can start immediately
     startAudio();
@@ -47,6 +84,14 @@ function startAudioWhenReady(audio, startAudio) {
   audio.load();
 }
 
+/**
+ * Plays when ready. If omitted, default values are used.
+ * Uses audio, options to perform the operation.
+ * @param {HTMLAudioElement} audio Audio element.
+ * @param {Object} [options] Configuration options.
+ * @param {*} [options.beforePlay] Before play.
+ * @param {Function} [options.onMetadata }] On metadata.
+ */
 export function playWhenReady(audio, { beforePlay, onMetadata } = {}) {
   if (!audio) return;
   addMetadataListenerIfNeeded(audio, onMetadata);
