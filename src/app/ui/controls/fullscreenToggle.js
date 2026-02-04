@@ -81,7 +81,7 @@ export function setupFullscreenToggle({
   bindToggleClick({ toggle, gameContainer, enterFullscreen, exitFullscreen });
   bindFullscreenChange({ gameContainer, updateUi });
   updateUi(false);
-}
+};
 
 const getAutoFullscreenElements = ({ containerId, toggleContainerSelector }) => ({
   container: document.getElementById(containerId),
@@ -93,6 +93,7 @@ const getAutoFullscreenState = ({ enabled, maxWidth, maxHeight }) =>
 
 const applyAutoFullscreenState = ({ container, toggleContainer, shouldFill }) => {
   container.classList.toggle("auto-fullscreen", shouldFill);
+  document.body?.classList.toggle("auto-fullscreen-active", shouldFill);
   if (toggleContainer) {
     toggleContainer.classList.toggle("hide-fullscreen-toggle", shouldFill);
   }
@@ -105,11 +106,12 @@ export function applyAutoFullscreen({
   enabled = true,
   toggleContainerSelector = ".hud-container-right",
 }) {
-  const { container, toggleContainer } = getAutoFullscreenElements({
-    containerId,
-    toggleContainerSelector,
-  });
+  updateAutoFullscreenState({ containerId, toggleContainerSelector,  enabled,  maxWidth, maxHeight });
+};
+
+const updateAutoFullscreenState = ({ containerId, toggleContainerSelector, enabled, maxWidth, maxHeight }) => {
+  const { container, toggleContainer } = getAutoFullscreenElements({ containerId, toggleContainerSelector });
   if (!container) return;
   const shouldFill = getAutoFullscreenState({ enabled, maxWidth, maxHeight });
   applyAutoFullscreenState({ container, toggleContainer, shouldFill });
-}
+};

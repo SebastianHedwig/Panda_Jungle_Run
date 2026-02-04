@@ -1,4 +1,4 @@
-import { setOverlayActive } from "./startScreenUtils.js";
+import { setOverlayActive, setLegalScreenActive } from "./startScreenUtils.js";
 
 const getCanvasPoint = (canvas, event) => {
   const rect = canvas.getBoundingClientRect();
@@ -18,6 +18,7 @@ const getLegalReturnHit = ({ state, x, y }) => isPointInsideBounds({ x, y, bound
 const closeLegalPage = ({ state, canvas, drawStartScreen }) => {
   state.legalPage = null;
   setOverlayActive(false);
+  setLegalScreenActive(false);
   canvas.style.cursor = "default";
   state.legalReturnBounds = null;
   state.legalReturnHover = false;
@@ -72,6 +73,7 @@ const resetSettingsToggleUI = ({ settingsLabel, defaultSettingsLabel, settingsIc
 
 const applyStartScreenExitEffects = ({ canvas, stopMenuMusic, mobileAudioUnlock, onStart }) => {
   setOverlayActive(false);
+  setLegalScreenActive(false);
   document.body?.classList.remove("start-screen-active");
   canvas.style.cursor = "default";
   stopMenuMusic();
@@ -158,6 +160,7 @@ const closeLegalOnEscape = ({ state, event, drawStartScreen }) => {
   event.stopImmediatePropagation();
   state.legalPage = null;
   setOverlayActive(false);
+  setLegalScreenActive(false);
   drawStartScreen();
 };
 

@@ -109,7 +109,7 @@
 .overlay-active .hud-container,
 .start-screen-active .mobile-control-container,
 .hide-fullscreen-toggle,
-.overlay-active .legal-links {
+.overlay-active .legal-footer-stack {
   display: none !important;
 }
 
@@ -213,12 +213,22 @@
   }
 }
 
-.legal-links {
+.legal-footer-stack {
   position: absolute;
-  bottom: clamp(0.6rem, 2vw, 1rem);
+  bottom: clamp(0.5rem, 2vw, 1rem);
   left: 0;
   right: 0;
   display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 1;
+  pointer-events: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.legal-links {
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: clamp(0.4rem, 2vw, 0.8rem);
@@ -227,11 +237,48 @@
   font-weight: 700;
   font-size: clamp(0.7rem, 3vw, 1rem);
   width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
-  z-index: 1;
-  pointer-events: none;
-  -webkit-tap-highlight-color: transparent;
+}
+
+.footer-inline {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  text-align: center;
+}
+
+.footer-inline,
+.footer-inline a {
+  color: rgb(255, 255, 255);
+  font-size: clamp(0.8rem, 1.2vw + 0.6rem, 1rem);
+  font-weight: 500;
+  text-decoration: none;
+  text-shadow: 0.2rem 0.05rem 0.8rem rgba(0, 0, 0, 0.8);
+}
+
+.footer-inline a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.1rem;
+}
+
+.footer-inline a {
+  pointer-events: auto;
+}
+
+body.auto-fullscreen-active .footer-inline {
+  display: flex;
+}
+
+@media (max-width: 520px) {
+  .footer-inline,
+  .footer-inline a {
+    font-size: clamp(0.55rem, 2.6vw, 0.85rem);
+  }
+
+  .footer-inline .asset-links,
+  .footer-inline .asset-links a {
+    font-size: clamp(0.5rem, 2.3vw, 0.75rem);
+  }
 }
 
 .separator {
@@ -250,8 +297,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.start-screen-active .legal-links {
+.start-screen-active .legal-footer-stack {
   display: flex;
+}
+
+body.legal-screen-active .footer-inline {
+  display: none;
 }
 
 .start-screen-active .impressum:hover,

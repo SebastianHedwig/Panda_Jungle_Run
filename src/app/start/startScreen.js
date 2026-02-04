@@ -5,7 +5,7 @@ import { ControlsOverlay } from "../ui/overlay/controlsOverlay.class.js";
 import { ControlsOverlayMobile } from "../ui/overlay/controlsOverlayMobile.class.js";
 import { renderImpressumScreen } from "./impressumScreen.js";
 import { renderPrivacyPolicyScreen } from "./privacyPolicyScreen.js";
-import { loadFont, loadStartImage, setOverlayActive } from "./startScreenUtils.js";
+import { loadFont, loadStartImage, setOverlayActive, setLegalScreenActive } from "./startScreenUtils.js";
 import { createStartScreenHandlers } from "./startScreenHandler.js";
 
 const AUTOSTART_KEY = "panda_autostart";
@@ -30,7 +30,7 @@ const START_BUTTON_SPRITE = { x: 525, y: 130, w: 360, h: 135 };
 const START_BUTTON_MAX_WIDTH = 260;
 const START_BUTTON_WIDTH_RATIO = 0.28;
 const START_BUTTON_BASE_Y_RATIO = 0.32;
-const START_BUTTON_Y_OFFSET = 170;
+const START_BUTTON_Y_OFFSET = 138;
 const START_BUTTON_HOVER_SCALE = 1.2;
 const BUTTON_SHADOW_COLOR = "rgba(255,255,255,0.7)";
 const BUTTON_SHADOW_BLUR = 14;
@@ -303,6 +303,7 @@ const applyLegalPageState = ({ startScreenState, page }) => {
 const createShowLegalPage = ({ canvas, startScreenState, drawStartScreen }) => (page) => {
   applyLegalPageState({ startScreenState, page });
   setOverlayActive(false);
+  setLegalScreenActive(true);
   canvas.style.cursor = "pointer";
   drawStartScreen();
 };

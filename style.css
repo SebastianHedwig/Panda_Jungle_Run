@@ -93,4 +93,8 @@ footer a:hover {
 .asset-links,
 .asset-links a {
   font-size: clamp(0.6rem, 1.2vw + 0.6rem, 1rem);
-};
+}
+
+body.auto-fullscreen-active footer {
+  display: none;
+}

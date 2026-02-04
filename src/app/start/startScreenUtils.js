@@ -4,6 +4,10 @@ export const setOverlayActive = (active) => {
   document.body?.classList.toggle("overlay-active", active);
 };
 
+export const setLegalScreenActive = (active) => {
+  document.body?.classList.toggle("legal-screen-active", active);
+};
+
 export const loadStartImage = (src) =>
   waitForImage(loadImage(src)).then(({ ok, img }) => {
     if (!ok) throw new Error(`Failed to load ${src}`);
