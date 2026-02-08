@@ -1,13 +1,17 @@
+import { consumeNextStartScreenAction } from "./startScreen.utils.js";
+
 /**
  * Creates legal link handler.
  * Uses page, showLegalPage to compute the result.
  * @param {*} page Page.
  * @param {*} showLegalPage Show legal page.
+ * @param {Object} state Start screen state.
  * @returns {*} Legal link handler.
  */
-export const createLegalLinkHandler = (page, showLegalPage) => (event) => {
+export const createLegalLinkHandler = (page, showLegalPage, state) => (event) => {
   event.preventDefault();
   event.stopPropagation();
+  if (consumeNextStartScreenAction(state)) return;
   showLegalPage(page);
 };
 
@@ -55,10 +59,11 @@ export const bindSettingsEvents = ({ settingsToggle, handleSettingsClick, handle
  * @param {*} [options.impressumLink] Impressum link.
  * @param {*} [options.privacyPolicyLink] Privacy policy link.
  * @param {*} [options.showLegalPage] Show legal page.
+ * @param {Object} [options.state] Start screen state.
  */
-export const bindLegalLinkEvents = ({ impressumLink, privacyPolicyLink, showLegalPage }) => {
-  const handleImpressumClick = createLegalLinkHandler("impressum", showLegalPage);
-  const handlePrivacyClick = createLegalLinkHandler("privacy", showLegalPage);
+export const bindLegalLinkEvents = ({ impressumLink, privacyPolicyLink, showLegalPage, state }) => {
+  const handleImpressumClick = createLegalLinkHandler("impressum", showLegalPage, state);
+  const handlePrivacyClick = createLegalLinkHandler("privacy", showLegalPage, state);
   impressumLink?.addEventListener("click", handleImpressumClick);
   privacyPolicyLink?.addEventListener("click", handlePrivacyClick);
 };

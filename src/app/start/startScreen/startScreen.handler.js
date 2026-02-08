@@ -1,4 +1,4 @@
-import { setOverlayActive } from "./startScreen.utils.js";
+import { consumeNextStartScreenAction, setOverlayActive } from "./startScreen.utils.js";
 import {
   getCanvasPoint,
   handleLegalClick,
@@ -23,6 +23,7 @@ import {
  */
 const createHandleCanvasClick = (dependencies, handlerRefs) => (event) => {
   if (!dependencies.state.startScreenActive) return;
+  if (consumeNextStartScreenAction(dependencies.state)) return;
   const { x, y } = getCanvasPoint(dependencies.canvas, event);
   if (handleLegalClick({ ...dependencies, x, y })) return;
   if (handleSettingsOverlayClick({ ...dependencies, x, y })) return;
@@ -66,6 +67,7 @@ const createHandleSettingsClick = (dependencies) => (event) => {
   if (!dependencies.state.startScreenActive) return;
   event?.preventDefault();
   event?.stopImmediatePropagation();
+  if (consumeNextStartScreenAction(dependencies.state)) return;
   dependencies.state.settingsOpen = !dependencies.state.settingsOpen;
   dependencies.state.startButtonHover = false;
   const overlay = dependencies.getActiveControlsOverlay();

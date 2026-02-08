@@ -51,5 +51,5 @@ export function setupStartScreen({ canvasId = "game", onStart }) {
   const startScreenDependencies = createStartScreenDependencies({ startScreenContext, drawStartScreen, showLegalPage, onStart });
   const handlers = createStartScreenHandlers(startScreenDependencies);
   loadAndRenderStartAssets({ startScreenState: startScreenContext.startScreenState, drawStartScreen });
-  bindStartScreenEvents({ ...handlers, ...startScreenContext, showLegalPage, impressumLink, privacyPolicyLink });
+  bindStartScreenEvents({ ...handlers, ...startScreenContext, state: startScreenContext.startScreenState, showLegalPage, impressumLink, privacyPolicyLink });
 }

@@ -19,6 +19,28 @@ export const setLegalScreenActive = (active) => {
 };
 
 /**
+ * Marks next start screen action consumed.
+ * Uses state to perform the operation.
+ * @param {Object} state Start screen state.
+ */
+export const markNextStartScreenActionConsumed = (state) => {
+  if (!state) return;
+  state.consumeNextAction = true;
+};
+
+/**
+ * Consumes next start screen action.
+ * Uses state to perform the operation.
+ * @param {Object} state Start screen state.
+ * @returns {boolean} Whether action consumed.
+ */
+export const consumeNextStartScreenAction = (state) => {
+  if (!state?.consumeNextAction) return false;
+  state.consumeNextAction = false;
+  return true;
+};
+
+/**
  * Loads start image.
  * Uses src to perform the operation.
  * @param {string} src Source URL.

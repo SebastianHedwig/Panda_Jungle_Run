@@ -3,6 +3,7 @@ import { startMusicController } from "../../audio/webAudioUnlock.js";
 import { ControlsOverlay } from "../../ui/overlay/controls/controlsOverlay.class.js";
 import { ControlsOverlayMobile } from "../../ui/overlay/controls/mobileControlsOverlay.class.js";
 import { AUTOSTART_KEY, SETTINGS_ICON_DEFAULT_SRC, SETTINGS_ICON_CONTROLLER_SRC } from "./startScreen.js";
+import { markNextStartScreenActionConsumed } from "./startScreen.utils.js";
 
 /**
  * Returns canvas and context.
@@ -127,15 +128,6 @@ const MENU_MUSIC_START_EVENTS = ["pointerdown", "touchstart", "keydown"];
 const forEachMenuMusicStartEvent = (callback) => MENU_MUSIC_START_EVENTS.forEach(callback);
 
 /**
- * Returns menu music event target.
- * Uses eventName, canvas to compute the result.
- * @param {string} eventName Event name.
- * @param {HTMLCanvasElement} canvas Target canvas.
- * @returns {EventTarget} Event target.
- */
-const getMenuMusicEventTarget = (eventName, canvas) => (eventName === "keydown" ? window : canvas);
-
-/**
  * Returns menu music event options.
  * Uses eventName to compute the result.
  * @param {string} eventName Event name.
@@ -147,23 +139,21 @@ const getMenuMusicEventOptions = (eventName) => (eventName === "touchstart" ? { 
  * Binds menu music event.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
- * @param {HTMLCanvasElement} [options.canvas] Target canvas.
  * @param {string} [options.eventName] Event name.
  * @param {Function} [options.handler] Handler.
  */
-const bindMenuMusicEvent = ({ canvas, eventName, handler }) =>
-  getMenuMusicEventTarget(eventName, canvas).addEventListener(eventName, handler, getMenuMusicEventOptions(eventName));
+const bindMenuMusicEvent = ({ eventName, handler }) =>
+  window.addEventListener(eventName, handler, getMenuMusicEventOptions(eventName));
 
 /**
  * Unbinds menu music event.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
- * @param {HTMLCanvasElement} [options.canvas] Target canvas.
  * @param {string} [options.eventName] Event name.
  * @param {Function} [options.handler] Handler.
  */
-const unbindMenuMusicEvent = ({ canvas, eventName, handler }) =>
-  getMenuMusicEventTarget(eventName, canvas).removeEventListener(eventName, handler);
+const unbindMenuMusicEvent = ({ eventName, handler }) =>
+  window.removeEventListener(eventName, handler);
 
 /**
  * Creates menu music start handler.
@@ -172,52 +162,51 @@ const unbindMenuMusicEvent = ({ canvas, eventName, handler }) =>
  * @param {Function} [options.startMenuMusic] Start menu music.
  * @param {Function} [options.cleanup] Cleanup.
  * @param {Object} [options.startedRef] Started ref.
+ * @param {Object} [options.state] Start screen state.
  * @returns {Function} Menu music start handler.
  */
-const createMenuMusicStartHandler = ({ startMenuMusic, cleanup, startedRef }) => () => {
+const createMenuMusicStartHandler = ({ startMenuMusic, cleanup, startedRef, state }) => () => {
   if (startedRef.started) return;
   startedRef.started = true;
   cleanup();
   startMenuMusic();
+  markNextStartScreenActionConsumed(state);
 };
 
 /**
  * Binds menu music start to first user interaction.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
- * @param {HTMLCanvasElement} [options.canvas] Target canvas.
  * @param {Function} [options.startMenuMusic] Start menu music.
+ * @param {Object} [options.state] Start screen state.
  */
-export const bindMenuMusicStartOnFirstInteraction = ({ canvas, startMenuMusic }) => {
-  if (!canvas || typeof startMenuMusic !== "function") return;
+export const bindMenuMusicStartOnFirstInteraction = ({ startMenuMusic, state }) => {
+  if (typeof startMenuMusic !== "function") return;
   const startedRef = { started: false };
   let handler = () => {};
-  const cleanup = () => forEachMenuMusicStartEvent((eventName) => unbindMenuMusicEvent({ canvas, eventName, handler }));
-  handler = createMenuMusicStartHandler({ startMenuMusic, cleanup, startedRef });
-  forEachMenuMusicStartEvent((eventName) => bindMenuMusicEvent({ canvas, eventName, handler }));
+  const cleanup = () => forEachMenuMusicStartEvent((eventName) => unbindMenuMusicEvent({ eventName, handler }));
+  handler = createMenuMusicStartHandler({ startMenuMusic, cleanup, startedRef, state });
+  forEachMenuMusicStartEvent((eventName) => bindMenuMusicEvent({ eventName, handler }));
 };
 
 /**
  * Initializes menu music.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
- * @param {HTMLCanvasElement} [options.canvas] Target canvas.
  * @param {Function} [options.startMenuMusic] Start menu music.
+ * @param {Object} [options.state] Start screen state.
  */
-const initMenuMusic = ({ canvas, startMenuMusic }) => {
+const initMenuMusic = ({ startMenuMusic, state }) => {
   if (isAutoFullscreenActive()) {
-    bindMenuMusicStartOnFirstInteraction({ canvas, startMenuMusic });
+    bindMenuMusicStartOnFirstInteraction({ startMenuMusic, state });
     return;
   }
   startMenuMusic();
 };
 
-/**
- * Creates start screen state.
- * @returns {*} Start screen state.
- */
-export const createStartScreenState = () => ({
+const START_SCREEN_STATE_TEMPLATE = {
   startScreenActive: true,
+  consumeNextAction: false,
   startButtonBounds: null,
   startButtonHover: false,
   settingsOpen: false,
@@ -229,7 +218,13 @@ export const createStartScreenState = () => ({
   touchScrollStartY: null,
   impressumLinkBounds: null,
   legalReturnBounds: null,
-});
+};
+
+/**
+ * Creates start screen state.
+ * @returns {Object} Start screen state.
+ */
+export const createStartScreenState = () => ({ ...START_SCREEN_STATE_TEMPLATE });
 
 /**
  * Builds start screen context.
@@ -248,7 +243,7 @@ export const buildStartScreenContext = ({ canvasId, onStart }) => {
   const getActiveControlsOverlay = createActiveControlsOverlayGetter(overlays);
   const startScreenState = createStartScreenState();
   const { start: startMenuMusic, stop: stopMenuMusic } = startMusicController;
-  initMenuMusic({ canvas: canvasContext.canvas, startMenuMusic });
+  initMenuMusic({ startMenuMusic, state: startScreenState });
   return { ...canvasContext, onStart, ...settingsContext, ...overlays, getActiveControlsOverlay, startScreenState, stopMenuMusic };
 };
 
