@@ -39,8 +39,19 @@ const handlePlaySuccess = ({ audio, volume, getGlobalMuted, clearUnlockHandlers 
  */
 const handlePlayFailure = ({ audio, volume, getGlobalMuted, bindUnlock }) => {
   applyAudioSettings({ audio, volume, getGlobalMuted });
-  bindUnlock(() => audio.play());
+  bindUnlock(() => safePlayAudio(audio));
   return false;
+};
+
+/**
+ * Safely plays audio.
+ * Uses audio to perform the operation.
+ * @param {HTMLAudioElement} audio Audio element.
+ */
+const safePlayAudio = (audio) => {
+  if (!audio?.play) return;
+  const playPromise = audio.play();
+  if (playPromise?.catch) playPromise.catch(() => {});
 };
 
 /**
@@ -178,7 +189,7 @@ const createStart = ({ src, getAudio, setAudio, getGlobalMuted, tryPlay, bindUnl
     const audio = ensureAudioInitialized({ audio: getAudio(), src, getGlobalMuted });
     setAudio(audio);
     startPlaybackWhenReady({ audio, tryPlay });
-    bindUnlock(() => audio.play());
+    bindUnlock(() => safePlayAudio(audio));
     return audio;
   };
 };
