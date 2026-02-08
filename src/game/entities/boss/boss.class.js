@@ -347,7 +347,7 @@ export class Boss extends EnemyBase {
   tryDealAttackDamage(player, popupDelay = 0) {
     if (!canBossDealAttackDamage(this, player)) return false;
     const attackContext = getBossAttackContext(this, player);
-    if (!isBossAttackContactValid(this, attackContext, player)) return false;
+    if (!isBossAttackContactValid(attackContext, player)) return false;
     if (player.isSliding) return false;
     applyBossAttackDamage(this, player, popupDelay);
     this.hasHitDuringAttack = true;
