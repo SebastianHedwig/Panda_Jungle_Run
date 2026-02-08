@@ -1,12 +1,28 @@
 import { MovableObject } from "../../../engine/physics/movableObject.class.js";
 import { HudPopup } from "../../effects/hudPopup.class.js";
-import { DEBUG_MODE, BASE_SPEED, PLAYER_MAX_HEARTS, PLAYER_SLIDE_DAMAGE, FACING_LEFT, FACING_RIGHT } from "../../../config/config.js";
+import { DEBUG_MODE } from "../../../config/config.js";
 import { PlayerAudio } from "../../audio/playerAudio/playerAudio.class.js";
-import { updatePlayer } from "./playerUpdate.js";
-import { renderPlayer } from "./playerRender.js";
-import { applyDizzy, handleDeathLanding, handleFallOffWorld, respawnFromFall, startDeath, startHurt, updateHurt } from "./playerHealth.js";
-import { startAttack, startShoot, updateAttack, updateShoot } from "./playerCombat.js";
-import { handleLandingAudio, startSlide } from "./playerSlide.js";
+import { updatePlayer } from "./player.update.js";
+import { renderPlayer } from "./player.render.js";
+import { applyDizzy, handleDeathLanding, handleFallOffWorld, respawnFromFall, startDeath, startHurt, updateHurt } from "./player.health.js";
+import { startAttack, startShoot, updateAttack, updateShoot } from "./player.combat.js";
+import { handleLandingAudio, startSlide } from "./player.slide.js";
+import { setAnimation, animate } from "./player.animation.js";
+import {
+  initializeAnimationSets,
+  initializeAnimationState,
+  initializeMovement,
+  initializeSlide,
+  initializeAttack,
+  initializeShoot,
+  initializeHurtDeath,
+  initializeHurtState,
+  initializeDeathState,
+  initializeAdvancedJump,
+  initializeFacing,
+  initializeHeartSystem,
+  initializeCoins,
+} from "./player.init.js";
 
 const DEBUG_HITBOX = DEBUG_MODE;
 const playerAudio = new PlayerAudio();
@@ -43,147 +59,6 @@ export class Player extends MovableObject {
     this.initializeFacing();
     this.initializeHeartSystem();
     this.initializeCoins();
-  }
-
-  /**
-   * Initializes animation sets.
-   * Uses frames to perform the operation.
-   * @param {*} frames Frames.
-   */
-  initializeAnimationSets(frames) {
-    Object.assign(this, frames);
-  }
-
-  /**
-   * Initializes animation state.
-   * Advances animation state and sprites.
-   * Updates the instance state.
-   */
-  initializeAnimationState() {
-    this.currentAnimation = this.idleFrames;
-    this.currentFrame = 0;
-    this.frameTime = 0;
-    this.frameSpeed = 0.065;
-    this.sprite = this.currentAnimation[0];
-  }
-
-  /**
-   * Initializes movement.
-   * Updates the instance state.
-   */
-  initializeMovement() {
-    this.defaultSpeed = BASE_SPEED;
-    this.runMultiplier = 2;
-  }
-
-  /**
-   * Initializes slide.
-   * Updates the instance state.
-   */
-  initializeSlide() {
-    Object.assign(this, {
-      isSliding: false, slideReady: true, slideDistance: 200, slideStartX: 0,
-      slideDirection: 1, slideSpeed: this.defaultSpeed * 2, slideBlockGrace: 0,
-      slideHitEnemies: new Set(), slideDamage: PLAYER_SLIDE_DAMAGE,
-      slideInvulnerableAfter: 1, slideInvulnerableDuring: 0.2,
-      wasSlidingPreviousFrame: false, slideInvulWindow: 0,
-    });
-  }
-
-  /**
-   * Initializes attack.
-   */
-  initializeAttack() {
-    Object.assign(this, {
-      isAttacking: false, attackDuration: 0.4, attackTimer: 0, attackHitDone: false,
-      attackRange: 70, attackHeightTolerance: 15, attackQueued: false,
-    });
-  }
-
-  /**
-   * Initializes shoot.
-   */
-  initializeShoot() {
-    Object.assign(this, {
-      isShooting: false, shootDuration: 0.35, shootTimer: 0, shootCooldown: 0,
-      shootCooldownDuration: 1.35, shootFireDelay: 0.3, shootFireTimer: 0,
-      shootHasFired: false, shootFacing: 1, bulletAmmo: 0, gunPulse: 0,
-    });
-  }
-
-  /**
-   * Initializes hurt death.
-   * Updates the instance state.
-   * Initializes hurt state, death state.
-   * @param {number} x X.
-   * @param {number} y Y.
-   */
-  initializeHurtDeath(x, y) {
-    this.initializeHurtState();
-    this.initializeDeathState(x, y);
-  }
-
-  /**
-   * Initializes hurt state.
-   */
-  initializeHurtState() {
-    Object.assign(this, {
-      isHurt: false, hurtDuration: 0.5, hurtTimer: 0, hurtUseDizzy: true,
-      hurtPhase: null, hurtPhaseTimer: 0, invulnerableTimer: 0,
-      invulnerableBlinkInterval: 0.15, invulnerableBlinkWindow: 0.6,
-    });
-  }
-
-  /**
-   * Initializes death state.
-   * Performs hitbox or collision checks.
-   * @param {number} x X.
-   * @param {number} y Y.
-   */
-  initializeDeathState(x, y) {
-    Object.assign(this, {
-      isDead: false, lastSafePosX: x, lastSafePosY: y, collisionDisabled: false,
-      deathSoundPlayed: false, onDeath: null,
-    });
-  }
-
-  /**
-   * Initializes advanced jump.
-   * Applies physics updates like gravity and velocity.
-   */
-  initializeAdvancedJump() {
-    Object.assign(this, {
-      coyoteTime: 0.1, coyoteTimer: 0, jumpBufferTime: 0.1, jumpBufferTimer: 0,
-      jumpCutMultiplier: 0.5, jumpHeld: false, justLanded: false, landedOnPlatform: false,
-    });
-  }
-
-  /**
-   * Initializes facing.
-   * Updates the instance state.
-   */
-  initializeFacing() {
-    this.facing = FACING_RIGHT;
-  }
-
-  /**
-   * Initializes heart system.
-   * Updates the instance state.
-   */
-  initializeHeartSystem() {
-    this.maxHearts = PLAYER_MAX_HEARTS;
-    this.healthPoints = this.maxHearts * 2;
-    this.maxHealthPoints = this.healthPoints;
-    this.healthPulse = 0;
-  }
-
-  /**
-   * Initializes coins.
-   * Updates the instance state.
-   */
-  initializeCoins() {
-    this.coins = 0;
-    this.hudPulse = 0;
   }
 
   /**
@@ -426,36 +301,6 @@ export class Player extends MovableObject {
   }
 
   /**
-   * Sets animation.
-   * Advances animation state and sprites.
-   * Updates the instance state.
-   * @param {*} frames Frames.
-   */
-  setAnimation(frames) {
-    if (this.currentAnimation !== frames) {
-      this.currentAnimation = frames;
-      this.currentFrame = 0;
-      this.frameTime = 0;
-      this.sprite = this.currentAnimation[0];
-    }
-  }
-
-  /**
-   * Animate.
-   * Advances animation state and sprites.
-   * Updates the instance state.
-   * @param {number} dt Delta time in seconds.
-   */
-  animate(dt) {
-    this.frameTime += dt;
-    if (this.frameTime >= this.frameSpeed) {
-      this.frameTime = 0;
-      this.currentFrame = (this.currentFrame + 1) % this.currentAnimation.length;
-      this.sprite = this.currentAnimation[this.currentFrame];
-    }
-  }
-
-  /**
    * Starts attack.
    * Triggers audio playback or updates audio state.
    * Updates the instance state.
@@ -551,3 +396,21 @@ export class Player extends MovableObject {
   }
 
 }
+
+Object.assign(Player.prototype, {
+  initializeAnimationSets,
+  initializeAnimationState,
+  initializeMovement,
+  initializeSlide,
+  initializeAttack,
+  initializeShoot,
+  initializeHurtDeath,
+  initializeHurtState,
+  initializeDeathState,
+  initializeAdvancedJump,
+  initializeFacing,
+  initializeHeartSystem,
+  initializeCoins,
+  setAnimation,
+  animate,
+});

@@ -1,7 +1,7 @@
 import { loadFrames, loadImage } from "./assetLoader.js";
-import { loadEnemy1Sprites } from "../../../game/entities/enemies/enemy1.class.js";
-import { loadEnemy2Sprites } from "../../../game/entities/enemies/enemy2.class.js";
-import { loadEnemy3Sprites } from "../../../game/entities/enemies/enemy3.class.js";
+import { loadEnemy1Sprites } from "../../../game/entities/enemies/enemy1/enemy1.class.js";
+import { loadEnemy2Sprites } from "../../../game/entities/enemies/enemy2/enemy2.class.js";
+import { loadEnemy3Sprites } from "../../../game/entities/enemies/enemy3/enemy3.class.js";
 import { loadBossSprites } from "../../../game/entities/boss/boss.class.js";
 
 const PLAYER_FRAME_KEYS = ["idle", "walk", "run", "jump", "slide", "attack", "shoot", "dizzy", "hurt", "die", "hitStars"];
@@ -114,9 +114,9 @@ function collectSpritesByKeys(spriteSet, keys) {
  * Collect enemy images.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
- * @param {import("../../../game/entities/enemies/enemyBase.class.js").EnemyBase} [options.enemy1Sprites] Enemy 1 sprites.
- * @param {import("../../../game/entities/enemies/enemyBase.class.js").EnemyBase} [options.enemy2Sprites] Enemy 2 sprites.
- * @param {import("../../../game/entities/enemies/enemyBase.class.js").EnemyBase} [options.enemy3Sprites] Enemy 3 sprites.
+ * @param {import("../../../game/entities/enemies/base/enemies.base.class.js").EnemyBase} [options.enemy1Sprites] Enemy 1 sprites.
+ * @param {import("../../../game/entities/enemies/base/enemies.base.class.js").EnemyBase} [options.enemy2Sprites] Enemy 2 sprites.
+ * @param {import("../../../game/entities/enemies/base/enemies.base.class.js").EnemyBase} [options.enemy3Sprites] Enemy 3 sprites.
  */
 function collectEnemyImages({ enemy1Sprites, enemy2Sprites, enemy3Sprites }) {
   return [
@@ -133,7 +133,7 @@ function collectEnemyImages({ enemy1Sprites, enemy2Sprites, enemy3Sprites }) {
  * @param {*} [options.bgImages] Bg images.
  * @param {import("../../../engine/world/platform.class.js").Platform} [options.platformSprites] Platform sprites.
  * @param {import("../../../game/entities/player/player.class.js").Player} [options.playerFrames] Player frames.
- * @param {import("../../../game/entities/enemies/enemyBase.class.js").EnemyBase} [options.enemySprites] Enemy sprites.
+ * @param {import("../../../game/entities/enemies/base/enemies.base.class.js").EnemyBase} [options.enemySprites] Enemy sprites.
  * @param {import("../../../game/entities/boss/boss.class.js").Boss} [options.bossSprites] Boss sprites.
  * @param {HTMLImageElement} [options.hudCoinImg] Hud coin img.
  * @param {HTMLImageElement} [options.hudGunImg] Hud gun img.
@@ -171,3 +171,4 @@ export function createGameAssets() {
   const images = buildImageList(assetBundle);
   return { ...assetBundle, images };
 }
+

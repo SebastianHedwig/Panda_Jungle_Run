@@ -1,7 +1,7 @@
-import { Enemy2 } from "./enemy2.class.js";
-import { EnemyBase } from "./enemyBase.class.js";
-import { ENEMY3_ATTACK1_DAMAGE, ENEMY3_ATTACK2_DAMAGE, ENEMY3_HEALTH, ENEMY3_SLIDE_DAMAGE, ENEMY3_COIN_DROP_COUNT, ENEMY3_GUN_DROP_COUNT, ENEMY3_SPEED, ENEMY3_SLIDE_SPEED, ENEMY_WIDTH, ENEMY_HEIGHT } from "../../../config/config.js";
-import { loadFrames } from "../../../core/game/assets/assetLoader.js";
+import { Enemy2 } from "../enemy2/enemy2.class.js";
+import { EnemyBase } from "../base/enemies.base.class.js";
+import { ENEMY3_ATTACK1_DAMAGE, ENEMY3_ATTACK2_DAMAGE, ENEMY3_HEALTH, ENEMY3_SLIDE_DAMAGE, ENEMY3_COIN_DROP_COUNT, ENEMY3_GUN_DROP_COUNT, ENEMY3_SPEED, ENEMY3_SLIDE_SPEED, ENEMY_WIDTH, ENEMY_HEIGHT } from "../../../../config/config.js";
+import { loadFrames } from "../../../../core/game/assets/assetLoader.js";
 
 /**
  * Loads enemy 3 sprites.
@@ -27,7 +27,7 @@ export class Enemy3 extends Enemy2 {
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} sprites Sprites.
-   * @param {import("../../../core/world.class.js").World} [world] World instance.
+   * @param {import("../../../../core/world.class.js").World} [world] World instance.
    */
   constructor(x, y, sprites, world = null) {
     super(x, y, buildEnemy3SpriteSet(sprites), world, ENEMY_WIDTH, ENEMY_HEIGHT);
@@ -89,7 +89,7 @@ export class Enemy3 extends Enemy2 {
    * Updates.
    * Updates the instance state.
    * @param {number} dt Delta time in seconds.
-   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @param {import("../../player/player.class.js").Player} player Player instance.
    */
   update(dt, player) {
     if (this.slideCooldown > 0) {
@@ -106,8 +106,8 @@ export class Enemy3 extends Enemy2 {
   /**
    * Try start attack.
    * Updates the instance state.
-   * @param {import("../player/player.class.js").Player} playerInfo Player info.
-   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @param {import("../../player/player.class.js").Player} playerInfo Player info.
+   * @param {import("../../player/player.class.js").Player} player Player instance.
    * @returns {*} Result value.
    */
   tryStartAttack(playerInfo, player) {
@@ -118,8 +118,8 @@ export class Enemy3 extends Enemy2 {
   /**
    * Can start slide attack.
    * Updates the player state.
-   * @param {import("../player/player.class.js").Player} playerInfo Player info.
-   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @param {import("../../player/player.class.js").Player} playerInfo Player info.
+   * @param {import("../../player/player.class.js").Player} player Player instance.
    * @returns {boolean} Whether start slide attack.
    */
   canStartSlideAttack(playerInfo, player) {
@@ -136,8 +136,8 @@ export class Enemy3 extends Enemy2 {
   /**
    * Starts slide attack.
    * Updates the instance state.
-   * @param {import("../player/player.class.js").Player} playerInfo Player info.
-   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @param {import("../../player/player.class.js").Player} playerInfo Player info.
+   * @param {import("../../player/player.class.js").Player} player Player instance.
    * @returns {*} Result value.
    */
   startSlideAttack(playerInfo, player) {

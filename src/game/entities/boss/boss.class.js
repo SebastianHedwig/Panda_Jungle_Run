@@ -1,4 +1,4 @@
-import { EnemyBase } from "../enemies/enemyBase.class.js";
+import { EnemyBase } from "../enemies/base/enemies.base.class.js";
 import { BOSS_SPEED, BOSS_RUN_SPEED, BOSS_ATTACK1_DAMAGE, BOSS_ATTACK2_DAMAGE, BOSS_DAMAGE, BOSS_HEALTH, DEBUG_MODE, FACING_LEFT, FACING_RIGHT, PLAYER_HURT_IMMUNITY_TIME } from "../../../config/config.js";
 import { BossAudio } from "../../audio/bossAudio/bossAudio.class.js";
 import { updateBoss } from "./bossUpdate.js";

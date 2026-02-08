@@ -1,5 +1,5 @@
 import { Player } from "../../../game/entities/player/player.class.js";
-import { createLevel1Platforms, createLevel1Collectables, generateCoinsMixed, generateCoinArcs, placeHearts, placeGuns, placeEnemiesMixed } from "../../../game/levels/level1.js";
+import { createLevel1Platforms, createLevel1Collectables, generateCoinsMixed, generateCoinArcs, placeHearts, placeGuns, placeEnemiesMixed } from "../../../game/levels/level1/level1.js";
 import { LEVEL1_COIN_COUNT, LEVEL1_COIN_RATIO_ABOVE, LEVEL1_ENEMY1_COUNT, LEVEL1_ENEMY2_COUNT, LEVEL1_ENEMY3_COUNT, LEVEL1_GUN_COUNT, LEVEL1_HEART_COUNT } from "../../../config/config.js";
 import { BossDirector } from "../../../game/directors/bossDirector.class.js";
 import { Hud } from "../../../game/ui/hud.class.js";

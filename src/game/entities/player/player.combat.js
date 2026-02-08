@@ -92,7 +92,7 @@ function tryAttackHit(player, playerAudio) {
  * Is enemy in attack range.
  * Updates the player state.
  * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../enemies/enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
  * @param {number} playerCenterX Player center X.
  * @param {number} playerCenterY Player center Y.
  * @returns {boolean} Whether enemy in attack range.
@@ -114,7 +114,7 @@ function isEnemyInAttackRange(player, enemy, playerCenterX, playerCenterY) {
  * Triggers audio playback or updates audio state.
  * Updates the player state.
  * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../enemies/enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
  * @param {import("./player.class.js").Player} playerAudio Player audio.
  */
 function applyAttackHit(player, enemy, playerAudio) {
@@ -129,7 +129,7 @@ function applyAttackHit(player, enemy, playerAudio) {
  * Updates the player state.
  * Spawns visual feedback effects.
  * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../enemies/enemyBase.class.js").EnemyBase} enemy Enemy instance.
+ * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
  */
 function spawnEnemyHitEffect(player, enemy) {
   if (enemy.isDead || enemy.health <= 0 || enemy.disableHitEffect) return;
@@ -240,3 +240,4 @@ function spawnPlayerBullet(player) {
 function consumeBulletAmmo(player) {
   if (player.bulletAmmo > 0) player.bulletAmmo = Math.max(0, player.bulletAmmo - 1);
 }
+

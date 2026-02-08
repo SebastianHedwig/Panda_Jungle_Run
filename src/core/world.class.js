@@ -1,5 +1,5 @@
 import { WORLD_WIDTH } from "../config/config.js";
-import { Bullet, Explosion } from "../game/entities/bullet.class.js";
+import { Bullet, Explosion } from "../game/entities/gunBullet/bullet.class.js";
 import { DizzyEffect } from "../game/effects/hitEffect.class.js";
 
 export class World {

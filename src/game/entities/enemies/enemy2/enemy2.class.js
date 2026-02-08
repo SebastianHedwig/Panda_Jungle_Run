@@ -1,7 +1,7 @@
-import { Enemy1 } from "./enemy1.class.js";
-import { EnemyBase } from "./enemyBase.class.js";
-import { ENEMY2_ATTACK1_DAMAGE, ENEMY2_ATTACK2_DAMAGE, ENEMY2_HEALTH, ENEMY2_SPEED, ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY2_COIN_DROP_COUNT } from "../../../config/config.js";
-import { loadFrames } from "../../../core/game/assets/assetLoader.js";
+import { Enemy1 } from "../enemy1/enemy1.class.js";
+import { EnemyBase } from "../base/enemies.base.class.js";
+import { ENEMY2_ATTACK1_DAMAGE, ENEMY2_ATTACK2_DAMAGE, ENEMY2_HEALTH, ENEMY2_SPEED, ENEMY_WIDTH, ENEMY_HEIGHT, ENEMY2_COIN_DROP_COUNT } from "../../../../config/config.js";
+import { loadFrames } from "../../../../core/game/assets/assetLoader.js";
 
 /**
  * Loads enemy 2 sprites.
@@ -26,7 +26,7 @@ export class Enemy2 extends Enemy1 {
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} sprites Sprites.
-   * @param {import("../../../core/world.class.js").World} [world] World instance.
+   * @param {import("../../../../core/world.class.js").World} [world] World instance.
    */
   constructor(x, y, sprites, world = null) {
     super(x, y, buildEnemy2SpriteSet(sprites), world, ENEMY_WIDTH, ENEMY_HEIGHT);
@@ -55,8 +55,8 @@ export class Enemy2 extends Enemy1 {
    * Try start attack.
    * Updates the player state.
    * Introduces randomness into the outcome.
-   * @param {import("../player/player.class.js").Player} playerInfo Player info.
-   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @param {import("../../player/player.class.js").Player} playerInfo Player info.
+   * @param {import("../../player/player.class.js").Player} player Player instance.
    * @returns {*} Result value.
    */
   tryStartAttack(playerInfo, player) {

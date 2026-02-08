@@ -1,15 +1,8 @@
-import { HudPopup } from "../effects/hudPopup.class.js";
-import { CollectablesAudio } from "../audio/collectablesAudio.class.js";
 import { loadImage } from "../../core/game/assets/assetLoader.js";
+import { applyItemTransform, applyOpacity, draw, drawItemImage, getCenterPosition, getCurrentImage, getScreenPosition, paintItemImage } from "./collectableItem.render.js";
+import { collect, collectCoin, collectGun, collectHeart, handleCollectByType, isColliding, resetPickupFx, startPickupAnimation } from "./collectableItem.collect.js";
 
-const collectablesAudio = new CollectablesAudio();
-
-export const COLLECTABLE_VALUES = {
-  coin: 10,
-  enemy: 5,
-  heart: 2,
-  gun: 0,
-};
+export { COLLECTABLE_VALUES } from "./collectableItem.collect.js";
 
 const ITEM_SIZE = 50;
 const DEFAULT_GRAVITY = 1800;
@@ -22,7 +15,6 @@ const PICKUP_FADE_SPEED = 3;
 const PICKUP_ROTATE_SPEED = 6;
 const DROP_DAMPING = 0.4;
 const FALLBACK_GROUND = 1000;
-const GUN_BULLETS_GRANT = 5;
 
 const ASSET_MAP = {
   coin: [
@@ -323,222 +315,23 @@ export class CollectableItem {
     this.dropPhysics = false;
   }
 
-  /**
-   * Draws.
-   * Renders to the canvas context.
-   * Updates the instance state.
-   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
-   */
-  draw(ctx, camera) {
-    if (!this.images.length || this.opacity <= 0) return;
-
-    const img = this.getCurrentImage();
-    if (!img) return;
-
-    ctx.save();
-    this.applyOpacity(ctx);
-    const { screenX, screenY } = this.getScreenPosition(camera);
-    this.drawItemImage(ctx, screenX, screenY, img);
-    ctx.restore();
-  }
-
-  /**
-   * Returns current image.
-   * Updates the instance state.
-   * @returns {*} Current image.
-   */
-  getCurrentImage() {
-    return this.images[this.currentImage];
-  }
-
-  /**
-   * Applies opacity.
-   * Renders to the canvas context.
-   * Updates the instance state.
-   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   */
-  applyOpacity(ctx) {
-    ctx.globalAlpha = this.opacity;
-  }
-
-  /**
-   * Returns screen position.
-   * Updates the instance state.
-   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
-   * @returns {Object} Screen position.
-   */
-  getScreenPosition(camera) {
-    const screenX = this.x - (camera?.x || 0);
-    const screenY = this.y - (camera?.y || 0);
-    return { screenX, screenY };
-  }
-
-  /**
-   * Draws item image.
-   * Updates the instance state.
-   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {number} screenX Screen X.
-   * @param {number} screenY Screen Y.
-   * @param {HTMLImageElement} img Img.
-   */
-  drawItemImage(ctx, screenX, screenY, img) {
-    const { centerX, centerY } = this.getCenterPosition(screenX, screenY);
-    this.applyItemTransform(ctx, centerX, centerY);
-    this.paintItemImage(ctx, img);
-  }
-
-  /**
-   * Returns center position.
-   * Updates the instance state.
-   * @param {number} screenX Screen X.
-   * @param {number} screenY Screen Y.
-   * @returns {Object} Center position.
-   */
-  getCenterPosition(screenX, screenY) {
-    const centerX = screenX + this.width / 2;
-    const centerY = screenY + this.height / 2;
-    return { centerX, centerY };
-  }
-
-  /**
-   * Applies item transform.
-   * Renders to the canvas context.
-   * Updates the instance state.
-   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {number} centerX Center X.
-   * @param {number} centerY Center Y.
-   */
-  applyItemTransform(ctx, centerX, centerY) {
-    ctx.translate(centerX, centerY);
-    ctx.scale(this.scaleFactor, this.scaleFactor);
-    ctx.rotate(this.rotationAngle);
-  }
-
-  /**
-   * Paint item image.
-   * Renders to the canvas context.
-   * Updates the instance state.
-   * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {HTMLImageElement} img Img.
-   */
-  paintItemImage(ctx, img) {
-    ctx.drawImage(img, -this.width / 2, -this.height / 2, this.width, this.height);
-  }
-
-  /**
-   * Is colliding.
-   * Updates the player state.
-   * @param {import("../entities/player/player.class.js").Player} player Player instance.
-   * @returns {boolean} Whether colliding.
-   */
-  isColliding(player) {
-    if (this.pickupDelay > 0) return false;
-
-    const itemLeft = this.x;
-    const itemRight = this.x + this.width;
-    const itemTop = this.y;
-    const itemBottom = this.y + this.height;
-
-    const playerLeft = player.x;
-    const playerRight = player.x + player.width;
-    const playerTop = player.y;
-    const playerBottom = player.y + player.height;
-
-    return !(
-      playerLeft > itemRight ||
-      playerRight < itemLeft ||
-      playerTop > itemBottom ||
-      playerBottom < itemTop
-    );
-  }
-
-  /**
-   * Collect.
-   * Updates the instance state.
-   * @param {import("../entities/player/player.class.js").Player} player Player instance.
-   */
-  collect(player) {
-    if (this.collected) return;
-    this.startPickupAnimation();
-    const itemX = this.x;
-    const itemY = this.y;
-
-    this.handleCollectByType(player, itemX, itemY);
-    this.resetPickupFx();
-  }
-
-  /**
-   * Starts pickup animation.
-   * Updates the instance state.
-   */
-  startPickupAnimation() {
-    this.collected = true;
-    this.pickupAnimating = true;
-  }
-
-  /**
-   * Handles collect by type.
-   * Updates the instance state.
-   * @param {import("../entities/player/player.class.js").Player} player Player instance.
-   * @param {number} itemX Item X.
-   * @param {number} itemY Item Y.
-   */
-  handleCollectByType(player, itemX, itemY) {
-    if (this.type === "coin") this.collectCoin(player, itemX, itemY);
-    if (this.type === "heart") this.collectHeart(player, itemX, itemY);
-    if (this.type === "gun") this.collectGun(player, itemX, itemY);
-  }
-
-  /**
-   * Collect coin.
-   * Triggers audio playback or updates audio state.
-   * Updates the player state.
-   * @param {import("../entities/player/player.class.js").Player} player Player instance.
-   * @param {number} itemX Item X.
-   * @param {number} itemY Item Y.
-   */
-  collectCoin(player, itemX, itemY) {
-    collectablesAudio.playCoin();
-    player.addCoins(COLLECTABLE_VALUES.coin);
-    player.world.hudPopups.push(new HudPopup(`+${COLLECTABLE_VALUES.coin}`, itemX, itemY, "coin"));
-  }
-
-  /**
-   * Collect heart.
-   * Triggers audio playback or updates audio state.
-   * Updates the player state.
-   * @param {import("../entities/player/player.class.js").Player} player Player instance.
-   * @param {number} itemX Item X.
-   * @param {number} itemY Item Y.
-   */
-  collectHeart(player, itemX, itemY) {
-    collectablesAudio.playHeart();
-    player.heal(COLLECTABLE_VALUES.heart);
-    player.world.hudPopups.push(new HudPopup("❤️", itemX, itemY, "heart"));
-  }
-
-  /**
-   * Collect gun.
-   * Triggers audio playback or updates audio state.
-   * Updates the player state.
-   * @param {import("../entities/player/player.class.js").Player} player Player instance.
-   * @param {number} itemX Item X.
-   * @param {number} itemY Item Y.
-   */
-  collectGun(player, itemX, itemY) {
-    collectablesAudio.playWeapon();
-    player.addBullets?.(GUN_BULLETS_GRANT);
-    player.world.hudPopups.push(new HudPopup(`+${GUN_BULLETS_GRANT}`, itemX, itemY, "gun"));
-  }
-
-  /**
-   * Resets pickup fx.
-   * Updates the instance state.
-   */
-  resetPickupFx() {
-    this.scaleFactor = 1;
-    this.opacity = 1;
-    this.rotationAngle = 0;
-  }
 }
+
+Object.assign(CollectableItem.prototype, {
+  draw,
+  getCurrentImage,
+  applyOpacity,
+  getScreenPosition,
+  drawItemImage,
+  getCenterPosition,
+  applyItemTransform,
+  paintItemImage,
+  isColliding,
+  collect,
+  startPickupAnimation,
+  handleCollectByType,
+  collectCoin,
+  collectHeart,
+  collectGun,
+  resetPickupFx,
+});
