@@ -1,0 +1,43 @@
+import { loadFont, loadStartImage } from "./startScreen.utils.js";
+
+/**
+ * Loads start assets.
+ * @returns {*} Result value.
+ */
+export const loadStartAssets = () =>
+  Promise.all([
+    loadStartImage("./assets/img/canvas-start-game_BG.jpg"),
+    loadStartImage("./assets/img/Gui/Game-UI.png"),
+    loadStartImage("./assets/img/menu_BG.png"),
+    loadFont("ComixLoud", "4rem"),
+  ]);
+
+/**
+ * Applies loaded assets.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.bg] Bg.
+ * @param {*} [options.ui] Ui.
+ * @param {*} [options.menuBg] Menu bg.
+ * @param {*} [options.startScreenState] Start screen state.
+ */
+export const applyLoadedAssets = ({ bg, ui, menuBg, startScreenState }) => {
+  startScreenState.startAssets = { bg, ui, menuBg };
+  document.body?.classList.add("start-screen-active");
+};
+
+/**
+ * Loads and render start assets.
+ * Uses options to perform the operation.
+ * @param {Object} options Configuration options.
+ * @param {*} [options.startScreenState] Start screen state.
+ * @param {*} [options.drawStartScreen] Draw start screen.
+ */
+export const loadAndRenderStartAssets = ({ startScreenState, drawStartScreen }) => {
+  loadStartAssets()
+    .then(([bg, ui, menuBg, _fontLoaded]) => {
+      applyLoadedAssets({ bg, ui, menuBg, startScreenState });
+      drawStartScreen();
+    })
+    .catch((err) => console.error("Failed to load start assets", err));
+};

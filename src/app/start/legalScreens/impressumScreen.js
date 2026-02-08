@@ -1,4 +1,4 @@
-import { LegalScreenBase } from "./legalScreenBase.class.js";
+import { LegalScreenBase } from "./legalScreen.base.class.js";
 
 const IMPRESSUM_PARAGRAPHS = [
   "Information pursuant to § 5 DDG",

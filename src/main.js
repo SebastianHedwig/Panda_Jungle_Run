@@ -4,7 +4,7 @@ import { installAudioTracking } from "./app/audio/audioTracking.js";
 import { setupSoundToggle } from "./app/ui/controls/soundToggle.js";
 import { togglePauseState } from "./app/ui/controls/settingsToggle.js";
 import { setupFullscreenToggle, applyAutoFullscreen } from "./app/ui/controls/fullscreenToggle.js";
-import { setupStartScreen } from "./app/start/startScreen.js";
+import { setupStartScreen } from "./app/start/startScreen/startScreen.js";
 import { ViewportManagement } from "./app/ui/viewportManagement.class.js";
 import { setupMobileControls } from "./app/ui/controls/mobileControls.js";
 

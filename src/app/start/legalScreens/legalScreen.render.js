@@ -11,7 +11,6 @@ const PANEL_SHADOW_BLUR = 10;
 const TITLE_FONT_SIZE = 32;
 const BODY_FONT_SIZE = 16;
 const LINE_HEIGHT_MULTIPLIER = 1.5;
-const EMPTY_LINE_RATIO = 0.6;
 const TITLE_COLOR = "rgb(0, 110, 110)";
 const BODY_COLOR = "#e4f7f7";
 const TITLE_BODY_GAP = 24;
@@ -21,104 +20,12 @@ const CLOSE_TEXT = "Close";
 const CLOSE_HEIGHT_MULTIPLIER = 1.2;
 
 /**
- * Creates line entry.
- * Uses text, height to compute the result.
- * @param {string} text Text.
- * @param {number} height Height.
- * @returns {*} Line entry.
- */
-const createLineEntry = (text, height) => ({ text, height });
-
-/**
- * Adds empty line.
- * Uses wrappedLines, lineHeight to perform the operation.
- * @param {*} wrappedLines Wrapped lines.
- * @param {number} lineHeight Line height.
- * @returns {*} Result value.
- */
-const addEmptyLine = (wrappedLines, lineHeight) =>
-  wrappedLines.push(createLineEntry("", lineHeight * EMPTY_LINE_RATIO));
-
-/**
- * Append line.
- * Uses wrappedLines, currentLine, lineHeight to perform the operation.
- * @param {*} wrappedLines Wrapped lines.
- * @param {*} currentLine Current line.
- * @param {number} lineHeight Line height.
- * @returns {*} Result value.
- */
-const appendLine = (wrappedLines, currentLine, lineHeight) =>
-  wrappedLines.push(createLineEntry(currentLine, lineHeight));
-
-/**
- * Returns test line.
- * Uses currentLine, word to compute the result.
- * @param {*} currentLine Current line.
- * @param {*} word Word.
- * @returns {string} Test line.
- */
-const getTestLine = (currentLine, word) => (currentLine ? `${currentLine} ${word}` : word);
-
-/**
- * Should wrap line.
- * Renders to the canvas context.
- * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {number} innerWidth Inner width.
- * @param {*} testLine Test line.
- * @returns {boolean} Whether wrap line.
- */
-const shouldWrapLine = (ctx, innerWidth, testLine) => ctx.measureText(testLine).width > innerWidth;
-
-/**
- * Wrap words into lines.
- * Uses options to perform the operation.
- * @param {Object} options Configuration options.
- * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
- * @param {number} [options.innerWidth] Inner width.
- * @param {number} [options.lineHeight] Line height.
- * @param {*} [options.words] Words.
- * @param {*} [options.wrappedLines] Wrapped lines.
- */
-const wrapWordsIntoLines = ({ ctx, innerWidth, lineHeight, words, wrappedLines }) => {
-  let currentLine = "";
-  words.forEach((word, wordIndex) => {
-    const testLine = getTestLine(currentLine, word);
-    if (shouldWrapLine(ctx, innerWidth, testLine)) {
-      appendLine(wrappedLines, currentLine, lineHeight);
-      currentLine = word;
-    } else {
-      currentLine = testLine;
-    }
-    if (wordIndex === words.length - 1) appendLine(wrappedLines, currentLine, lineHeight);
-  });
-};
-
-/**
- * Wrap paragraph text.
- * Uses options to perform the operation.
- * @param {Object} options Configuration options.
- * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
- * @param {number} [options.innerWidth] Inner width.
- * @param {number} [options.lineHeight] Line height.
- * @param {string} [options.paragraphText] Paragraph text.
- * @param {*} [options.wrappedLines] Wrapped lines.
- */
-const wrapParagraphText = ({ ctx, innerWidth, lineHeight, paragraphText, wrappedLines }) => {
-  if (!paragraphText) {
-    addEmptyLine(wrappedLines, lineHeight);
-    return;
-  }
-  const words = paragraphText.split(" ");
-  wrapWordsIntoLines({ ctx, innerWidth, lineHeight, words, wrappedLines });
-};
-
-/**
  * Creates panel metrics.
  * Uses canvas to compute the result.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @returns {Object} Panel metrics.
  */
-const createPanelMetrics = (canvas) => {
+export const createPanelMetrics = (canvas) => {
   const panelPadding = 28;
   const panelWidth = Math.min(canvas.width * PANEL_WIDTH_RATIO);
   const panelX = (canvas.width - panelWidth) / 2;
@@ -155,7 +62,7 @@ const drawPanel = ({ ctx, panelX, panelY, panelWidth, panelHeight }) => {
  * Returns font metrics.
  * @returns {Object} Font metrics.
  */
-const getFontMetrics = () => {
+export const getFontMetrics = () => {
   const titleFontSize = TITLE_FONT_SIZE;
   const bodyFontSize = BODY_FONT_SIZE;
   const lineHeight = bodyFontSize * LINE_HEIGHT_MULTIPLIER;
@@ -207,7 +114,7 @@ const applyBodyFont = ({ ctx, bodyFontSize }) => {
  * @param {number} [options.titleFontSize] Title font size.
  * @param {*} [options.scroll] Scroll.
  */
-const getScrollMetrics = ({ wrapped, panelY, panelHeight, panelPadding, titleFontSize, scroll }) => {
+export const getScrollMetrics = ({ wrapped, panelY, panelHeight, panelPadding, titleFontSize, scroll }) => {
   const contentHeight = wrapped.reduce((totalHeight, lineEntry) => totalHeight + lineEntry.height, 0);
   const textStartY = panelY + panelPadding + titleFontSize + TITLE_BODY_GAP;
   const innerHeight = panelHeight - (textStartY - panelY) - panelPadding;
@@ -226,7 +133,7 @@ const getScrollMetrics = ({ wrapped, panelY, panelHeight, panelPadding, titleFon
  * @param {number} [options.panelWidth] Panel width.
  * @param {number} [options.panelPadding] Panel padding.
  */
-const getCloseTextBounds = ({ ctx, panelX, panelY, panelWidth, panelPadding }) => {
+export const getCloseTextBounds = ({ ctx, panelX, panelY, panelWidth, panelPadding }) => {
   const closeFontSize = CLOSE_FONT_SIZE;
   ctx.font = `bold ${closeFontSize}px sans-serif`;
   const closeText = CLOSE_TEXT;
@@ -393,13 +300,12 @@ const renderWrappedLines = ({ ctx, wrapped, panelX, panelY, panelPadding, panelH
  * @param {*} [options.clampedScroll] Clamped scroll.
  * @param {Function} [options.onLineRender] On line render.
  */
-const renderContent = ({ ctx, wrapped, panelX, panelY, panelPadding, panelHeight, lineHeight, bodyFontSize, textStartY, innerWidth, innerHeight, clampedScroll, onLineRender }) => {
+export const renderContent = ({ ctx, wrapped, panelX, panelY, panelPadding, panelHeight, lineHeight, bodyFontSize, textStartY, innerWidth, innerHeight, clampedScroll, onLineRender }) => {
   beginContentClip({ ctx, panelX, panelPadding, textStartY, innerWidth, innerHeight, bodyFontSize });
   const linkBounds = renderWrappedLines({ ctx, wrapped, panelX, panelY, panelPadding, panelHeight, lineHeight, bodyFontSize, textStartY, clampedScroll, onLineRender });
   endContentClip(ctx);
   return linkBounds;
 };
-
 
 /**
  * Draws legal layout.
@@ -415,81 +321,8 @@ const renderContent = ({ ctx, wrapped, panelX, panelY, panelPadding, panelHeight
  * @param {number} [options.titleFontSize] Title font size.
  * @param {number} [options.bodyFontSize] Body font size.
  */
-const drawLegalLayout = ({ ctx, title, panelX, panelY, panelWidth, panelHeight, panelPadding, titleFontSize, bodyFontSize }) => {
+export const drawLegalLayout = ({ ctx, title, panelX, panelY, panelWidth, panelHeight, panelPadding, titleFontSize, bodyFontSize }) => {
   drawPanel({ ctx, panelX, panelY, panelWidth, panelHeight });
   drawTitleText({ ctx, title, panelX, panelY, panelPadding, titleFontSize });
   applyBodyFont({ ctx, bodyFontSize });
 };
-
-/**
- * Renders legal screen.
- * Uses options to perform the operation.
- * @param {Object} options Configuration options.
- * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
- * @param {HTMLCanvasElement} [options.canvas] Target canvas.
- * @param {*} [options.scroll] Scroll.
- * @param {Function} [options.onLineRender] On line render.
- * @param {string} [options.title] Title.
- * @param {*} [options.wrapParagraphs] Wrap paragraphs.
- */
-const renderLegalScreen = ({ ctx, canvas, scroll, onLineRender, title, wrapParagraphs }) => {
-  if (!ctx || !canvas) return { maxScroll: 0, closeTextBounds: null, linkBounds: null };
-  const { panelPadding, panelWidth, panelX, panelY, panelHeight, innerWidth } = createPanelMetrics(canvas);
-  const { titleFontSize, bodyFontSize, lineHeight } = getFontMetrics();
-  drawLegalLayout({ ctx, title, panelX, panelY, panelWidth, panelHeight, panelPadding, titleFontSize, bodyFontSize });
-  const wrapped = wrapParagraphs({ ctx, innerWidth, lineHeight });
-  const { textStartY, innerHeight, maxScroll, clampedScroll } = getScrollMetrics({ wrapped, panelY, panelHeight, panelPadding, titleFontSize, scroll });
-  const closeTextBounds = getCloseTextBounds({ ctx, panelX, panelY, panelWidth, panelPadding });
-  const linkBounds = renderContent({ ctx, wrapped, panelX, panelY, panelPadding, panelHeight, lineHeight, bodyFontSize, textStartY, innerWidth, innerHeight, clampedScroll, onLineRender });
-  return { maxScroll, linkBounds, closeTextBounds };
-};
-
-export class LegalScreenBase {
-  /**
-   * Creates a new instance.
-   * Uses options to perform the operation.
-   * @param {Object} options Configuration options.
-   * @param {string} [options.title] Title.
-   * @param {*} [options.paragraphs] Paragraphs.
-   */
-  constructor({ title, paragraphs }) {
-    this.title = title;
-    this.paragraphs = paragraphs;
-  }
-
-  /**
-   * Wrap paragraphs.
-   * Uses options to perform the operation.
-   * @param {Object} options Configuration options.
-   * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
-   * @param {number} [options.innerWidth] Inner width.
-   * @param {number} [options.lineHeight] Line height.
-   */
-  wrapParagraphs({ ctx, innerWidth, lineHeight }) {
-    const wrappedLines = [];
-    this.paragraphs.forEach((paragraphText) => {
-      wrapParagraphText({ ctx, innerWidth, lineHeight, paragraphText, wrappedLines });
-    });
-    return wrappedLines;
-  }
-
-  /**
-   * Renders. If omitted, default values are used.
-   * Uses options to perform the operation.
-   * @param {Object} [options] Configuration options.
-   * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
-   * @param {HTMLCanvasElement} [options.canvas] Target canvas.
-   * @param {*} [options.scroll] Scroll.
-   * @param {Function} [options.onLineRender] On line render.
-   */
-  render({ ctx, canvas, scroll = 0, onLineRender }) {
-    return renderLegalScreen({
-      ctx,
-      canvas,
-      scroll,
-      onLineRender,
-      title: this.title,
-      wrapParagraphs: (args) => this.wrapParagraphs(args),
-    });
-  }
-}

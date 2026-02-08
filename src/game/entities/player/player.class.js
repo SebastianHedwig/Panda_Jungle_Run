@@ -1,7 +1,7 @@
 import { MovableObject } from "../../../engine/physics/movableObject.class.js";
 import { HudPopup } from "../../effects/hudPopup.class.js";
 import { DEBUG_MODE, BASE_SPEED, PLAYER_MAX_HEARTS, PLAYER_SLIDE_DAMAGE, FACING_LEFT, FACING_RIGHT } from "../../../config/config.js";
-import { PlayerAudio } from "../../audio/playerAudio.class.js";
+import { PlayerAudio } from "../../audio/playerAudio/playerAudio.class.js";
 import { updatePlayer } from "./playerUpdate.js";
 import { renderPlayer } from "./playerRender.js";
 import { applyDizzy, handleDeathLanding, handleFallOffWorld, respawnFromFall, startDeath, startHurt, updateHurt } from "./playerHealth.js";

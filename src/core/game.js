@@ -1,4 +1,4 @@
-import { createGame } from "./game/createGame.js";
+import { createGame } from "./game/createGame/createGame.js";
 
 const game = createGame({ canvasId: "game" });
 

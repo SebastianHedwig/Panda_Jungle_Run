@@ -1,4 +1,4 @@
-import { setOverlayActive, setLegalScreenActive } from "./startScreenUtils.js";
+import { setOverlayActive, setLegalScreenActive } from "./startScreen.utils.js";
 
 /**
  * Returns canvas point.
@@ -7,7 +7,7 @@ import { setOverlayActive, setLegalScreenActive } from "./startScreenUtils.js";
  * @param {Event} event Event object.
  * @returns {Object} Canvas point.
  */
-const getCanvasPoint = (canvas, event) => {
+export const getCanvasPoint = (canvas, event) => {
   const rect = canvas.getBoundingClientRect();
   const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
   /**
@@ -84,7 +84,7 @@ const closeLegalPage = ({ state, canvas, drawStartScreen }) => {
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
-const handleLegalClick = ({ state, x, y, showLegalPage, canvas, drawStartScreen }) => {
+export const handleLegalClick = ({ state, x, y, showLegalPage, canvas, drawStartScreen }) => {
   if (!state.legalPage) return false;
   if (getLegalLinkHit({ state, x, y })) {
     showLegalPage("privacy");
@@ -105,7 +105,7 @@ const handleLegalClick = ({ state, x, y, showLegalPage, canvas, drawStartScreen 
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
-const handleSettingsOverlayClick = ({ state, x, y, getActiveControlsOverlay, canvas, drawStartScreen }) => {
+export const handleSettingsOverlayClick = ({ state, x, y, getActiveControlsOverlay, canvas, drawStartScreen }) => {
   if (!state.settingsOpen) return false;
   const overlay = getActiveControlsOverlay();
   if (!overlay.handleCloseButtonClick(x, y)) return true;
@@ -212,7 +212,7 @@ const exitStartScreen = (dependencies) => {
  * @param {number} [options.y] Y.
  * @param {*} [options.handlerRefs] Handler refs.
  */
-const handleStartButtonClick = ({ state, x, y, handlerRefs, ...dependencies }) => {
+export const handleStartButtonClick = ({ state, x, y, handlerRefs, ...dependencies }) => {
   if (!state.startButtonBounds) return false;
   const inside = isInsideStartButton({ state, x, y });
   if (!inside) return false;
@@ -244,7 +244,7 @@ const getLegalHoverFlags = ({ state, x, y }) => {
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
-const handleLegalMove = ({ state, x, y, canvas, drawStartScreen }) => {
+export const handleLegalMove = ({ state, x, y, canvas, drawStartScreen }) => {
   const { overReturn, overLink } = getLegalHoverFlags({ state, x, y });
   if (state.legalReturnHover !== overReturn) {
     state.legalReturnHover = overReturn;
@@ -263,7 +263,7 @@ const handleLegalMove = ({ state, x, y, canvas, drawStartScreen }) => {
  * @param {import("../ui/overlay/overlayBase.class.js").OverlayBase} [options.getActiveControlsOverlay] Get active controls overlay.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
-const handleSettingsMove = ({ x, y, canvas, getActiveControlsOverlay, drawStartScreen }) => {
+export const handleSettingsMove = ({ x, y, canvas, getActiveControlsOverlay, drawStartScreen }) => {
   const overlay = getActiveControlsOverlay();
   overlay.setPointer(x, y);
   const hovering = overlay.isHovering();
@@ -281,7 +281,7 @@ const handleSettingsMove = ({ x, y, canvas, getActiveControlsOverlay, drawStartS
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
-const handleStartButtonMove = ({ state, x, y, canvas, drawStartScreen }) => {
+export const handleStartButtonMove = ({ state, x, y, canvas, drawStartScreen }) => {
   if (!state.startButtonBounds) return;
   const inside = isInsideStartButton({ state, x, y });
   if (inside !== state.startButtonHover) {
@@ -301,7 +301,7 @@ const handleStartButtonMove = ({ state, x, y, canvas, drawStartScreen }) => {
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
-const handleLegalLeave = ({ state, canvas, drawStartScreen }) => {
+export const handleLegalLeave = ({ state, canvas, drawStartScreen }) => {
   canvas.style.cursor = "default";
   if (!state.legalReturnHover) return;
   state.legalReturnHover = false;
@@ -316,7 +316,7 @@ const handleLegalLeave = ({ state, canvas, drawStartScreen }) => {
  * @param {import("../ui/overlay/overlayBase.class.js").OverlayBase} [options.getActiveControlsOverlay] Get active controls overlay.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
-const handleSettingsLeave = ({ canvas, getActiveControlsOverlay, drawStartScreen }) => {
+export const handleSettingsLeave = ({ canvas, getActiveControlsOverlay, drawStartScreen }) => {
   const overlay = getActiveControlsOverlay();
   overlay.clearPointer();
   drawStartScreen();
@@ -332,7 +332,7 @@ const handleSettingsLeave = ({ canvas, getActiveControlsOverlay, drawStartScreen
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
-const handleStartButtonLeave = ({ state, canvas, drawStartScreen }) => {
+export const handleStartButtonLeave = ({ state, canvas, drawStartScreen }) => {
   if (state.startButtonHover) {
     state.startButtonHover = false;
     drawStartScreen();
@@ -348,7 +348,7 @@ const handleStartButtonLeave = ({ state, canvas, drawStartScreen }) => {
  * @param {Event} [options.event] Event object.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
-const closeLegalOnEscape = ({ state, event, drawStartScreen }) => {
+export const closeLegalOnEscape = ({ state, event, drawStartScreen }) => {
   event.preventDefault();
   event.stopImmediatePropagation();
   state.legalPage = null;
@@ -366,7 +366,7 @@ const closeLegalOnEscape = ({ state, event, drawStartScreen }) => {
  * @param {import("../ui/overlay/overlayBase.class.js").OverlayBase} [options.getActiveControlsOverlay] Get active controls overlay.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
-const closeSettingsOnEscape = ({ state, event, getActiveControlsOverlay, drawStartScreen }) => {
+export const closeSettingsOnEscape = ({ state, event, getActiveControlsOverlay, drawStartScreen }) => {
   event.preventDefault();
   event.stopImmediatePropagation();
   state.settingsOpen = false;
@@ -375,160 +375,3 @@ const closeSettingsOnEscape = ({ state, event, getActiveControlsOverlay, drawSta
   setOverlayActive(false);
   drawStartScreen();
 };
-
-/**
- * Creates handle canvas click.
- * Uses dependencies, handlerRefs to compute the result.
- * @param {*} dependencies Dependencies.
- * @param {*} handlerRefs Handler refs.
- * @returns {*} Handle canvas click.
- */
-const createHandleCanvasClick = (dependencies, handlerRefs) => (event) => {
-  if (!dependencies.state.startScreenActive) return;
-  const { x, y } = getCanvasPoint(dependencies.canvas, event);
-  if (handleLegalClick({ ...dependencies, x, y })) return;
-  if (handleSettingsOverlayClick({ ...dependencies, x, y })) return;
-  handleStartButtonClick({ ...dependencies, x, y, handlerRefs });
-};
-
-/**
- * Creates handle move.
- * Uses dependencies to compute the result.
- * @param {*} dependencies Dependencies.
- * @returns {*} Handle move.
- */
-const createHandleMove = (dependencies) => (event) => {
-  if (!dependencies.state.startScreenActive) return;
-  const { x, y } = getCanvasPoint(dependencies.canvas, event);
-  if (dependencies.state.legalPage) return handleLegalMove({ ...dependencies, x, y });
-  if (dependencies.state.settingsOpen) return handleSettingsMove({ ...dependencies, x, y });
-  handleStartButtonMove({ ...dependencies, x, y });
-};
-
-/**
- * Creates handle leave.
- * Uses dependencies to compute the result.
- * @param {*} dependencies Dependencies.
- * @returns {*} Handle leave.
- */
-const createHandleLeave = (dependencies) => () => {
-  if (!dependencies.state.startScreenActive) return;
-  if (dependencies.state.legalPage) return handleLegalLeave(dependencies);
-  if (dependencies.state.settingsOpen) return handleSettingsLeave(dependencies);
-  handleStartButtonLeave(dependencies);
-};
-
-/**
- * Creates handle settings click.
- * Uses dependencies to compute the result.
- * @param {*} dependencies Dependencies.
- * @returns {*} Handle settings click.
- */
-const createHandleSettingsClick = (dependencies) => (event) => {
-  if (!dependencies.state.startScreenActive) return;
-  event?.preventDefault();
-  event?.stopImmediatePropagation();
-  dependencies.state.settingsOpen = !dependencies.state.settingsOpen;
-  dependencies.state.startButtonHover = false;
-  const overlay = dependencies.getActiveControlsOverlay();
-  overlay.clearPointer();
-  dependencies.canvas.style.cursor = "default";
-  setOverlayActive(dependencies.state.settingsOpen);
-  dependencies.drawStartScreen();
-};
-
-/**
- * Creates handle key down.
- * Uses dependencies to compute the result.
- * @param {*} dependencies Dependencies.
- * @returns {*} Handle key down.
- */
-const createHandleKeyDown = (dependencies) => (event) => {
-  if (!dependencies.state.startScreenActive || event.key !== "Escape") return;
-  if (dependencies.state.legalPage) return closeLegalOnEscape({ ...dependencies, event });
-  if (dependencies.state.settingsOpen) closeSettingsOnEscape({ ...dependencies, event });
-};
-
-/**
- * Creates handle wheel.
- * Uses dependencies to compute the result.
- * @param {*} dependencies Dependencies.
- * @returns {*} Handle wheel.
- */
-const createHandleWheel = (dependencies) => (event) => {
-  if (!dependencies.state.legalPage) return;
-  event.preventDefault();
-  const scrollDeltaY = event.deltaY;
-  dependencies.state.legalScroll = Math.min(dependencies.state.legalMaxScroll, Math.max(0, dependencies.state.legalScroll + scrollDeltaY));
-  dependencies.drawStartScreen();
-};
-
-/**
- * Creates handle touch start.
- * Uses dependencies to compute the result.
- * @param {*} dependencies Dependencies.
- * @returns {*} Handle touch start.
- */
-const createHandleTouchStart = (dependencies) => (event) => {
-  if (!dependencies.state.legalPage) return;
-  const firstTouch = event.touches?.[0];
-  if (!firstTouch) return;
-  dependencies.state.touchScrollStartY = firstTouch.clientY;
-};
-
-/**
- * Creates handle touch move.
- * Uses dependencies to compute the result.
- * @param {*} dependencies Dependencies.
- * @returns {*} Handle touch move.
- */
-const createHandleTouchMove = (dependencies) => (event) => {
-  if (!dependencies.state.legalPage || dependencies.state.touchScrollStartY === null) return;
-  const firstTouch = event.touches?.[0];
-  if (!firstTouch) return;
-  const scrollDeltaY = dependencies.state.touchScrollStartY - firstTouch.clientY;
-  dependencies.state.legalScroll = Math.min(dependencies.state.legalMaxScroll, Math.max(0, dependencies.state.legalScroll + scrollDeltaY));
-  dependencies.state.touchScrollStartY = firstTouch.clientY;
-  event.preventDefault();
-  dependencies.drawStartScreen();
-};
-
-/**
- * Creates handle touch end.
- * Uses dependencies to compute the result.
- * @param {*} dependencies Dependencies.
- * @returns {*} Handle touch end.
- */
-const createHandleTouchEnd = (dependencies) => () => {
-  dependencies.state.touchScrollStartY = null;
-};
-
-/**
- * Builds start screen handlers.
- * Uses dependencies to compute the result.
- * @param {*} dependencies Dependencies.
- * @returns {*} Start screen handlers.
- */
-const buildStartScreenHandlers = (dependencies) => {
-  const handlerRefs = {};
-  handlerRefs.handleCanvasClick = createHandleCanvasClick(dependencies, handlerRefs);
-  handlerRefs.handleMove = createHandleMove(dependencies);
-  handlerRefs.handleLeave = createHandleLeave(dependencies);
-  handlerRefs.handleSettingsClick = createHandleSettingsClick(dependencies);
-  handlerRefs.handleKeyDown = createHandleKeyDown(dependencies);
-  handlerRefs.handleWheel = createHandleWheel(dependencies);
-  handlerRefs.handleTouchStart = createHandleTouchStart(dependencies);
-  handlerRefs.handleTouchMove = createHandleTouchMove(dependencies);
-  handlerRefs.handleTouchEnd = createHandleTouchEnd(dependencies);
-  return handlerRefs;
-};
-
-/**
- * Creates start screen handlers.
- * Uses dependencies to compute the result.
- * @param {*} dependencies Dependencies.
- * @returns {*} Start screen handlers.
- */
-export function createStartScreenHandlers(dependencies) {
-  return buildStartScreenHandlers(dependencies);
-}

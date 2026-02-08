@@ -1,4 +1,4 @@
-import { loadImage, waitForImage } from "../../core/game/assets/assetLoader.js";
+import { loadImage, waitForImage } from "../../../core/game/assets/assetLoader.js";
 
 /**
  * Sets overlay active.

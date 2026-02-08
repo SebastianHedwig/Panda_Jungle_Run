@@ -9,7 +9,7 @@ import {
   WORLD_WIDTH,
 } from "../../config/config.js";
 import { Boss } from "../entities/boss/boss.class.js";
-import { BossAudio } from "../audio/bossAudio.class.js";
+import { BossAudio } from "../audio/bossAudio/bossAudio.class.js";
 import { BOSS_MUSIC_PLAYBACK_RATE } from "../../config/config.js";
 
 /**
