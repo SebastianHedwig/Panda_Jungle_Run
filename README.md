@@ -12,6 +12,7 @@ A 2D side‑scrolling platformer in the browser (Canvas), built entirely in vani
 - [Installation](#installation)
 - [Documentation](#documentation)
 - [Project Structure](#project-structure)
+- [Projektgröße](#project-size)
 - [Git Workflow](#git-workflow)
 - [Credits / Assets](#credits-assets)
 - [Copyright](#copyright)
@@ -111,6 +112,12 @@ npx serve
 - `assets/` — spritesheets, SFX, icons
 - `styles/` and `style.css` — UI and layout styles
 
+
+<a id="project-size"></a>
+**Project-Size**
+- Folder: 133
+- Files: 986
+- Total number of codelines: 228.816 Lines
 
 <a id="git-workflow"></a>
 **Git Workflow (Push / Pull / Branch)**
