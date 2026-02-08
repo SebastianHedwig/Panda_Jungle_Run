@@ -253,7 +253,7 @@ export class OverlayRenderer {
    * Creates a new instance. If omitted, default values are used.
    * Uses options to perform the operation.
    * @param {Object} [options] Configuration options.
-   * @param {import("./overlay.base.class.js").OverlayClose} [options.closeOverlay] Close overlay.
+   * @param {OverlayClose} [options.closeOverlay] Close overlay.
    */
   constructor({ closeOverlay = new OverlayClose() } = {}) {
     this.closeOverlay = closeOverlay;

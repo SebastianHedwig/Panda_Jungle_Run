@@ -16,7 +16,7 @@ export class EnemyBase extends MovableObject {
    * @param {number} y Y.
    * @param {number} width Width.
    * @param {number} height Height.
-   * @param {import("../../../../core/world.class.js").World} [world] World instance.
+   * @param {World} [world] World instance.
    */
   constructor(x, y, width, height, world = null) {
     super(x, y, width, height);
@@ -89,7 +89,7 @@ export class EnemyBase extends MovableObject {
    * Renders to the canvas context.
    * Performs hitbox or collision checks.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../../../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    */
   renderHitbox(ctx, camera) {
     const hitbox = this.getHitbox();
@@ -101,7 +101,7 @@ export class EnemyBase extends MovableObject {
   /**
    * Returns player delta.
    * Uses player to compute the result.
-   * @param {import("../../player/player.class.js").Player} player Player instance.
+   * @param {Player} player Player instance.
    * @returns {*} Player delta.
    */
   getPlayerDelta(player) {
@@ -114,7 +114,7 @@ export class EnemyBase extends MovableObject {
   /**
    * Should chase player. If omitted, default values are used.
    * Updates the instance state.
-   * @param {import("../../player/player.class.js").Player} playerInfo Player info.
+   * @param {Player} playerInfo Player info.
    * @param {boolean} [wasChasing] Whether chasing.
    * @returns {boolean} Whether chase player.
    */
@@ -199,7 +199,7 @@ export class EnemyBase extends MovableObject {
   /**
    * Has adjacent platform.
    * Updates the world state.
-   * @param {import("../../../../engine/world/platform.class.js").Platform} currentPlatform Current platform.
+   * @param {Platform} currentPlatform Current platform.
    * @param {*} moveDirection Move direction.
    * @param {number} footX Foot X.
    * @returns {boolean} Whether adjacent platform.
@@ -242,7 +242,7 @@ export class EnemyBase extends MovableObject {
    * Uses moveDirection, dt, platform, onLowestPlatform, fromChasing to perform the operation.
    * @param {*} moveDirection Move direction.
    * @param {number} dt Delta time in seconds.
-   * @param {import("../../../../engine/world/platform.class.js").Platform} platform Platform.
+   * @param {Platform} platform Platform.
    * @param {Function} onLowestPlatform On lowest platform.
    * @param {*} fromChasing From chasing.
    * @returns {*} Result value.
@@ -256,8 +256,8 @@ export class EnemyBase extends MovableObject {
   /**
    * Try start attack.
    * Uses playerInfo, player to perform the operation.
-   * @param {import("../../player/player.class.js").Player} playerInfo Player info.
-   * @param {import("../../player/player.class.js").Player} player Player instance.
+   * @param {Player} playerInfo Player info.
+   * @param {Player} player Player instance.
    * @returns {*} Result value.
    */
   tryStartAttack(playerInfo, player) {
@@ -272,7 +272,7 @@ export class EnemyBase extends MovableObject {
    * @param {number} deltaX Delta X.
    * @param {*} frames Frames.
    * @param {number} damage Damage.
-   * @param {import("../../player/player.class.js").Player} player Player instance.
+   * @param {Player} player Player instance.
    * @param {number} [moveSpeed] Move speed.
    */
   startMeleeAttack(deltaX, frames, damage, player, moveSpeed = 0) {
@@ -344,9 +344,9 @@ function getActorCenter(actor) {
 /**
  * Builds player delta.
  * Updates the player state.
- * @param {import("../../player/player.class.js").Player} player Player instance.
- * @param {import("./enemies.base.class.js").EnemyBase} enemyCenter Enemy center.
- * @param {import("../../player/player.class.js").Player} playerCenter Player center.
+ * @param {Player} player Player instance.
+ * @param {EnemyBase} enemyCenter Enemy center.
+ * @param {Player} playerCenter Player center.
  * @returns {Object} Player delta.
  */
 function buildPlayerDelta(player, enemyCenter, playerCenter) {

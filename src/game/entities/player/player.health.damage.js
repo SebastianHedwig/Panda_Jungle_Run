@@ -7,10 +7,10 @@ const msPerSecond = 1000;
 /**
  * Take damage. If omitted, default values are used.
  * Triggers audio playback or updates audio state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} [damageAmount] Damage amount.
  * @param {*} [hitEffects] Hit effects.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} playerAudio Player audio.
  */
 export function takeDamage(player, damageAmount = 1, hitEffects = {}, playerAudio) {
   if (player.isDead) return;
@@ -22,7 +22,7 @@ export function takeDamage(player, damageAmount = 1, hitEffects = {}, playerAudi
 /**
  * Applies damage amount.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} damageAmount Damage amount.
  */
 function applyDamageAmount(player, damageAmount) {
@@ -33,7 +33,7 @@ function applyDamageAmount(player, damageAmount) {
 /**
  * Queues damage popup.
  * Uses player, damageAmount, hitEffects to perform the operation.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} damageAmount Damage amount.
  * @param {*} hitEffects Hit effects.
  */
@@ -62,7 +62,7 @@ function schedulePopup(addPopup, popupDelaySeconds) {
  * Adds damage popup.
  * Updates the player state.
  * Spawns visual feedback effects.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} damageAmount Damage amount.
  */
 function addDamagePopup(player, damageAmount) {
@@ -75,9 +75,9 @@ function addDamagePopup(player, damageAmount) {
  * Handles damage outcome.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {*} hitEffects Hit effects.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} playerAudio Player audio.
  * @returns {*} Result value.
  */
 function handleDamageOutcome(player, hitEffects, playerAudio) {
@@ -89,7 +89,7 @@ function handleDamageOutcome(player, hitEffects, playerAudio) {
 /**
  * Heal. If omitted, default values are used.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} [healAmount] Heal amount.
  */
 export function heal(player, healAmount = 1) {
@@ -102,7 +102,7 @@ export function heal(player, healAmount = 1) {
 /**
  * Applies heal amount.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} healAmount Heal amount.
  * @returns {*} Result value.
  */
@@ -116,7 +116,7 @@ function applyHealAmount(player, healAmount) {
  * Adds heal popup.
  * Updates the player state.
  * Spawns visual feedback effects.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {*} gained Gained.
  */
 function addHealPopup(player, gained) {

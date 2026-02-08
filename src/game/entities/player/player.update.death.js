@@ -1,7 +1,7 @@
 /**
  * Handles death flow.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
  */
@@ -17,7 +17,7 @@ export function handleDeathFlow(player, dt) {
  * Updates death movement.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 function updateDeathMovement(player, dt) {
@@ -32,7 +32,7 @@ function updateDeathMovement(player, dt) {
  * Updates death frames.
  * Advances animation state and sprites.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 function updateDeathFrames(player, dt) {
@@ -47,7 +47,7 @@ function updateDeathFrames(player, dt) {
  * Advances death frame.
  * Advances animation state and sprites.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function advanceDeathFrame(player) {
   const lastDeathFrameIndex = player.currentAnimation.length - 1;

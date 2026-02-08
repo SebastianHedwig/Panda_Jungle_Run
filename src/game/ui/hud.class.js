@@ -79,9 +79,9 @@ export class Hud {
    * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLCanvasElement} canvas Target canvas.
-   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
-   * @param {import("../entities/player/player.class.js").Player} player Player instance.
-   * @param {import("../entities/boss/boss.class.js").Boss} boss Boss instance.
+   * @param {Camera} camera Camera instance.
+   * @param {Player} player Player instance.
+   * @param {Boss} boss Boss instance.
    */
   render(ctx, canvas, camera, player, boss) {
     if (!ctx || !canvas || !camera || !player) return;

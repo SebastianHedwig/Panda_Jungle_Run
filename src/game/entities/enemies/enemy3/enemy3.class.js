@@ -27,7 +27,7 @@ export class Enemy3 extends Enemy2 {
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} sprites Sprites.
-   * @param {import("../../../../core/world.class.js").World} [world] World instance.
+   * @param {World} [world] World instance.
    */
   constructor(x, y, sprites, world = null) {
     super(x, y, buildEnemy3SpriteSet(sprites), world, ENEMY_WIDTH, ENEMY_HEIGHT);
@@ -89,7 +89,7 @@ export class Enemy3 extends Enemy2 {
    * Updates.
    * Updates the instance state.
    * @param {number} dt Delta time in seconds.
-   * @param {import("../../player/player.class.js").Player} player Player instance.
+   * @param {Player} player Player instance.
    */
   update(dt, player) {
     if (this.slideCooldown > 0) {
@@ -106,8 +106,8 @@ export class Enemy3 extends Enemy2 {
   /**
    * Try start attack.
    * Updates the instance state.
-   * @param {import("../../player/player.class.js").Player} playerInfo Player info.
-   * @param {import("../../player/player.class.js").Player} player Player instance.
+   * @param {Player} playerInfo Player info.
+   * @param {Player} player Player instance.
    * @returns {*} Result value.
    */
   tryStartAttack(playerInfo, player) {
@@ -118,8 +118,8 @@ export class Enemy3 extends Enemy2 {
   /**
    * Can start slide attack.
    * Updates the player state.
-   * @param {import("../../player/player.class.js").Player} playerInfo Player info.
-   * @param {import("../../player/player.class.js").Player} player Player instance.
+   * @param {Player} playerInfo Player info.
+   * @param {Player} player Player instance.
    * @returns {boolean} Whether start slide attack.
    */
   canStartSlideAttack(playerInfo, player) {
@@ -136,8 +136,8 @@ export class Enemy3 extends Enemy2 {
   /**
    * Starts slide attack.
    * Updates the instance state.
-   * @param {import("../../player/player.class.js").Player} playerInfo Player info.
-   * @param {import("../../player/player.class.js").Player} player Player instance.
+   * @param {Player} playerInfo Player info.
+   * @param {Player} player Player instance.
    * @returns {*} Result value.
    */
   startSlideAttack(playerInfo, player) {

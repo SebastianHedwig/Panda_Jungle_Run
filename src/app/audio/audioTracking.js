@@ -28,7 +28,8 @@ const createCacheBustUrl = (url) => `${url}${separator(url)}cb=${Date.now()}`;
  * (preventing cache-related load errors like `net::ERR_CACHE_OPERATION_NOT_SUPPORTED`).
  * If `force` is false, an existing `cb` stays untouched; if true, it is replaced.
  * @param {string} url Original audio URL.
- * @param {{force?: boolean}} [options] When `force` is true, always set a fresh cb.
+ * @param {Object} [options] Options.
+ * @param {boolean} [options.force] When `force` is true, always set a fresh cb.
  * @returns {string} URL with cache-buster applied (or original when not applicable).
  */
   const addCacheBust = (url, { force = false } = {}) => {
@@ -96,7 +97,7 @@ const getAudioConstructorInfo = () => {
  * Creates tracked audio factory.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
- * @param {typeof Audio} [options.OriginalAudio] Original audio.
+ * @param {Function} [options.OriginalAudio] Original audio constructor.
  * @param {*} [options.audioRegistry] Audio registry.
  * @param {Function} [options.addCacheBust] Add cache bust.
  * @param {Function} [options.attachCacheBustOnError] Attach cache bust on error.
@@ -125,7 +126,7 @@ const createTrackedAudioFactory = ({ OriginalAudio, audioRegistry, addCacheBust,
  * Installs clone node override.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
- * @param {typeof Audio} [options.OriginalAudio] Original audio.
+ * @param {Function} [options.OriginalAudio] Original audio constructor.
  * @param {Function} [options.originalCloneNode] Original clone node.
  * @param {*} [options.audioRegistry] Audio registry.
  * @param {Function} [options.addCacheBust] Add cache bust.
@@ -147,7 +148,7 @@ const installCloneNodeOverride = ({ OriginalAudio, originalCloneNode, audioRegis
  * Installs audio overrides.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
- * @param {typeof Audio} [options.OriginalAudio] Original audio.
+ * @param {Function} [options.OriginalAudio] Original audio constructor.
  * @param {Function} [options.originalCloneNode] Original clone node.
  * @param {Function} [options.createTrackedAudio] Create tracked audio.
  * @param {*} [options.audioRegistry] Audio registry.

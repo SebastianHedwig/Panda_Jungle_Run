@@ -3,7 +3,7 @@
  * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function drawBullets(ctx, canvas, player) {
   if (!this.isGunImageReady()) return;
@@ -78,7 +78,7 @@ export function drawGunImage(ctx, x, y, gunSettings) {
  * @param {number} x X.
  * @param {number} y Y.
  * @param {*} gunSettings Gun settings.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function drawBulletValue(ctx, x, y, gunSettings, player) {
   const baseScale = 1;

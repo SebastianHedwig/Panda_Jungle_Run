@@ -38,7 +38,7 @@ export class Cloud {
    * Renders to the canvas context.
    * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    */
   render(ctx, camera) {
     const drawW = this.image.width * this.scale;

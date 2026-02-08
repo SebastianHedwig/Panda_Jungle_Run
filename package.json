@@ -1,0 +1,28 @@
+{
+  "name": "panda_jungle_run",
+  "version": "1.0.0",
+  "description": "A 2D side‑scrolling platformer in the browser (Canvas), built entirely in vanilla JS.",
+  "main": "initGame.js",
+  "scripts": {
+    "docs": "jsdoc -c jsdoc.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SebastianHedwig/Panda_Jungle_Run.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/SebastianHedwig/Panda_Jungle_Run/issues"
+  },
+  "homepage": "https://github.com/SebastianHedwig/Panda_Jungle_Run#readme",
+  "devDependencies": {
+    "docdash": "^2.0.2",
+    "docdash-orange": "^1.2.1",
+    "jsdoc": "^4.0.5",
+    "taffydb": "^2.7.3"
+  }
+}

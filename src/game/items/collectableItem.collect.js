@@ -15,7 +15,7 @@ const GUN_BULLETS_GRANT = 5;
 /**
  * Is colliding.
  * Updates the player state.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether colliding.
  */
 export function isColliding(player) {
@@ -42,7 +42,7 @@ export function isColliding(player) {
 /**
  * Collect.
  * Updates the instance state.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function collect(player) {
   if (this.collected) return;
@@ -66,7 +66,7 @@ export function startPickupAnimation() {
 /**
  * Handles collect by type.
  * Updates the instance state.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} itemX Item X.
  * @param {number} itemY Item Y.
  */
@@ -80,7 +80,7 @@ export function handleCollectByType(player, itemX, itemY) {
  * Collect coin.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} itemX Item X.
  * @param {number} itemY Item Y.
  */
@@ -94,7 +94,7 @@ export function collectCoin(player, itemX, itemY) {
  * Collect heart.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} itemX Item X.
  * @param {number} itemY Item Y.
  */
@@ -108,7 +108,7 @@ export function collectHeart(player, itemX, itemY) {
  * Collect gun.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} itemX Item X.
  * @param {number} itemY Item Y.
  */

@@ -363,7 +363,7 @@ export class Player extends MovableObject {
    * Updates.
    * Triggers audio playback or updates audio state.
    * @param {number} dt Delta time in seconds.
-   * @param {import("../../../engine/input/input.class.js").Input} input Input handler.
+   * @param {Input} input Input handler.
    */
   update(dt, input) {
     updatePlayer(this, dt, input, playerAudio);
@@ -373,7 +373,7 @@ export class Player extends MovableObject {
    * Renders.
    * Uses ctx, camera to perform the operation.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    */
   render(ctx, camera) {
     renderPlayer(this, ctx, camera, { debugHitbox: DEBUG_HITBOX });

@@ -1,8 +1,8 @@
 /**
  * Can start enemy attack.
  * Updates the player state.
- * @param {import("../../player/player.class.js").Player} playerInfo Player info.
- * @param {import("../../player/player.class.js").Player} player Player instance.
+ * @param {Player} playerInfo Player info.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether start enemy attack.
  */
 export function canStartEnemyAttack(playerInfo, player) {
@@ -12,9 +12,9 @@ export function canStartEnemyAttack(playerInfo, player) {
 /**
  * Try start melee attack.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("../../player/player.class.js").Player} playerInfo Player info.
- * @param {import("../../player/player.class.js").Player} player Player instance.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Player} playerInfo Player info.
+ * @param {Player} player Player instance.
  * @returns {*} Result value.
  */
 export function tryStartMeleeAttack(enemy, playerInfo, player) {
@@ -30,7 +30,7 @@ export function tryStartMeleeAttack(enemy, playerInfo, player) {
 /**
  * Is player in range.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {number} deltaX Delta X.
  * @param {number} absoluteDeltaY Absolute delta Y.
  * @returns {boolean} Whether player in range.

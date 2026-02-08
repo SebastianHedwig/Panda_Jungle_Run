@@ -3,8 +3,8 @@
  * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
- * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
- * @param {import("../entities/boss/boss.class.js").Boss} boss Boss instance.
+ * @param {Camera} camera Camera instance.
+ * @param {Boss} boss Boss instance.
  */
 export function drawBossIndicator(ctx, canvas, camera, boss) {
   if (!this.shouldRenderBossIndicator(boss)) return;
@@ -17,7 +17,7 @@ export function drawBossIndicator(ctx, canvas, camera, boss) {
 /**
  * Should render boss indicator.
  * Updates the boss state.
- * @param {import("../entities/boss/boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @returns {boolean} Whether render boss indicator.
  */
 export function shouldRenderBossIndicator(boss) {
@@ -77,9 +77,9 @@ export function drawVerticalIndicator(ctx, placement, indicatorStyle) {
 /**
  * Returns boss indicator placement.
  * Updates the instance state.
- * @param {import("../entities/boss/boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {HTMLCanvasElement} canvas Target canvas.
- * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @param {*} indicatorStyle Indicator style.
  * @returns {*} Boss indicator placement.
  */
@@ -92,8 +92,8 @@ export function getBossIndicatorPlacement(boss, canvas, camera, indicatorStyle) 
 /**
  * Returns boss indicator base.
  * Updates the boss state.
- * @param {import("../entities/boss/boss.class.js").Boss} boss Boss instance.
- * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Boss} boss Boss instance.
+ * @param {Camera} camera Camera instance.
  * @param {*} indicatorStyle Indicator style.
  * @returns {Object} Boss indicator base.
  */

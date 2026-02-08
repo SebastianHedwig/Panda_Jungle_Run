@@ -6,7 +6,7 @@ const bossAudio = new BossAudio();
 /**
  * Creates boss attacks.
  * Uses boss to compute the result.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @returns {Object} Boss attacks.
  */
 export function createBossAttacks(boss) {
@@ -17,7 +17,7 @@ export function createBossAttacks(boss) {
  * Creates boss attack 1.
  * Triggers audio playback or updates audio state.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @returns {Object} Boss attack 1.
  */
 function createBossAttack1(boss) {
@@ -40,7 +40,7 @@ function createBossAttack1(boss) {
  * Creates boss attack 2.
  * Triggers audio playback or updates audio state.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @returns {Object} Boss attack 2.
  */
 function createBossAttack2(boss) {
@@ -62,8 +62,8 @@ function createBossAttack2(boss) {
 /**
  * Can attempt boss attack.
  * Updates the player state.
- * @param {import("../player/player.class.js").Player} playerInfo Player info.
- * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {Player} playerInfo Player info.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether attempt boss attack.
  */
 export function canAttemptBossAttack(playerInfo, player) {
@@ -73,7 +73,7 @@ export function canAttemptBossAttack(playerInfo, player) {
 /**
  * Can use boss height.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} absoluteDeltaY Absolute delta Y.
  * @returns {boolean} Whether use boss height.
  */
@@ -86,7 +86,7 @@ export function canUseBossHeight(boss, absoluteDeltaY) {
 /**
  * Select boss attack.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {boolean} canAttack1 Whether attack 1.
  * @param {boolean} canAttack2 Whether attack 2.
  * @returns {*} Result value.
@@ -102,7 +102,7 @@ export function selectBossAttack(boss, canAttack1, canAttack2) {
 /**
  * Returns boss attack height tolerance.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {*} attackConfiguration Attack configuration.
  * @returns {*} Boss attack height tolerance.
  */
@@ -114,7 +114,7 @@ export function getBossAttackHeightTolerance(boss, attackConfiguration) {
 /**
  * Configure boss attack.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {*} attackConfiguration Attack configuration.
  * @param {number} heightTolerance Height tolerance.
  * @param {string} attackId Attack element id.
@@ -131,7 +131,7 @@ export function configureBossAttack(boss, attackConfiguration, heightTolerance, 
 /**
  * Resets boss run state.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  */
 export function resetBossRunState(boss) {
   boss.isRunning = false;
@@ -141,7 +141,7 @@ export function resetBossRunState(boss) {
 /**
  * Sets boss running.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {boolean} isRunning Whether running.
  */
 export function setBossRunning(boss, isRunning) {
@@ -152,7 +152,7 @@ export function setBossRunning(boss, isRunning) {
  * Should start running burst.
  * Updates the boss state.
  * Introduces randomness into the outcome.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @returns {boolean} Whether start running burst.
  */
 export function shouldStartRunningBurst(boss) {
@@ -162,7 +162,7 @@ export function shouldStartRunningBurst(boss) {
 /**
  * Starts boss running burst.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  */
 export function startBossRunningBurst(boss) {
   boss.runningBurstTimer = boss.runningBurstDuration;
@@ -173,8 +173,8 @@ export function startBossRunningBurst(boss) {
 /**
  * Can boss deal attack damage.
  * Updates the player state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
- * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {Boss} boss Boss instance.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether boss deal attack damage.
  */
 export function canBossDealAttackDamage(boss, player) {
@@ -184,8 +184,8 @@ export function canBossDealAttackDamage(boss, player) {
 /**
  * Returns boss attack context.
  * Updates the player state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
- * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {Boss} boss Boss instance.
+ * @param {Player} player Player instance.
  * @returns {Object} Boss attack context.
  */
 export function getBossAttackContext(boss, player) {
@@ -205,7 +205,7 @@ export function getBossAttackContext(boss, player) {
  * Is boss attack contact valid.
  * Updates the player state.
  * @param {*} attackContext Attack context.
- * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether boss attack contact valid.
  */
 export function isBossAttackContactValid(attackContext, player) {
@@ -219,8 +219,8 @@ export function isBossAttackContactValid(attackContext, player) {
  * Applies boss attack damage.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
- * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {Boss} boss Boss instance.
+ * @param {Player} player Player instance.
  * @param {*} popupDelay Popup delay.
  */
 export function applyBossAttackDamage(boss, player, popupDelay) {
@@ -233,7 +233,7 @@ export function applyBossAttackDamage(boss, player, popupDelay) {
 /**
  * Applies player invulnerability.
  * Updates the player state.
- * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function applyPlayerInvulnerability(player) {
   if (typeof player.invulnerableTimer === "number") {
@@ -245,7 +245,7 @@ function applyPlayerInvulnerability(player) {
  * Handles boss damage result.
  * Triggers audio playback or updates audio state.
  * Advances animation state and sprites.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {boolean} prevDead Prev dead.
  */
 export function handleBossDamageResult(boss, prevDead) {

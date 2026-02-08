@@ -4,7 +4,7 @@ import { WORLD_WIDTH } from "../../../config/config.js";
 /**
  * Returns heart centers.
  * Updates the world state.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @returns {*} Heart centers.
  */
 function getHeartCenters(world) {
@@ -40,7 +40,7 @@ function getGunTargets(count) {
 /**
  * Find platform under target.
  * Updates the world state.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} targetX Target X.
  * @returns {*} Result value.
  */
@@ -51,7 +51,7 @@ function findPlatformUnderTarget(world, targetX) {
 /**
  * Returns gun base placement.
  * Uses platformUnderTarget, targetX to compute the result.
- * @param {import("../../../engine/world/platform.class.js").Platform} platformUnderTarget Platform under target.
+ * @param {Platform} platformUnderTarget Platform under target.
  * @param {number} targetX Target X.
  * @returns {Object} Gun base placement.
  */
@@ -90,7 +90,7 @@ function tryPlaceGunWithOffsets(guns, placementOffsets, basePlacement, farFromHe
 /**
  * Place gun at target.
  * Uses world, guns, targetX, farFromHearts to perform the operation.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {*} guns Guns.
  * @param {number} targetX Target X.
  * @param {*} farFromHearts Far from hearts.
@@ -107,7 +107,7 @@ function placeGunAtTarget(world, guns, targetX, farFromHearts) {
 /**
  * Place guns. If omitted, default values are used.
  * Updates the world state.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} [count] Count.
  */
 export function placeGuns(world, count = 4) {

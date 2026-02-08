@@ -3,7 +3,7 @@ import { FACING_RIGHT, PLAYER_HURT_IMMUNITY_TIME } from "../../../../config/conf
 /**
  * Try deal attack damage. If omitted, default values are used.
  * Updates the player state.
- * @param {import("../../player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {*} [popupDelay] Popup delay.
  * @returns {*} Result value.
  */
@@ -21,9 +21,9 @@ export function tryDealAttackDamage(player, popupDelay = 0) {
  * Handles attack state.
  * Advances animation state and sprites.
  * Updates the enemy state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
- * @param {import("../../player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {*} Result value.
  */
 export function handleAttackState(enemy, dt, player) {
@@ -41,7 +41,7 @@ export function handleAttackState(enemy, dt, player) {
 /**
  * Updates attack timer.
  * Updates the enemy state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
  */
 function updateAttackTimer(enemy, dt) {
@@ -52,7 +52,7 @@ function updateAttackTimer(enemy, dt) {
  * Updates attack movement.
  * Advances animation state and sprites.
  * Updates the enemy state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
  */
 function updateAttackMovement(enemy, dt) {
@@ -69,7 +69,7 @@ function updateAttackMovement(enemy, dt) {
 /**
  * Should stop attack at edge.
  * Updates the enemy state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {number} nextX Next X.
  * @returns {boolean} Whether stop attack at edge.
  */
@@ -84,7 +84,7 @@ function shouldStopAttackAtEdge(enemy, nextX) {
  * End sliding attack.
  * Advances animation state and sprites.
  * Updates the enemy state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  */
 function endSlidingAttack(enemy) {
   enemy.isAttacking = false;
@@ -97,7 +97,7 @@ function endSlidingAttack(enemy) {
 /**
  * Finish attack if needed.
  * Updates the enemy state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  */
 function finishAttackIfNeeded(enemy) {
   if (enemy.attackTimer > 0) return;
@@ -110,9 +110,9 @@ function finishAttackIfNeeded(enemy) {
 /**
  * Try start attack if in range.
  * Updates the enemy state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("../../player/player.class.js").Player} playerInfo Player info.
- * @param {import("../../player/player.class.js").Player} player Player instance.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Player} playerInfo Player info.
+ * @param {Player} player Player instance.
  * @returns {*} Result value.
  */
 export function tryStartAttackIfInRange(enemy, playerInfo, player) {
@@ -122,8 +122,8 @@ export function tryStartAttackIfInRange(enemy, playerInfo, player) {
 /**
  * Handles player collision.
  * Updates the player state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("../../player/player.class.js").Player} player Player instance.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Player} player Player instance.
  */
 export function handlePlayerCollision(enemy, player) {
   const playerCanBeHit =
@@ -140,7 +140,7 @@ export function handlePlayerCollision(enemy, player) {
 /**
  * Applies player invulnerability.
  * Updates the player state.
- * @param {import("../../player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function applyPlayerInvulnerability(player) {
   if (typeof player.invulnerableTimer === "number") {
@@ -151,8 +151,8 @@ function applyPlayerInvulnerability(player) {
 /**
  * Can deal attack damage.
  * Updates the player state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("../../player/player.class.js").Player} player Player instance.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether deal attack damage.
  */
 function canDealAttackDamage(enemy, player) {
@@ -162,8 +162,8 @@ function canDealAttackDamage(enemy, player) {
 /**
  * Returns attack context.
  * Updates the player state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("../../player/player.class.js").Player} player Player instance.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Player} player Player instance.
  * @returns {Object} Attack context.
  */
 function getAttackContext(enemy, player) {
@@ -180,9 +180,9 @@ function getAttackContext(enemy, player) {
 /**
  * Is attack contact valid.
  * Updates the player state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {*} attackContext Attack context.
- * @param {import("../../player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether attack contact valid.
  */
 function isAttackContactValid(enemy, attackContext, player) {
@@ -195,8 +195,8 @@ function isAttackContactValid(enemy, attackContext, player) {
 /**
  * Applies attack damage to player.
  * Updates the player state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("../../player/player.class.js").Player} player Player instance.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Player} player Player instance.
  * @param {*} popupDelay Popup delay.
  */
 function applyAttackDamageToPlayer(enemy, player, popupDelay) {

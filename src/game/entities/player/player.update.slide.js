@@ -5,10 +5,10 @@ import { checkSlideHits } from "./player.update.slideHits.js";
  * Handles slide flow.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
- * @param {import("../../../engine/input/input.class.js").Input} input Input handler.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Input} input Input handler.
+ * @param {Player} playerAudio Player audio.
  * @returns {*} Result value.
  */
 export function handleSlideFlow(player, dt, input, playerAudio) {
@@ -25,7 +25,7 @@ export function handleSlideFlow(player, dt, input, playerAudio) {
 /**
  * Returns slide keys down.
  * Reads input state to decide actions.
- * @param {import("../../../engine/input/input.class.js").Input} input Input handler.
+ * @param {Input} input Input handler.
  * @returns {*} Slide keys down.
  */
 function getSlideKeysDown(input) {
@@ -36,9 +36,9 @@ function getSlideKeysDown(input) {
  * Should start slide.
  * Reads input state to decide actions.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {*} slideKeysDown Slide keys down.
- * @param {import("../../../engine/input/input.class.js").Input} input Input handler.
+ * @param {Input} input Input handler.
  * @returns {boolean} Whether start slide.
  */
 function shouldStartSlide(player, slideKeysDown, input) {
@@ -54,7 +54,7 @@ function shouldStartSlide(player, slideKeysDown, input) {
 /**
  * Starts slide from input.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function startSlideFromInput(player) {
   player.startSlide();
@@ -65,7 +65,7 @@ function startSlideFromInput(player) {
 /**
  * Updates slide ready.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {*} slideKeysDown Slide keys down.
  */
 function updateSlideReady(player, slideKeysDown) {
@@ -76,9 +76,9 @@ function updateSlideReady(player, slideKeysDown) {
  * Updates sliding state.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} playerAudio Player audio.
  * @returns {*} Result value.
  */
 function updateSlidingState(player, dt, playerAudio) {
@@ -94,7 +94,7 @@ function updateSlidingState(player, dt, playerAudio) {
 /**
  * Updates slide position.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
  */
@@ -112,7 +112,7 @@ function updateSlidePosition(player, dt) {
 /**
  * Updates slide invulnerability.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function updateSlideInvulnerability(player) {
   player.invulnerableTimer = Math.max(player.invulnerableTimer, player.slideInvulnerableDuring);
@@ -122,7 +122,7 @@ function updateSlideInvulnerability(player) {
 /**
  * End slide.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function endSlide(player) {
   player.isSliding = false;
@@ -133,7 +133,7 @@ function endSlide(player) {
  * Applies slide animation.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 function applySlideAnimation(player, dt) {

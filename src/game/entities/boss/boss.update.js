@@ -11,9 +11,9 @@ import {
 /**
  * Updates boss.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
- * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function updateBoss(boss, dt, player) {
   if (handleBossDeath(boss, dt)) return;
@@ -31,7 +31,7 @@ export function updateBoss(boss, dt, player) {
 /**
  * Handles boss death.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
  */
@@ -47,7 +47,7 @@ function handleBossDeath(boss, dt) {
  * Updates boss death frames.
  * Advances animation state and sprites.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  */
 function updateBossDeathFrames(boss, dt) {
@@ -65,7 +65,7 @@ function updateBossDeathFrames(boss, dt) {
 /**
  * Updates boss death timer.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  */
 function updateBossDeathTimer(boss, dt) {
@@ -77,7 +77,7 @@ function updateBossDeathTimer(boss, dt) {
 /**
  * Updates boss cooldowns.
  * Applies physics updates like gravity and velocity.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  */
 function updateBossCooldowns(boss, dt) {
@@ -93,7 +93,7 @@ function updateBossCooldowns(boss, dt) {
 /**
  * Updates boss timer.
  * Uses boss, timerKey, dt to perform the operation.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} timerKey Timer key.
  * @param {number} dt Delta time in seconds.
  */
@@ -105,7 +105,7 @@ function updateBossTimer(boss, timerKey, dt) {
  * Handles boss hit stun.
  * Advances animation state and sprites.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
  */
@@ -124,7 +124,7 @@ function handleBossHitStun(boss, dt) {
  * Handles boss hurt anim.
  * Advances animation state and sprites.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
  */
@@ -142,8 +142,8 @@ function handleBossHurtAnim(boss, dt) {
 /**
  * Handles dead player state.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
- * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {Boss} boss Boss instance.
+ * @param {Player} player Player instance.
  */
 function handleDeadPlayerState(boss, player) {
   if (!player?.isDead) return;
@@ -155,8 +155,8 @@ function handleDeadPlayerState(boss, player) {
  * Handles boss jump.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
- * @param {import("../player/player.class.js").Player} playerInfo Player info.
+ * @param {Boss} boss Boss instance.
+ * @param {Player} playerInfo Player info.
  */
 function handleBossJump(boss, playerInfo) {
   const wantJump =
@@ -175,9 +175,9 @@ function handleBossJump(boss, playerInfo) {
 /**
  * Handles boss attack state.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
- * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {*} Result value.
  */
 function handleBossAttackState(boss, dt, player) {
@@ -194,7 +194,7 @@ function handleBossAttackState(boss, dt, player) {
  * Updates boss attack animation.
  * Advances animation state and sprites.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  */
 function updateBossAttackAnimation(boss, dt) {
@@ -207,7 +207,7 @@ function updateBossAttackAnimation(boss, dt) {
 /**
  * Finish boss attack if needed.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  */
 function finishBossAttackIfNeeded(boss) {
   if (boss.attackTimer > 0) return;
@@ -222,10 +222,10 @@ function finishBossAttackIfNeeded(boss) {
 /**
  * Handles boss movement.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
- * @param {import("../player/player.class.js").Player} player Player instance.
- * @param {import("../player/player.class.js").Player} playerInfo Player info.
+ * @param {Player} player Player instance.
+ * @param {Player} playerInfo Player info.
  */
 function handleBossMovement(boss, dt, player, playerInfo) {
   const movementContext = getBossMovementContext(boss, player, playerInfo);
@@ -244,9 +244,9 @@ function handleBossMovement(boss, dt, player, playerInfo) {
 /**
  * Returns boss movement context.
  * Updates the player state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
- * @param {import("../player/player.class.js").Player} player Player instance.
- * @param {import("../player/player.class.js").Player} playerInfo Player info.
+ * @param {Boss} boss Boss instance.
+ * @param {Player} player Player instance.
+ * @param {Player} playerInfo Player info.
  * @returns {Object} Boss movement context.
  */
 function getBossMovementContext(boss, player, playerInfo) {
@@ -267,11 +267,11 @@ function getBossMovementContext(boss, player, playerInfo) {
 /**
  * Is boss edge blocked.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
- * @param {import("../player/player.class.js").Player} playerInfo Player info.
+ * @param {Boss} boss Boss instance.
+ * @param {Player} playerInfo Player info.
  * @param {boolean} canChase Whether chase.
  * @param {Function} onLowestPlatform On lowest platform.
- * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Platform} platform Platform.
  * @returns {boolean} Whether boss edge blocked.
  */
 function isBossEdgeBlocked(boss, playerInfo, canChase, onLowestPlatform, platform) {
@@ -291,8 +291,8 @@ function isBossEdgeBlocked(boss, playerInfo, canChase, onLowestPlatform, platfor
 /**
  * Returns boss move dir.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
- * @param {import("../player/player.class.js").Player} playerInfo Player info.
+ * @param {Boss} boss Boss instance.
+ * @param {Player} playerInfo Player info.
  * @returns {*} Boss move dir.
  */
 function getBossMoveDir(boss, playerInfo) {
@@ -311,7 +311,7 @@ function getBossMoveDir(boss, playerInfo) {
 /**
  * Adjust boss move dir.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {*} moveDirection Move direction.
  * @param {number} dt Delta time in seconds.
  * @param {*} movementContext Movement context.
@@ -331,7 +331,7 @@ function adjustBossMoveDir(boss, moveDirection, dt, movementContext) {
 /**
  * Applies boss move.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  * @param {*} moveDirection Move direction.
  */

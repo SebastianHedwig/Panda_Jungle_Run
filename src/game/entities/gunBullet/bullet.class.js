@@ -11,7 +11,7 @@ export class Bullet {
    * @param {number} startX Start X.
    * @param {number} startY Start Y.
    * @param {*} direction Direction.
-   * @param {import("../../../core/world.class.js").World} world World instance.
+   * @param {World} world World instance.
    */
   constructor(startX, startY, direction, world) {
     this.initPosition(startX, startY, direction);
@@ -48,7 +48,7 @@ export class Bullet {
    * Initializes state.
    * Updates the instance state.
    * @param {*} direction Direction.
-   * @param {import("../../../core/world.class.js").World} world World instance.
+   * @param {World} world World instance.
    */
   initState(direction, world) {
     this.facingDirection = direction;
@@ -134,7 +134,7 @@ export class Bullet {
    * Did hit platform.
    * Uses bounds, platform to perform the operation.
    * @param {*} bounds Bounds.
-   * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+   * @param {Platform} platform Platform.
    * @returns {*} Result value.
    */
   didHitPlatform(bounds, platform) {
@@ -199,7 +199,7 @@ export class Bullet {
    * Try hit enemy.
    * Updates the world state.
    * Spawns visual feedback effects.
-   * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+   * @param {EnemyBase} enemy Enemy instance.
    * @param {boolean} shouldPlayImpactSound Whether play impact sound.
    */
   tryHitEnemy(enemy, shouldPlayImpactSound) {
@@ -214,7 +214,7 @@ export class Bullet {
   /**
    * Applies enemy damage.
    * Updates the enemy state.
-   * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+   * @param {EnemyBase} enemy Enemy instance.
    */
   applyEnemyDamage(enemy) {
     enemy.takeDamage?.(PLAYER_BULLET_DAMAGE);
@@ -224,7 +224,7 @@ export class Bullet {
    * Maybe spawn hit effect.
    * Updates the instance state.
    * Spawns visual feedback effects.
-   * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+   * @param {EnemyBase} enemy Enemy instance.
    */
   maybeSpawnHitEffect(enemy) {
     if (!this.isHitEffectAllowed(enemy)) return;
@@ -235,7 +235,7 @@ export class Bullet {
    * Is hit effect allowed.
    * Updates the enemy state.
    * Spawns visual feedback effects.
-   * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+   * @param {EnemyBase} enemy Enemy instance.
    * @returns {boolean} Whether hit effect allowed.
    */
   isHitEffectAllowed(enemy) {
@@ -246,7 +246,7 @@ export class Bullet {
    * Spawns hit effect for enemy.
    * Updates the world state.
    * Spawns visual feedback effects.
-   * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+   * @param {EnemyBase} enemy Enemy instance.
    */
   spawnHitEffectForEnemy(enemy) {
     const { x: enemyX, y: enemyY, width: enemyWidth, height: enemyHeight } = enemy;
@@ -275,7 +275,7 @@ export class Bullet {
    * Renders to the canvas context.
    * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    */
   render(ctx, camera) {
     const { screenX, screenY } = this.getScreenPosition(camera);
@@ -288,7 +288,7 @@ export class Bullet {
   /**
    * Returns screen position.
    * Updates the instance state.
-   * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    * @returns {Object} Screen position.
    */
   getScreenPosition(camera) {

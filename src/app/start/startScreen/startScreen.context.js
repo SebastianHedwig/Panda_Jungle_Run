@@ -101,8 +101,8 @@ export const createControlsOverlays = () => ({
  * Creates active controls overlay getter.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
- * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.controlsOverlayDesktop] Controls overlay desktop.
- * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.controlsOverlayMobile] Controls overlay mobile.
+ * @param {ControlsOverlay | ControlsOverlayMobile} [options.controlsOverlayDesktop] Controls overlay desktop.
+ * @param {ControlsOverlay | ControlsOverlayMobile} [options.controlsOverlayMobile] Controls overlay mobile.
  * @returns {*} Active controls overlay getter.
  */
 export const createActiveControlsOverlayGetter = ({ controlsOverlayDesktop, controlsOverlayMobile }) => () => {
@@ -164,8 +164,8 @@ export const createLegalLinks = () => ({
  * Binds overlay icon load.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
- * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.controlsOverlayDesktop] Controls overlay desktop.
- * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.controlsOverlayMobile] Controls overlay mobile.
+ * @param {ControlsOverlay | ControlsOverlayMobile} [options.controlsOverlayDesktop] Controls overlay desktop.
+ * @param {ControlsOverlay | ControlsOverlayMobile} [options.controlsOverlayMobile] Controls overlay mobile.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
 export const bindOverlayIconLoad = ({ controlsOverlayDesktop, controlsOverlayMobile, drawStartScreen }) => {

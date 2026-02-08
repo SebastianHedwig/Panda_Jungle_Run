@@ -93,7 +93,7 @@ export class DizzyEffect {
    * Renders.
    * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    */
   render(ctx, camera) {
     if (this.isFinished) return;
@@ -117,7 +117,7 @@ export class DizzyEffect {
    * Renders to the canvas context.
    * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    * @param {HTMLImageElement} img Img.
    */
   drawFrame(ctx, camera, img) {

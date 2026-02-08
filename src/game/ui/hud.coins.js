@@ -3,7 +3,7 @@
  * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function drawCoins(ctx, canvas, player) {
   if (!this.isCoinImageReady()) return;
@@ -74,7 +74,7 @@ export function drawCoinImage(ctx, x, y, coinSettings) {
  * @param {number} x X.
  * @param {number} y Y.
  * @param {*} coinSettings Coin settings.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function drawCoinValue(ctx, x, y, coinSettings, player) {
   const baseScale = 1;

@@ -2,7 +2,7 @@
  * Applies platform collisions.
  * Performs hitbox or collision checks.
  * Updates the instance state.
- * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function applyPlatformCollisions(player) {
   if (this.shouldSkipCollision(player)) return;
@@ -18,7 +18,7 @@ export function applyPlatformCollisions(player) {
 /**
  * Should skip collision.
  * Performs hitbox or collision checks.
- * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether skip collision.
  */
 export function shouldSkipCollision(player) {
@@ -43,7 +43,7 @@ export function getCollisionConfig() {
  * Returns player collision metrics.
  * Applies physics updates like gravity and velocity.
  * Updates the player state.
- * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {Object} Player collision metrics.
  */
 export function getPlayerCollisionMetrics(player) {
@@ -61,7 +61,7 @@ export function getPlayerCollisionMetrics(player) {
 /**
  * Resets player ground state.
  * Updates the player state.
- * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function resetPlayerGroundState(player) {
   player.onGround = false;
@@ -72,7 +72,7 @@ export function resetPlayerGroundState(player) {
  * Returns collision state.
  * Performs hitbox or collision checks.
  * Updates the instance state.
- * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {Object} Collision state.
  */
 export function getCollisionState(player) {
@@ -85,7 +85,7 @@ export function getCollisionState(player) {
 /**
  * Returns platform overlap state.
  * Performs hitbox or collision checks.
- * @param {import("../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Platform} platform Platform.
  * @param {*} collisionState Collision state.
  * @returns {Object} Platform overlap state.
  */
@@ -103,8 +103,8 @@ export function getPlatformOverlapState(platform, collisionState) {
  * Applies landing collision.
  * Performs hitbox or collision checks.
  * Updates the instance state.
- * @param {import("../engine/world/platform.class.js").Platform} platform Platform.
- * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+ * @param {Platform} platform Platform.
+ * @param {Player} player Player instance.
  * @param {*} collisionState Collision state.
  * @param {*} overlaps Overlaps.
  * @returns {*} Result value.
@@ -121,8 +121,8 @@ export function applyLandingCollision(platform, player, collisionState, overlaps
  * Applies landing from above.
  * Applies physics updates like gravity and velocity.
  * Performs hitbox or collision checks.
- * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
- * @param {import("../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Player} player Player instance.
+ * @param {Platform} platform Platform.
  * @param {*} collisionState Collision state.
  * @returns {*} Result value.
  */
@@ -143,8 +143,8 @@ export function applyLandingFromAbove(player, platform, collisionState) {
  * Applies stay grounded.
  * Applies physics updates like gravity and velocity.
  * Performs hitbox or collision checks.
- * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
- * @param {import("../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Player} player Player instance.
+ * @param {Platform} platform Platform.
  * @param {*} collisionState Collision state.
  * @returns {*} Result value.
  */
@@ -164,8 +164,8 @@ export function applyStayGrounded(player, platform, collisionState) {
  * Applies head bump.
  * Applies physics updates like gravity and velocity.
  * Performs hitbox or collision checks.
- * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
- * @param {import("../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Player} player Player instance.
+ * @param {Platform} platform Platform.
  * @param {*} collisionState Collision state.
  * @param {*} overlaps Overlaps.
  * @returns {*} Result value.
@@ -186,8 +186,8 @@ export function applyHeadBump(player, platform, collisionState, overlaps) {
  * Applies side wall collision.
  * Applies physics updates like gravity and velocity.
  * Performs hitbox or collision checks.
- * @param {import("../engine/world/platform.class.js").Platform} platform Platform.
- * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+ * @param {Platform} platform Platform.
+ * @param {Player} player Player instance.
  * @param {*} collisionState Collision state.
  * @param {*} overlaps Overlaps.
  */
@@ -207,7 +207,7 @@ export function applySideWallCollision(platform, player, collisionState, overlap
  * Applies post collision effects.
  * Performs hitbox or collision checks.
  * Updates the player state.
- * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {*} collisionState Collision state.
  */
 export function applyPostCollisionEffects(player, collisionState) {
@@ -221,7 +221,7 @@ export function applyPostCollisionEffects(player, collisionState) {
 /**
  * Applies horizontal limits.
  * Updates the player state.
- * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function applyHorizontalLimits(player) {
   if (player.x < this.left) player.x = this.left;
@@ -231,7 +231,7 @@ export function applyHorizontalLimits(player) {
 /**
  * Stops slide if blocked.
  * Updates the player state.
- * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} previousX Previous X.
  * @param {*} slideBlockMovementThreshold Slide block movement threshold.
  */

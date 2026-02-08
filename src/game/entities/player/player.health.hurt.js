@@ -4,7 +4,7 @@ const dizzyFrameDurationMultiplier = 2;
  * Applies dizzy. If omitted, default values are used.
  * Advances animation state and sprites.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} [dizzyDuration] Dizzy duration.
  */
 export function applyDizzy(player, dizzyDuration = 0) {
@@ -21,7 +21,7 @@ export function applyDizzy(player, dizzyDuration = 0) {
 /**
  * Starts hurt. If omitted, default values are used.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {*} [useDizzy] Use dizzy.
  * @returns {*} Result value.
  */
@@ -35,7 +35,7 @@ export function startHurt(player, useDizzy = true) {
 /**
  * Applies no dizzy hurt.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function applyNoDizzyHurt(player) {
   player.invulnerableTimer = Math.max(player.invulnerableTimer, player.invulnerableBlinkWindow);
@@ -45,7 +45,7 @@ function applyNoDizzyHurt(player) {
 /**
  * Begin hurt phases.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function beginHurtPhases(player) {
   player.isHurt = true;
@@ -61,7 +61,7 @@ function beginHurtPhases(player) {
  * Returns hurt durations.
  * Advances animation state and sprites.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {Object} Hurt durations.
  */
 function getHurtDurations(player) {
@@ -75,7 +75,7 @@ function getHurtDurations(player) {
 /**
  * Resets combat on hurt.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function resetCombatOnHurt(player) {
   player.isAttacking = false;
@@ -86,7 +86,7 @@ function resetCombatOnHurt(player) {
  * Sets hurt animation.
  * Advances animation state and sprites.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function setHurtAnimation(player) {
   player.setAnimation(player.dizzyFrames);
@@ -96,7 +96,7 @@ function setHurtAnimation(player) {
 /**
  * Updates hurt.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
  */
@@ -111,7 +111,7 @@ export function updateHurt(player, dt) {
 /**
  * Should enter dizzy.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether enter dizzy.
  */
 function shouldEnterDizzy(player) {
@@ -122,7 +122,7 @@ function shouldEnterDizzy(player) {
  * Starts dizzy phase.
  * Advances animation state and sprites.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function startDizzyPhase(player) {
   player.hurtPhase = "dizzy";
@@ -135,7 +135,7 @@ function startDizzyPhase(player) {
  * Returns dizzy phase duration.
  * Advances animation state and sprites.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {*} Dizzy phase duration.
  */
 function getDizzyPhaseDuration(player) {
@@ -150,7 +150,7 @@ function getDizzyPhaseDuration(player) {
 /**
  * End hurt.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function endHurt(player) {
   player.isHurt = false;

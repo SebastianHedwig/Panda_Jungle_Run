@@ -5,7 +5,7 @@ import { FACING_LEFT, FACING_RIGHT } from "../../../../config/config.js";
  * Returns collectable drop config.
  * Updates the enemy state.
  * Spawns visual feedback effects.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @returns {Object} Collectable drop config.
  */
 export function getCollectableDropConfig(enemy) {
@@ -26,7 +26,7 @@ export function getCollectableDropConfig(enemy) {
 /**
  * Creates collectable drops.
  * Uses enemy, itemType, count, dropConfig to compute the result.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {string} itemType Item type.
  * @param {number} count Count.
  * @param {*} dropConfig Drop config.
@@ -45,7 +45,7 @@ export function createCollectableDrops(enemy, itemType, count, dropConfig) {
  * Creates collectable drop.
  * Applies physics updates like gravity and velocity.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {string} itemType Item type.
  * @param {number} dropIndex Drop index.
  * @param {*} dropConfig Drop config.
@@ -68,7 +68,7 @@ function createCollectableDrop(enemy, itemType, dropIndex, dropConfig) {
 /**
  * Adds collectables to world.
  * Updates the world state.
- * @param {import("../../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {*} drops Drops.
  */
 export function addCollectablesToWorld(world, drops) {

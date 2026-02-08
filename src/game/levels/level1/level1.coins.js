@@ -7,7 +7,7 @@ const BOSS_AREA_START = WORLD_WIDTH * 0.9; // last 10% of the level
 /**
  * Builds coin placement config.
  * Updates the world state.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} totalCount Total count.
  * @param {number} ratioAbovePlatforms Ratio above platforms.
  * @returns {Object} Coin placement config.
@@ -25,7 +25,7 @@ function buildCoinPlacementConfig(world, totalCount, ratioAbovePlatforms) {
  * Returns random platform.
  * Updates the world state.
  * Introduces randomness into the outcome.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @returns {*} Random platform.
  */
 function getRandomPlatform(world) {
@@ -35,7 +35,7 @@ function getRandomPlatform(world) {
 /**
  * Returns platform coin range.
  * Uses platform, maxXLimit, config to compute the result.
- * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Platform} platform Platform.
  * @param {number} maxXLimit Max X limit.
  * @param {Object} config Configuration options.
  * @returns {Object} Platform coin range.
@@ -66,7 +66,7 @@ function shouldPlacePlatformRow(config, placement) {
  * Uses placement, config, platform to compute the result.
  * @param {*} placement Placement.
  * @param {Object} config Configuration options.
- * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Platform} platform Platform.
  * @returns {Object} Platform row params.
  */
 function getPlatformRowParams(placement, config, platform) {
@@ -80,7 +80,7 @@ function getPlatformRowParams(placement, config, platform) {
 /**
  * Try add coin.
  * Updates the world state.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} coins Coins.
  * @param {number} worldX World X.
  * @param {number} worldY World Y.
@@ -97,9 +97,9 @@ function tryAddCoin(world, coins, worldX, worldY, config) {
 /**
  * Place platform row coins.
  * Uses world, coins, platform, placement, config to perform the operation.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} coins Coins.
- * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Platform} platform Platform.
  * @param {*} placement Placement.
  * @param {Object} config Configuration options.
  */
@@ -114,9 +114,9 @@ function placePlatformRowCoins(world, coins, platform, placement, config) {
 /**
  * Place single platform coin.
  * Introduces randomness into the outcome.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} coins Coins.
- * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Platform} platform Platform.
  * @param {*} placement Placement.
  * @param {Object} config Configuration options.
  */
@@ -129,7 +129,7 @@ function placeSinglePlatformCoin(world, coins, platform, placement, config) {
 /**
  * Place platform coins batch.
  * Spawns visual feedback effects.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} coins Coins.
  * @param {Object} config Configuration options.
  * @param {number} count Count.
@@ -148,7 +148,7 @@ function placePlatformCoinsBatch(world, coins, config, count, maxXLimit) {
 /**
  * Place platform coins.
  * Uses world, coins, config to perform the operation.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} coins Coins.
  * @param {Object} config Configuration options.
  */
@@ -163,7 +163,7 @@ function placePlatformCoins(world, coins, config) {
  * Returns random coin position.
  * Updates the world state.
  * Introduces randomness into the outcome.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {Object} config Configuration options.
  * @param {number} xMaxLimit X max limit.
  * @returns {Object} Random coin position.
@@ -179,7 +179,7 @@ function getRandomCoinPosition(world, config, xMaxLimit) {
 /**
  * Place random coin batch.
  * Uses world, coins, config, count, xMaxLimit, placementAttempts to perform the operation.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} coins Coins.
  * @param {Object} config Configuration options.
  * @param {number} count Count.
@@ -201,7 +201,7 @@ function placeRandomCoinBatch(world, coins, config, count, xMaxLimit, placementA
 /**
  * Place random coins.
  * Uses world, coins, config to perform the operation.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} coins Coins.
  * @param {Object} config Configuration options.
  */
@@ -230,7 +230,7 @@ function buildCoinArcConfig(maxArcs) {
 /**
  * Returns sorted platforms.
  * Updates the world state.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @returns {*} Sorted platforms.
  */
 function getSortedPlatforms(world) {
@@ -240,8 +240,8 @@ function getSortedPlatforms(world) {
 /**
  * Returns arc params.
  * Uses currentPlatform, nextPlatform, config to compute the result.
- * @param {import("../../../engine/world/platform.class.js").Platform} currentPlatform Current platform.
- * @param {import("../../../engine/world/platform.class.js").Platform} nextPlatform Next platform.
+ * @param {Platform} currentPlatform Current platform.
+ * @param {Platform} nextPlatform Next platform.
  * @param {Object} config Configuration options.
  * @returns {Object} Arc params.
  */
@@ -261,8 +261,8 @@ function getArcParams(currentPlatform, nextPlatform, config) {
  * result.
  * @param {number} coinIndex Coin index.
  * @param {number} coinsInArc Coins in arc.
- * @param {import("../../../engine/world/platform.class.js").Platform} currentPlatform Current platform.
- * @param {import("../../../engine/world/platform.class.js").Platform} nextPlatform Next platform.
+ * @param {Platform} currentPlatform Current platform.
+ * @param {Platform} nextPlatform Next platform.
  * @param {number} gap Gap.
  * @param {Object} config Configuration options.
  * @returns {Object} Arc coin world position.
@@ -278,7 +278,7 @@ function getArcCoinWorldPosition(coinIndex, coinsInArc, currentPlatform, nextPla
 /**
  * Try add arc coin.
  * Updates the world state.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {*} arcs Arcs.
  * @param {number} worldX World X.
  * @param {number} worldY World Y.
@@ -294,10 +294,10 @@ function tryAddArcCoin(world, arcs, worldX, worldY, config) {
 /**
  * Place arc coins.
  * Uses world, arcs, currentPlatform, nextPlatform, config to perform the operation.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {*} arcs Arcs.
- * @param {import("../../../engine/world/platform.class.js").Platform} currentPlatform Current platform.
- * @param {import("../../../engine/world/platform.class.js").Platform} nextPlatform Next platform.
+ * @param {Platform} currentPlatform Current platform.
+ * @param {Platform} nextPlatform Next platform.
  * @param {Object} config Configuration options.
  * @returns {*} Result value.
  */
@@ -316,7 +316,7 @@ function placeArcCoins(world, arcs, currentPlatform, nextPlatform, config) {
 /**
  * Place coin arcs.
  * Uses world, platforms, arcs, config to perform the operation.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {*} platforms Platforms.
  * @param {*} arcs Arcs.
  * @param {Object} config Configuration options.
@@ -334,7 +334,7 @@ function placeCoinArcs(world, platforms, arcs, config) {
 /**
  * Generate coins mixed. If omitted, default values are used.
  * Uses world, totalCount, ratioAbovePlatforms to perform the operation.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} [totalCount] Total count.
  * @param {number} [ratioAbovePlatforms] Ratio above platforms.
  * @returns {*} Coins mixed.
@@ -354,7 +354,7 @@ export function generateCoinsMixed(
 /**
  * Generate coin arcs. If omitted, default values are used.
  * Uses world, maxArcs to perform the operation.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} [maxArcs] Max arcs.
  * @returns {*} Coin arcs.
  */

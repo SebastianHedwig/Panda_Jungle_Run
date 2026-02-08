@@ -3,7 +3,7 @@
  * Renders to the canvas context.
  * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  */
 export function draw(ctx, camera) {
   if (!this.images.length || this.opacity <= 0) return;
@@ -40,7 +40,7 @@ export function applyOpacity(ctx) {
 /**
  * Returns screen position.
  * Updates the instance state.
- * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @returns {Object} Screen position.
  */
 export function getScreenPosition(camera) {

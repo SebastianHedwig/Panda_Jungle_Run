@@ -56,7 +56,7 @@ export class BossDirector {
    * Updates the instance state.
    * Spawns visual feedback effects.
    * @param {number} dt Delta time in seconds.
-   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   * @param {Player} player Player instance.
    * @returns {*} Result value.
    */
   update(dt, player) {
@@ -69,7 +69,7 @@ export class BossDirector {
   /**
    * Should process update.
    * Updates the instance state.
-   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   * @param {Player} player Player instance.
    * @returns {boolean} Whether process update.
    */
   shouldProcessUpdate(player) {
@@ -80,7 +80,7 @@ export class BossDirector {
    * Should spawn boss.
    * Updates the player state.
    * Spawns visual feedback effects.
-   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   * @param {Player} player Player instance.
    * @returns {boolean} Whether spawn boss.
    */
   shouldSpawnBoss(player) {
@@ -110,7 +110,7 @@ export class BossDirector {
    * Spawns boss.
    * Updates the instance state.
    * Spawns visual feedback effects.
-   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   * @param {Player} player Player instance.
    */
   spawnBoss(player) {
     if (!this.bossSprites) return;
@@ -127,7 +127,7 @@ export class BossDirector {
    * Returns boss spawn position.
    * Updates the player state.
    * Spawns visual feedback effects.
-   * @param {import("../entities/player/player.class.js").Player} player Player instance.
+   * @param {Player} player Player instance.
    * @returns {Object} Boss spawn position.
    */
   getBossSpawnPosition(player) {
@@ -178,7 +178,7 @@ export class BossDirector {
   /**
    * Register boss.
    * Updates the world state.
-   * @param {import("../entities/boss/boss.class.js").Boss} boss Boss instance.
+   * @param {Boss} boss Boss instance.
    */
   registerBoss(boss) {
     this.world.addEnemies([boss]);

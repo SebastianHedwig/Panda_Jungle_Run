@@ -3,10 +3,10 @@ import { FACING_LEFT, FACING_RIGHT } from "../../../config/config.js";
 /**
  * Handles movement and jump.
  * Triggers audio playback or updates audio state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
- * @param {import("../../../engine/input/input.class.js").Input} input Input handler.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Input} input Input handler.
+ * @param {Player} playerAudio Player audio.
  */
 export function handleMovementAndJump(player, dt, input, playerAudio) {
   const directionState = getDirectionState(input);
@@ -20,7 +20,7 @@ export function handleMovementAndJump(player, dt, input, playerAudio) {
 /**
  * Returns direction state.
  * Reads input state to decide actions.
- * @param {import("../../../engine/input/input.class.js").Input} input Input handler.
+ * @param {Input} input Input handler.
  * @returns {Object} Direction state.
  */
 function getDirectionState(input) {
@@ -33,7 +33,7 @@ function getDirectionState(input) {
 /**
  * Applies directional movement.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @param {*} directionState Direction state.
  * @returns {*} Result value.
@@ -56,9 +56,9 @@ function applyDirectionalMovement(player, dt, directionState) {
  * Applies running speed.
  * Reads input state to decide actions.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {*} moving Moving.
- * @param {import("../../../engine/input/input.class.js").Input} input Input handler.
+ * @param {Input} input Input handler.
  * @returns {*} Result value.
  */
 function applyRunningSpeed(player, moving, input) {
@@ -74,7 +74,7 @@ function applyRunningSpeed(player, moving, input) {
  * Applies movement animation.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {*} moving Moving.
  * @param {*} running Running.
  */
@@ -88,10 +88,10 @@ function applyMovementAnimation(player, moving, running) {
 /**
  * Handles advanced jump.
  * Triggers audio playback or updates audio state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
- * @param {import("../../../engine/input/input.class.js").Input} input Input handler.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Input} input Input handler.
+ * @param {Player} playerAudio Player audio.
  */
 function handleAdvancedJump(player, dt, input, playerAudio) {
   updateJumpInput(player, input);
@@ -105,8 +105,8 @@ function handleAdvancedJump(player, dt, input, playerAudio) {
  * Updates jump input.
  * Reads input state to decide actions.
  * Applies physics updates like gravity and velocity.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../../../engine/input/input.class.js").Input} input Input handler.
+ * @param {Player} player Player instance.
+ * @param {Input} input Input handler.
  */
 function updateJumpInput(player, input) {
   if (input.isPressed(" ")) {
@@ -118,7 +118,7 @@ function updateJumpInput(player, input) {
 /**
  * Updates coyote timer.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 function updateCoyoteTimer(player, dt) {
@@ -130,8 +130,8 @@ function updateCoyoteTimer(player, dt) {
  * Try consume jump buffer.
  * Triggers audio playback or updates audio state.
  * Applies physics updates like gravity and velocity.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} player Player instance.
+ * @param {Player} playerAudio Player audio.
  */
 function tryConsumeJumpBuffer(player, playerAudio) {
   if (player.jumpBufferTimer <= 0 || player.coyoteTimer <= 0) return;
@@ -144,7 +144,7 @@ function tryConsumeJumpBuffer(player, playerAudio) {
  * Applies jump cut.
  * Applies physics updates like gravity and velocity.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function applyJumpCut(player) {
   if (!player.jumpHeld && player.velocityY < 0) player.velocityY *= player.jumpCutMultiplier;
@@ -154,7 +154,7 @@ function applyJumpCut(player) {
  * Decay jump buffer.
  * Applies physics updates like gravity and velocity.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 function decayJumpBuffer(player, dt) {
@@ -165,7 +165,7 @@ function decayJumpBuffer(player, dt) {
  * Finalize movement.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 function finalizeMovement(player, dt) {

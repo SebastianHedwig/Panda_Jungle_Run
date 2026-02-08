@@ -1,9 +1,9 @@
 /**
  * Handles combat flow.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
- * @param {import("../../../engine/input/input.class.js").Input} input Input handler.
+ * @param {Input} input Input handler.
  * @returns {*} Result value.
  */
 export function handleCombatFlow(player, dt, input) {
@@ -20,8 +20,8 @@ export function handleCombatFlow(player, dt, input) {
  * Handles attack shoot input.
  * Reads input state to decide actions.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../../../engine/input/input.class.js").Input} input Input handler.
+ * @param {Player} player Player instance.
+ * @param {Input} input Input handler.
  */
 function handleAttackShootInput(player, input) {
   if (!input.isPressed("Enter")) return;
@@ -33,7 +33,7 @@ function handleAttackShootInput(player, input) {
  * Handles shooting.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
  */
@@ -50,7 +50,7 @@ function handleShooting(player, dt) {
  * Handles attacking.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
  */
@@ -66,7 +66,7 @@ function handleAttacking(player, dt) {
 /**
  * Handles queued attack.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function handleQueuedAttack(player) {
   if (!player.attackQueued) return;

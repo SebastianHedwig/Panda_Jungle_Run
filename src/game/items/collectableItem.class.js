@@ -37,7 +37,7 @@ export class CollectableItem {
    * @param {number} x X.
    * @param {number} y Y.
    * @param {string} [type] Type.
-   * @param {import("../../core/world.class.js").World} [world] World instance.
+   * @param {World} [world] World instance.
    */
   constructor(x, y, type = "coin", world = null) {
     this.x = x;
@@ -279,7 +279,7 @@ export class CollectableItem {
    * Handles platform collision.
    * Applies physics updates like gravity and velocity.
    * Performs hitbox or collision checks.
-   * @param {import("../../core/world.class.js").World} world World instance.
+   * @param {World} world World instance.
    * @param {number} previousBottom Previous bottom.
    * @param {number} currentBottom Current bottom.
    * @returns {*} Result value.

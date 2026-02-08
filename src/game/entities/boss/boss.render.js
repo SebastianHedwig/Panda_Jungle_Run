@@ -3,9 +3,9 @@ import { FACING_RIGHT } from "../../../config/config.js";
 /**
  * Renders boss. If omitted, default values are used.
  * Uses boss, ctx, camera, options to perform the operation.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @param {Object} [options] Configuration options.
  * @param {*} [options.debugHitbox] Debug hitbox.
  */
@@ -22,7 +22,7 @@ export function renderBoss(boss, ctx, camera, { debugHitbox = false } = {}) {
  * Returns boss render settings.
  * Advances animation state and sprites.
  * Performs hitbox or collision checks.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @returns {Object} Boss render settings.
  */
 function getBossRenderSettings(boss) {
@@ -37,9 +37,9 @@ function getBossRenderSettings(boss) {
 /**
  * Draws boss sprite.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @param {*} renderSettings Render settings.
  * @param {*} debugHitbox Debug hitbox.
  * @returns {*} Result value.
@@ -54,9 +54,9 @@ function drawBossSprite(boss, ctx, camera, renderSettings, debugHitbox) {
  * Draws boss sprite flipped.
  * Renders to the canvas context.
  * Advances animation state and sprites.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @param {*} renderSettings Render settings.
  * @param {*} debugHitbox Debug hitbox.
  */
@@ -72,9 +72,9 @@ function drawBossSpriteFlipped(boss, ctx, camera, renderSettings, debugHitbox) {
  * Draws boss sprite normal.
  * Renders to the canvas context.
  * Advances animation state and sprites.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @param {*} renderSettings Render settings.
  * @param {*} debugHitbox Debug hitbox.
  */
@@ -89,9 +89,9 @@ function drawBossSpriteNormal(boss, ctx, camera, renderSettings, debugHitbox) {
  * Draws boss hitbox flipped.
  * Renders to the canvas context.
  * Performs hitbox or collision checks.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @param {*} renderSettings Render settings.
  */
 function drawBossHitboxFlipped(boss, ctx, camera, renderSettings) {
@@ -105,9 +105,9 @@ function drawBossHitboxFlipped(boss, ctx, camera, renderSettings) {
  * Draws boss hitbox normal.
  * Renders to the canvas context.
  * Performs hitbox or collision checks.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @param {*} renderSettings Render settings.
  */
 function drawBossHitboxNormal(boss, ctx, camera, renderSettings) {
@@ -120,9 +120,9 @@ function drawBossHitboxNormal(boss, ctx, camera, renderSettings) {
 /**
  * Draws boss health bar.
  * Uses boss, ctx, camera, renderSettings to perform the operation.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @param {*} renderSettings Render settings.
  */
 function drawBossHealthBar(boss, ctx, camera, renderSettings) {
@@ -136,7 +136,7 @@ function drawBossHealthBar(boss, ctx, camera, renderSettings) {
 /**
  * Should render health bar.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @returns {boolean} Whether render health bar.
  */
 function shouldRenderHealthBar(boss) {
@@ -146,8 +146,8 @@ function shouldRenderHealthBar(boss) {
 /**
  * Returns boss health bar metrics.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
- * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Boss} boss Boss instance.
+ * @param {Camera} camera Camera instance.
  * @param {*} renderSettings Render settings.
  * @returns {Object} Boss health bar metrics.
  */
@@ -198,7 +198,7 @@ function drawBossHealthBarFill(ctx, healthBarMetrics, renderSettings) {
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} healthBarMetrics Health bar metrics.
  * @param {*} renderSettings Render settings.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  */
 function drawBossHealthBarText(ctx, healthBarMetrics, renderSettings, boss) {
   ctx.fillStyle = renderSettings.healthTextColor;
@@ -216,9 +216,9 @@ function drawBossHealthBarText(ctx, healthBarMetrics, renderSettings, boss) {
  * Draws boss debug hitbox.
  * Renders to the canvas context.
  * Performs hitbox or collision checks.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @param {*} renderSettings Render settings.
  */
 function drawBossDebugHitbox(boss, ctx, camera, renderSettings) {

@@ -3,9 +3,9 @@ import { FACING_LEFT } from "../../../config/config.js";
 /**
  * Renders player. If omitted, default values are used.
  * Uses player, ctx, camera, options to perform the operation.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @param {Object} [options] Configuration options.
  * @param {*} [options.debugHitbox] Debug hitbox.
  */
@@ -23,7 +23,7 @@ export function renderPlayer(player, ctx, camera, { debugHitbox = false } = {}) 
 /**
  * Should skip render.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether skip render.
  */
 function shouldSkipRender(player) {
@@ -35,7 +35,7 @@ function shouldSkipRender(player) {
 /**
  * Is invisible blink phase.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether invisible blink phase.
  */
 function isInvisibleBlinkPhase(player) {
@@ -60,8 +60,8 @@ function applyFacingTransform(ctx, isMirroredFacing) {
  * Returns sprite draw position.
  * Advances animation state and sprites.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Player} player Player instance.
+ * @param {Camera} camera Camera instance.
  * @param {boolean} isMirroredFacing Whether mirrored facing.
  * @returns {Object} Sprite draw position.
  */
@@ -79,9 +79,9 @@ function getSpriteDrawPosition(player, camera, isMirroredFacing) {
  * Draws hitbox.
  * Renders to the canvas context.
  * Performs hitbox or collision checks.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @param {boolean} isMirroredFacing Whether mirrored facing.
  */
 function drawHitbox(player, ctx, camera, isMirroredFacing) {
@@ -96,7 +96,7 @@ function drawHitbox(player, ctx, camera, isMirroredFacing) {
  * Returns hitbox draw position.
  * Performs hitbox or collision checks.
  * @param {*} hitbox Hitbox.
- * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @param {boolean} isMirroredFacing Whether mirrored facing.
  * @returns {Object} Hitbox draw position.
  */

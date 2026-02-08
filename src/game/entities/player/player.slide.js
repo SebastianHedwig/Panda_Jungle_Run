@@ -2,8 +2,8 @@
  * Starts slide.
  * Triggers audio playback or updates audio state.
  * Applies physics updates like gravity and velocity.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} player Player instance.
+ * @param {Player} playerAudio Player audio.
  */
 export function startSlide(player, playerAudio) {
   if (player.isSliding || !player.onGround) return;
@@ -22,8 +22,8 @@ export function startSlide(player, playerAudio) {
  * Handles landing audio.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} player Player instance.
+ * @param {Player} playerAudio Player audio.
  */
 export function handleLandingAudio(player, playerAudio) {
   if (player.justLanded && player.landedOnPlatform && !player.isSliding) {

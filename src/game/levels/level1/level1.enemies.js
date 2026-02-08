@@ -18,7 +18,7 @@ function getTotalRequested(enemy1Count, enemy2Count, enemy3Count) {
 /**
  * Returns enemy platforms.
  * Updates the world state.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @returns {*} Enemy platforms.
  */
 function getEnemyPlatforms(world) {
@@ -63,7 +63,7 @@ function buildEnemyMix(enemy1Count, enemy2Count, enemy3Count) {
 /**
  * Returns enemy position.
  * Uses platform to compute the result.
- * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Platform} platform Platform.
  * @returns {Object} Enemy position.
  */
 function getEnemyPosition(platform) {
@@ -81,10 +81,10 @@ function getEnemyPosition(platform) {
  * @param {string} enemyType Enemy type.
  * @param {number} enemyX Enemy X.
  * @param {number} enemyY Enemy Y.
- * @param {import("../../../core/world.class.js").World} world World instance.
- * @param {import("../../entities/enemies/base/enemies.base.class.js").EnemyBase} enemy1Sprites Enemy 1 sprites.
- * @param {import("../../entities/enemies/base/enemies.base.class.js").EnemyBase} enemy2Sprites Enemy 2 sprites.
- * @param {import("../../entities/enemies/base/enemies.base.class.js").EnemyBase} enemy3Sprites Enemy 3 sprites.
+ * @param {World} world World instance.
+ * @param {EnemyBase} enemy1Sprites Enemy 1 sprites.
+ * @param {EnemyBase} enemy2Sprites Enemy 2 sprites.
+ * @param {EnemyBase} enemy3Sprites Enemy 3 sprites.
  */
 function pushEnemyByType(enemies, enemyType, enemyX, enemyY, world, enemy1Sprites, enemy2Sprites, enemy3Sprites) {
   if (enemyType === "e2" && enemy2Sprites) enemies.push(new Enemy2(enemyX, enemyY, enemy2Sprites, world));
@@ -96,12 +96,12 @@ function pushEnemyByType(enemies, enemyType, enemyX, enemyY, world, enemy1Sprite
  * Place enemy mix.
  * Uses world, platforms, enemyMix, enemy1Sprites, enemy2Sprites, enemy3Sprites to perform the
  * operation.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {*} platforms Platforms.
- * @param {import("../../entities/enemies/base/enemies.base.class.js").EnemyBase} enemyMix Enemy mix.
- * @param {import("../../entities/enemies/base/enemies.base.class.js").EnemyBase} enemy1Sprites Enemy 1 sprites.
- * @param {import("../../entities/enemies/base/enemies.base.class.js").EnemyBase} enemy2Sprites Enemy 2 sprites.
- * @param {import("../../entities/enemies/base/enemies.base.class.js").EnemyBase} enemy3Sprites Enemy 3 sprites.
+ * @param {EnemyBase} enemyMix Enemy mix.
+ * @param {EnemyBase} enemy1Sprites Enemy 1 sprites.
+ * @param {EnemyBase} enemy2Sprites Enemy 2 sprites.
+ * @param {EnemyBase} enemy3Sprites Enemy 3 sprites.
  * @returns {*} Result value.
  */
 function placeEnemyMix(world, platforms, enemyMix, enemy1Sprites, enemy2Sprites, enemy3Sprites) {
@@ -119,10 +119,10 @@ function placeEnemyMix(world, platforms, enemyMix, enemy1Sprites, enemy2Sprites,
 /**
  * Place enemies mixed. If omitted, default values are used.
  * Updates the world state.
- * @param {import("../../../core/world.class.js").World} world World instance.
- * @param {import("../../entities/enemies/base/enemies.base.class.js").EnemyBase} enemy1Sprites Enemy 1 sprites.
- * @param {import("../../entities/enemies/base/enemies.base.class.js").EnemyBase} enemy2Sprites Enemy 2 sprites.
- * @param {import("../../entities/enemies/base/enemies.base.class.js").EnemyBase} enemy3Sprites Enemy 3 sprites.
+ * @param {World} world World instance.
+ * @param {EnemyBase} enemy1Sprites Enemy 1 sprites.
+ * @param {EnemyBase} enemy2Sprites Enemy 2 sprites.
+ * @param {EnemyBase} enemy3Sprites Enemy 3 sprites.
  * @param {number} [enemy1Count] Enemy 1 count.
  * @param {number} [enemy2Count] Enemy 2 count.
  * @param {number} [enemy3Count] Enemy 3 count.

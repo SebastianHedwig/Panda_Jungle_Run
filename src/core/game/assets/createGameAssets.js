@@ -114,9 +114,9 @@ function collectSpritesByKeys(spriteSet, keys) {
  * Collect enemy images.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
- * @param {import("../../../game/entities/enemies/base/enemies.base.class.js").EnemyBase} [options.enemy1Sprites] Enemy 1 sprites.
- * @param {import("../../../game/entities/enemies/base/enemies.base.class.js").EnemyBase} [options.enemy2Sprites] Enemy 2 sprites.
- * @param {import("../../../game/entities/enemies/base/enemies.base.class.js").EnemyBase} [options.enemy3Sprites] Enemy 3 sprites.
+ * @param {EnemyBase} [options.enemy1Sprites] Enemy 1 sprites.
+ * @param {EnemyBase} [options.enemy2Sprites] Enemy 2 sprites.
+ * @param {EnemyBase} [options.enemy3Sprites] Enemy 3 sprites.
  */
 function collectEnemyImages({ enemy1Sprites, enemy2Sprites, enemy3Sprites }) {
   return [
@@ -131,10 +131,10 @@ function collectEnemyImages({ enemy1Sprites, enemy2Sprites, enemy3Sprites }) {
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.bgImages] Bg images.
- * @param {import("../../../engine/world/platform.class.js").Platform} [options.platformSprites] Platform sprites.
- * @param {import("../../../game/entities/player/player.class.js").Player} [options.playerFrames] Player frames.
- * @param {import("../../../game/entities/enemies/base/enemies.base.class.js").EnemyBase} [options.enemySprites] Enemy sprites.
- * @param {import("../../../game/entities/boss/boss.class.js").Boss} [options.bossSprites] Boss sprites.
+ * @param {Platform} [options.platformSprites] Platform sprites.
+ * @param {Player} [options.playerFrames] Player frames.
+ * @param {EnemyBase} [options.enemySprites] Enemy sprites.
+ * @param {Boss} [options.bossSprites] Boss sprites.
  * @param {HTMLImageElement} [options.hudCoinImg] Hud coin img.
  * @param {HTMLImageElement} [options.hudGunImg] Hud gun img.
  * @param {HTMLImageElement} [options.menuBgImg] Menu bg img.

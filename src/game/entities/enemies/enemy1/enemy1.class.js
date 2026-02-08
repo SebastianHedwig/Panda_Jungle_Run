@@ -17,7 +17,7 @@ export class Enemy1 extends EnemyBase {
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} sprites Sprites.
-   * @param {import("../../../../core/world.class.js").World} [world] World instance.
+   * @param {World} [world] World instance.
    * @param {number} [width] Width.
    * @param {number} [height] Height.
    */

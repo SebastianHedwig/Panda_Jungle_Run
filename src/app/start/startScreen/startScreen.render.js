@@ -243,7 +243,7 @@ export const drawStartButton = ({ ctx, canvas, ui, startScreenState }) => {
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
  * @param {*} [options.startScreenState] Start screen state.
- * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.getActiveControlsOverlay] Get active controls overlay.
+ * @param {ControlsOverlay | ControlsOverlayMobile} [options.getActiveControlsOverlay] Get active controls overlay.
  */
 export const drawSettingsOverlay = ({ ctx, canvas, startScreenState, getActiveControlsOverlay }) => {
   if (!startScreenState.settingsOpen || !startScreenState.startAssets.menuBg) return;
@@ -273,7 +273,7 @@ export const drawLegalStartScreen = ({ startScreenState, drawLegalPage }) => {
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
  * @param {*} [options.startScreenState] Start screen state.
  * @param {*} [options.drawLegalPage] Draw legal page.
- * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.getActiveControlsOverlay] Get active controls overlay.
+ * @param {ControlsOverlay | ControlsOverlayMobile} [options.getActiveControlsOverlay] Get active controls overlay.
  * @returns {*} Draw start screen.
  */
 export const createDrawStartScreen = ({ ctx, canvas, startScreenState, drawLegalPage, getActiveControlsOverlay }) => () => {

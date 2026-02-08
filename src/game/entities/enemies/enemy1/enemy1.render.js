@@ -6,7 +6,7 @@ import { FACING_LEFT } from "../../../../config/config.js";
  * Renders to the canvas context.
  * Advances animation state and sprites.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  */
 export function render(ctx, camera) {
   if (shouldSkipEnemyRender(this)) return;
@@ -22,7 +22,7 @@ export function render(ctx, camera) {
 /**
  * Should skip enemy render.
  * Updates the enemy state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @returns {boolean} Whether skip enemy render.
  */
 function shouldSkipEnemyRender(enemy) {
@@ -48,8 +48,8 @@ function applyEnemyFacingTransform(ctx, isMirroredFacing) {
  * Returns enemy sprite draw position.
  * Advances animation state and sprites.
  * Updates the enemy state.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("../../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Camera} camera Camera instance.
  * @param {boolean} isMirroredFacing Whether mirrored facing.
  * @returns {Object} Enemy sprite draw position.
  */
@@ -65,9 +65,9 @@ function getEnemySpriteDrawPosition(enemy, camera, isMirroredFacing) {
  * Draws enemy hitbox.
  * Renders to the canvas context.
  * Performs hitbox or collision checks.
- * @param {import("../base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../../../../engine/world/camera.class.js").Camera} camera Camera instance.
+ * @param {Camera} camera Camera instance.
  * @param {boolean} isMirroredFacing Whether mirrored facing.
  */
 function drawEnemyHitbox(enemy, ctx, camera, isMirroredFacing) {

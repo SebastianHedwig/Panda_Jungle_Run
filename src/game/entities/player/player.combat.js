@@ -3,8 +3,8 @@ import { PLAYER_ATTACK_DAMAGE, FACING_RIGHT } from "../../../config/config.js";
 /**
  * Starts attack.
  * Triggers audio playback or updates audio state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} player Player instance.
+ * @param {Player} playerAudio Player audio.
  * @returns {*} Result value.
  */
 export function startAttack(player, playerAudio) {
@@ -17,7 +17,7 @@ export function startAttack(player, playerAudio) {
 /**
  * Can start attack.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether start attack.
  */
 function canStartAttack(player) {
@@ -35,7 +35,7 @@ function canStartAttack(player) {
  * Prepares attack state.
  * Advances animation state and sprites.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function prepareAttackState(player) {
   player.isAttacking = true;
@@ -49,9 +49,9 @@ function prepareAttackState(player) {
  * Updates attack.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} playerAudio Player audio.
  */
 export function updateAttack(player, dt, playerAudio) {
   if (!player.isAttacking) return;
@@ -63,7 +63,7 @@ export function updateAttack(player, dt, playerAudio) {
 /**
  * Should check attack hit.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether check attack hit.
  */
 function shouldCheckAttackHit(player) {
@@ -74,8 +74,8 @@ function shouldCheckAttackHit(player) {
  * Try attack hit.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} player Player instance.
+ * @param {Player} playerAudio Player audio.
  */
 function tryAttackHit(player, playerAudio) {
   const playerCenterX = player.x + player.width / 2;
@@ -91,8 +91,8 @@ function tryAttackHit(player, playerAudio) {
 /**
  * Is enemy in attack range.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {Player} player Player instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {number} playerCenterX Player center X.
  * @param {number} playerCenterY Player center Y.
  * @returns {boolean} Whether enemy in attack range.
@@ -113,9 +113,9 @@ function isEnemyInAttackRange(player, enemy, playerCenterX, playerCenterY) {
  * Applies attack hit.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} player Player instance.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Player} playerAudio Player audio.
  */
 function applyAttackHit(player, enemy, playerAudio) {
   playerAudio.playHit();
@@ -128,8 +128,8 @@ function applyAttackHit(player, enemy, playerAudio) {
  * Spawns enemy hit effect.
  * Updates the player state.
  * Spawns visual feedback effects.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {Player} player Player instance.
+ * @param {EnemyBase} enemy Enemy instance.
  */
 function spawnEnemyHitEffect(player, enemy) {
   if (enemy.isDead || enemy.health <= 0 || enemy.disableHitEffect) return;
@@ -143,8 +143,8 @@ function spawnEnemyHitEffect(player, enemy) {
 /**
  * Starts shoot.
  * Triggers audio playback or updates audio state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} player Player instance.
+ * @param {Player} playerAudio Player audio.
  * @returns {*} Result value.
  */
 export function startShoot(player, playerAudio) {
@@ -157,7 +157,7 @@ export function startShoot(player, playerAudio) {
 /**
  * Can start shoot.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {boolean} Whether start shoot.
  */
 function canStartShoot(player) {
@@ -175,7 +175,7 @@ function canStartShoot(player) {
  * Prepares shoot state.
  * Advances animation state and sprites.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function prepareShootState(player) {
   player.isShooting = true;
@@ -191,7 +191,7 @@ function prepareShootState(player) {
 /**
  * Updates shoot.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 export function updateShoot(player, dt) {
@@ -205,7 +205,7 @@ export function updateShoot(player, dt) {
  * Handles shot firing.
  * Updates the player state.
  * Spawns visual feedback effects.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 function handleShotFiring(player, dt) {
@@ -222,7 +222,7 @@ function handleShotFiring(player, dt) {
  * Spawns player bullet.
  * Updates the player state.
  * Spawns visual feedback effects.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function spawnPlayerBullet(player) {
   const facingDirection = player.shootFacing;
@@ -235,7 +235,7 @@ function spawnPlayerBullet(player) {
 /**
  * Consume bullet ammo.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function consumeBulletAmmo(player) {
   if (player.bulletAmmo > 0) player.bulletAmmo = Math.max(0, player.bulletAmmo - 1);

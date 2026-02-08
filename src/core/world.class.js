@@ -259,7 +259,7 @@ export class World {
    * Renders projectiles.
    * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    */
   renderProjectiles(ctx, camera) {
     this.bullets.forEach((bullet) => bullet.render(ctx, camera));
@@ -271,7 +271,7 @@ export class World {
    * Updates the instance state.
    * Spawns visual feedback effects.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    */
   renderHitEffects(ctx, camera) {
     this.hitEffects.forEach((effect) => effect.render(ctx, camera));
@@ -281,7 +281,7 @@ export class World {
    * Updates enemies.
    * Updates the enemy state.
    * @param {number} dt Delta time in seconds.
-   * @param {import("../game/entities/player/player.class.js").Player} player Player instance.
+   * @param {Player} player Player instance.
    * @returns {*} Result value.
    */
   updateEnemies(dt, player) {
@@ -295,7 +295,7 @@ export class World {
    * Renders enemies.
    * Updates the enemy state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    */
   renderEnemies(ctx, camera) {
     this.enemies.forEach((enemy) => enemy.render(ctx, camera));

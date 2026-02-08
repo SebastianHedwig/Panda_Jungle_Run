@@ -4,8 +4,8 @@ import { PLAYER_SLIDE_DAMAGE } from "../../../config/config.js";
  * Checks slide hits.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} player Player instance.
+ * @param {Player} playerAudio Player audio.
  */
 export function checkSlideHits(player, playerAudio) {
   if (!player.world?.enemies?.length) return;
@@ -22,8 +22,8 @@ export function checkSlideHits(player, playerAudio) {
 /**
  * Should check slide enemy.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {Player} player Player instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @returns {boolean} Whether check slide enemy.
  */
 function shouldCheckSlideEnemy(player, enemy) {
@@ -33,7 +33,7 @@ function shouldCheckSlideEnemy(player, enemy) {
 /**
  * Returns enemy hitbox.
  * Updates the enemy state.
- * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @returns {*} Enemy hitbox.
  */
 function getEnemyHitbox(enemy) {
@@ -60,9 +60,9 @@ function isHitboxOverlapping(hitboxA, hitboxB) {
  * Applies slide hit.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} player Player instance.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Player} playerAudio Player audio.
  */
 function applySlideHit(player, enemy, playerAudio) {
   playerAudio.playHit();
@@ -76,8 +76,8 @@ function applySlideHit(player, enemy, playerAudio) {
  * Spawns slide hit effect.
  * Updates the player state.
  * Spawns visual feedback effects.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../enemies/base/enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {Player} player Player instance.
+ * @param {EnemyBase} enemy Enemy instance.
  */
 function spawnSlideHitEffect(player, enemy) {
   if (enemy.isDead || enemy.health <= 0 || enemy.disableHitEffect) return;

@@ -8,10 +8,10 @@ import { handleMovementAndJump } from "./player.update.movement.js";
 /**
  * Updates player.
  * Triggers audio playback or updates audio state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
- * @param {import("../../../engine/input/input.class.js").Input} input Input handler.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Input} input Input handler.
+ * @param {Player} playerAudio Player audio.
  */
 export function updatePlayer(player, dt, input, playerAudio) {
   prepareUpdateFrame(player, playerAudio);
@@ -27,8 +27,8 @@ export function updatePlayer(player, dt, input, playerAudio) {
  * Prepares update frame.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} player Player instance.
+ * @param {Player} playerAudio Player audio.
  */
 function prepareUpdateFrame(player, playerAudio) {
   player._preCollisionX = player.x;
@@ -41,8 +41,8 @@ function prepareUpdateFrame(player, playerAudio) {
  * Plays death sound once.
  * Triggers audio playback or updates audio state.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("./player.class.js").Player} playerAudio Player audio.
+ * @param {Player} player Player instance.
+ * @param {Player} playerAudio Player audio.
  */
 function playDeathSoundOnce(player, playerAudio) {
   if (player.deathSoundPlayed) return;

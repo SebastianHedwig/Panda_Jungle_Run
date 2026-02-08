@@ -24,7 +24,7 @@ export function isPointerInsideBounds(bounds) {
 /**
  * Exit controls overlay.
  * Updates the instance state.
- * @param {import("../controls/controlsOverlay.class.js").ControlsOverlay | import("../controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} activeOverlay Active overlay.
+ * @param {ControlsOverlay | ControlsOverlayMobile} activeOverlay Active overlay.
  * @returns {*} Result value.
  */
 export function exitControlsOverlay(activeOverlay) {

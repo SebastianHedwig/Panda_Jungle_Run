@@ -1,7 +1,7 @@
 /**
  * Updates cooldowns and timers.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 export function updateCooldownsAndTimers(player, dt) {
@@ -16,7 +16,7 @@ export function updateCooldownsAndTimers(player, dt) {
 /**
  * Updates slide block grace.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 function updateSlideBlockGrace(player, dt) {
@@ -28,7 +28,7 @@ function updateSlideBlockGrace(player, dt) {
 /**
  * Updates shoot cooldown.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 function updateShootCooldown(player, dt) {
@@ -40,7 +40,7 @@ function updateShootCooldown(player, dt) {
 /**
  * Updates gun pulse.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 function updateGunPulse(player, dt) {
@@ -51,7 +51,7 @@ function updateGunPulse(player, dt) {
 /**
  * Updates invulnerability timers.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 function updateInvulnerabilityTimers(player, dt) {
@@ -66,7 +66,7 @@ function updateInvulnerabilityTimers(player, dt) {
 /**
  * Applies post slide invulnerability.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function applyPostSlideInvulnerability(player) {
   player.invulnerableTimer = Math.max(

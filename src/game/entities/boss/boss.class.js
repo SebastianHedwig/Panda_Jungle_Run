@@ -31,7 +31,7 @@ export class Boss extends EnemyBase {
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} sprites Sprites.
-   * @param {import("../../../core/world.class.js").World} [world] World instance.
+   * @param {World} [world] World instance.
    */
   constructor(x, y, sprites, world = null) {
     super(x, y, 240, 240, world);
@@ -197,7 +197,7 @@ export class Boss extends EnemyBase {
    * @param {*} dx Dx.
    * @param {*} frames Frames.
    * @param {number} damage Damage.
-   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @param {Player} player Player instance.
    * @param {number} [moveSpeed] Move speed.
    * @param {number} [rangeOverride] Range override.
    * @param {number} [heightOverride] Height override.
@@ -235,7 +235,7 @@ export class Boss extends EnemyBase {
    * Updates the instance state.
    * @param {*} moveDirection Move direction.
    * @param {number} dt Delta time in seconds.
-   * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+   * @param {Platform} platform Platform.
    * @param {Function} onLowestPlatform On lowest platform.
    * @param {*} fromChasing From chasing.
    * @returns {*} Result value.
@@ -250,8 +250,8 @@ export class Boss extends EnemyBase {
   /**
    * Try start attack.
    * Updates the instance state.
-   * @param {import("../player/player.class.js").Player} playerInfo Player info.
-   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @param {Player} playerInfo Player info.
+   * @param {Player} player Player instance.
    * @returns {*} Result value.
    */
   tryStartAttack(playerInfo, player) {
@@ -302,7 +302,7 @@ export class Boss extends EnemyBase {
    * Updates the instance state.
    * @param {string} attackId Attack element id.
    * @param {number} deltaX Delta X.
-   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @param {Player} player Player instance.
    * @returns {*} Result value.
    */
   runAttack(attackId, deltaX, player) {
@@ -319,7 +319,7 @@ export class Boss extends EnemyBase {
    * Updates.
    * Uses dt, player to perform the operation.
    * @param {number} dt Delta time in seconds.
-   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @param {Player} player Player instance.
    */
   update(dt, player) {
     updateBoss(this, dt, player);
@@ -340,7 +340,7 @@ export class Boss extends EnemyBase {
   /**
    * Try deal attack damage. If omitted, default values are used.
    * Updates the player state.
-   * @param {import("../player/player.class.js").Player} player Player instance.
+   * @param {Player} player Player instance.
    * @param {*} [popupDelay] Popup delay.
    * @returns {*} Result value.
    */
@@ -390,7 +390,7 @@ export class Boss extends EnemyBase {
    * Renders.
    * Uses ctx, camera to perform the operation.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    */
   render(ctx, camera) {
     renderBoss(this, ctx, camera, { debugHitbox: DEBUG_BOSS_HITBOX });

@@ -3,7 +3,7 @@ import { HudPopup } from "../../../effects/hudPopup.class.js";
 /**
  * Applies damage amount.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {number} amount Amount.
  */
 export function applyDamageAmount(enemy, amount) {
@@ -13,7 +13,7 @@ export function applyDamageAmount(enemy, amount) {
 /**
  * Applies recent slide hit.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {*} hitContext Hit context.
  */
 export function applyRecentSlideHit(enemy, hitContext) {
@@ -27,7 +27,7 @@ export function applyRecentSlideHit(enemy, hitContext) {
  * Adds enemy damage popup.
  * Updates the enemy state.
  * Spawns visual feedback effects.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {number} amount Amount.
  */
 export function addEnemyDamagePopup(enemy, amount) {
@@ -40,7 +40,7 @@ export function addEnemyDamagePopup(enemy, amount) {
 /**
  * Handles enemy death.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @returns {*} Result value.
  */
 export function handleEnemyDeath(enemy) {
@@ -56,7 +56,7 @@ export function handleEnemyDeath(enemy) {
 /**
  * Marks enemy dead.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  */
 function markEnemyDead(enemy) {
   enemy.isDead = true;
@@ -66,7 +66,7 @@ function markEnemyDead(enemy) {
  * Sets death animation.
  * Advances animation state and sprites.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  */
 function setDeathAnimation(enemy) {
   enemy.setAnimation?.(enemy.dieFrames);
@@ -78,7 +78,7 @@ function setDeathAnimation(enemy) {
  * Resets death velocity.
  * Applies physics updates like gravity and velocity.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  */
 function resetDeathVelocity(enemy) {
   enemy.velocityX = 0;
@@ -88,7 +88,7 @@ function resetDeathVelocity(enemy) {
 /**
  * Initializes death timers.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  */
 function initDeathTimers(enemy) {
   enemy.deathTimer = 5;
@@ -99,7 +99,7 @@ function initDeathTimers(enemy) {
  * Applies hit stun.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {*} hitContext Hit context.
  */
 export function applyHitStun(enemy, hitContext) {

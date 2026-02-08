@@ -3,8 +3,8 @@ import { FACING_LEFT, FACING_RIGHT } from "../../../../config/config.js";
 /**
  * Returns adjacent platform search.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("../../../../engine/world/platform.class.js").Platform} currentPlatform Current platform.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Platform} currentPlatform Current platform.
  * @param {*} moveDirection Move direction.
  * @param {number} footX Foot X.
  * @returns {Object} Adjacent platform search.
@@ -24,8 +24,8 @@ export function getAdjacentPlatformSearch(enemy, currentPlatform, moveDirection,
 /**
  * Is adjacent platform.
  * Uses platform, currentPlatform, searchContext to perform the operation.
- * @param {import("../../../../engine/world/platform.class.js").Platform} platform Platform.
- * @param {import("../../../../engine/world/platform.class.js").Platform} currentPlatform Current platform.
+ * @param {Platform} platform Platform.
+ * @param {Platform} currentPlatform Current platform.
  * @param {*} searchContext Search context.
  * @returns {boolean} Whether adjacent platform.
  */
@@ -42,7 +42,7 @@ export function isAdjacentPlatform(platform, currentPlatform, searchContext) {
 /**
  * Try land on platform.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {number} previousBottom Previous bottom.
  * @param {number} currentBottom Current bottom.
  * @returns {*} Result value.
@@ -62,8 +62,8 @@ export function tryLandOnPlatform(enemy, previousBottom, currentBottom) {
  * Is platform landing.
  * Applies physics updates like gravity and velocity.
  * Performs hitbox or collision checks.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("../../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Platform} platform Platform.
  * @param {number} previousBottom Previous bottom.
  * @param {number} currentBottom Current bottom.
  * @returns {boolean} Whether platform landing.
@@ -77,8 +77,8 @@ function isPlatformLanding(enemy, platform, previousBottom, currentBottom) {
  * Applies platform landing.
  * Applies physics updates like gravity and velocity.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("../../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Platform} platform Platform.
  */
 function applyPlatformLanding(enemy, platform) {
   enemy.y = platform.top - enemy.height;
@@ -92,7 +92,7 @@ function applyPlatformLanding(enemy, platform) {
  * Handles fall below canvas.
  * Applies physics updates like gravity and velocity.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {number} currentBottom Current bottom.
  */
 export function handleFallBelowCanvas(enemy, currentBottom) {
@@ -108,10 +108,10 @@ export function handleFallBelowCanvas(enemy, currentBottom) {
 /**
  * Builds edge context.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {*} moveDirection Move direction.
  * @param {number} dt Delta time in seconds.
- * @param {import("../../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Platform} platform Platform.
  * @param {Function} onLowestPlatform On lowest platform.
  * @returns {Object} Edge context.
  */
@@ -130,8 +130,8 @@ export function buildEdgeContext(enemy, moveDirection, dt, platform, onLowestPla
 /**
  * Is beyond platform edge.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("../../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Platform} platform Platform.
  * @param {number} footX Foot X.
  * @returns {boolean} Whether beyond platform edge.
  */
@@ -142,8 +142,8 @@ function isBeyondPlatformEdge(enemy, platform, footX) {
 /**
  * Is returning inside.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
- * @param {import("../../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {EnemyBase} enemy Enemy instance.
+ * @param {Platform} platform Platform.
  * @param {number} currentFootX Current foot X.
  * @param {*} moveDirection Move direction.
  * @returns {boolean} Whether returning inside.
@@ -168,7 +168,7 @@ export function shouldTurnAround(edgeContext) {
 /**
  * Applies edge turn.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  * @param {*} edgeContext Edge context.
  * @param {*} fromChasing From chasing.
  * @returns {*} Result value.
@@ -185,7 +185,7 @@ export function applyEdgeTurn(enemy, edgeContext, fromChasing) {
 /**
  * Applies chase cooldown.
  * Updates the enemy state.
- * @param {import("./enemies.base.class.js").EnemyBase} enemy Enemy instance.
+ * @param {EnemyBase} enemy Enemy instance.
  */
 function applyChaseCooldown(enemy) {
   enemy.chaseCooldown = Math.max(enemy.chaseCooldown, enemy.chaseCooldownDuration);

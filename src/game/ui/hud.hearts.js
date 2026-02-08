@@ -2,7 +2,7 @@
  * Draws hearts.
  * Updates the player state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function drawHearts(ctx, player) {
   const heartSettings = this.getHeartSettings();
@@ -46,7 +46,7 @@ export function getLastFilledIndex(states) {
  * @param {*} states States.
  * @param {*} heartSettings Heart settings.
  * @param {number} lastFilledIndex Last filled index.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function drawHeartsFromStates(ctx, states, heartSettings, lastFilledIndex, player) {
   states.forEach((state, heartIndex) => {
@@ -65,7 +65,7 @@ export function drawHeartsFromStates(ctx, states, heartSettings, lastFilledIndex
  * @param {number} x X.
  * @param {*} heartSettings Heart settings.
  * @param {number} lastFilledIndex Last filled index.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function drawHeartAtIndex(ctx, state, heartIndex, x, heartSettings, lastFilledIndex, player) {
   ctx.save();
@@ -81,7 +81,7 @@ export function drawHeartAtIndex(ctx, state, heartIndex, x, heartSettings, lastF
  * Updates the player state.
  * @param {number} heartIndex Heart index.
  * @param {number} lastFilledIndex Last filled index.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {*} heartSettings Heart settings.
  * @returns {*} Heart scale.
  */

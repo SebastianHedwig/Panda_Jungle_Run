@@ -20,7 +20,7 @@ function getHeartSpawnPositions() {
 /**
  * Find heart platform.
  * Updates the world state.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} worldX World X.
  * @returns {*} Result value.
  */
@@ -31,7 +31,7 @@ function findHeartPlatform(world, worldX) {
 /**
  * Is inside platform.
  * Updates the world state.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} heartWorldX Heart world X.
  * @param {number} heartWorldY Heart world Y.
  * @returns {boolean} Whether inside platform.
@@ -50,7 +50,7 @@ function isInsidePlatform(world, heartWorldX, heartWorldY) {
 /**
  * Place hearts. If omitted, default values are used.
  * Updates the world state.
- * @param {import("../../../core/world.class.js").World} world World instance.
+ * @param {World} world World instance.
  * @param {number} [count] Count.
  */
 export function placeHearts(world, count = 4) {

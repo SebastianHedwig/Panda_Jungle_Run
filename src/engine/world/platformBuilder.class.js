@@ -5,7 +5,7 @@ export class PlatformBuilder {
    * Creates a new instance.
    * Advances animation state and sprites.
    * Updates the instance state.
-   * @param {import("./platform.class.js").Platform} platformArray Platform array.
+   * @param {Platform} platformArray Platform array.
    * @param {*} sprites Sprites.
    */
   constructor(platformArray, sprites) {

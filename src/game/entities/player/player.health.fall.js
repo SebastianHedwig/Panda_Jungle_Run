@@ -3,7 +3,7 @@ import { PLAYER_FALL_DAMAGE } from "../../../config/config.js";
 /**
  * Handles death landing.
  * Uses player, previousBottom, currentBottom to perform the operation.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} previousBottom Previous bottom.
  * @param {number} currentBottom Current bottom.
  */
@@ -16,7 +16,7 @@ export function handleDeathLanding(player, previousBottom, currentBottom) {
 /**
  * Returns death landing context.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {Object} Death landing context.
  */
 function getDeathLandingContext(player) {
@@ -31,7 +31,7 @@ function getDeathLandingContext(player) {
 /**
  * Try land on platform.
  * Uses player, landingContext, previousBottom, currentBottom to perform the operation.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {*} landingContext Landing context.
  * @param {number} previousBottom Previous bottom.
  * @param {number} currentBottom Current bottom.
@@ -49,8 +49,8 @@ function tryLandOnPlatform(player, landingContext, previousBottom, currentBottom
 /**
  * Can land on platform.
  * Performs hitbox or collision checks.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Player} player Player instance.
+ * @param {Platform} platform Platform.
  * @param {*} landingContext Landing context.
  * @param {number} previousBottom Previous bottom.
  * @param {number} currentBottom Current bottom.
@@ -67,8 +67,8 @@ function canLandOnPlatform(player, platform, landingContext, previousBottom, cur
  * Is crossing platform top.
  * Applies physics updates like gravity and velocity.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Player} player Player instance.
+ * @param {Platform} platform Platform.
  * @param {number} previousBottom Previous bottom.
  * @param {number} currentBottom Current bottom.
  * @returns {boolean} Whether crossing platform top.
@@ -85,8 +85,8 @@ function isCrossingPlatformTop(player, platform, previousBottom, currentBottom) 
  * Applies platform landing.
  * Applies physics updates like gravity and velocity.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
- * @param {import("../../../engine/world/platform.class.js").Platform} platform Platform.
+ * @param {Player} player Player instance.
+ * @param {Platform} platform Platform.
  */
 function applyPlatformLanding(player, platform) {
   const landingTopPosition = platform.top - player.height;
@@ -99,7 +99,7 @@ function applyPlatformLanding(player, platform) {
  * Land on ground if needed.
  * Applies physics updates like gravity and velocity.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {*} landingContext Landing context.
  * @param {number} currentBottom Current bottom.
  */
@@ -115,7 +115,7 @@ function landOnGroundIfNeeded(player, landingContext, currentBottom) {
  * Respawn from fall.
  * Updates the player state.
  * Spawns visual feedback effects.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @returns {*} Result value.
  */
 export function respawnFromFall(player) {
@@ -129,7 +129,7 @@ export function respawnFromFall(player) {
 /**
  * Applies fall damage.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function applyFallDamage(player) {
   player.healthPoints = Math.max(0, player.healthPoints - PLAYER_FALL_DAMAGE);
@@ -140,7 +140,7 @@ function applyFallDamage(player) {
  * Respawn at safe position.
  * Applies physics updates like gravity and velocity.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function respawnAtSafePosition(player) {
   player.x = player.lastSafePosX ?? player.x;
@@ -155,7 +155,7 @@ function respawnAtSafePosition(player) {
  * Resets post respawn state.
  * Advances animation state and sprites.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function resetPostRespawnState(player) {
   player.invulnerableTimer = 1.0;
@@ -170,7 +170,7 @@ function resetPostRespawnState(player) {
  * Handles fall off world.
  * Applies physics updates like gravity and velocity.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {*} grounded Grounded.
  * @param {number} bottom Bottom.
  * @param {boolean} canvasHeight Canvas height.

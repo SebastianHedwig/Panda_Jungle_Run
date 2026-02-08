@@ -106,7 +106,7 @@ export class HudPopup {
    * Renders to the canvas context.
    * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    */
   draw(ctx, camera) {
     if (this.opacity <= 0) return;
@@ -132,7 +132,7 @@ export class HudPopup {
   /**
    * Returns screen position.
    * Updates the instance state.
-   * @param {import("../../engine/world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    * @returns {Object} Screen position.
    */
   getScreenPosition(camera) {

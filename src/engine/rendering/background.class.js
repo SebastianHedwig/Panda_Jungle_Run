@@ -144,7 +144,7 @@ export class Background {
    * Renders clouds.
    * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    */
   renderClouds(ctx, camera) {
     for (let cloud of this.clouds) {
@@ -167,7 +167,7 @@ export class Background {
    * Renders.
    * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
-   * @param {import("../world/camera.class.js").Camera} camera Camera instance.
+   * @param {Camera} camera Camera instance.
    */
   render(ctx, camera) {
     this.renderBaseLayer(ctx);

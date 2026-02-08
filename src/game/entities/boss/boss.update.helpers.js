@@ -4,7 +4,7 @@ import { PLAYER_HURT_IMMUNITY_TIME } from "../../../config/config.js";
  * Applies boss gravity and landing.
  * Applies physics updates like gravity and velocity.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  */
 export function applyBossGravityAndLanding(boss, dt) {
@@ -18,7 +18,7 @@ export function applyBossGravityAndLanding(boss, dt) {
  * Applies boss gravity and landing with state.
  * Applies physics updates like gravity and velocity.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
  */
@@ -36,8 +36,8 @@ export function applyBossGravityAndLandingWithState(boss, dt) {
 /**
  * Handles boss landing impact.
  * Updates the player state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
- * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {Boss} boss Boss instance.
+ * @param {Player} player Player instance.
  * @param {*} landed Landed.
  */
 export function handleBossLandingImpact(boss, player, landed) {
@@ -51,8 +51,8 @@ export function handleBossLandingImpact(boss, player, landed) {
 /**
  * Handles boss collision damage.
  * Updates the player state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
- * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {Boss} boss Boss instance.
+ * @param {Player} player Player instance.
  */
 export function handleBossCollisionDamage(boss, player) {
   const playerCanBeHit =
@@ -69,7 +69,7 @@ export function handleBossCollisionDamage(boss, player) {
 /**
  * Applies player invulnerability.
  * Updates the player state.
- * @param {import("../player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 function applyPlayerInvulnerability(player) {
   if (typeof player.invulnerableTimer === "number") {
@@ -81,7 +81,7 @@ function applyPlayerInvulnerability(player) {
  * Updates boss movement animation.
  * Advances animation state and sprites.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  */
 export function updateBossMovementAnimation(boss, dt) {
@@ -98,7 +98,7 @@ export function updateBossMovementAnimation(boss, dt) {
 /**
  * Clamp boss movement.
  * Updates the boss state.
- * @param {import("./boss.class.js").Boss} boss Boss instance.
+ * @param {Boss} boss Boss instance.
  */
 export function clampBossMovement(boss) {
   if (Number.isFinite(boss.movementMinX)) {

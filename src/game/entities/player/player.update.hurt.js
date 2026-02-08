@@ -2,7 +2,7 @@
  * Handles hurt flow.
  * Applies physics updates like gravity and velocity.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
  */
@@ -19,7 +19,7 @@ export function handleHurtFlow(player, dt) {
  * Applies hurt animation.
  * Advances animation state and sprites.
  * Updates the player state.
- * @param {import("./player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
 function applyHurtAnimation(player, dt) {

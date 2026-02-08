@@ -2,7 +2,7 @@
  * Updates.
  * Updates the instance state.
  * @param {number} dt Delta time in seconds.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  */
 export function update(dt, player) {
   if (!player) return;
@@ -24,7 +24,7 @@ export function getUpdateSpeeds() {
 /**
  * Updates coin display.
  * Updates the player state.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @param {number} coinLerpSpeed Coin lerp speed.
  */
@@ -44,7 +44,7 @@ export function updatePulseTimes(dt) {
 /**
  * Decay hud pulse.
  * Updates the player state.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @param {number} hudPulseDecaySpeed Hud pulse decay speed.
  */
@@ -55,7 +55,7 @@ export function decayHudPulse(player, dt, hudPulseDecaySpeed) {
 /**
  * Decay health pulse.
  * Updates the player state.
- * @param {import("../entities/player/player.class.js").Player} player Player instance.
+ * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @param {number} healthPulseDecaySpeed Health pulse decay speed.
  */
