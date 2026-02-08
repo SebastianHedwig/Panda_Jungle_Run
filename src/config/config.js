@@ -24,7 +24,8 @@ export const JUMP_FORCE = 1200;
 export const APEX_BOOST = 0.6;
 export const APEX_THRESHOLD = 120;
 
-export const MUTE_TOGGLE_GAMESTART = true;
+export const SOUND_MUTE_STORAGE_KEY = "SoundMute";
+export const INITIAL_MUTE_STATE_GAMESTART = false;
 export const MUSIC_LOOP_CUT = 4;
 export const MUSIC_VOLUME = 0.2;
 export const SFX_VOLUME = 0.2;

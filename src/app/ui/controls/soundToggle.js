@@ -1,3 +1,5 @@
+import { SOUND_MUTE_STORAGE_KEY } from "../../../config/config.js";
+
 /**
  * Returns sound elements.
  * Uses options to compute the result.
@@ -78,6 +80,19 @@ const restoreIconState = (icon) => {
 };
 
 /**
+ * Persists muted state.
+ * Uses muted to perform the operation.
+ * @param {boolean} muted Muted.
+ */
+const persistMutedState = (muted) => {
+  try {
+    localStorage.setItem(SOUND_MUTE_STORAGE_KEY, String(Boolean(muted)));
+  } catch (error) {
+    // ignore storage failures (private mode, blocked storage, etc.)
+  }
+};
+
+/**
  * Binds hover handlers.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
@@ -127,6 +142,7 @@ const bindSoundToggleClick = ({ toggle, audioTracking, setMuted }) => {
  */
 const createMutedSetter = ({ audioTracking, icon, label }) => (muted) => {
   audioTracking.setMuted(muted);
+  persistMutedState(muted);
   applySoundUiState({ icon, label, muted });
 };
 
