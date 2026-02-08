@@ -1,5 +1,5 @@
-import { OverlayRenderer } from "./overlayBase.class.js";
-import { renderBackButton } from "./overlayUtils.js";
+import { OverlayRenderer } from "../base/overlay.base.class.js";
+import { renderBackButton } from "../base/overlay.utils.js";
 
 const DEFAULT_CONTROLS = [
   { label: "Move", value: "A / D or Arrow keys" },

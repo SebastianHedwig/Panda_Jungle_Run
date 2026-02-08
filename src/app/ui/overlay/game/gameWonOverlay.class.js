@@ -1,4 +1,4 @@
-import { GameOverlayBase } from "./gameOverlayBase.class.js";
+import { GameOverlayBase } from "./gameOverlay.base.class.js";
 
 const TITLE_MAX_WIDTH_RATIO_WIN = 0.82;
 const TITLE_MAX_HEIGHT_RATIO_WIN = 0.24;

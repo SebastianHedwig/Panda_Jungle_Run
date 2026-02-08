@@ -3,9 +3,9 @@ import { createLevel1Platforms, createLevel1Collectables, generateCoinsMixed, ge
 import { LEVEL1_COIN_COUNT, LEVEL1_COIN_RATIO_ABOVE, LEVEL1_ENEMY1_COUNT, LEVEL1_ENEMY2_COUNT, LEVEL1_ENEMY3_COUNT, LEVEL1_GUN_COUNT, LEVEL1_HEART_COUNT } from "../../../config/config.js";
 import { BossDirector } from "../../../game/directors/bossDirector.class.js";
 import { Hud } from "../../../game/ui/hud.class.js";
-import { SettingsOverlay } from "../../../app/ui/overlay/settingsOverlay.class.js";
-import { GameOverOverlay } from "../../../app/ui/overlay/gameOverOverlay.class.js";
-import { GameWonOverlay } from "../../../app/ui/overlay/gameWonOverlay.class.js";
+import { SettingsOverlay } from "../../../app/ui/overlay/settings/settingsOverlay.class.js";
+import { GameOverOverlay } from "../../../app/ui/overlay/game/gameOverOverlay.class.js";
+import { GameWonOverlay } from "../../../app/ui/overlay/game/gameWonOverlay.class.js";
 
 /**
  * Returns background assets.

@@ -101,7 +101,7 @@ export const handleLegalClick = ({ state, x, y, showLegalPage, canvas, drawStart
  * @param {*} [options.state] State.
  * @param {number} [options.x] X.
  * @param {number} [options.y] Y.
- * @param {import("../ui/overlay/overlayBase.class.js").OverlayBase} [options.getActiveControlsOverlay] Get active controls overlay.
+ * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.getActiveControlsOverlay] Get active controls overlay.
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
@@ -260,7 +260,7 @@ export const handleLegalMove = ({ state, x, y, canvas, drawStartScreen }) => {
  * @param {number} [options.x] X.
  * @param {number} [options.y] Y.
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
- * @param {import("../ui/overlay/overlayBase.class.js").OverlayBase} [options.getActiveControlsOverlay] Get active controls overlay.
+ * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.getActiveControlsOverlay] Get active controls overlay.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
 export const handleSettingsMove = ({ x, y, canvas, getActiveControlsOverlay, drawStartScreen }) => {
@@ -313,7 +313,7 @@ export const handleLegalLeave = ({ state, canvas, drawStartScreen }) => {
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
- * @param {import("../ui/overlay/overlayBase.class.js").OverlayBase} [options.getActiveControlsOverlay] Get active controls overlay.
+ * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.getActiveControlsOverlay] Get active controls overlay.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
 export const handleSettingsLeave = ({ canvas, getActiveControlsOverlay, drawStartScreen }) => {
@@ -363,7 +363,7 @@ export const closeLegalOnEscape = ({ state, event, drawStartScreen }) => {
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
  * @param {Event} [options.event] Event object.
- * @param {import("../ui/overlay/overlayBase.class.js").OverlayBase} [options.getActiveControlsOverlay] Get active controls overlay.
+ * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.getActiveControlsOverlay] Get active controls overlay.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
 export const closeSettingsOnEscape = ({ state, event, getActiveControlsOverlay, drawStartScreen }) => {

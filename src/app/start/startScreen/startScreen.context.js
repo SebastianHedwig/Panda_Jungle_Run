@@ -1,7 +1,7 @@
 import { mobileAudioUnlock } from "../../audio/mobileAudioUnlock.js";
 import { startMusicController } from "../../audio/webAudioUnlock.js";
-import { ControlsOverlay } from "../../ui/overlay/controlsOverlay.class.js";
-import { ControlsOverlayMobile } from "../../ui/overlay/controlsOverlayMobile.class.js";
+import { ControlsOverlay } from "../../ui/overlay/controls/controlsOverlay.class.js";
+import { ControlsOverlayMobile } from "../../ui/overlay/controls/mobileControlsOverlay.class.js";
 import { AUTOSTART_KEY, SETTINGS_ICON_DEFAULT_SRC, SETTINGS_ICON_CONTROLLER_SRC } from "./startScreen.js";
 
 /**
@@ -101,8 +101,8 @@ export const createControlsOverlays = () => ({
  * Creates active controls overlay getter.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
- * @param {import("../../ui/overlay/overlayBase.class.js").OverlayBase} [options.controlsOverlayDesktop] Controls overlay desktop.
- * @param {import("../../ui/overlay/overlayBase.class.js").OverlayBase} [options.controlsOverlayMobile] Controls overlay mobile.
+ * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.controlsOverlayDesktop] Controls overlay desktop.
+ * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.controlsOverlayMobile] Controls overlay mobile.
  * @returns {*} Active controls overlay getter.
  */
 export const createActiveControlsOverlayGetter = ({ controlsOverlayDesktop, controlsOverlayMobile }) => () => {
@@ -164,8 +164,8 @@ export const createLegalLinks = () => ({
  * Binds overlay icon load.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
- * @param {import("../../ui/overlay/overlayBase.class.js").OverlayBase} [options.controlsOverlayDesktop] Controls overlay desktop.
- * @param {import("../../ui/overlay/overlayBase.class.js").OverlayBase} [options.controlsOverlayMobile] Controls overlay mobile.
+ * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.controlsOverlayDesktop] Controls overlay desktop.
+ * @param {import("../../ui/overlay/controls/controlsOverlay.class.js").ControlsOverlay | import("../../ui/overlay/controls/mobileControlsOverlay.class.js").ControlsOverlayMobile} [options.controlsOverlayMobile] Controls overlay mobile.
  * @param {*} [options.drawStartScreen] Draw start screen.
  */
 export const bindOverlayIconLoad = ({ controlsOverlayDesktop, controlsOverlayMobile, drawStartScreen }) => {

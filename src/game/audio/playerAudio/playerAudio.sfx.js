@@ -97,7 +97,8 @@ export function playSlide() {
   const randomSlideIndex = Math.floor(Math.random() * this.slideSrcs.length);
   const src = this.slideSrcs[randomSlideIndex];
   const propertyName = `slideAudio${randomSlideIndex}`;
-  this.playOneShot({ propertyName, src });
+  const audio = this.playOneShot({ propertyName, src });
+  if (audio) audio.volume = Math.min(1, this.volume + 0.05);
 }
 
 /**
@@ -111,3 +112,4 @@ export function playDead() {
     rate: this.deadRate,
   });
 }
+

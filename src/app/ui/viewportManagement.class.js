@@ -134,7 +134,7 @@ export class ViewportManagement {
   /**
    * Append overlay.
    * Uses overlay to perform the operation.
-   * @param {import("./overlay/overlayBase.class.js").OverlayBase} overlay Overlay.
+   * @param {HTMLElement} overlay Overlay.
    */
   appendOverlay(overlay) {
     document.body.appendChild(overlay);

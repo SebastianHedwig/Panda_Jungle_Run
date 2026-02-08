@@ -1,4 +1,4 @@
-import { GameOverlayBase } from "./gameOverlayBase.class.js";
+import { GameOverlayBase } from "./gameOverlay.base.class.js";
 
 const BUTTONS_TITLE_GAP_FACTOR = 0.9;
 const BUTTONS_BASE_Y_OFFSET_RATIO = 0.08;
