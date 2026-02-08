@@ -117,8 +117,8 @@ npx serve
 **Project-Size (status: 2026/02/08)**
 - Folder: 125
 - Files: 783
-- Total number of codelines: 11.107 Lines
-(folder, files & codelines - Project only)
+- Total number of codelines: 11.107 Lines<br>
+ (folder, files & codelines - Project only)
 
 <a id="git-workflow"></a>
 **Git Workflow (Push / Pull / Branch)**
