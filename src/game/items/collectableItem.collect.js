@@ -21,15 +21,18 @@ const GUN_BULLETS_GRANT = 5;
 export function isColliding(player) {
   if (this.pickupDelay > 0) return false;
 
-  const itemLeft = this.x;
-  const itemRight = this.x + this.width;
-  const itemTop = this.y;
-  const itemBottom = this.y + this.height;
+  const itemHitbox = this.getHitbox ? this.getHitbox() : { x: this.x, y: this.y, width: this.width, height: this.height };
+  const playerHitbox = player.getHitbox ? player.getHitbox() : { x: player.x, y: player.y, width: player.width, height: player.height };
 
-  const playerLeft = player.x;
-  const playerRight = player.x + player.width;
-  const playerTop = player.y;
-  const playerBottom = player.y + player.height;
+  const itemLeft = itemHitbox.x;
+  const itemRight = itemHitbox.x + itemHitbox.width;
+  const itemTop = itemHitbox.y;
+  const itemBottom = itemHitbox.y + itemHitbox.height;
+
+  const playerLeft = playerHitbox.x;
+  const playerRight = playerHitbox.x + playerHitbox.width;
+  const playerTop = playerHitbox.y;
+  const playerBottom = playerHitbox.y + playerHitbox.height;
 
   return !(
     playerLeft > itemRight ||

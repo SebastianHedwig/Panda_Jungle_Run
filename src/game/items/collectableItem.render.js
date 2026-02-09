@@ -1,3 +1,5 @@
+import { DEBUG_MODE } from "../../config/config.js";
+
 /**
  * Draws.
  * Renders to the canvas context.
@@ -11,11 +13,12 @@ export function draw(ctx, camera) {
   const img = this.getCurrentImage();
   if (!img) return;
 
+  const { screenX, screenY } = this.getScreenPosition(camera);
   ctx.save();
   this.applyOpacity(ctx);
-  const { screenX, screenY } = this.getScreenPosition(camera);
   this.drawItemImage(ctx, screenX, screenY, img);
   ctx.restore();
+  this.drawDebugHitbox(ctx, camera);
 }
 
 /**
@@ -99,4 +102,39 @@ export function applyItemTransform(ctx, centerX, centerY) {
  */
 export function paintItemImage(ctx, img) {
   ctx.drawImage(img, -this.width / 2, -this.height / 2, this.width, this.height);
+}
+
+/**
+ * Returns hitbox.
+ * Updates the instance state.
+ * @returns {Object} Hitbox.
+ */
+export function getHitbox() {
+  const shrinkX = this.width * this.hitboxShrinkXFactor;
+  const shrinkY = this.height * this.hitboxShrinkYFactor;
+  return {
+    x: this.x + shrinkX / 2,
+    y: this.y + shrinkY / 2,
+    width: this.width - shrinkX,
+    height: this.height - shrinkY,
+  };
+}
+
+/**
+ * Draws debug hitbox.
+ * Renders to the canvas context.
+ * Updates the instance state.
+ * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
+ * @param {Camera} camera Camera instance.
+ */
+export function drawDebugHitbox(ctx, camera) {
+  if (!DEBUG_MODE) return;
+  const hitbox = this.getHitbox();
+  const cameraX = camera?.x || 0;
+  const cameraY = camera?.y || 0;
+  ctx.save();
+  ctx.strokeStyle = "yellow";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(hitbox.x - cameraX, hitbox.y - cameraY, hitbox.width, hitbox.height);
+  ctx.restore();
 }

@@ -1,5 +1,5 @@
 import { loadImage } from "../../core/game/assets/assetLoader.js";
-import { applyItemTransform, applyOpacity, draw, drawItemImage, getCenterPosition, getCurrentImage, getScreenPosition, paintItemImage } from "./collectableItem.render.js";
+import { applyItemTransform, applyOpacity, draw, drawDebugHitbox, drawItemImage, getCenterPosition, getCurrentImage, getHitbox, getScreenPosition, paintItemImage } from "./collectableItem.render.js";
 import { collect, collectCoin, collectGun, collectHeart, handleCollectByType, isColliding, resetPickupFx, startPickupAnimation } from "./collectableItem.collect.js";
 
 export { COLLECTABLE_VALUES } from "./collectableItem.collect.js";
@@ -45,6 +45,7 @@ export class CollectableItem {
     this.type = type;
     this.world = world;
     this.applyDimensions();
+    this.initHitbox();
     this.initPickupState();
     this.initPickupFx();
     this.initPhysics();
@@ -59,6 +60,15 @@ export class CollectableItem {
   applyDimensions() {
     this.width = ITEM_SIZE;
     this.height = ITEM_SIZE;
+  }
+
+  /**
+   * Initializes hitbox.
+   * Updates the instance state.
+   */
+  initHitbox() {
+    this.hitboxShrinkXFactor = 0.2;
+    this.hitboxShrinkYFactor = 0.2;
   }
 
   /**
@@ -323,6 +333,8 @@ Object.assign(CollectableItem.prototype, {
   applyOpacity,
   getScreenPosition,
   drawItemImage,
+  getHitbox,
+  drawDebugHitbox,
   getCenterPosition,
   applyItemTransform,
   paintItemImage,
