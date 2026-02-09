@@ -21,80 +21,6 @@ export const getCanvasPoint = (canvas, event) => {
 };
 
 /**
- * Is point inside bounds.
- * Uses options to perform the operation.
- * @param {Object} options Configuration options.
- * @param {number} [options.x] X.
- * @param {number} [options.y] Y.
- * @param {*} [options.bounds] Bounds.
- * @returns {boolean} Whether point inside bounds.
- */
-const isPointInsideBounds = ({ x, y, bounds }) =>
-  bounds && x >= bounds.x && x <= bounds.x + bounds.w && y >= bounds.y && y <= bounds.y + bounds.h;
-
-/**
- * Returns legal link hit.
- * Uses options to compute the result.
- * @param {Object} options Configuration options.
- * @param {*} [options.state] State.
- * @param {number} [options.x] X.
- * @param {number} [options.y] Y.
- * @returns {*} Legal link hit.
- */
-const getLegalLinkHit = ({ state, x, y }) =>
-  state.legalPage === "impressum" && isPointInsideBounds({ x, y, bounds: state.impressumLinkBounds });
-
-/**
- * Returns legal return hit.
- * Uses options to compute the result.
- * @param {Object} options Configuration options.
- * @param {*} [options.state] State.
- * @param {number} [options.x] X.
- * @param {number} [options.y] Y.
- * @returns {*} Legal return hit.
- */
-const getLegalReturnHit = ({ state, x, y }) => isPointInsideBounds({ x, y, bounds: state.legalReturnBounds });
-
-/**
- * Close legal page.
- * Uses options to perform the operation.
- * @param {Object} options Configuration options.
- * @param {*} [options.state] State.
- * @param {HTMLCanvasElement} [options.canvas] Target canvas.
- * @param {*} [options.drawStartScreen] Draw start screen.
- */
-const closeLegalPage = ({ state, canvas, drawStartScreen }) => {
-  state.legalPage = null;
-  setOverlayActive(false);
-  setLegalScreenActive(false);
-  canvas.style.cursor = "default";
-  state.legalReturnBounds = null;
-  state.legalReturnHover = false;
-  drawStartScreen();
-};
-
-/**
- * Handles legal click.
- * Uses options to perform the operation.
- * @param {Object} options Configuration options.
- * @param {*} [options.state] State.
- * @param {number} [options.x] X.
- * @param {number} [options.y] Y.
- * @param {*} [options.showLegalPage] Show legal page.
- * @param {HTMLCanvasElement} [options.canvas] Target canvas.
- * @param {*} [options.drawStartScreen] Draw start screen.
- */
-export const handleLegalClick = ({ state, x, y, showLegalPage, canvas, drawStartScreen }) => {
-  if (!state.legalPage) return false;
-  if (getLegalLinkHit({ state, x, y })) {
-    showLegalPage("privacy");
-    return true;
-  }
-  if (getLegalReturnHit({ state, x, y })) closeLegalPage({ state, canvas, drawStartScreen });
-  return true;
-};
-
-/**
  * Handles settings overlay click.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
@@ -221,39 +147,6 @@ export const handleStartButtonClick = ({ state, x, y, handlerRefs, ...dependenci
 };
 
 /**
- * Returns legal hover flags.
- * Uses options to compute the result.
- * @param {Object} options Configuration options.
- * @param {*} [options.state] State.
- * @param {number} [options.x] X.
- * @param {number} [options.y] Y.
- */
-const getLegalHoverFlags = ({ state, x, y }) => {
-  const overReturn = isPointInsideBounds({ x, y, bounds: state.legalReturnBounds });
-  const overLink = state.legalPage === "impressum" && isPointInsideBounds({ x, y, bounds: state.impressumLinkBounds });
-  return { overReturn, overLink };
-};
-
-/**
- * Handles legal move.
- * Uses options to perform the operation.
- * @param {Object} options Configuration options.
- * @param {*} [options.state] State.
- * @param {number} [options.x] X.
- * @param {number} [options.y] Y.
- * @param {HTMLCanvasElement} [options.canvas] Target canvas.
- * @param {*} [options.drawStartScreen] Draw start screen.
- */
-export const handleLegalMove = ({ state, x, y, canvas, drawStartScreen }) => {
-  const { overReturn, overLink } = getLegalHoverFlags({ state, x, y });
-  if (state.legalReturnHover !== overReturn) {
-    state.legalReturnHover = overReturn;
-    drawStartScreen();
-  }
-  canvas.style.cursor = overReturn || overLink ? "pointer" : "default";
-};
-
-/**
  * Handles settings move.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
@@ -294,21 +187,6 @@ export const handleStartButtonMove = ({ state, x, y, canvas, drawStartScreen }) 
 };
 
 /**
- * Handles legal leave.
- * Uses options to perform the operation.
- * @param {Object} options Configuration options.
- * @param {*} [options.state] State.
- * @param {HTMLCanvasElement} [options.canvas] Target canvas.
- * @param {*} [options.drawStartScreen] Draw start screen.
- */
-export const handleLegalLeave = ({ state, canvas, drawStartScreen }) => {
-  canvas.style.cursor = "default";
-  if (!state.legalReturnHover) return;
-  state.legalReturnHover = false;
-  drawStartScreen();
-};
-
-/**
  * Handles settings leave.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
@@ -338,23 +216,6 @@ export const handleStartButtonLeave = ({ state, canvas, drawStartScreen }) => {
     drawStartScreen();
   }
   canvas.style.cursor = "default";
-};
-
-/**
- * Close legal on escape.
- * Uses options to perform the operation.
- * @param {Object} options Configuration options.
- * @param {*} [options.state] State.
- * @param {Event} [options.event] Event object.
- * @param {*} [options.drawStartScreen] Draw start screen.
- */
-export const closeLegalOnEscape = ({ state, event, drawStartScreen }) => {
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  state.legalPage = null;
-  setOverlayActive(false);
-  setLegalScreenActive(false);
-  drawStartScreen();
 };
 
 /**

@@ -1,18 +1,6 @@
 import { consumeNextStartScreenAction, setOverlayActive } from "./startScreen.utils.js";
-import {
-  getCanvasPoint,
-  handleLegalClick,
-  handleSettingsOverlayClick,
-  handleStartButtonClick,
-  handleLegalMove,
-  handleSettingsMove,
-  handleStartButtonMove,
-  handleLegalLeave,
-  handleSettingsLeave,
-  handleStartButtonLeave,
-  closeLegalOnEscape,
-  closeSettingsOnEscape,
-} from "./startScreen.handler.logic.js";
+import { handleLegalClick, handleLegalMove, handleLegalLeave, closeLegalOnEscape } from "./startScreen.handler.legal.js";
+import { getCanvasPoint, handleSettingsOverlayClick, handleStartButtonClick, handleSettingsMove, handleStartButtonMove, handleSettingsLeave, handleStartButtonLeave, closeSettingsOnEscape } from "./startScreen.handler.logic.js";
 
 /**
  * Creates handle canvas click.
