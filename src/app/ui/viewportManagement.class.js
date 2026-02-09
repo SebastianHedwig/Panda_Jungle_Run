@@ -1,6 +1,6 @@
 
-const PORTRAIT_QUERY = "(orientation: portrait) and (max-width: 920px)";
-const ASPECT_RATIO_QUERY = "(max-aspect-ratio: 7/5) and (max-width: 800px)";
+const PORTRAIT_QUERY = "(orientation: portrait) and (max-width: 1024px)";
+const ASPECT_RATIO_QUERY = "(max-aspect-ratio: 7/5) and (max-width: 1024px)";
 const ROTATE_OVERLAY_MARKUP = /*HTML*/ `
   <div class="rotate-overlay__panel">
     <div class="rotate-overlay__icon">
