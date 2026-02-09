@@ -5,6 +5,10 @@ import { ControlsOverlayMobile } from "../../ui/overlay/controls/mobileControlsO
 import { AUTOSTART_KEY, SETTINGS_ICON_DEFAULT_SRC, SETTINGS_ICON_CONTROLLER_SRC } from "./startScreen.js";
 import { markNextStartScreenActionConsumed } from "./startScreen.utils.js";
 
+// Temporary: disable autostart + menu music on start screen.
+const START_SCREEN_AUTOSTART_ENABLED = false;
+const START_SCREEN_MENU_MUSIC_ENABLED = false;
+
 /**
  * Returns canvas and context.
  * Used to provide canvas and context for camera-relative placement.
@@ -254,13 +258,15 @@ export const buildStartScreenContext = ({ canvasId, onStart }) => {
   const canvasContext = getCanvasAndContext(canvasId);
   if (!canvasContext) return null;
   mobileAudioUnlock.bind();
-  if (handleAutoStart(onStart)) return null;
+  if (START_SCREEN_AUTOSTART_ENABLED && handleAutoStart(onStart)) return null;
   const settingsContext = getSettingsContext();
   const overlays = createControlsOverlays();
   const getActiveControlsOverlay = createActiveControlsOverlayGetter(overlays);
   const startScreenState = createStartScreenState();
   const { start: startMenuMusic, stop: stopMenuMusic } = startMusicController;
-  initMenuMusic({ startMenuMusic, state: startScreenState });
+  if (START_SCREEN_MENU_MUSIC_ENABLED) {
+    initMenuMusic({ startMenuMusic, state: startScreenState });
+  }
   return { ...canvasContext, onStart, ...settingsContext, ...overlays, getActiveControlsOverlay, startScreenState, stopMenuMusic };
 };
 
