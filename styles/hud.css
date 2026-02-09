@@ -15,10 +15,9 @@
 }
 
 .auto-fullscreen .hud-container-left {
-  left: 50%;
-  top: clamp(0.35rem, 1vw, 0.6rem);
-  bottom: auto;
-  transform: translateX(-50%);
+  left: 0.5rem;
+  top: auto;
+  bottom: 0.5rem;
 }
 
 .start-screen-active .hud-container-left {
@@ -37,6 +36,7 @@
   position: absolute;
   display: none;
   align-items: center;
+  flex-direction: column;
   gap: clamp(0.33rem, 1.5vw, 0.65rem);
   padding: clamp(0.35rem, 1.5vw, 0.6rem);
   background-color: rgba(0, 0, 0, 0.6);
@@ -48,7 +48,9 @@
 
 .mobile-control-container-left,
 .mobile-control-container-right {
-  bottom: 0.5rem;
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%);
 }
 
 .mobile-control-container-left {
