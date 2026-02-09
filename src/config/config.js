@@ -4,7 +4,7 @@ export const WORLD_WIDTH = 10000;
 export const WORLD_HEIGHT = 720;
 export const SET_FULLSCREEN = true;
 export const AUTO_FULLSCREEN_MAX_WIDTH = 1368;
-export const AUTO_FULLSCREEN_MAX_HEIGHT = 912;
+export const AUTO_FULLSCREEN_MAX_HEIGHT = 1024;
 
 export const FACING_LEFT = -1;
 export const FACING_RIGHT = 1;

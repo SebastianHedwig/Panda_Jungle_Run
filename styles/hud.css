@@ -16,11 +16,15 @@
 
 .auto-fullscreen .hud-container-left {
   left: 50%;
+  top: clamp(0.35rem, 1vw, 0.6rem);
+  bottom: auto;
   transform: translateX(-50%);
 }
 
 .start-screen-active .hud-container-left {
   left: clamp(0.35rem, 1vw, 0.6rem);
+  top: auto;
+  bottom: clamp(0.35rem, 1vw, 0.6rem);
   transform: none;
 }
 

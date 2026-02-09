@@ -1,4 +1,7 @@
-const DEADZONE_RATIO = 0.3;
+const DEADZONE_RATIO = 0.25;
+const DEADZONE_X_BIAS = 0.05;
+const FOLLOW_LEFT_MULTIPLIER = 1.0;
+const FOLLOW_RIGHT_MULTIPLIER = 1.15;
 const DEFAULT_SMOOTHING = 0.08;
 const SHAKE_DEFAULT_DURATION = 0.25;
 const SHAKE_DEFAULT_MAGNITUDE = 8;
@@ -26,7 +29,11 @@ export class Camera {
     this.deadzoneWidth = canvas.width * DEADZONE_RATIO;
     this.deadzoneHeight = canvas.height * DEADZONE_RATIO;
 
-    this.deadzoneX = (canvas.width - this.deadzoneWidth) / 2;
+    const deadzoneBaseX = (canvas.width - this.deadzoneWidth) / 2;
+    const deadzoneShiftX = canvas.width * DEADZONE_X_BIAS;
+    const deadzoneMinX = 0;
+    const deadzoneMaxX = canvas.width - this.deadzoneWidth;
+    this.deadzoneX = Math.min(deadzoneMaxX, Math.max(deadzoneMinX, deadzoneBaseX - deadzoneShiftX));
     this.deadzoneY = (canvas.height - this.deadzoneHeight) / 2;
 
     this.shakeTimer = 0;
@@ -54,11 +61,11 @@ export class Camera {
    */
   updateHorizontalFollow(playerScreenX, smoothing) {
     if (playerScreenX < this.deadzoneX) {
-      this.x -= (this.deadzoneX - playerScreenX) * smoothing;
+      this.x -= (this.deadzoneX - playerScreenX) * smoothing * FOLLOW_LEFT_MULTIPLIER;
       return;
     }
     if (playerScreenX > this.deadzoneX + this.deadzoneWidth) {
-      this.x += (playerScreenX - (this.deadzoneX + this.deadzoneWidth)) * smoothing;
+      this.x += (playerScreenX - (this.deadzoneX + this.deadzoneWidth)) * smoothing * FOLLOW_RIGHT_MULTIPLIER;
     }
   }
 
