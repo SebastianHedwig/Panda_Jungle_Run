@@ -1,5 +1,6 @@
 /**
  * Returns back button base rect.
+ * Used to provide back button base rect for UI interaction handling.
  * Advances animation state and sprites.
  * @param {Object} options Configuration options.
  * @param {HTMLImageElement} [options.sprite] Sprite.
@@ -21,6 +22,7 @@ function getBackButtonBaseRect({ sprite, targetSize, containerX, containerY, con
 
 /**
  * Is pointer inside rect.
+ * Used to decide UI hit testing outcomes.
  * Uses pointer, rect to perform the operation.
  * @param {*} pointer Pointer.
  * @param {*} rect Rect.
@@ -32,6 +34,7 @@ function isPointerInsideRect(pointer, rect) {
 
 /**
  * Returns scaled rect.
+ * Used to provide scaled rect for UI interaction handling.
  * Uses rect, scale to compute the result.
  * @param {*} rect Rect.
  * @param {number} scale Scale.
@@ -47,6 +50,7 @@ function getScaledRect(rect, scale) {
 
 /**
  * Draws back button sprite.
+ * Used to render back button sprite.
  * Renders to the canvas context.
  * Advances animation state and sprites.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
@@ -67,6 +71,7 @@ function drawBackButtonSprite(ctx, uiImage, sprite, rect, shadow) {
 
 /**
  * Renders back button. If omitted, default values are used.
+ * Used to render back button. If omitted, default values are used.
  * Advances animation state and sprites.
  * @param {Object} [options] Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -98,6 +103,7 @@ export function renderBackButton({
 
 /**
  * Applies overlay text style. If omitted, default values are used.
+ * Used to keep UI visuals consistent.
  * Uses ctx, options to perform the operation.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {Object} [options] Configuration options.

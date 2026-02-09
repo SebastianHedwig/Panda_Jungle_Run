@@ -25,7 +25,7 @@ const SIDE_WALL_GAP_RATIO = 0.30; // 30% of the collider height
 export class Platform {
   /**
    * Creates a new instance. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to set up required data for platform collision handling.
    * @param {HTMLImageElement} image Image.
    * @param {number} x X.
    * @param {number} y Y.
@@ -47,7 +47,7 @@ export class Platform {
 
   /**
    * Sets dimensions.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {HTMLImageElement} image Image.
    */
   setDimensions(image) {
@@ -57,7 +57,7 @@ export class Platform {
 
   /**
    * Sets defaults.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {string} type Type.
    */
   setDefaults(type) {
@@ -69,7 +69,7 @@ export class Platform {
 
   /**
    * Applies side trims.
-   * Updates the instance state.
+   * Used to keep state consistent before the next step for platform collision handling.
    * @param {string} type Type.
    */
   applySideTrims(type) {
@@ -80,7 +80,7 @@ export class Platform {
 
   /**
    * Applies corner cuts.
-   * Updates the instance state.
+   * Used to keep state consistent before the next step for platform collision handling.
    * @param {string} type Type.
    */
   applyCornerCuts(type) {
@@ -91,7 +91,6 @@ export class Platform {
 
   /**
    * Calculates collider.
-   * Updates the instance state.
    */
   calculateCollider() {
     this.colliderOffset = Math.floor(this.height * this.decorRatio);
@@ -102,7 +101,6 @@ export class Platform {
 
   /**
    * Calculates collision bounds.
-   * Updates the instance state.
    */
   calculateCollisionBounds() {
     this.top = this.y + this.colliderOffset;
@@ -113,7 +111,7 @@ export class Platform {
 
   /**
    * Rect.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @returns {Object} Result value.
    */
   get rect() {
@@ -127,8 +125,8 @@ export class Platform {
 
   /**
    * Renders.
+   * Used to render visuals.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
    */

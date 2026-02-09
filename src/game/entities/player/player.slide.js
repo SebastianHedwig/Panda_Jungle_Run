@@ -1,5 +1,6 @@
 /**
  * Starts slide.
+ * Used to support physics updates.
  * Triggers audio playback or updates audio state.
  * Applies physics updates like gravity and velocity.
  * @param {Player} player Player instance.
@@ -20,8 +21,8 @@ export function startSlide(player, playerAudio) {
 
 /**
  * Handles landing audio.
+ * Used to centralize a specific behavior for audio playback.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {Player} playerAudio Player audio.
  */

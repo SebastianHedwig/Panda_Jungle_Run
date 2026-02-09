@@ -1,6 +1,5 @@
 /**
  * Binds unlock.
- * Updates the instance state.
  */
 export function bindUnlock() {
   if (this.unlockHandler) return;
@@ -14,8 +13,8 @@ export function bindUnlock() {
 
 /**
  * Returns unlock audio files.
+ * Used to provide unlock audio files for audio playback.
  * Applies physics updates like gravity and velocity.
- * Updates the instance state.
  * @returns {Array<any>} Unlock audio files.
  */
 export function getUnlockAudioFiles() {
@@ -34,8 +33,8 @@ export function getUnlockAudioFiles() {
 
 /**
  * Warmup audio file.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
- * Updates the instance state.
  * @param {*} audioFile Audio file.
  */
 export function warmupAudioFile(audioFile) {
@@ -48,6 +47,7 @@ export function warmupAudioFile(audioFile) {
 
 /**
  * Mute audio for warmup.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
  * @param {*} audioFile Audio file.
  */
@@ -58,8 +58,8 @@ export function muteAudioForWarmup(audioFile) {
 
 /**
  * Plays and reset audio.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
- * Updates the instance state.
  * @param {*} audioFile Audio file.
  * @param {boolean} previousMuted Previous muted.
  * @param {number} previousVolume Previous volume.
@@ -72,6 +72,7 @@ export function playAndResetAudio(audioFile, previousMuted, previousVolume) {
 
 /**
  * Resets audio playback.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
  * @param {*} audioFile Audio file.
  */
@@ -82,6 +83,7 @@ export function resetAudioPlayback(audioFile) {
 
 /**
  * Restore audio state.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
  * @param {*} audioFile Audio file.
  * @param {boolean} previousMuted Previous muted.
@@ -95,7 +97,6 @@ export function restoreAudioState(audioFile, previousMuted, previousVolume) {
 /**
  * Adds unlock listeners.
  * Binds keydown, pointerdown, touchstart event listeners.
- * Updates the instance state.
  */
 export function addUnlockListeners() {
   window.addEventListener("pointerdown", this.unlockHandler, { once: true });
@@ -105,7 +106,6 @@ export function addUnlockListeners() {
 
 /**
  * Unbind unlock.
- * Updates the instance state.
  */
 export function unbindUnlock() {
   if (!this.unlockHandler) return;

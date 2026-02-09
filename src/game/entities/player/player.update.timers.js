@@ -1,6 +1,6 @@
 /**
  * Updates cooldowns and timers.
- * Updates the player state.
+ * Used to advance state during the update loop for world state updates.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -15,7 +15,7 @@ export function updateCooldownsAndTimers(player, dt) {
 
 /**
  * Updates slide block grace.
- * Updates the player state.
+ * Used to advance state during the update loop for physics updates.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -27,7 +27,7 @@ function updateSlideBlockGrace(player, dt) {
 
 /**
  * Updates shoot cooldown.
- * Updates the player state.
+ * Used to advance state during the update loop for timed actions.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -39,7 +39,7 @@ function updateShootCooldown(player, dt) {
 
 /**
  * Updates gun pulse.
- * Updates the player state.
+ * Used to advance state during the update loop for collectable handling.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -50,7 +50,7 @@ function updateGunPulse(player, dt) {
 
 /**
  * Updates invulnerability timers.
- * Updates the player state.
+ * Used to advance state during the update loop for world state updates.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -65,7 +65,7 @@ function updateInvulnerabilityTimers(player, dt) {
 
 /**
  * Applies post slide invulnerability.
- * Updates the player state.
+ * Used to keep state consistent before the next step for physics updates.
  * @param {Player} player Player instance.
  */
 export function applyPostSlideInvulnerability(player) {

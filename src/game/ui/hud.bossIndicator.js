@@ -1,6 +1,6 @@
 /**
  * Draws boss indicator.
- * Updates the instance state.
+ * Used to render boss indicator.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {Camera} camera Camera instance.
@@ -16,7 +16,7 @@ export function drawBossIndicator(ctx, canvas, camera, boss) {
 
 /**
  * Should render boss indicator.
- * Updates the boss state.
+ * Used to decide UI hit testing outcomes.
  * @param {Boss} boss Boss instance.
  * @returns {boolean} Whether render boss indicator.
  */
@@ -26,6 +26,7 @@ export function shouldRenderBossIndicator(boss) {
 
 /**
  * Returns boss indicator style.
+ * Used to provide boss indicator style for rendering.
  * @returns {Object} Boss indicator style.
  */
 export function getBossIndicatorStyle() {
@@ -34,8 +35,8 @@ export function getBossIndicatorStyle() {
 
 /**
  * Draws boss indicator content.
+ * Used to render boss indicator content.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} placement Placement.
  * @param {*} indicatorStyle Indicator style.
@@ -50,7 +51,7 @@ export function drawBossIndicatorContent(ctx, placement, indicatorStyle) {
 
 /**
  * Draws side indicator.
- * Updates the instance state.
+ * Used to render side indicator.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} placement Placement.
  * @param {*} indicatorStyle Indicator style.
@@ -63,7 +64,7 @@ export function drawSideIndicator(ctx, placement, indicatorStyle) {
 
 /**
  * Draws vertical indicator.
- * Updates the instance state.
+ * Used to render vertical indicator.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} placement Placement.
  * @param {*} indicatorStyle Indicator style.
@@ -76,7 +77,7 @@ export function drawVerticalIndicator(ctx, placement, indicatorStyle) {
 
 /**
  * Returns boss indicator placement.
- * Updates the instance state.
+ * Used to provide boss indicator placement for UI interaction handling.
  * @param {Boss} boss Boss instance.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {Camera} camera Camera instance.
@@ -91,7 +92,7 @@ export function getBossIndicatorPlacement(boss, canvas, camera, indicatorStyle) 
 
 /**
  * Returns boss indicator base.
- * Updates the boss state.
+ * Used to provide boss indicator base for UI interaction handling.
  * @param {Boss} boss Boss instance.
  * @param {Camera} camera Camera instance.
  * @param {*} indicatorStyle Indicator style.
@@ -107,6 +108,7 @@ export function getBossIndicatorBase(boss, camera, indicatorStyle) {
 
 /**
  * Returns boss indicator offscreen.
+ * Used to provide boss indicator offscreen for UI interaction handling.
  * Uses base, canvas, margin to compute the result.
  * @param {*} base Base.
  * @param {HTMLCanvasElement} canvas Target canvas.
@@ -130,6 +132,7 @@ export function getBossIndicatorOffscreen(base, canvas, margin) {
 
 /**
  * Builds boss indicator placement.
+ * Used to assemble required data for UI interaction handling.
  * Uses base, offscreen, canvas, indicatorStyle to compute the result.
  * @param {*} base Base.
  * @param {*} offscreen Offscreen.
@@ -148,8 +151,8 @@ export function buildBossIndicatorPlacement(base, offscreen, canvas, indicatorSt
 
 /**
  * Draws indicator arrow.
+ * Used to render indicator arrow.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} x X.
  * @param {number} y Y.
@@ -167,6 +170,7 @@ export function drawIndicatorArrow(ctx, x, y, angle, arrowSize) {
 
 /**
  * Returns arrow geometry.
+ * Used to provide arrow geometry for UI interaction handling.
  * Uses arrowSize to compute the result.
  * @param {number} arrowSize Arrow size.
  * @returns {Object} Arrow geometry.
@@ -183,6 +187,7 @@ export function getArrowGeometry(arrowSize) {
 
 /**
  * Draws arrow path.
+ * Used to render arrow path.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} arrowGeometry Arrow geometry.
@@ -198,6 +203,7 @@ export function drawArrowPath(ctx, arrowGeometry) {
 
 /**
  * Draws indicator label.
+ * Used to render indicator label.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {string} text Text.

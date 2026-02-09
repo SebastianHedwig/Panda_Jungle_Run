@@ -2,6 +2,7 @@ import { loadImage, waitForImage } from "../../../core/game/assets/assetLoader.j
 
 /**
  * Sets overlay active.
+ * Used to support UI interaction handling.
  * Updates CSS classes to reflect the current state.
  * @param {boolean} active Active.
  */
@@ -11,6 +12,7 @@ export const setOverlayActive = (active) => {
 
 /**
  * Sets legal screen active.
+ * Used to support camera-relative placement.
  * Updates CSS classes to reflect the current state.
  * @param {boolean} active Active.
  */
@@ -20,6 +22,7 @@ export const setLegalScreenActive = (active) => {
 
 /**
  * Marks next start screen action consumed.
+ * Used to support camera-relative placement.
  * Uses state to perform the operation.
  * @param {Object} state Start screen state.
  */
@@ -30,6 +33,7 @@ export const markNextStartScreenActionConsumed = (state) => {
 
 /**
  * Consumes next start screen action.
+ * Used to support camera-relative placement.
  * Uses state to perform the operation.
  * @param {Object} state Start screen state.
  * @returns {boolean} Whether action consumed.
@@ -42,6 +46,7 @@ export const consumeNextStartScreenAction = (state) => {
 
 /**
  * Loads start image.
+ * Used to support camera-relative placement.
  * Uses src to perform the operation.
  * @param {string} src Source URL.
  * @returns {*} Result value.
@@ -54,6 +59,7 @@ export const loadStartImage = (src) =>
 
 /**
  * Loads font. If omitted, default values are used.
+ * Used to support camera-relative placement.
  * Uses family, descriptor to perform the operation.
  * @param {*} family Family.
  * @param {*} [descriptor] Descriptor.

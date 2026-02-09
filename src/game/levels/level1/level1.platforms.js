@@ -2,6 +2,7 @@ import { PlatformBuilder } from "../../../engine/world/platformBuilder.class.js"
 
 /**
  * Adds base ground.
+ * Used to support platform collision handling.
  * Uses build, fillerWidth, fillerOffsetLarge, fillerOffsetSmall to perform the operation.
  * @param {*} build Build.
  * @param {number} fillerWidth Filler width.
@@ -19,6 +20,7 @@ function addBaseGround(build, fillerWidth, fillerOffsetLarge, fillerOffsetSmall)
 
 /**
  * Adds higher level platforms.
+ * Used to support world state updates.
  * Uses build to perform the operation.
  * @param {*} build Build.
  */
@@ -30,6 +32,7 @@ function addHigherLevelPlatforms(build) {
 
 /**
  * Adds floating islands.
+ * Used to support world state updates.
  * Uses build to perform the operation.
  * @param {*} build Build.
  */
@@ -43,6 +46,7 @@ function addFloatingIslands(build) {
 
 /**
  * Creates level 1 platforms.
+ * Used to set up required data for world state updates.
  * Advances animation state and sprites.
  * @param {*} sprites Sprites.
  * @returns {*} Level 1 platforms.

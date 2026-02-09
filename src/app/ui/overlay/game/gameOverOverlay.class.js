@@ -6,7 +6,6 @@ const BUTTONS_BASE_Y_OFFSET_RATIO = 0.08;
 export class GameOverOverlay extends GameOverlayBase {
   /**
    * Creates a new instance.
-   * Updates the instance state.
    */
   constructor() {
     super();
@@ -15,7 +14,7 @@ export class GameOverOverlay extends GameOverlayBase {
 
   /**
    * Renders.
-   * Updates the instance state.
+   * Used to render visuals.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLCanvasElement} canvas Target canvas.
    */

@@ -2,6 +2,7 @@ import { PLAYER_FALL_DAMAGE } from "../../../config/config.js";
 
 /**
  * Handles death landing.
+ * Used to centralize a specific behavior for combat effects.
  * Uses player, previousBottom, currentBottom to perform the operation.
  * @param {Player} player Player instance.
  * @param {number} previousBottom Previous bottom.
@@ -15,7 +16,7 @@ export function handleDeathLanding(player, previousBottom, currentBottom) {
 
 /**
  * Returns death landing context.
- * Updates the player state.
+ * Used to provide death landing context for combat effects.
  * @param {Player} player Player instance.
  * @returns {Object} Death landing context.
  */
@@ -30,6 +31,7 @@ function getDeathLandingContext(player) {
 
 /**
  * Try land on platform.
+ * Used to support combat effects.
  * Uses player, landingContext, previousBottom, currentBottom to perform the operation.
  * @param {Player} player Player instance.
  * @param {*} landingContext Landing context.
@@ -48,6 +50,7 @@ function tryLandOnPlatform(player, landingContext, previousBottom, currentBottom
 
 /**
  * Can land on platform.
+ * Used to decide combat outcomes.
  * Performs hitbox or collision checks.
  * @param {Player} player Player instance.
  * @param {Platform} platform Platform.
@@ -65,8 +68,8 @@ function canLandOnPlatform(player, platform, landingContext, previousBottom, cur
 
 /**
  * Is crossing platform top.
+ * Used to decide combat outcomes.
  * Applies physics updates like gravity and velocity.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {Platform} platform Platform.
  * @param {number} previousBottom Previous bottom.
@@ -83,8 +86,8 @@ function isCrossingPlatformTop(player, platform, previousBottom, currentBottom) 
 
 /**
  * Applies platform landing.
+ * Used to keep state consistent before the next step for combat effects.
  * Applies physics updates like gravity and velocity.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {Platform} platform Platform.
  */
@@ -97,8 +100,8 @@ function applyPlatformLanding(player, platform) {
 
 /**
  * Land on ground if needed.
+ * Used to support combat effects.
  * Applies physics updates like gravity and velocity.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {*} landingContext Landing context.
  * @param {number} currentBottom Current bottom.
@@ -113,7 +116,7 @@ function landOnGroundIfNeeded(player, landingContext, currentBottom) {
 
 /**
  * Respawn from fall.
- * Updates the player state.
+ * Used to support combat effects.
  * Spawns visual feedback effects.
  * @param {Player} player Player instance.
  * @returns {*} Result value.
@@ -128,7 +131,7 @@ export function respawnFromFall(player) {
 
 /**
  * Applies fall damage.
- * Updates the player state.
+ * Used to keep state consistent before the next step for combat effects.
  * @param {Player} player Player instance.
  */
 function applyFallDamage(player) {
@@ -138,8 +141,8 @@ function applyFallDamage(player) {
 
 /**
  * Respawn at safe position.
+ * Used to support camera-relative placement.
  * Applies physics updates like gravity and velocity.
- * Updates the player state.
  * @param {Player} player Player instance.
  */
 function respawnAtSafePosition(player) {
@@ -153,8 +156,8 @@ function respawnAtSafePosition(player) {
 
 /**
  * Resets post respawn state.
+ * Used to support combat effects.
  * Advances animation state and sprites.
- * Updates the player state.
  * @param {Player} player Player instance.
  */
 function resetPostRespawnState(player) {
@@ -168,8 +171,8 @@ function resetPostRespawnState(player) {
 
 /**
  * Handles fall off world.
+ * Used to centralize a specific behavior for combat effects.
  * Applies physics updates like gravity and velocity.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {*} grounded Grounded.
  * @param {number} bottom Bottom.

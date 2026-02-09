@@ -21,6 +21,7 @@ const OVERLAY_TEXT_COLOR = "rgb(0, 110, 110)";
 
 /**
  * Text style.
+ * Used to support UI interaction handling.
  * Uses ctx to perform the operation.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  */
@@ -30,8 +31,8 @@ export function textStyle(ctx) {
 
 /**
  * Renders controls layer.
+ * Used to render controls layer.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  */
@@ -48,6 +49,7 @@ export function renderControlsLayer(ctx, canvas) {
 
 /**
  * Returns title Y.
+ * Used to provide title Y for UI interaction handling.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {number} [options.y] Y.
@@ -59,8 +61,8 @@ export function getTitleY({ y, height }) {
 
 /**
  * Draws settings title.
+ * Used to render settings title.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {number} titleY Title Y.
@@ -73,8 +75,8 @@ export function drawSettingsTitle(ctx, canvas, titleY) {
 
 /**
  * Draws paused text.
+ * Used to render paused text.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {number} titleY Title Y.
@@ -90,6 +92,7 @@ export function drawPausedText(ctx, canvas, titleY) {
 
 /**
  * Returns list layout.
+ * Used to provide list layout for UI interaction handling.
  * Uses canvas, pausedY to compute the result.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {number} pausedY Paused Y.
@@ -104,8 +107,8 @@ export function getListLayout(canvas, pausedY) {
 
 /**
  * Applies menu font.
+ * Used to keep UI visuals consistent.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  */
@@ -117,6 +120,7 @@ export function applyMenuFont(ctx, canvas) {
 
 /**
  * Returns menu items.
+ * Used to provide menu items for UI interaction handling.
  * @returns {Array<any>} Menu items.
  */
 export function getMenuItems() {
@@ -125,6 +129,7 @@ export function getMenuItems() {
 
 /**
  * Returns menu item layout.
+ * Used to provide menu item layout for UI interaction handling.
  * Uses ctx, item, index, options to compute the result.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} item Item.
@@ -151,6 +156,7 @@ export function getMenuItemLayout(ctx, item, index, { listStartY, lineHeight, ca
 
 /**
  * Draws menu item.
+ * Used to render menu item.
  * Uses ctx, item, options, canvasCenterX to perform the operation.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} item Item.
@@ -170,7 +176,7 @@ export function drawMenuItem(ctx, item, { itemYPosition, hoverScale }, canvasCen
 
 /**
  * Renders menu items.
- * Updates the instance state.
+ * Used to render menu items.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} items Items.
  * @param {*} layout Layout.
@@ -190,8 +196,8 @@ export function renderMenuItems(ctx, items, layout) {
 
 /**
  * Renders menu layer.
+ * Used to render menu layer.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  */
@@ -209,7 +215,7 @@ export function renderMenuLayer(ctx, canvas) {
 
 /**
  * Renders menu content.
- * Updates the instance state.
+ * Used to render menu content.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {HTMLElement} panelRect Panel rect.
@@ -226,8 +232,8 @@ export function renderMenuContent(ctx, canvas, panelRect) {
 
 /**
  * Renders.
+ * Used to render visuals.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  */

@@ -1,6 +1,6 @@
 /**
  * Draws bullets.
- * Updates the instance state.
+ * Used to render bullets.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {Player} player Player instance.
@@ -15,7 +15,7 @@ export function drawBullets(ctx, canvas, player) {
 
 /**
  * Is gun image ready.
- * Updates the instance state.
+ * Used to decide UI hit testing outcomes.
  * @returns {boolean} Whether gun image ready.
  */
 export function isGunImageReady() {
@@ -24,6 +24,7 @@ export function isGunImageReady() {
 
 /**
  * Returns gun hud settings.
+ * Used to provide gun hud settings for UI interaction handling.
  * @returns {Object} Gun hud settings.
  */
 export function getGunHudSettings() {
@@ -44,6 +45,7 @@ export function getGunHudSettings() {
 
 /**
  * Returns gun position.
+ * Used to provide gun position for camera-relative placement.
  * Uses canvas, gunSettings to compute the result.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {*} gunSettings Gun settings.
@@ -59,8 +61,8 @@ export function getGunPosition(canvas, gunSettings) {
 
 /**
  * Draws gun image.
+ * Used to render gun image.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} x X.
  * @param {number} y Y.
@@ -72,8 +74,8 @@ export function drawGunImage(ctx, x, y, gunSettings) {
 
 /**
  * Draws bullet value.
+ * Used to render bullet value.
  * Renders to the canvas context.
- * Updates the player state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} x X.
  * @param {number} y Y.
@@ -93,6 +95,7 @@ export function drawBulletValue(ctx, x, y, gunSettings, player) {
 
 /**
  * Applies bullet text transform.
+ * Used to keep UI visuals consistent.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} x X.
@@ -107,6 +110,7 @@ export function applyBulletTextTransform(ctx, x, y, gunSettings, scale) {
 
 /**
  * Applies bullet text style.
+ * Used to keep UI visuals consistent.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} gunSettings Gun settings.

@@ -2,7 +2,6 @@ import { ENEMY1_DAMAGE, ENEMY1_HEALTH, ENEMY1_SPEED } from "../../../../config/c
 
 /**
  * Initializes stats.
- * Updates the instance state.
  */
 export function initializeStats() {
   Object.assign(this, {
@@ -14,7 +13,6 @@ export function initializeStats() {
 
 /**
  * Initializes combat defaults.
- * Updates the instance state.
  */
 export function initializeCombatDefaults() {
   this.isAttacking = false;
@@ -26,7 +24,6 @@ export function initializeCombatDefaults() {
 
 /**
  * Initializes chase defaults.
- * Updates the instance state.
  */
 export function initializeChaseDefaults() {
   this.chaseRangeX = 300;

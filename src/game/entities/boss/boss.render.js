@@ -2,6 +2,7 @@ import { FACING_RIGHT } from "../../../config/config.js";
 
 /**
  * Renders boss. If omitted, default values are used.
+ * Used to render boss. If omitted, default values are used.
  * Uses boss, ctx, camera, options to perform the operation.
  * @param {Boss} boss Boss instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
@@ -20,6 +21,7 @@ export function renderBoss(boss, ctx, camera, { debugHitbox = false } = {}) {
 
 /**
  * Returns boss render settings.
+ * Used to provide boss render settings for rendering.
  * Advances animation state and sprites.
  * Performs hitbox or collision checks.
  * @param {Boss} boss Boss instance.
@@ -36,7 +38,7 @@ function getBossRenderSettings(boss) {
 
 /**
  * Draws boss sprite.
- * Updates the boss state.
+ * Used to render boss sprite.
  * @param {Boss} boss Boss instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {Camera} camera Camera instance.
@@ -52,6 +54,7 @@ function drawBossSprite(boss, ctx, camera, renderSettings, debugHitbox) {
 
 /**
  * Draws boss sprite flipped.
+ * Used to render boss sprite flipped.
  * Renders to the canvas context.
  * Advances animation state and sprites.
  * @param {Boss} boss Boss instance.
@@ -70,6 +73,7 @@ function drawBossSpriteFlipped(boss, ctx, camera, renderSettings, debugHitbox) {
 
 /**
  * Draws boss sprite normal.
+ * Used to render boss sprite normal.
  * Renders to the canvas context.
  * Advances animation state and sprites.
  * @param {Boss} boss Boss instance.
@@ -87,6 +91,7 @@ function drawBossSpriteNormal(boss, ctx, camera, renderSettings, debugHitbox) {
 
 /**
  * Draws boss hitbox flipped.
+ * Used to render boss hitbox flipped.
  * Renders to the canvas context.
  * Performs hitbox or collision checks.
  * @param {Boss} boss Boss instance.
@@ -103,6 +108,7 @@ function drawBossHitboxFlipped(boss, ctx, camera, renderSettings) {
 
 /**
  * Draws boss hitbox normal.
+ * Used to render boss hitbox normal.
  * Renders to the canvas context.
  * Performs hitbox or collision checks.
  * @param {Boss} boss Boss instance.
@@ -119,6 +125,7 @@ function drawBossHitboxNormal(boss, ctx, camera, renderSettings) {
 
 /**
  * Draws boss health bar.
+ * Used to render boss health bar.
  * Uses boss, ctx, camera, renderSettings to perform the operation.
  * @param {Boss} boss Boss instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
@@ -135,7 +142,7 @@ function drawBossHealthBar(boss, ctx, camera, renderSettings) {
 
 /**
  * Should render health bar.
- * Updates the boss state.
+ * Used to decide control flow.
  * @param {Boss} boss Boss instance.
  * @returns {boolean} Whether render health bar.
  */
@@ -145,7 +152,7 @@ function shouldRenderHealthBar(boss) {
 
 /**
  * Returns boss health bar metrics.
- * Updates the boss state.
+ * Used to provide boss health bar metrics for rendering.
  * @param {Boss} boss Boss instance.
  * @param {Camera} camera Camera instance.
  * @param {*} renderSettings Render settings.
@@ -164,6 +171,7 @@ function getBossHealthBarMetrics(boss, camera, renderSettings) {
 
 /**
  * Draws boss health bar background.
+ * Used to render boss health bar background.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} healthBarMetrics Health bar metrics.
@@ -181,6 +189,7 @@ function drawBossHealthBarBackground(ctx, healthBarMetrics, renderSettings) {
 
 /**
  * Draws boss health bar fill.
+ * Used to render boss health bar fill.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} healthBarMetrics Health bar metrics.
@@ -193,8 +202,8 @@ function drawBossHealthBarFill(ctx, healthBarMetrics, renderSettings) {
 
 /**
  * Draws boss health bar text.
+ * Used to render boss health bar text.
  * Renders to the canvas context.
- * Updates the boss state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} healthBarMetrics Health bar metrics.
  * @param {*} renderSettings Render settings.
@@ -214,6 +223,7 @@ function drawBossHealthBarText(ctx, healthBarMetrics, renderSettings, boss) {
 
 /**
  * Draws boss debug hitbox.
+ * Used to render boss debug hitbox.
  * Renders to the canvas context.
  * Performs hitbox or collision checks.
  * @param {Boss} boss Boss instance.

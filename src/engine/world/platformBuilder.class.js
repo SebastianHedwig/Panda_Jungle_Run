@@ -3,8 +3,8 @@ import { Platform } from "./platform.class.js";
 export class PlatformBuilder {
   /**
    * Creates a new instance.
+   * Used to set up required data for platform collision handling.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {Platform} platformArray Platform array.
    * @param {*} sprites Sprites.
    */
@@ -20,8 +20,8 @@ export class PlatformBuilder {
 
   /**
    * Adds.
+   * Used to support platform collision handling.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {string} type Type.
    * @param {number} x X.
    * @param {number} y Y.
@@ -39,7 +39,7 @@ export class PlatformBuilder {
 
   /**
    * Starts long.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @returns {*} Result value.
@@ -47,7 +47,7 @@ export class PlatformBuilder {
   startLong(x, y)  { return this.add("startLong", x + this.startLongOffset, y); }
   /**
    * Middle long.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @returns {*} Result value.
@@ -55,7 +55,7 @@ export class PlatformBuilder {
   middleLong(x, y) { return this.add("middleLong", x, y); }
   /**
    * End long.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @returns {*} Result value.
@@ -63,7 +63,7 @@ export class PlatformBuilder {
   endLong(x, y)    { return this.add("endLong", x, y); }
   /**
    * Starts short.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @returns {*} Result value.
@@ -71,7 +71,7 @@ export class PlatformBuilder {
   startShort(x, y) { return this.add("startShort", x, y); }
   /**
    * Middle short.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @returns {*} Result value.
@@ -79,7 +79,7 @@ export class PlatformBuilder {
   middleShort(x, y) { return this.add("middleShort", x, y); }
   /**
    * End short.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @returns {*} Result value.
@@ -87,7 +87,7 @@ export class PlatformBuilder {
   endShort(x, y) { return this.add("endShort", x, y); }
   /**
    * Small.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @returns {*} Result value.
@@ -95,7 +95,7 @@ export class PlatformBuilder {
   small(x, y) { return this.add("small", x, y); }
   /**
    * Filler.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @returns {*} Result value.
@@ -108,7 +108,7 @@ export class PlatformBuilder {
 
   /**
    * Row.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {number} count Count.
@@ -125,7 +125,7 @@ export class PlatformBuilder {
 
   /**
    * Adds row segment.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {string} type Type.
    * @param {number} x X.
    * @param {number} y Y.
@@ -138,8 +138,8 @@ export class PlatformBuilder {
 
   /**
    * Stack filler. If omitted, default values are used.
+   * Used to support platform collision handling.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} [rows] Rows.
@@ -155,7 +155,7 @@ export class PlatformBuilder {
 
   /**
    * Stack filler column.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {number} columnIndex Column index.
@@ -175,7 +175,7 @@ export class PlatformBuilder {
 
   /**
    * Island small.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {number} x X.
    * @param {number} y Y.
    */
@@ -186,7 +186,7 @@ export class PlatformBuilder {
 
   /**
    * Stair up. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} [steps] Steps.
@@ -202,7 +202,7 @@ export class PlatformBuilder {
 
   /**
    * Stair down. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} [steps] Steps.
@@ -218,7 +218,7 @@ export class PlatformBuilder {
 
   /**
    * Adds stair step.
-   * Updates the instance state.
+   * Used to support platform collision handling.
    * @param {string} type Type.
    * @param {number} x X.
    * @param {number} y Y.

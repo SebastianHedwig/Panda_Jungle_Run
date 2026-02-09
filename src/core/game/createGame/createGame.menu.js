@@ -1,5 +1,6 @@
 /**
  * Sets paused.
+ * Used to support UI interaction handling.
  * Uses paused to perform the operation.
  * @param {boolean} paused Paused.
  */
@@ -13,6 +14,7 @@ export function setPaused(paused) {
 
 /**
  * Returns paused.
+ * Used to provide paused for UI interaction handling.
  * @returns {*} Paused.
  */
 export function getPaused() {
@@ -21,6 +23,7 @@ export function getPaused() {
 
 /**
  * Sets settings open.
+ * Used to support UI interaction handling.
  * Resolves DOM elements from the document.
  * @param {boolean} open Open.
  */
@@ -31,6 +34,7 @@ export function setSettingsOpen(open) {
 
 /**
  * Returns canvas pointer.
+ * Used to provide canvas pointer for UI interaction handling.
  * Uses event to compute the result.
  * @param {Event} event Event object.
  * @returns {Object} Canvas pointer.
@@ -44,6 +48,7 @@ export function getCanvasPointer(event) {
 
 /**
  * Sets game won pointer.
+ * Used to support UI interaction handling.
  * Uses canvasPointerX, canvasPointerY to perform the operation.
  * @param {number} canvasPointerX Canvas pointer X.
  * @param {number} canvasPointerY Canvas pointer Y.
@@ -54,6 +59,7 @@ export function setGameWonPointer(canvasPointerX, canvasPointerY) {
 
 /**
  * Sets game over pointer.
+ * Used to support UI interaction handling.
  * Uses canvasPointerX, canvasPointerY to perform the operation.
  * @param {number} canvasPointerX Canvas pointer X.
  * @param {number} canvasPointerY Canvas pointer Y.
@@ -64,6 +70,7 @@ export function setGameOverPointer(canvasPointerX, canvasPointerY) {
 
 /**
  * Sets menu pointer.
+ * Used to support UI interaction handling.
  * Uses menuPointerX, menuPointerY to perform the operation.
  * @param {number} menuPointerX Menu pointer X.
  * @param {number} menuPointerY Menu pointer Y.
@@ -75,6 +82,7 @@ export function setMenuPointer(menuPointerX, menuPointerY) {
 
 /**
  * Applies menu pointer.
+ * Used to keep UI visuals consistent.
  * Uses canvasPointerX, canvasPointerY to perform the operation.
  * @param {number} canvasPointerX Canvas pointer X.
  * @param {number} canvasPointerY Canvas pointer Y.
@@ -88,6 +96,7 @@ export function applyMenuPointer(canvasPointerX, canvasPointerY) {
 
 /**
  * Updates settings pointer.
+ * Used to advance state during the update loop for UI interaction handling.
  * Uses event to perform the operation.
  * @param {Event} event Event object.
  */
@@ -109,6 +118,7 @@ export function clearSettingsPointer() {
 
 /**
  * Handles game overlay action.
+ * Used to centralize a specific behavior for UI interaction handling.
  * Uses action to perform the operation.
  * @param {*} action Action.
  */
@@ -119,6 +129,7 @@ export function handleGameOverlayAction(action) {
 
 /**
  * Handles end game click.
+ * Used to centralize a specific behavior for UI interaction handling.
  * Uses canvasPointerX, canvasPointerY to perform the operation.
  * @param {number} canvasPointerX Canvas pointer X.
  * @param {number} canvasPointerY Canvas pointer Y.
@@ -142,6 +153,7 @@ export function handleEndGameClick(canvasPointerX, canvasPointerY) {
 
 /**
  * Stops menu click event.
+ * Used to support UI interaction handling.
  * Uses event to perform the operation.
  * @param {Event} event Event object.
  */
@@ -152,6 +164,7 @@ export function stopMenuClickEvent(event) {
 
 /**
  * Handles menu click.
+ * Used to centralize a specific behavior for UI interaction handling.
  * Uses event to perform the operation.
  * @param {Event} event Event object.
  */

@@ -10,7 +10,7 @@ import {
 
 /**
  * Updates boss.
- * Updates the boss state.
+ * Used to advance state during the update loop for world state updates.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  * @param {Player} player Player instance.
@@ -30,7 +30,7 @@ export function updateBoss(boss, dt, player) {
 
 /**
  * Handles boss death.
- * Updates the boss state.
+ * Used to centralize a specific behavior for combat effects.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
@@ -45,8 +45,8 @@ function handleBossDeath(boss, dt) {
 
 /**
  * Updates boss death frames.
+ * Used to advance state during the update loop for combat effects.
  * Advances animation state and sprites.
- * Updates the boss state.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -64,7 +64,7 @@ function updateBossDeathFrames(boss, dt) {
 
 /**
  * Updates boss death timer.
- * Updates the boss state.
+ * Used to advance state during the update loop for timed actions.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -76,6 +76,7 @@ function updateBossDeathTimer(boss, dt) {
 
 /**
  * Updates boss cooldowns.
+ * Used to advance state during the update loop for world state updates.
  * Applies physics updates like gravity and velocity.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
@@ -92,6 +93,7 @@ function updateBossCooldowns(boss, dt) {
 
 /**
  * Updates boss timer.
+ * Used to advance state during the update loop for timed actions.
  * Uses boss, timerKey, dt to perform the operation.
  * @param {Boss} boss Boss instance.
  * @param {number} timerKey Timer key.
@@ -103,8 +105,8 @@ function updateBossTimer(boss, timerKey, dt) {
 
 /**
  * Handles boss hit stun.
+ * Used to centralize a specific behavior for combat effects.
  * Advances animation state and sprites.
- * Updates the boss state.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
@@ -122,8 +124,8 @@ function handleBossHitStun(boss, dt) {
 
 /**
  * Handles boss hurt anim.
+ * Used to centralize a specific behavior for combat effects.
  * Advances animation state and sprites.
- * Updates the boss state.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
@@ -141,7 +143,7 @@ function handleBossHurtAnim(boss, dt) {
 
 /**
  * Handles dead player state.
- * Updates the boss state.
+ * Used to centralize a specific behavior for world state updates.
  * @param {Boss} boss Boss instance.
  * @param {Player} player Player instance.
  */
@@ -153,6 +155,7 @@ function handleDeadPlayerState(boss, player) {
 
 /**
  * Handles boss jump.
+ * Used to centralize a specific behavior for physics updates.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
  * @param {Boss} boss Boss instance.
@@ -174,7 +177,7 @@ function handleBossJump(boss, playerInfo) {
 
 /**
  * Handles boss attack state.
- * Updates the boss state.
+ * Used to centralize a specific behavior for combat effects.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  * @param {Player} player Player instance.
@@ -192,8 +195,8 @@ function handleBossAttackState(boss, dt, player) {
 
 /**
  * Updates boss attack animation.
+ * Used to advance state during the update loop for animation timing.
  * Advances animation state and sprites.
- * Updates the boss state.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -206,7 +209,7 @@ function updateBossAttackAnimation(boss, dt) {
 
 /**
  * Finish boss attack if needed.
- * Updates the boss state.
+ * Used to support combat effects.
  * @param {Boss} boss Boss instance.
  */
 function finishBossAttackIfNeeded(boss) {
@@ -221,7 +224,7 @@ function finishBossAttackIfNeeded(boss) {
 
 /**
  * Handles boss movement.
- * Updates the boss state.
+ * Used to centralize a specific behavior for physics updates.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  * @param {Player} player Player instance.
@@ -243,7 +246,7 @@ function handleBossMovement(boss, dt, player, playerInfo) {
 
 /**
  * Returns boss movement context.
- * Updates the player state.
+ * Used to provide boss movement context for physics updates.
  * @param {Boss} boss Boss instance.
  * @param {Player} player Player instance.
  * @param {Player} playerInfo Player info.
@@ -266,7 +269,7 @@ function getBossMovementContext(boss, player, playerInfo) {
 
 /**
  * Is boss edge blocked.
- * Updates the boss state.
+ * Used to decide control flow.
  * @param {Boss} boss Boss instance.
  * @param {Player} playerInfo Player info.
  * @param {boolean} canChase Whether chase.
@@ -290,7 +293,7 @@ function isBossEdgeBlocked(boss, playerInfo, canChase, onLowestPlatform, platfor
 
 /**
  * Returns boss move dir.
- * Updates the boss state.
+ * Used to provide boss move dir for world state updates.
  * @param {Boss} boss Boss instance.
  * @param {Player} playerInfo Player info.
  * @returns {*} Boss move dir.
@@ -310,7 +313,7 @@ function getBossMoveDir(boss, playerInfo) {
 
 /**
  * Adjust boss move dir.
- * Updates the boss state.
+ * Used to support world state updates.
  * @param {Boss} boss Boss instance.
  * @param {*} moveDirection Move direction.
  * @param {number} dt Delta time in seconds.
@@ -330,7 +333,7 @@ function adjustBossMoveDir(boss, moveDirection, dt, movementContext) {
 
 /**
  * Applies boss move.
- * Updates the boss state.
+ * Used to keep state consistent before the next step for world state updates.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  * @param {*} moveDirection Move direction.

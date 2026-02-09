@@ -2,8 +2,8 @@ import { handleAttackState, tryStartAttackIfInRange, handlePlayerCollision } fro
 
 /**
  * Updates.
+ * Used to advance state during the update loop for world state updates.
  * Advances animation state and sprites.
- * Updates the instance state.
  * @param {number} dt Delta time in seconds.
  * @param {Player} player Player instance.
  * @returns {*} Result value.
@@ -24,7 +24,7 @@ export function update(dt, player) {
 
 /**
  * Handles death update.
- * Updates the enemy state.
+ * Used to centralize a specific behavior for combat effects.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -36,8 +36,8 @@ function handleDeathUpdate(enemy, dt) {
 
 /**
  * Updates death animation.
+ * Used to advance state during the update loop for animation timing.
  * Advances animation state and sprites.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -51,8 +51,8 @@ function updateDeathAnimation(enemy, dt) {
 
 /**
  * Advances death frame.
+ * Used to support animation timing.
  * Advances animation state and sprites.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  */
 function advanceDeathFrame(enemy) {
@@ -64,7 +64,7 @@ function advanceDeathFrame(enemy) {
 
 /**
  * Updates removal timers.
- * Updates the enemy state.
+ * Used to advance state during the update loop for world state updates.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -80,7 +80,7 @@ function updateRemovalTimers(enemy, dt) {
 
 /**
  * Updates enemy timers.
- * Updates the enemy state.
+ * Used to advance state during the update loop for world state updates.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -91,8 +91,8 @@ function updateEnemyTimers(enemy, dt) {
 
 /**
  * Handles hit stun.
+ * Used to centralize a specific behavior for combat effects.
  * Advances animation state and sprites.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
@@ -109,7 +109,7 @@ function handleHitStun(enemy, dt) {
 
 /**
  * Handles dead player state.
- * Updates the enemy state.
+ * Used to centralize a specific behavior for world state updates.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Player} player Player instance.
  */
@@ -121,8 +121,8 @@ function handleDeadPlayerState(enemy, player) {
 
 /**
  * Handles chase and movement.
+ * Used to centralize a specific behavior for physics updates.
  * Applies physics updates like gravity and velocity.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
  * @param {Player} player Player instance.
@@ -141,7 +141,7 @@ function handleChaseAndMovement(enemy, dt, player, playerInfo) {
 
 /**
  * Returns chase state.
- * Updates the player state.
+ * Used to provide chase state for world state updates.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Player} player Player instance.
  * @param {Player} playerInfo Player info.
@@ -162,7 +162,7 @@ function getChaseState(enemy, player, playerInfo, platform) {
 
 /**
  * Is blocked by edge.
- * Updates the enemy state.
+ * Used to decide control flow.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Player} playerInfo Player info.
  * @param {boolean} canChase Whether chase.
@@ -181,7 +181,7 @@ function isBlockedByEdge(enemy, playerInfo, canChase, onLowestPlatform, platform
 
 /**
  * Returns move direction.
- * Updates the enemy state.
+ * Used to provide move direction for world state updates.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Player} playerInfo Player info.
  * @param {*} chaseState Chase state.
@@ -204,7 +204,7 @@ function getMoveDirection(enemy, playerInfo, chaseState) {
 
 /**
  * Adjust move direction.
- * Updates the enemy state.
+ * Used to support world state updates.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {*} moveDirection Move direction.
  * @param {number} dt Delta time in seconds.
@@ -219,7 +219,7 @@ function adjustMoveDirection(enemy, moveDirection, dt, platform, chaseState) {
 
 /**
  * Applies horizontal movement.
- * Updates the enemy state.
+ * Used to keep state consistent before the next step for physics updates.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
  * @param {*} moveDirection Move direction.
@@ -231,8 +231,8 @@ function applyHorizontalMovement(enemy, dt, moveDirection) {
 
 /**
  * Applies gravity and landing.
+ * Used to keep state consistent before the next step for physics updates.
  * Applies physics updates like gravity and velocity.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
  */

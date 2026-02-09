@@ -2,8 +2,8 @@ import { DEBUG_MODE } from "../../config/config.js";
 
 /**
  * Draws.
+ * Used to render visuals.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {Camera} camera Camera instance.
  */
@@ -23,7 +23,7 @@ export function draw(ctx, camera) {
 
 /**
  * Returns current image.
- * Updates the instance state.
+ * Used to provide current image for rendering.
  * @returns {*} Current image.
  */
 export function getCurrentImage() {
@@ -32,8 +32,8 @@ export function getCurrentImage() {
 
 /**
  * Applies opacity.
+ * Used to apply visual styling before rendering.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  */
 export function applyOpacity(ctx) {
@@ -42,7 +42,7 @@ export function applyOpacity(ctx) {
 
 /**
  * Returns screen position.
- * Updates the instance state.
+ * Used to provide screen position for camera-relative placement.
  * @param {Camera} camera Camera instance.
  * @returns {Object} Screen position.
  */
@@ -54,7 +54,7 @@ export function getScreenPosition(camera) {
 
 /**
  * Draws item image.
- * Updates the instance state.
+ * Used to render item image.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} screenX Screen X.
  * @param {number} screenY Screen Y.
@@ -68,7 +68,7 @@ export function drawItemImage(ctx, screenX, screenY, img) {
 
 /**
  * Returns center position.
- * Updates the instance state.
+ * Used to provide center position for rendering.
  * @param {number} screenX Screen X.
  * @param {number} screenY Screen Y.
  * @returns {Object} Center position.
@@ -81,8 +81,8 @@ export function getCenterPosition(screenX, screenY) {
 
 /**
  * Applies item transform.
+ * Used to apply visual styling before rendering.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} centerX Center X.
  * @param {number} centerY Center Y.
@@ -95,8 +95,8 @@ export function applyItemTransform(ctx, centerX, centerY) {
 
 /**
  * Paint item image.
+ * Used to render item image.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLImageElement} img Img.
  */
@@ -106,7 +106,7 @@ export function paintItemImage(ctx, img) {
 
 /**
  * Returns hitbox.
- * Updates the instance state.
+ * Used to provide hitbox for collision and hit testing.
  * @returns {Object} Hitbox.
  */
 export function getHitbox() {
@@ -122,8 +122,8 @@ export function getHitbox() {
 
 /**
  * Draws debug hitbox.
+ * Used to render debug hitbox.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {Camera} camera Camera instance.
  */

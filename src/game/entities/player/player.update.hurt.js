@@ -1,7 +1,7 @@
 /**
  * Handles hurt flow.
+ * Used to centralize a specific behavior for combat effects.
  * Applies physics updates like gravity and velocity.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
@@ -17,8 +17,8 @@ export function handleHurtFlow(player, dt) {
 
 /**
  * Applies hurt animation.
+ * Used to apply animation transforms.
  * Advances animation state and sprites.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */

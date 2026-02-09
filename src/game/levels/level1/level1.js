@@ -6,6 +6,7 @@ export { placeHearts } from "./level1.hearts.js";
 
 /**
  * Creates level 1 collectables.
+ * Used to set up required data for world state updates.
  * @returns {Array<any>} Level 1 collectables.
  */
 export function createLevel1Collectables() {

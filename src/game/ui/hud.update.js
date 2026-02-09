@@ -1,6 +1,6 @@
 /**
  * Updates.
- * Updates the instance state.
+ * Used to advance state during the update loop for UI interaction handling.
  * @param {number} dt Delta time in seconds.
  * @param {Player} player Player instance.
  */
@@ -15,6 +15,7 @@ export function update(dt, player) {
 
 /**
  * Returns update speeds.
+ * Used to provide update speeds for UI interaction handling.
  * @returns {Object} Update speeds.
  */
 export function getUpdateSpeeds() {
@@ -23,7 +24,7 @@ export function getUpdateSpeeds() {
 
 /**
  * Updates coin display.
- * Updates the player state.
+ * Used to advance state during the update loop for UI interaction handling.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @param {number} coinLerpSpeed Coin lerp speed.
@@ -34,7 +35,7 @@ export function updateCoinDisplay(player, dt, coinLerpSpeed) {
 
 /**
  * Updates pulse times.
- * Updates the instance state.
+ * Used to advance state during the update loop for UI interaction handling.
  * @param {number} dt Delta time in seconds.
  */
 export function updatePulseTimes(dt) {
@@ -43,7 +44,7 @@ export function updatePulseTimes(dt) {
 
 /**
  * Decay hud pulse.
- * Updates the player state.
+ * Used to support UI interaction handling.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @param {number} hudPulseDecaySpeed Hud pulse decay speed.
@@ -54,7 +55,7 @@ export function decayHudPulse(player, dt, hudPulseDecaySpeed) {
 
 /**
  * Decay health pulse.
- * Updates the player state.
+ * Used to support UI interaction handling.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @param {number} healthPulseDecaySpeed Health pulse decay speed.

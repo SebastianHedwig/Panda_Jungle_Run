@@ -14,6 +14,7 @@ import { BOSS_MUSIC_PLAYBACK_RATE } from "../../config/config.js";
 
 /**
  * Builds boss director config. If omitted, default values are used.
+ * Used to assemble required data for world state updates.
  * Uses options to compute the result.
  * @param {Object} [options] Configuration options.
  */
@@ -24,6 +25,7 @@ function buildBossDirectorConfig(options = {}) {
 
 /**
  * Builds boss director state.
+ * Used to assemble required data for world state updates.
  * Triggers audio playback or updates audio state.
  * @returns {Object} Boss director state.
  */
@@ -34,6 +36,7 @@ function buildBossDirectorState() {
 export class BossDirector {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for world state updates.
    * Uses options to perform the operation.
    * @param {Object} [options] Configuration options.
    */
@@ -44,7 +47,7 @@ export class BossDirector {
 
   /**
    * Returns boss.
-   * Updates the instance state.
+   * Used to provide boss for world state updates.
    * @returns {*} Boss.
    */
   getBoss() {
@@ -53,7 +56,7 @@ export class BossDirector {
 
   /**
    * Updates.
-   * Updates the instance state.
+   * Used to advance state during the update loop for world state updates.
    * Spawns visual feedback effects.
    * @param {number} dt Delta time in seconds.
    * @param {Player} player Player instance.
@@ -68,7 +71,7 @@ export class BossDirector {
 
   /**
    * Should process update.
-   * Updates the instance state.
+   * Used to decide control flow.
    * @param {Player} player Player instance.
    * @returns {boolean} Whether process update.
    */
@@ -78,7 +81,7 @@ export class BossDirector {
 
   /**
    * Should spawn boss.
-   * Updates the player state.
+   * Used to decide control flow.
    * Spawns visual feedback effects.
    * @param {Player} player Player instance.
    * @returns {boolean} Whether spawn boss.
@@ -89,7 +92,7 @@ export class BossDirector {
 
   /**
    * Should handle boss defeat.
-   * Updates the instance state.
+   * Used to decide control flow.
    * @returns {boolean} Whether handle boss defeat.
    */
   shouldHandleBossDefeat() {
@@ -98,7 +101,7 @@ export class BossDirector {
 
   /**
    * Handles boss defeat result.
-   * Updates the instance state.
+   * Used to centralize a specific behavior for world state updates.
    * @returns {Object} Result value.
    */
   handleBossDefeatResult() {
@@ -108,7 +111,7 @@ export class BossDirector {
 
   /**
    * Spawns boss.
-   * Updates the instance state.
+   * Used to support world state updates.
    * Spawns visual feedback effects.
    * @param {Player} player Player instance.
    */
@@ -125,7 +128,7 @@ export class BossDirector {
 
   /**
    * Returns boss spawn position.
-   * Updates the player state.
+   * Used to provide boss spawn position for camera-relative placement.
    * Spawns visual feedback effects.
    * @param {Player} player Player instance.
    * @returns {Object} Boss spawn position.
@@ -147,7 +150,7 @@ export class BossDirector {
 
   /**
    * Find spawn platform.
-   * Updates the world state.
+   * Used to support platform collision handling.
    * Spawns visual feedback effects.
    * @param {number} spawnX Spawn X.
    * @returns {*} Result value.
@@ -160,7 +163,7 @@ export class BossDirector {
 
   /**
    * Creates boss.
-   * Updates the boss state.
+   * Used to set up required data for world state updates.
    * Spawns visual feedback effects.
    * @param {number} spawnX Spawn X.
    * @param {number} spawnY Spawn Y.
@@ -177,7 +180,7 @@ export class BossDirector {
 
   /**
    * Register boss.
-   * Updates the world state.
+   * Used to support world state updates.
    * @param {Boss} boss Boss instance.
    */
   registerBoss(boss) {
@@ -189,7 +192,6 @@ export class BossDirector {
   /**
    * Starts boss audio.
    * Triggers audio playback or updates audio state.
-   * Updates the world state.
    */
   startBossAudio() {
     this.gameAudio?.stopCrossfadeAndCleanup?.();
@@ -200,7 +202,6 @@ export class BossDirector {
 
   /**
    * Shake for spawn.
-   * Updates the instance state.
    * Spawns visual feedback effects.
    */
   shakeForSpawn() {
@@ -209,7 +210,6 @@ export class BossDirector {
 
   /**
    * Handles boss defeat.
-   * Updates the instance state.
    */
   handleBossDefeat() {
     this.handleBossAudioDefeat();
@@ -219,7 +219,6 @@ export class BossDirector {
   /**
    * Handles boss audio defeat.
    * Triggers audio playback or updates audio state.
-   * Updates the instance state.
    */
   handleBossAudioDefeat() {
     if (!this.bossAudioPlayer) return;
@@ -233,14 +232,14 @@ export class BossDirector {
 
   /**
    * Binds defeat cleanup.
+   * Used to support world state updates.
    * Binds ended event listeners.
-   * Updates the instance state.
    * @param {*} defeatAudio Defeat audio.
    */
   bindDefeatCleanup(defeatAudio) {
     /**
      * On defeat ended.
-     * Updates the instance state.
+     * Used to support world state updates.
      * @returns {*} Result value.
      */
     const onDefeatEnded = () => this.finishDefeatCleanup(defeatAudio);
@@ -249,8 +248,8 @@ export class BossDirector {
 
   /**
    * Finish defeat cleanup.
+   * Used to support world state updates.
    * Triggers audio playback or updates audio state.
-   * Updates the instance state.
    * @param {*} defeatAudio Defeat audio.
    */
   finishDefeatCleanup(defeatAudio) {
@@ -262,7 +261,6 @@ export class BossDirector {
   /**
    * Clears boss refs.
    * Triggers audio playback or updates audio state.
-   * Updates the world state.
    */
   clearBossRefs() {
     this.world.bossAudioPlayer = null;

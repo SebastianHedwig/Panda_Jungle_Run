@@ -2,6 +2,7 @@ import { consumeNextStartScreenAction } from "./startScreen.utils.js";
 
 /**
  * Creates legal link handler.
+ * Used to set up required data for camera-relative placement.
  * Uses page, showLegalPage to compute the result.
  * @param {*} page Page.
  * @param {*} showLegalPage Show legal page.
@@ -17,6 +18,7 @@ export const createLegalLinkHandler = (page, showLegalPage, state) => (event) =>
 
 /**
  * Binds canvas events.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
@@ -41,6 +43,7 @@ export const bindCanvasEvents = ({ canvas, handleCanvasClick, handleMove, handle
 
 /**
  * Binds settings events.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLElement} [options.settingsToggle] Settings toggle.
@@ -54,6 +57,7 @@ export const bindSettingsEvents = ({ settingsToggle, handleSettingsClick, handle
 
 /**
  * Binds legal link events.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.impressumLink] Impressum link.
@@ -70,6 +74,7 @@ export const bindLegalLinkEvents = ({ impressumLink, privacyPolicyLink, showLega
 
 /**
  * Binds start screen events.
+ * Used to support camera-relative placement.
  * Uses deps to perform the operation.
  * @param {*} deps Deps.
  */

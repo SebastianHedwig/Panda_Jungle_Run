@@ -1,6 +1,6 @@
 /**
  * Draws hearts.
- * Updates the player state.
+ * Used to render hearts.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {Player} player Player instance.
  */
@@ -13,6 +13,7 @@ export function drawHearts(ctx, player) {
 
 /**
  * Returns heart settings.
+ * Used to provide heart settings for UI interaction handling.
  * @returns {Object} Heart settings.
  */
 export function getHeartSettings() {
@@ -31,6 +32,7 @@ export function getHeartSettings() {
 
 /**
  * Returns last filled index.
+ * Used to provide last filled index for UI interaction handling.
  * Uses states to compute the result.
  * @param {*} states States.
  * @returns {Array<any>} Last filled index.
@@ -41,7 +43,7 @@ export function getLastFilledIndex(states) {
 
 /**
  * Draws hearts from states.
- * Updates the instance state.
+ * Used to render hearts from states.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} states States.
  * @param {*} heartSettings Heart settings.
@@ -57,8 +59,8 @@ export function drawHeartsFromStates(ctx, states, heartSettings, lastFilledIndex
 
 /**
  * Draws heart at index.
+ * Used to render heart at index.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} state State.
  * @param {number} heartIndex Heart index.
@@ -78,7 +80,7 @@ export function drawHeartAtIndex(ctx, state, heartIndex, x, heartSettings, lastF
 
 /**
  * Returns heart scale.
- * Updates the player state.
+ * Used to provide heart scale for rendering.
  * @param {number} heartIndex Heart index.
  * @param {number} lastFilledIndex Last filled index.
  * @param {Player} player Player instance.
@@ -101,8 +103,8 @@ export function getHeartScale(heartIndex, lastFilledIndex, player, heartSettings
 
 /**
  * Draws heart shape.
+ * Used to render heart shape.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} heartState Heart state.
  * @param {number} size Size.
@@ -118,6 +120,7 @@ export function drawHeartShape(ctx, heartState, size) {
 
 /**
  * Returns heart style.
+ * Used to provide heart style for rendering.
  * @returns {Object} Heart style.
  */
 export function getHeartStyle() {
@@ -134,6 +137,7 @@ export function getHeartStyle() {
 
 /**
  * Trace heart path.
+ * Used to support UI interaction handling.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} size Size.
@@ -149,6 +153,7 @@ export function traceHeartPath(ctx, size, heartStyle) {
 
 /**
  * Applies heart outline.
+ * Used to keep UI visuals consistent.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} heartStyle Heart style.
@@ -160,8 +165,8 @@ export function applyHeartOutline(ctx, heartStyle) {
 
 /**
  * Applies heart fill.
+ * Used to keep UI visuals consistent.
  * Renders to the canvas context.
- * Updates the player state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} heartState Heart state.
  * @param {*} heartStyle Heart style.

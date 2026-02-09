@@ -16,7 +16,7 @@ const CLOUD_SCALE_RANGE = 0.3; // results in max 0.4
 export class Background {
   /**
    * Creates a new instance.
-   * Updates the instance state.
+   * Used to set up required data for gameplay flow.
    * @param {HTMLCanvasElement} canvas Target canvas.
    */
   constructor(canvas) {
@@ -29,7 +29,7 @@ export class Background {
 
   /**
    * Adds layer. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support gameplay flow.
    * @param {HTMLImageElement} image Image.
    * @param {number} speedX Speed X.
    * @param {number} [speedY] Speed Y.
@@ -40,7 +40,7 @@ export class Background {
 
   /**
    * Adds cloud.
-   * Updates the instance state.
+   * Used to support gameplay flow.
    * Introduces randomness into the outcome.
    * @param {HTMLImageElement} image Image.
    */
@@ -54,7 +54,7 @@ export class Background {
 
   /**
    * Spawns clouds.
-   * Updates the instance state.
+   * Used to support gameplay flow.
    * Introduces randomness into the outcome.
    * @param {HTMLImageElement} image1 Image 1.
    * @param {HTMLImageElement} image2 Image 2.
@@ -68,7 +68,7 @@ export class Background {
 
   /**
    * Updates layers.
-   * Updates the instance state.
+   * Used to advance state during the update loop for gameplay flow.
    * @param {number} cameraX Camera X.
    * @param {number} cameraY Camera Y.
    */
@@ -80,6 +80,7 @@ export class Background {
 
   /**
    * Should respawn cloud.
+   * Used to decide control flow.
    * Spawns visual feedback effects.
    * @param {*} cloud Cloud.
    * @returns {boolean} Whether respawn cloud.
@@ -90,7 +91,7 @@ export class Background {
 
   /**
    * Respawn cloud.
-   * Updates the instance state.
+   * Used to support gameplay flow.
    * Introduces randomness into the outcome.
    * @param {*} cloud Cloud.
    * @param {number} cameraX Camera X.
@@ -104,7 +105,7 @@ export class Background {
 
   /**
    * Updates clouds.
-   * Updates the instance state.
+   * Used to advance state during the update loop for gameplay flow.
    * Spawns visual feedback effects.
    * @param {number} cameraX Camera X.
    * @param {number} dt Delta time in seconds.
@@ -120,7 +121,7 @@ export class Background {
 
   /**
    * Updates.
-   * Updates the instance state.
+   * Used to advance state during the update loop for gameplay flow.
    * @param {number} cameraX Camera X.
    * @param {number} cameraY Camera Y.
    * @param {number} dt Delta time in seconds.
@@ -132,7 +133,7 @@ export class Background {
 
   /**
    * Renders base layer.
-   * Updates the instance state.
+   * Used to render base layer.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    */
   renderBaseLayer(ctx) {
@@ -142,7 +143,7 @@ export class Background {
 
   /**
    * Renders clouds.
-   * Updates the instance state.
+   * Used to render clouds.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
    */
@@ -154,7 +155,7 @@ export class Background {
 
   /**
    * Renders parallax layers.
-   * Updates the instance state.
+   * Used to render parallax layers.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    */
   renderParallaxLayers(ctx) {
@@ -165,7 +166,7 @@ export class Background {
 
   /**
    * Renders.
-   * Updates the instance state.
+   * Used to render visuals.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
    */

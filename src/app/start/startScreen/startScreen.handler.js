@@ -4,6 +4,7 @@ import { getCanvasPoint, handleSettingsOverlayClick, handleStartButtonClick, han
 
 /**
  * Creates handle canvas click.
+ * Used to set up required data for UI interaction handling.
  * Uses dependencies, handlerRefs to compute the result.
  * @param {*} dependencies Dependencies.
  * @param {*} handlerRefs Handler refs.
@@ -20,6 +21,7 @@ const createHandleCanvasClick = (dependencies, handlerRefs) => (event) => {
 
 /**
  * Creates handle move.
+ * Used to set up required data for camera-relative placement.
  * Uses dependencies to compute the result.
  * @param {*} dependencies Dependencies.
  * @returns {*} Handle move.
@@ -34,6 +36,7 @@ const createHandleMove = (dependencies) => (event) => {
 
 /**
  * Creates handle leave.
+ * Used to set up required data for camera-relative placement.
  * Uses dependencies to compute the result.
  * @param {*} dependencies Dependencies.
  * @returns {*} Handle leave.
@@ -47,6 +50,7 @@ const createHandleLeave = (dependencies) => () => {
 
 /**
  * Creates handle settings click.
+ * Used to set up required data for UI interaction handling.
  * Uses dependencies to compute the result.
  * @param {*} dependencies Dependencies.
  * @returns {*} Handle settings click.
@@ -67,6 +71,7 @@ const createHandleSettingsClick = (dependencies) => (event) => {
 
 /**
  * Creates handle key down.
+ * Used to set up required data for camera-relative placement.
  * Uses dependencies to compute the result.
  * @param {*} dependencies Dependencies.
  * @returns {*} Handle key down.
@@ -79,6 +84,7 @@ const createHandleKeyDown = (dependencies) => (event) => {
 
 /**
  * Creates handle wheel.
+ * Used to set up required data for camera-relative placement.
  * Uses dependencies to compute the result.
  * @param {*} dependencies Dependencies.
  * @returns {*} Handle wheel.
@@ -93,6 +99,7 @@ const createHandleWheel = (dependencies) => (event) => {
 
 /**
  * Creates handle touch start.
+ * Used to set up required data for UI interaction handling.
  * Uses dependencies to compute the result.
  * @param {*} dependencies Dependencies.
  * @returns {*} Handle touch start.
@@ -106,6 +113,7 @@ const createHandleTouchStart = (dependencies) => (event) => {
 
 /**
  * Creates handle touch move.
+ * Used to set up required data for UI interaction handling.
  * Uses dependencies to compute the result.
  * @param {*} dependencies Dependencies.
  * @returns {*} Handle touch move.
@@ -123,6 +131,7 @@ const createHandleTouchMove = (dependencies) => (event) => {
 
 /**
  * Creates handle touch end.
+ * Used to set up required data for UI interaction handling.
  * Uses dependencies to compute the result.
  * @param {*} dependencies Dependencies.
  * @returns {*} Handle touch end.
@@ -133,6 +142,7 @@ const createHandleTouchEnd = (dependencies) => () => {
 
 /**
  * Builds start screen handlers.
+ * Used to assemble required data for camera-relative placement.
  * Uses dependencies to compute the result.
  * @param {*} dependencies Dependencies.
  * @returns {*} Start screen handlers.
@@ -153,6 +163,7 @@ const buildStartScreenHandlers = (dependencies) => {
 
 /**
  * Creates start screen handlers.
+ * Used to set up required data for camera-relative placement.
  * Uses dependencies to compute the result.
  * @param {*} dependencies Dependencies.
  * @returns {*} Start screen handlers.

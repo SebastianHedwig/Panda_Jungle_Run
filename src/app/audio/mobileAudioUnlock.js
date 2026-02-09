@@ -1,5 +1,6 @@
 /**
  * Resolve unlock events. If omitted, default values are used.
+ * Used to support audio playback.
  * Uses options to perform the operation.
  * @param {Object} [options] Configuration options.
  * @returns {*} Result value.
@@ -9,6 +10,7 @@ const resolveUnlockEvents = (options = {}) =>
 
 /**
  * Restore audio state.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
  * @param {HTMLAudioElement} audio Audio element.
  * @param {boolean} prevMuted Prev muted.
@@ -21,6 +23,7 @@ const restoreAudioState = (audio, prevMuted, prevVolume) => {
 
 /**
  * Resets audio.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
  * @param {HTMLAudioElement} audio Audio element.
  */
@@ -31,6 +34,7 @@ const resetAudio = (audio) => {
 
 /**
  * Finalize priming.
+ * Used to support audio playback.
  * Uses audio, prevMuted, prevVolume to perform the operation.
  * @param {HTMLAudioElement} audio Audio element.
  * @param {boolean} prevMuted Prev muted.
@@ -43,6 +47,7 @@ const finalizePriming = (audio, prevMuted, prevVolume) => {
 
 /**
  * Handles prime promise.
+ * Used to centralize a specific behavior for audio playback.
  * Uses playPromise, audio, prevMuted, prevVolume to perform the operation.
  * @param {*} playPromise Play promise.
  * @param {HTMLAudioElement} audio Audio element.
@@ -62,6 +67,7 @@ const handlePrimePromise = (playPromise, audio, prevMuted, prevVolume) => {
 
 /**
  * Prime audio.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
  * @param {HTMLAudioElement} audio Audio element.
  */
@@ -81,6 +87,7 @@ const primeAudio = (audio) => {
 
 /**
  * Collect audio candidates.
+ * Used to support audio playback.
  * Uses audioGetters to perform the operation.
  * @param {*} audioGetters Audio getters.
  * @returns {*} Result value.
@@ -99,6 +106,7 @@ const collectAudioCandidates = (audioGetters) => {
 
 /**
  * Creates unlock.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.audioGetters] Audio getters.
@@ -119,6 +127,7 @@ const createUnlock = ({ audioGetters, primeAudio, unbind, getUnlocked, setUnlock
 
 /**
  * Creates bind.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.events] Events.
@@ -140,6 +149,7 @@ const createBind = ({ events, handler, getBound, getUnlocked, setBound }) => {
 
 /**
  * Creates unbind.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.events] Events.
@@ -159,6 +169,7 @@ const createUnbind = ({ events, handler, getBound, setBound }) => {
 
 /**
  * Creates add audios.
+ * Used to set up required data for audio playback.
  * Uses audioGetters to compute the result.
  * @param {*} audioGetters Audio getters.
  * @returns {*} Add audios.
@@ -178,6 +189,7 @@ const createAddAudios = (audioGetters) => {
 
 /**
  * Creates mobile audio api.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.addAudios] Add audios.
@@ -195,6 +207,7 @@ const createMobileAudioApi = ({ addAudios, bind, unlock, getUnlocked }) => ({
 
 /**
  * Creates mobile audio handlers.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.events] Events.
@@ -211,6 +224,7 @@ const createMobileAudioHandlers = ({ events, audioGetters, getUnlocked, setUnloc
   let unlock = () => {};
   /**
    * Handler.
+   * Used to support audio playback.
    * @returns {*} Result value.
    */
   const handler = () => unlock();
@@ -223,6 +237,7 @@ const createMobileAudioHandlers = ({ events, audioGetters, getUnlocked, setUnloc
 
 /**
  * Creates mobile audio unlock. If omitted, default values are used.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} [options] Configuration options.
  */

@@ -7,6 +7,7 @@ import { markNextStartScreenActionConsumed } from "./startScreen.utils.js";
 
 /**
  * Returns canvas and context.
+ * Used to provide canvas and context for camera-relative placement.
  * Resolves DOM elements from the document.
  * @param {string} canvasId Canvas element id.
  * @returns {Object} Canvas and context.
@@ -20,6 +21,7 @@ export const getCanvasAndContext = (canvasId) => {
 
 /**
  * Returns auto start flag.
+ * Used to provide auto start flag for camera-relative placement.
  * Reads or writes browser storage.
  * @returns {*} Auto start flag.
  */
@@ -43,6 +45,7 @@ export const clearAutoStartFlag = () => {
 
 /**
  * Handles auto start.
+ * Used to centralize a specific behavior for camera-relative placement.
  * Uses onStart to perform the operation.
  * @param {Function} onStart On start.
  * @returns {*} Result value.
@@ -57,6 +60,7 @@ export const handleAutoStart = (onStart) => {
 
 /**
  * Applies settings toggle defaults.
+ * Used to keep state consistent before the next step for camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {string} [options.settingsLabel] Settings label.
@@ -75,6 +79,7 @@ export const applySettingsToggleDefaults = ({ settingsLabel, settingsToggle, set
 
 /**
  * Returns settings context.
+ * Used to provide settings context for camera-relative placement.
  * Resolves DOM elements from the document.
  * @returns {Object} Settings context.
  */
@@ -91,6 +96,7 @@ export const getSettingsContext = () => {
 
 /**
  * Creates controls overlays.
+ * Used to set up required data for camera-relative placement.
  * @returns {*} Controls overlays.
  */
 export const createControlsOverlays = () => ({
@@ -100,6 +106,7 @@ export const createControlsOverlays = () => ({
 
 /**
  * Returns auto fullscreen active.
+ * Used to provide auto fullscreen active for camera-relative placement.
  * Reads from the document.
  * @returns {boolean} Whether auto fullscreen active.
  */
@@ -107,6 +114,7 @@ export const isAutoFullscreenActive = () => document.getElementById("game-contai
 
 /**
  * Creates active controls overlay getter.
+ * Used to set up required data for UI interaction handling.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {ControlsOverlay | ControlsOverlayMobile} [options.controlsOverlayDesktop] Controls overlay desktop.
@@ -122,6 +130,7 @@ const MENU_MUSIC_START_EVENTS = ["pointerdown", "touchstart", "keydown"];
 
 /**
  * Iterates menu music start events.
+ * Used to support UI interaction handling.
  * Uses callback to perform the operation.
  * @param {Function} callback Callback.
  */
@@ -129,6 +138,7 @@ const forEachMenuMusicStartEvent = (callback) => MENU_MUSIC_START_EVENTS.forEach
 
 /**
  * Returns menu music event options.
+ * Used to provide menu music event options for audio playback.
  * Uses eventName to compute the result.
  * @param {string} eventName Event name.
  * @returns {*} Event options.
@@ -137,6 +147,7 @@ const getMenuMusicEventOptions = (eventName) => (eventName === "touchstart" ? { 
 
 /**
  * Binds menu music event.
+ * Used to support UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {string} [options.eventName] Event name.
@@ -147,6 +158,7 @@ const bindMenuMusicEvent = ({ eventName, handler }) =>
 
 /**
  * Unbinds menu music event.
+ * Used to support UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {string} [options.eventName] Event name.
@@ -157,6 +169,7 @@ const unbindMenuMusicEvent = ({ eventName, handler }) =>
 
 /**
  * Creates menu music start handler.
+ * Used to set up required data for UI interaction handling.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {Function} [options.startMenuMusic] Start menu music.
@@ -175,6 +188,7 @@ const createMenuMusicStartHandler = ({ startMenuMusic, cleanup, startedRef, stat
 
 /**
  * Binds menu music start to first user interaction.
+ * Used to support UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {Function} [options.startMenuMusic] Start menu music.
@@ -191,6 +205,7 @@ export const bindMenuMusicStartOnFirstInteraction = ({ startMenuMusic, state }) 
 
 /**
  * Initializes menu music.
+ * Used to set default state before use for UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {Function} [options.startMenuMusic] Start menu music.
@@ -222,12 +237,14 @@ const START_SCREEN_STATE_TEMPLATE = {
 
 /**
  * Creates start screen state.
+ * Used to set up required data for camera-relative placement.
  * @returns {Object} Start screen state.
  */
 export const createStartScreenState = () => ({ ...START_SCREEN_STATE_TEMPLATE });
 
 /**
  * Builds start screen context.
+ * Used to assemble required data for camera-relative placement.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {string} [options.canvasId] Canvas element id.
@@ -249,6 +266,7 @@ export const buildStartScreenContext = ({ canvasId, onStart }) => {
 
 /**
  * Creates legal links.
+ * Used to set up required data for camera-relative placement.
  * @returns {*} Legal links.
  */
 export const createLegalLinks = () => ({
@@ -258,6 +276,7 @@ export const createLegalLinks = () => ({
 
 /**
  * Binds overlay icon load.
+ * Used to support UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {ControlsOverlay | ControlsOverlayMobile} [options.controlsOverlayDesktop] Controls overlay desktop.
@@ -271,6 +290,7 @@ export const bindOverlayIconLoad = ({ controlsOverlayDesktop, controlsOverlayMob
 
 /**
  * Creates start screen dependencies.
+ * Used to set up required data for camera-relative placement.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.startScreenContext] Start screen context.

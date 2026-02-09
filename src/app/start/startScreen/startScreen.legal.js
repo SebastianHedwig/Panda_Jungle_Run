@@ -5,6 +5,7 @@ import { LEGAL_RETURN_HOVER_SCALE, LEGAL_RETURN_COLOR, LEGAL_RETURN_HOVER_COLOR 
 
 /**
  * Returns legal renderer.
+ * Used to provide legal renderer for camera-relative placement.
  * Uses legalPage to compute the result.
  * @param {*} legalPage Legal page.
  * @returns {*} Legal renderer.
@@ -14,6 +15,7 @@ export const getLegalRenderer = (legalPage) =>
 
 /**
  * Resets legal bounds.
+ * Used to support collision and hit testing.
  * Uses startScreenState to perform the operation.
  * @param {*} startScreenState Start screen state.
  */
@@ -24,6 +26,7 @@ export const resetLegalBounds = (startScreenState) => {
 
 /**
  * Applies legal render result.
+ * Used to keep state consistent before the next step for camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.renderResult] Render result.
@@ -40,6 +43,7 @@ export const applyLegalRenderResult = ({ renderResult, startScreenState, isImpre
 
 /**
  * Returns legal return scale.
+ * Used to provide legal return scale for rendering.
  * Uses startScreenState to compute the result.
  * @param {*} startScreenState Start screen state.
  * @returns {*} Legal return scale.
@@ -49,6 +53,7 @@ export const getLegalReturnScale = (startScreenState) =>
 
 /**
  * Draws scaled close text.
+ * Used to render scaled close text.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -65,6 +70,7 @@ export const drawScaledCloseText = ({ ctx, closeTextBounds, scale }) => {
 
 /**
  * Returns legal return bounds.
+ * Used to provide legal return bounds for collision and hit testing.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {string} closeTextBounds Close text bounds.
@@ -77,6 +83,7 @@ export const getLegalReturnBounds = (ctx, closeTextBounds) => {
 
 /**
  * Draws legal close text.
+ * Used to render legal close text.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -96,6 +103,7 @@ export const drawLegalCloseText = ({ ctx, closeTextBounds, startScreenState }) =
 
 /**
  * Creates draw legal page.
+ * Used to set up required data for camera-relative placement.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -115,6 +123,7 @@ export const createDrawLegalPage = ({ ctx, canvas, startScreenState }) => () => 
 
 /**
  * Applies legal page state.
+ * Used to keep state consistent before the next step for camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.startScreenState] Start screen state.
@@ -133,6 +142,7 @@ export const applyLegalPageState = ({ startScreenState, page }) => {
 
 /**
  * Creates show legal page.
+ * Used to set up required data for camera-relative placement.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.

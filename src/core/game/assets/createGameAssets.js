@@ -25,6 +25,7 @@ const BOSS_KEYS = ["idle", "walk", "run", "attack1", "attack2", "hurt", "die", "
 
 /**
  * Creates background images.
+ * Used to set up required data for gameplay flow.
  * @returns {Array<any>} Background images.
  */
 function createBackgroundImages() {
@@ -40,6 +41,7 @@ function createBackgroundImages() {
 
 /**
  * Creates platform sprites.
+ * Used to set up required data for platform collision handling.
  * @returns {Object} Platform sprites.
  */
 function createPlatformSprites() {
@@ -58,6 +60,7 @@ function createPlatformSprites() {
 
 /**
  * Creates player frames.
+ * Used to set up required data for world state updates.
  * @returns {*} Player frames.
  */
 function createPlayerFrames() {
@@ -68,6 +71,7 @@ function createPlayerFrames() {
 
 /**
  * Creates enemy sprites.
+ * Used to set up required data for world state updates.
  * @returns {Object} Enemy sprites.
  */
 function createEnemySprites() {
@@ -80,6 +84,7 @@ function createEnemySprites() {
 
 /**
  * Creates boss sprites.
+ * Used to set up required data for world state updates.
  * @returns {*} Boss sprites.
  */
 function createBossSprites() {
@@ -88,6 +93,7 @@ function createBossSprites() {
 
 /**
  * Creates hud images.
+ * Used to set up required data for UI interaction handling.
  * @returns {Object} Hud images.
  */
 function createHudImages() {
@@ -101,6 +107,7 @@ function createHudImages() {
 
 /**
  * Collect sprites by keys.
+ * Used to support collectable handling.
  * Advances animation state and sprites.
  * @param {HTMLImageElement} spriteSet Sprite set.
  * @param {*} keys Keys.
@@ -112,6 +119,7 @@ function collectSpritesByKeys(spriteSet, keys) {
 
 /**
  * Collect enemy images.
+ * Used to support collectable handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {EnemyBase} [options.enemy1Sprites] Enemy 1 sprites.
@@ -128,6 +136,7 @@ function collectEnemyImages({ enemy1Sprites, enemy2Sprites, enemy3Sprites }) {
 
 /**
  * Builds image list.
+ * Used to assemble required data for rendering.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.bgImages] Bg images.
@@ -150,6 +159,7 @@ function buildImageList({ bgImages, platformSprites, playerFrames, enemySprites,
 
 /**
  * Builds base assets.
+ * Used to assemble required data for gameplay flow.
  * @returns {Object} Base assets.
  */
 function buildBaseAssets() {
@@ -164,6 +174,7 @@ function buildBaseAssets() {
 
 /**
  * Creates game assets.
+ * Used to set up required data for gameplay flow.
  * @returns {Object} Game assets.
  */
 export function createGameAssets() {

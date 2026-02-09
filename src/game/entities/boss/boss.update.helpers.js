@@ -2,8 +2,8 @@ import { PLAYER_HURT_IMMUNITY_TIME } from "../../../config/config.js";
 
 /**
  * Applies boss gravity and landing.
+ * Used to keep state consistent before the next step for physics updates.
  * Applies physics updates like gravity and velocity.
- * Updates the boss state.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -16,8 +16,8 @@ export function applyBossGravityAndLanding(boss, dt) {
 
 /**
  * Applies boss gravity and landing with state.
+ * Used to keep state consistent before the next step for physics updates.
  * Applies physics updates like gravity and velocity.
- * Updates the boss state.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
@@ -35,7 +35,7 @@ export function applyBossGravityAndLandingWithState(boss, dt) {
 
 /**
  * Handles boss landing impact.
- * Updates the player state.
+ * Used to centralize a specific behavior for platform collision handling.
  * @param {Boss} boss Boss instance.
  * @param {Player} player Player instance.
  * @param {*} landed Landed.
@@ -50,7 +50,7 @@ export function handleBossLandingImpact(boss, player, landed) {
 
 /**
  * Handles boss collision damage.
- * Updates the player state.
+ * Used to centralize a specific behavior for collision and hit testing.
  * @param {Boss} boss Boss instance.
  * @param {Player} player Player instance.
  */
@@ -68,7 +68,7 @@ export function handleBossCollisionDamage(boss, player) {
 
 /**
  * Applies player invulnerability.
- * Updates the player state.
+ * Used to keep state consistent before the next step for world state updates.
  * @param {Player} player Player instance.
  */
 function applyPlayerInvulnerability(player) {
@@ -79,8 +79,8 @@ function applyPlayerInvulnerability(player) {
 
 /**
  * Updates boss movement animation.
+ * Used to advance state during the update loop for animation timing.
  * Advances animation state and sprites.
- * Updates the boss state.
  * @param {Boss} boss Boss instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -97,7 +97,7 @@ export function updateBossMovementAnimation(boss, dt) {
 
 /**
  * Clamp boss movement.
- * Updates the boss state.
+ * Used to support physics updates.
  * @param {Boss} boss Boss instance.
  */
 export function clampBossMovement(boss) {

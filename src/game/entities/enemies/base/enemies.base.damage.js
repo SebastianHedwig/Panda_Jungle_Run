@@ -2,7 +2,7 @@ import { HudPopup } from "../../../effects/hudPopup.class.js";
 
 /**
  * Applies damage amount.
- * Updates the enemy state.
+ * Used to keep state consistent before the next step for combat effects.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} amount Amount.
  */
@@ -12,7 +12,7 @@ export function applyDamageAmount(enemy, amount) {
 
 /**
  * Applies recent slide hit.
- * Updates the enemy state.
+ * Used to keep state consistent before the next step for combat effects.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {*} hitContext Hit context.
  */
@@ -25,7 +25,7 @@ export function applyRecentSlideHit(enemy, hitContext) {
 
 /**
  * Adds enemy damage popup.
- * Updates the enemy state.
+ * Used to support combat effects.
  * Spawns visual feedback effects.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} amount Amount.
@@ -39,7 +39,7 @@ export function addEnemyDamagePopup(enemy, amount) {
 
 /**
  * Handles enemy death.
- * Updates the enemy state.
+ * Used to centralize a specific behavior for combat effects.
  * @param {EnemyBase} enemy Enemy instance.
  * @returns {*} Result value.
  */
@@ -55,7 +55,7 @@ export function handleEnemyDeath(enemy) {
 
 /**
  * Marks enemy dead.
- * Updates the enemy state.
+ * Used to support combat effects.
  * @param {EnemyBase} enemy Enemy instance.
  */
 function markEnemyDead(enemy) {
@@ -64,8 +64,8 @@ function markEnemyDead(enemy) {
 
 /**
  * Sets death animation.
+ * Used to support animation timing.
  * Advances animation state and sprites.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  */
 function setDeathAnimation(enemy) {
@@ -76,8 +76,8 @@ function setDeathAnimation(enemy) {
 
 /**
  * Resets death velocity.
+ * Used to support combat effects.
  * Applies physics updates like gravity and velocity.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  */
 function resetDeathVelocity(enemy) {
@@ -87,7 +87,7 @@ function resetDeathVelocity(enemy) {
 
 /**
  * Initializes death timers.
- * Updates the enemy state.
+ * Used to set default state before use for combat effects.
  * @param {EnemyBase} enemy Enemy instance.
  */
 function initDeathTimers(enemy) {
@@ -97,6 +97,7 @@ function initDeathTimers(enemy) {
 
 /**
  * Applies hit stun.
+ * Used to keep state consistent before the next step for combat effects.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
  * @param {EnemyBase} enemy Enemy instance.

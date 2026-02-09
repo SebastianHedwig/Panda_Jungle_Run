@@ -7,8 +7,8 @@ const BASE_SPRITE_SIZE = 60;
 export class DizzyEffect {
   /**
    * Creates a new instance.
+   * Used to set up required data for combat effects.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} frames Frames.
@@ -31,7 +31,7 @@ export class DizzyEffect {
 
   /**
    * Updates.
-   * Updates the instance state.
+   * Used to advance state during the update loop for combat effects.
    * @param {number} dt Delta time in seconds.
    */
   update(dt) {
@@ -43,7 +43,7 @@ export class DizzyEffect {
 
   /**
    * Advances frame time.
-   * Updates the instance state.
+   * Used to support animation timing.
    * @param {number} dt Delta time in seconds.
    */
   advanceFrameTime(dt) {
@@ -52,7 +52,7 @@ export class DizzyEffect {
 
   /**
    * Applies float.
-   * Updates the instance state.
+   * Used to keep state consistent before the next step for combat effects.
    * @param {number} dt Delta time in seconds.
    */
   applyFloat(dt) {
@@ -61,7 +61,6 @@ export class DizzyEffect {
 
   /**
    * Advances frame if needed.
-   * Updates the instance state.
    */
   advanceFrameIfNeeded() {
     if (this.frameElapsed >= this.frameDuration) this.advanceFrame();
@@ -70,7 +69,6 @@ export class DizzyEffect {
   /**
    * Advances frame.
    * Advances animation state and sprites.
-   * Updates the instance state.
    */
   advanceFrame() {
     this.frameElapsed = 0;
@@ -81,7 +79,6 @@ export class DizzyEffect {
   /**
    * Handles completed loop.
    * Advances animation state and sprites.
-   * Updates the instance state.
    */
   handleCompletedLoop() {
     this.currentFrameIndex = 0;
@@ -91,7 +88,7 @@ export class DizzyEffect {
 
   /**
    * Renders.
-   * Updates the instance state.
+   * Used to render visuals.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
    */
@@ -104,8 +101,8 @@ export class DizzyEffect {
 
   /**
    * Returns current frame.
+   * Used to provide current frame for animation timing.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @returns {*} Current frame.
    */
   getCurrentFrame() {
@@ -114,8 +111,8 @@ export class DizzyEffect {
 
   /**
    * Draws frame.
+   * Used to render frame.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
    * @param {HTMLImageElement} img Img.

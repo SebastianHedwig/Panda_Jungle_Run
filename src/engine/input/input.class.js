@@ -2,7 +2,6 @@ export class Input {
   /**
    * Creates a new instance.
    * Reads input state to decide actions.
-   * Updates the instance state.
    */
   constructor() {
     this.keysDown = new Set();
@@ -13,7 +12,6 @@ export class Input {
   /**
    * Binds key listeners.
    * Binds keydown, keyup event listeners.
-   * Updates the instance state.
    */
   bindKeyListeners() {
     window.addEventListener("keydown", (event) => this.handleKeyDown(event));
@@ -22,6 +20,7 @@ export class Input {
 
   /**
    * Returns normalized key.
+   * Used to provide normalized key for UI interaction handling.
    * Normalizes keyboard input for consistent handling.
    * @param {Event} event Event object.
    * @returns {*} Normalized key.
@@ -32,8 +31,8 @@ export class Input {
 
   /**
    * Handles key down.
+   * Used to centralize a specific behavior for UI interaction handling.
    * Reads input state to decide actions.
-   * Updates the instance state.
    * @param {Event} event Event object.
    */
   handleKeyDown(event) {
@@ -46,8 +45,8 @@ export class Input {
 
   /**
    * Handles key up.
+   * Used to centralize a specific behavior for UI interaction handling.
    * Reads input state to decide actions.
-   * Updates the instance state.
    * @param {Event} event Event object.
    */
   handleKeyUp(event) {
@@ -57,8 +56,8 @@ export class Input {
 
   /**
    * Is down.
+   * Used to decide UI hit testing outcomes.
    * Reads input state to decide actions.
-   * Updates the instance state.
    * @param {string} key Key.
    * @returns {boolean} Whether down.
    */
@@ -68,8 +67,8 @@ export class Input {
 
   /**
    * Is pressed.
+   * Used to decide UI hit testing outcomes.
    * Reads input state to decide actions.
-   * Updates the instance state.
    * @param {string} key Key.
    * @returns {boolean} Whether pressed.
    */
@@ -80,7 +79,6 @@ export class Input {
   /**
    * End frame.
    * Reads input state to decide actions.
-   * Updates the instance state.
    */
   endFrame() {
     this.keysPressed.clear();

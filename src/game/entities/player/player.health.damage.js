@@ -6,6 +6,7 @@ const msPerSecond = 1000;
 
 /**
  * Take damage. If omitted, default values are used.
+ * Used to support combat effects.
  * Triggers audio playback or updates audio state.
  * @param {Player} player Player instance.
  * @param {number} [damageAmount] Damage amount.
@@ -21,7 +22,7 @@ export function takeDamage(player, damageAmount = 1, hitEffects = {}, playerAudi
 
 /**
  * Applies damage amount.
- * Updates the player state.
+ * Used to keep state consistent before the next step for combat effects.
  * @param {Player} player Player instance.
  * @param {number} damageAmount Damage amount.
  */
@@ -32,6 +33,7 @@ function applyDamageAmount(player, damageAmount) {
 
 /**
  * Queues damage popup.
+ * Used to support combat effects.
  * Uses player, damageAmount, hitEffects to perform the operation.
  * @param {Player} player Player instance.
  * @param {number} damageAmount Damage amount.
@@ -41,6 +43,7 @@ function queueDamagePopup(player, damageAmount, hitEffects) {
   const popupDelaySeconds = hitEffects?.popupDelay ?? 0;
   /**
    * Adds popup.
+   * Used to support combat effects.
    * @returns {*} Result value.
    */
   const addPopup = () => addDamagePopup(player, damageAmount);
@@ -49,6 +52,7 @@ function queueDamagePopup(player, damageAmount, hitEffects) {
 
 /**
  * Schedules popup.
+ * Used to support combat effects.
  * Schedules timed actions.
  * @param {Function} addPopup Add popup.
  * @param {*} popupDelaySeconds Popup delay seconds.
@@ -60,7 +64,7 @@ function schedulePopup(addPopup, popupDelaySeconds) {
 
 /**
  * Adds damage popup.
- * Updates the player state.
+ * Used to support combat effects.
  * Spawns visual feedback effects.
  * @param {Player} player Player instance.
  * @param {number} damageAmount Damage amount.
@@ -73,8 +77,8 @@ function addDamagePopup(player, damageAmount) {
 
 /**
  * Handles damage outcome.
+ * Used to centralize a specific behavior for combat effects.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {*} hitEffects Hit effects.
  * @param {Player} playerAudio Player audio.
@@ -88,7 +92,7 @@ function handleDamageOutcome(player, hitEffects, playerAudio) {
 
 /**
  * Heal. If omitted, default values are used.
- * Updates the player state.
+ * Used to support combat effects.
  * @param {Player} player Player instance.
  * @param {number} [healAmount] Heal amount.
  */
@@ -101,7 +105,7 @@ export function heal(player, healAmount = 1) {
 
 /**
  * Applies heal amount.
- * Updates the player state.
+ * Used to keep state consistent before the next step for combat effects.
  * @param {Player} player Player instance.
  * @param {number} healAmount Heal amount.
  * @returns {*} Result value.
@@ -114,7 +118,7 @@ function applyHealAmount(player, healAmount) {
 
 /**
  * Adds heal popup.
- * Updates the player state.
+ * Used to support combat effects.
  * Spawns visual feedback effects.
  * @param {Player} player Player instance.
  * @param {*} gained Gained.

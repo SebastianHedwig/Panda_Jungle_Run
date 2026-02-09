@@ -61,6 +61,7 @@ export const PLAYER_SLIDE = [
 export class PlayerAudio {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for audio playback.
    * Uses options to perform the operation.
    * @param {Object} [options] Configuration options.
    */
@@ -71,7 +72,7 @@ export class PlayerAudio {
 
   /**
    * Creates audio.
-   * Updates the instance state.
+   * Used to set up required data for audio playback.
    * @param {string} src Source URL.
    * @returns {*} Audio.
    */
@@ -81,7 +82,7 @@ export class PlayerAudio {
 
   /**
    * Ensure base.
-   * Updates the instance state.
+   * Used to support audio playback.
    * @param {string} propertyName Property name.
    * @param {string} src Source URL.
    * @returns {*} Result value.

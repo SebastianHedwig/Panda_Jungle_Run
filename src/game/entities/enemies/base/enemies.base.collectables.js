@@ -3,7 +3,7 @@ import { FACING_LEFT, FACING_RIGHT } from "../../../../config/config.js";
 
 /**
  * Returns collectable drop config.
- * Updates the enemy state.
+ * Used to provide collectable drop config for collectable handling.
  * Spawns visual feedback effects.
  * @param {EnemyBase} enemy Enemy instance.
  * @returns {Object} Collectable drop config.
@@ -25,6 +25,7 @@ export function getCollectableDropConfig(enemy) {
 
 /**
  * Creates collectable drops.
+ * Used to set up required data for collectable handling.
  * Uses enemy, itemType, count, dropConfig to compute the result.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {string} itemType Item type.
@@ -43,8 +44,8 @@ export function createCollectableDrops(enemy, itemType, count, dropConfig) {
 
 /**
  * Creates collectable drop.
+ * Used to set up required data for collectable handling.
  * Applies physics updates like gravity and velocity.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {string} itemType Item type.
  * @param {number} dropIndex Drop index.
@@ -67,7 +68,7 @@ function createCollectableDrop(enemy, itemType, dropIndex, dropConfig) {
 
 /**
  * Adds collectables to world.
- * Updates the world state.
+ * Used to support world state updates.
  * @param {World} world World instance.
  * @param {*} drops Drops.
  */

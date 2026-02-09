@@ -1,6 +1,6 @@
 /**
  * Handles combat flow.
- * Updates the player state.
+ * Used to centralize a specific behavior for combat effects.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @param {Input} input Input handler.
@@ -18,8 +18,8 @@ export function handleCombatFlow(player, dt, input) {
 
 /**
  * Handles attack shoot input.
+ * Used to centralize a specific behavior for UI interaction handling.
  * Reads input state to decide actions.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {Input} input Input handler.
  */
@@ -31,6 +31,7 @@ function handleAttackShootInput(player, input) {
 
 /**
  * Handles shooting.
+ * Used to centralize a specific behavior for combat effects.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
  * @param {Player} player Player instance.
@@ -48,6 +49,7 @@ function handleShooting(player, dt) {
 
 /**
  * Handles attacking.
+ * Used to centralize a specific behavior for combat effects.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
  * @param {Player} player Player instance.
@@ -65,7 +67,7 @@ function handleAttacking(player, dt) {
 
 /**
  * Handles queued attack.
- * Updates the player state.
+ * Used to centralize a specific behavior for combat effects.
  * @param {Player} player Player instance.
  */
 function handleQueuedAttack(player) {

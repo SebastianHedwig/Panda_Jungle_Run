@@ -2,6 +2,7 @@ import { setOverlayActive, setLegalScreenActive } from "./startScreen.utils.js";
 
 /**
  * Returns canvas point.
+ * Used to provide canvas point for camera-relative placement.
  * Uses canvas, event to compute the result.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {Event} event Event object.
@@ -12,6 +13,7 @@ export const getCanvasPoint = (canvas, event) => {
   const x = ((event.clientX - rect.left) / rect.width) * canvas.width;
   /**
    * Y.
+   * Used to support camera-relative placement.
    * Uses (event.clientY - rect.top) / rect.height to perform the operation.
    * @param {number} (event.clientY - rect.top) / rect.height Event client Y rect top rect height.
    * @returns {*} Result value.
@@ -22,6 +24,7 @@ export const getCanvasPoint = (canvas, event) => {
 
 /**
  * Handles settings overlay click.
+ * Used to centralize a specific behavior for UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
@@ -45,6 +48,7 @@ export const handleSettingsOverlayClick = ({ state, x, y, getActiveControlsOverl
 
 /**
  * Is inside start button.
+ * Used to decide UI hit testing outcomes.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
@@ -60,6 +64,7 @@ const isInsideStartButton = ({ state, x, y }) => {
 
 /**
  * Removes start screen listeners.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
@@ -80,6 +85,7 @@ const removeStartScreenListeners = ({ canvas, settingsToggle, handleCanvasClick,
 
 /**
  * Resets settings toggle UI.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {string} [options.settingsLabel] Settings label.
@@ -99,6 +105,7 @@ const resetSettingsToggleUI = ({ settingsLabel, defaultSettingsLabel, settingsIc
 
 /**
  * Applies start screen exit effects.
+ * Used to keep state consistent before the next step for camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
@@ -118,6 +125,7 @@ const applyStartScreenExitEffects = ({ canvas, stopMenuMusic, mobileAudioUnlock,
 
 /**
  * Exit start screen.
+ * Used to support camera-relative placement.
  * Uses dependencies to perform the operation.
  * @param {*} dependencies Dependencies.
  */
@@ -131,6 +139,7 @@ const exitStartScreen = (dependencies) => {
 
 /**
  * Handles start button click.
+ * Used to centralize a specific behavior for UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
@@ -148,6 +157,7 @@ export const handleStartButtonClick = ({ state, x, y, handlerRefs, ...dependenci
 
 /**
  * Handles settings move.
+ * Used to centralize a specific behavior for camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {number} [options.x] X.
@@ -166,6 +176,7 @@ export const handleSettingsMove = ({ x, y, canvas, getActiveControlsOverlay, dra
 
 /**
  * Handles start button move.
+ * Used to centralize a specific behavior for UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
@@ -188,6 +199,7 @@ export const handleStartButtonMove = ({ state, x, y, canvas, drawStartScreen }) 
 
 /**
  * Handles settings leave.
+ * Used to centralize a specific behavior for camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLCanvasElement} [options.canvas] Target canvas.
@@ -204,6 +216,7 @@ export const handleSettingsLeave = ({ canvas, getActiveControlsOverlay, drawStar
 
 /**
  * Handles start button leave.
+ * Used to centralize a specific behavior for UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
@@ -220,6 +233,7 @@ export const handleStartButtonLeave = ({ state, canvas, drawStartScreen }) => {
 
 /**
  * Close settings on escape.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.

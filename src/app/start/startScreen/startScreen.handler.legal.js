@@ -3,6 +3,7 @@ import { setOverlayActive, setLegalScreenActive } from "./startScreen.utils.js";
 
 /**
  * Is point inside bounds.
+ * Used to decide collision outcomes.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {number} [options.x] X.
@@ -15,6 +16,7 @@ const isPointInsideBounds = ({ x, y, bounds }) =>
 
 /**
  * Returns legal link hit.
+ * Used to provide legal link hit for camera-relative placement.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
@@ -27,6 +29,7 @@ const getLegalLinkHit = ({ state, x, y }) =>
 
 /**
  * Returns legal return hit.
+ * Used to provide legal return hit for camera-relative placement.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
@@ -38,6 +41,7 @@ const getLegalReturnHit = ({ state, x, y }) => isPointInsideBounds({ x, y, bound
 
 /**
  * Returns legal panel bounds.
+ * Used to provide legal panel bounds for collision and hit testing.
  * Uses canvas to compute the result.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @returns {*} Legal panel bounds.
@@ -50,6 +54,7 @@ const getLegalPanelBounds = (canvas) => {
 
 /**
  * Returns legal outside click.
+ * Used to provide legal outside click for UI interaction handling.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {number} [options.x] X.
@@ -65,6 +70,7 @@ const isLegalOutsideClick = ({ x, y, canvas }) => {
 
 /**
  * Handles legal link click.
+ * Used to centralize a specific behavior for UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.showLegalPage] Show legal page.
@@ -77,6 +83,7 @@ const handleLegalLinkClick = ({ showLegalPage }) => {
 
 /**
  * Closes legal page and returns true.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
@@ -91,6 +98,7 @@ const closeLegalAndReturn = ({ state, canvas, drawStartScreen }) => {
 
 /**
  * Close legal page.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
@@ -109,6 +117,7 @@ const closeLegalPage = ({ state, canvas, drawStartScreen }) => {
 
 /**
  * Handles legal click.
+ * Used to centralize a specific behavior for UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
@@ -128,6 +137,7 @@ export const handleLegalClick = ({ state, x, y, showLegalPage, canvas, drawStart
 
 /**
  * Returns legal hover flags.
+ * Used to provide legal hover flags for UI interaction handling.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
@@ -142,6 +152,7 @@ const getLegalHoverFlags = ({ state, x, y }) => {
 
 /**
  * Handles legal move.
+ * Used to centralize a specific behavior for camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
@@ -161,6 +172,7 @@ export const handleLegalMove = ({ state, x, y, canvas, drawStartScreen }) => {
 
 /**
  * Handles legal leave.
+ * Used to centralize a specific behavior for camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.
@@ -176,6 +188,7 @@ export const handleLegalLeave = ({ state, canvas, drawStartScreen }) => {
 
 /**
  * Close legal on escape.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.state] State.

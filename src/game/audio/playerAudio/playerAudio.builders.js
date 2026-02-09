@@ -12,6 +12,7 @@ import {
 
 /**
  * Builds player audio sources. If omitted, default values are used.
+ * Used to assemble required data for audio playback.
  * Applies physics updates like gravity and velocity.
  * @param {Object} [options] Configuration options.
  * @param {string} [options.deadSrc] Dead src.
@@ -39,6 +40,7 @@ export function buildPlayerAudioSources({
 
 /**
  * Builds player audio settings. If omitted, default values are used.
+ * Used to assemble required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} [options] Configuration options.
  * @param {number} [options.landingOffset] Landing offset.
@@ -58,6 +60,7 @@ export function buildPlayerAudioSettings({
 
 /**
  * Builds player audio config. If omitted, default values are used.
+ * Used to assemble required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} [options] Configuration options.
  */
@@ -67,6 +70,7 @@ export function buildPlayerAudioConfig(options = {}) {
 
 /**
  * Builds player audio state.
+ * Used to assemble required data for audio playback.
  * Applies physics updates like gravity and velocity.
  * @returns {Object} Player audio state.
  */

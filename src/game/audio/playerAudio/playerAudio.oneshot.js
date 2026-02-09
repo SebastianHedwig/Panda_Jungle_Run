@@ -2,6 +2,7 @@ import { playWhenReady } from "../audioUtils.js";
 
 /**
  * Plays one shot. If omitted, default values are used.
+ * Used to support audio playback.
  * Uses options to perform the operation.
  * @param {Object} [options] Configuration options.
  * @param {string} [options.propertyName] Property name.
@@ -21,7 +22,7 @@ export function playOneShot({ propertyName, src, audioStartOffset = 0, rate = 1,
 
 /**
  * Prepares one shot audio.
- * Updates the instance state.
+ * Used to support audio playback.
  * @param {*} cachedAudioBaseInstance Cached audio base instance.
  * @param {*} forceClone Force clone.
  * @param {number} rate Rate.
@@ -40,6 +41,7 @@ export function prepareOneShotAudio(cachedAudioBaseInstance, forceClone, rate) {
 
 /**
  * Should clone audio.
+ * Used to decide control flow.
  * Uses cachedAudioBaseInstance to perform the operation.
  * @param {*} cachedAudioBaseInstance Cached audio base instance.
  * @returns {boolean} Whether clone audio.
@@ -50,7 +52,7 @@ export function shouldCloneAudio(cachedAudioBaseInstance) {
 
 /**
  * Clone audio instance.
- * Updates the instance state.
+ * Used to support audio playback.
  * @param {*} cachedAudioBaseInstance Cached audio base instance.
  * @returns {*} Result value.
  */
@@ -64,6 +66,7 @@ export function cloneAudioInstance(cachedAudioBaseInstance) {
 
 /**
  * Creates offset setter.
+ * Used to set up required data for audio playback.
  * Uses audio, audioStartOffset to compute the result.
  * @param {HTMLAudioElement} audio Audio element.
  * @param {number} audioStartOffset Audio start offset.
@@ -83,6 +86,7 @@ export function createOffsetSetter(audio, audioStartOffset) {
 
 /**
  * Queues one shot playback.
+ * Used to support audio playback.
  * Uses audio, setOffset to perform the operation.
  * @param {HTMLAudioElement} audio Audio element.
  * @param {number} setOffset Set offset.

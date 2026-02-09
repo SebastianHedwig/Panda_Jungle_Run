@@ -76,6 +76,7 @@ const privacyPolicyScreenBase = new LegalScreenBase({
 
 /**
  * Renders privacy policy screen. If omitted, default values are used.
+ * Used to render privacy policy screen. If omitted, default values are used.
  * Uses options to perform the operation.
  * @param {Object} [options] Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.

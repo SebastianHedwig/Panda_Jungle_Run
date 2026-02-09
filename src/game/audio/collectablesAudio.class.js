@@ -9,6 +9,7 @@ const WEAPON_PICKUP = "./assets/sfx/weapon/weapon-pickup.mp3";
 export class CollectablesAudio {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for audio playback.
    * Uses options to perform the operation.
    * @param {Object} [options] Configuration options.
    * @param {string} [options.coinSrc] Coin src.
@@ -36,7 +37,7 @@ export class CollectablesAudio {
 
   /**
    * Creates audio.
-   * Updates the instance state.
+   * Used to set up required data for audio playback.
    * @param {string} src Source URL.
    * @returns {*} Audio.
    */
@@ -46,7 +47,7 @@ export class CollectablesAudio {
 
   /**
    * Ensure sound pool.
-   * Updates the instance state.
+   * Used to support audio playback.
    * @param {string} soundKey Sound key.
    * @param {string} src Source URL.
    * @returns {*} Result value.
@@ -63,7 +64,7 @@ export class CollectablesAudio {
 
   /**
    * Next audio from pool.
-   * Updates the instance state.
+   * Used to support audio playback.
    * @param {string} soundKey Sound key.
    * @param {string} src Source URL.
    * @returns {*} Result value.
@@ -80,7 +81,7 @@ export class CollectablesAudio {
 
   /**
    * Plays sound.
-   * Updates the instance state.
+   * Used to support audio playback.
    * @param {string} soundKey Sound key.
    * @param {string} src Source URL.
    */
@@ -91,7 +92,6 @@ export class CollectablesAudio {
 
   /**
    * Plays coin.
-   * Updates the instance state.
    */
   playCoin() {
     this.playSound("coin", this.coinSrc);
@@ -99,7 +99,6 @@ export class CollectablesAudio {
 
   /**
    * Plays heart.
-   * Updates the instance state.
    */
   playHeart() {
     this.playSound("heart", this.heartSrc);
@@ -107,7 +106,6 @@ export class CollectablesAudio {
 
   /**
    * Plays weapon.
-   * Updates the instance state.
    */
   playWeapon() {
     this.playSound("weapon", this.weaponSrc);
@@ -115,7 +113,7 @@ export class CollectablesAudio {
 
   /**
    * Collect warmup audios.
-   * Updates the instance state.
+   * Used to support audio playback.
    * @returns {Array<any>} Result value.
    */
   collectWarmupAudios() {

@@ -2,6 +2,7 @@ import { loadFrames } from "../../../../core/game/assets/assetLoader.js";
 
 /**
  * Loads enemy 1 sprites.
+ * Used to support world state updates.
  * @returns {Object} Result value.
  */
 export function loadEnemy1Sprites() {
@@ -16,8 +17,8 @@ export function loadEnemy1Sprites() {
 
 /**
  * Initializes sprite frames.
+ * Used to set default state before use for rendering.
  * Advances animation state and sprites.
- * Updates the instance state.
  * @param {*} sprites Sprites.
  */
 export function initializeSpriteFrames(sprites) {

@@ -2,6 +2,7 @@ import { FACING_LEFT } from "../../../config/config.js";
 
 /**
  * Renders player. If omitted, default values are used.
+ * Used to render player. If omitted, default values are used.
  * Uses player, ctx, camera, options to perform the operation.
  * @param {Player} player Player instance.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
@@ -22,7 +23,7 @@ export function renderPlayer(player, ctx, camera, { debugHitbox = false } = {}) 
 
 /**
  * Should skip render.
- * Updates the player state.
+ * Used to decide control flow.
  * @param {Player} player Player instance.
  * @returns {boolean} Whether skip render.
  */
@@ -34,7 +35,7 @@ function shouldSkipRender(player) {
 
 /**
  * Is invisible blink phase.
- * Updates the player state.
+ * Used to decide control flow.
  * @param {Player} player Player instance.
  * @returns {boolean} Whether invisible blink phase.
  */
@@ -48,6 +49,7 @@ function isInvisibleBlinkPhase(player) {
 
 /**
  * Applies facing transform.
+ * Used to apply visual styling before rendering.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {boolean} isMirroredFacing Whether mirrored facing.
@@ -58,8 +60,8 @@ function applyFacingTransform(ctx, isMirroredFacing) {
 
 /**
  * Returns sprite draw position.
+ * Used to provide sprite draw position for camera-relative placement.
  * Advances animation state and sprites.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {Camera} camera Camera instance.
  * @param {boolean} isMirroredFacing Whether mirrored facing.
@@ -77,6 +79,7 @@ function getSpriteDrawPosition(player, camera, isMirroredFacing) {
 
 /**
  * Draws hitbox.
+ * Used to render hitbox.
  * Renders to the canvas context.
  * Performs hitbox or collision checks.
  * @param {Player} player Player instance.
@@ -94,6 +97,7 @@ function drawHitbox(player, ctx, camera, isMirroredFacing) {
 
 /**
  * Returns hitbox draw position.
+ * Used to provide hitbox draw position for collision and hit testing.
  * Performs hitbox or collision checks.
  * @param {*} hitbox Hitbox.
  * @param {Camera} camera Camera instance.

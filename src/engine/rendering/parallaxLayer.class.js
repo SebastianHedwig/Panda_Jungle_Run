@@ -1,7 +1,7 @@
 export class ParallaxLayer {
   /**
    * Creates a new instance.
-   * Updates the instance state.
+   * Used to set up required data for gameplay flow.
    * @param {HTMLImageElement} image Image.
    * @param {number} speedFactorX Speed factor X.
    * @param {number} speedFactorY Speed factor Y.
@@ -18,7 +18,7 @@ export class ParallaxLayer {
 
   /**
    * Updates.
-   * Updates the instance state.
+   * Used to advance state during the update loop for gameplay flow.
    * @param {number} cameraX Camera X.
    * @param {number} cameraY Camera Y.
    */
@@ -29,7 +29,7 @@ export class ParallaxLayer {
 
   /**
    * Returns canvas size.
-   * Updates the instance state.
+   * Used to provide canvas size for rendering.
    * @returns {Object} Canvas size.
    */
   getCanvasSize() {
@@ -38,7 +38,7 @@ export class ParallaxLayer {
 
   /**
    * Returns image aspect ratio.
-   * Updates the instance state.
+   * Used to provide image aspect ratio for rendering.
    * @returns {*} Image aspect ratio.
    */
   getImageAspectRatio() {
@@ -47,6 +47,7 @@ export class ParallaxLayer {
 
   /**
    * Returns draw size.
+   * Used to provide draw size for rendering.
    * Uses canvasWidth, canvasHeight, imageAspectRatio to compute the result.
    * @param {boolean} canvasWidth Canvas width.
    * @param {boolean} canvasHeight Canvas height.
@@ -65,7 +66,7 @@ export class ParallaxLayer {
 
   /**
    * Returns tile start X.
-   * Updates the instance state.
+   * Used to provide tile start X for gameplay flow.
    * @param {*} drawW Draw W.
    * @returns {*} Tile start X.
    */
@@ -75,8 +76,8 @@ export class ParallaxLayer {
 
   /**
    * Draws tiles.
+   * Used to render tiles.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {number} tileStartX Tile start X.
    * @param {*} drawW Draw W.
@@ -89,7 +90,7 @@ export class ParallaxLayer {
 
   /**
    * Renders.
-   * Updates the instance state.
+   * Used to render visuals.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    */
   render(ctx) {

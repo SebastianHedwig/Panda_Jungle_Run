@@ -24,7 +24,7 @@ const LINE_WIDTH = 3;
 export class HudPopup {
   /**
    * Creates a new instance. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to set up required data for UI interaction handling.
    * @param {string} [text] Text.
    * @param {number} x X.
    * @param {number} y Y.
@@ -44,7 +44,7 @@ export class HudPopup {
 
   /**
    * Updates.
-   * Updates the instance state.
+   * Used to advance state during the update loop for UI interaction handling.
    * @param {number} dt Delta time in seconds.
    */
   update(dt) {
@@ -57,7 +57,7 @@ export class HudPopup {
 
   /**
    * Updates rise.
-   * Updates the instance state.
+   * Used to advance state during the update loop for UI interaction handling.
    * @param {number} dt Delta time in seconds.
    */
   updateRise(dt) {
@@ -66,7 +66,7 @@ export class HudPopup {
 
   /**
    * Updates opacity.
-   * Updates the instance state.
+   * Used to advance state during the update loop for UI interaction handling.
    * @param {number} dt Delta time in seconds.
    */
   updateOpacity(dt) {
@@ -75,7 +75,7 @@ export class HudPopup {
 
   /**
    * Updates scale.
-   * Updates the instance state.
+   * Used to advance state during the update loop for UI interaction handling.
    * @param {number} dt Delta time in seconds.
    */
   updateScale(dt) {
@@ -85,7 +85,6 @@ export class HudPopup {
 
   /**
    * Updates shake.
-   * Updates the instance state.
    */
   updateShake() {
     if (this.type === "damage") {
@@ -95,7 +94,6 @@ export class HudPopup {
 
   /**
    * Clamp opacity.
-   * Updates the instance state.
    */
   clampOpacity() {
     if (this.opacity < 0) this.opacity = 0;
@@ -103,8 +101,8 @@ export class HudPopup {
 
   /**
    * Draws.
+   * Used to render visuals.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
    */
@@ -121,8 +119,8 @@ export class HudPopup {
 
   /**
    * Applies opacity.
+   * Used to keep UI visuals consistent.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    */
   applyOpacity(ctx) {
@@ -131,7 +129,7 @@ export class HudPopup {
 
   /**
    * Returns screen position.
-   * Updates the instance state.
+   * Used to provide screen position for camera-relative placement.
    * @param {Camera} camera Camera instance.
    * @returns {Object} Screen position.
    */
@@ -143,8 +141,8 @@ export class HudPopup {
 
   /**
    * Applies transform.
+   * Used to keep UI visuals consistent.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {number} screenX Screen X.
    * @param {number} screenY Screen Y.
@@ -158,8 +156,8 @@ export class HudPopup {
 
   /**
    * Applies text style.
+   * Used to keep UI visuals consistent.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    */
   applyTextStyle(ctx) {
@@ -171,8 +169,8 @@ export class HudPopup {
 
   /**
    * Draws text.
+   * Used to render text.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    */
   drawText(ctx) {

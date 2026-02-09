@@ -35,6 +35,7 @@ export const BUTTON_SHADOW_OFFSET_Y = 2;
 
 /**
  * Sets up start screen. If omitted, default values are used.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} [options] Configuration options.
  * @param {string} [options.canvasId] Canvas element id.

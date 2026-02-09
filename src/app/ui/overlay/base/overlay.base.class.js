@@ -26,6 +26,7 @@ const BODY_SHADOW_BLUR = 0;
 export class OverlayClose {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for UI interaction handling.
    * Advances animation state and sprites.
    * @param {Object} [options] Configuration options.
    * @param {HTMLImageElement} [options.sprite] Sprite.
@@ -60,7 +61,7 @@ export class OverlayClose {
 
   /**
    * Sets pointer.
-   * Updates the instance state.
+   * Used to support UI interaction handling.
    * @param {number} x X.
    * @param {number} y Y.
    */
@@ -74,7 +75,6 @@ export class OverlayClose {
 
   /**
    * Clears pointer.
-   * Updates the instance state.
    */
   clearPointer() {
     this.pointer = null;
@@ -83,7 +83,6 @@ export class OverlayClose {
 
   /**
    * Clears render state.
-   * Updates the instance state.
    */
   clearRenderState() {
     this.bounds = null;
@@ -92,7 +91,7 @@ export class OverlayClose {
 
   /**
    * Can render.
-   * Updates the instance state.
+   * Used to decide UI hit testing outcomes.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLImageElement} uiImage Ui image.
    * @returns {boolean} Whether render.
@@ -107,8 +106,8 @@ export class OverlayClose {
 
   /**
    * Returns base rect.
+   * Used to provide base rect for UI interaction handling.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {number} width Width.
@@ -125,6 +124,7 @@ export class OverlayClose {
 
   /**
    * Returns hover state.
+   * Used to provide hover state for UI interaction handling.
    * Uses options to compute the result.
    * @param {Object} options Configuration options.
    * @param {number} [options.baseX] Base X.
@@ -144,6 +144,7 @@ export class OverlayClose {
 
   /**
    * Returns draw rect.
+   * Used to provide draw rect for UI interaction handling.
    * Uses options, isHover to compute the result.
    * @param {Object} options Configuration options.
    * @param {number} [options.baseScale] Base scale.
@@ -164,6 +165,7 @@ export class OverlayClose {
 
   /**
    * Draws icon.
+   * Used to render icon.
    * Renders to the canvas context.
    * Advances animation state and sprites.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
@@ -183,7 +185,7 @@ export class OverlayClose {
 
   /**
    * Updates render state.
-   * Updates the instance state.
+   * Used to advance state during the update loop for UI interaction handling.
    * @param {*} rect Rect.
    * @param {boolean} isHover Whether hover.
    */
@@ -194,6 +196,7 @@ export class OverlayClose {
 
   /**
    * Is inside bounds.
+   * Used to decide UI hit testing outcomes.
    * Uses x, y, bounds to perform the operation.
    * @param {number} x X.
    * @param {number} y Y.
@@ -206,7 +209,7 @@ export class OverlayClose {
 
   /**
    * Is hovering.
-   * Updates the instance state.
+   * Used to decide UI hit testing outcomes.
    * @returns {boolean} Whether hovering.
    */
   isHovering() {
@@ -215,7 +218,7 @@ export class OverlayClose {
 
   /**
    * Handles close button click.
-   * Updates the instance state.
+   * Used to centralize a specific behavior for UI interaction handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @returns {*} Result value.
@@ -229,6 +232,7 @@ export class OverlayClose {
 
   /**
    * Renders.
+   * Used to render visuals.
    * Uses ctx, uiImage, options to perform the operation.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLImageElement} uiImage Ui image.
@@ -251,6 +255,7 @@ export class OverlayClose {
 export class OverlayRenderer {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for UI interaction handling.
    * Uses options to perform the operation.
    * @param {Object} [options] Configuration options.
    * @param {OverlayClose} [options.closeOverlay] Close overlay.
@@ -261,7 +266,7 @@ export class OverlayRenderer {
 
   /**
    * Sets pointer.
-   * Updates the instance state.
+   * Used to support UI interaction handling.
    * @param {number} x X.
    * @param {number} y Y.
    */
@@ -271,7 +276,6 @@ export class OverlayRenderer {
 
   /**
    * Clears pointer.
-   * Updates the instance state.
    */
   clearPointer() {
     this.closeOverlay.clearPointer();
@@ -279,7 +283,7 @@ export class OverlayRenderer {
 
   /**
    * Handles close button click.
-   * Updates the instance state.
+   * Used to centralize a specific behavior for UI interaction handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @returns {*} Result value.
@@ -290,7 +294,7 @@ export class OverlayRenderer {
 
   /**
    * Is hovering.
-   * Updates the instance state.
+   * Used to decide UI hit testing outcomes.
    * @returns {boolean} Whether hovering.
    */
   isHovering() {
@@ -299,6 +303,7 @@ export class OverlayRenderer {
 
   /**
    * Renders panel.
+   * Used to render panel.
    * Uses ctx, options to perform the operation.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Object} options Configuration options.
@@ -319,6 +324,7 @@ export class OverlayRenderer {
 
   /**
    * Can render panel.
+   * Used to decide UI hit testing outcomes.
    * Uses ctx, canvas, bgImage to perform the operation.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLCanvasElement} canvas Target canvas.
@@ -331,6 +337,7 @@ export class OverlayRenderer {
 
   /**
    * Draws backdrop.
+   * Used to render backdrop.
    * Renders to the canvas context.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLCanvasElement} canvas Target canvas.
@@ -342,6 +349,7 @@ export class OverlayRenderer {
 
   /**
    * Returns panel rect.
+   * Used to provide panel rect for UI interaction handling.
    * Uses canvas, bgImage to compute the result.
    * @param {HTMLCanvasElement} canvas Target canvas.
    * @param {HTMLImageElement} bgImage Bg image.
@@ -360,6 +368,7 @@ export class OverlayRenderer {
 
   /**
    * Draws panel image.
+   * Used to render panel image.
    * Renders to the canvas context.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLImageElement} bgImage Bg image.
@@ -371,7 +380,7 @@ export class OverlayRenderer {
 
   /**
    * Updates close overlay.
-   * Updates the instance state.
+   * Used to advance state during the update loop for UI interaction handling.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLImageElement} uiImage Ui image.
    * @param {HTMLElement} panelRect Panel rect.
@@ -386,6 +395,7 @@ export class OverlayRenderer {
 
   /**
    * Applies title style.
+   * Used to keep UI visuals consistent.
    * Renders to the canvas context.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {boolean} canvasWidth Canvas width.
@@ -402,6 +412,7 @@ export class OverlayRenderer {
 
   /**
    * Applies body style.
+   * Used to keep UI visuals consistent.
    * Renders to the canvas context.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {boolean} canvasWidth Canvas width.

@@ -6,7 +6,7 @@ const BOSS_AREA_START = WORLD_WIDTH * 0.9; // last 10% of the level
 
 /**
  * Builds coin placement config.
- * Updates the world state.
+ * Used to assemble required data for collectable handling.
  * @param {World} world World instance.
  * @param {number} totalCount Total count.
  * @param {number} ratioAbovePlatforms Ratio above platforms.
@@ -23,7 +23,7 @@ function buildCoinPlacementConfig(world, totalCount, ratioAbovePlatforms) {
 
 /**
  * Returns random platform.
- * Updates the world state.
+ * Used to provide random platform for platform collision handling.
  * Introduces randomness into the outcome.
  * @param {World} world World instance.
  * @returns {*} Random platform.
@@ -34,6 +34,7 @@ function getRandomPlatform(world) {
 
 /**
  * Returns platform coin range.
+ * Used to provide platform coin range for platform collision handling.
  * Uses platform, maxXLimit, config to compute the result.
  * @param {Platform} platform Platform.
  * @param {number} maxXLimit Max X limit.
@@ -51,6 +52,7 @@ function getPlatformCoinRange(platform, maxXLimit, config) {
 
 /**
  * Should place platform row.
+ * Used to decide platform interactions.
  * Introduces randomness into the outcome.
  * @param {Object} config Configuration options.
  * @param {*} placement Placement.
@@ -63,6 +65,7 @@ function shouldPlacePlatformRow(config, placement) {
 
 /**
  * Returns platform row params.
+ * Used to provide platform row params for platform collision handling.
  * Uses placement, config, platform to compute the result.
  * @param {*} placement Placement.
  * @param {Object} config Configuration options.
@@ -79,7 +82,7 @@ function getPlatformRowParams(placement, config, platform) {
 
 /**
  * Try add coin.
- * Updates the world state.
+ * Used to support collectable handling.
  * @param {World} world World instance.
  * @param {number} coins Coins.
  * @param {number} worldX World X.
@@ -96,6 +99,7 @@ function tryAddCoin(world, coins, worldX, worldY, config) {
 
 /**
  * Place platform row coins.
+ * Used to support platform collision handling.
  * Uses world, coins, platform, placement, config to perform the operation.
  * @param {World} world World instance.
  * @param {number} coins Coins.
@@ -113,6 +117,7 @@ function placePlatformRowCoins(world, coins, platform, placement, config) {
 
 /**
  * Place single platform coin.
+ * Used to support platform collision handling.
  * Introduces randomness into the outcome.
  * @param {World} world World instance.
  * @param {number} coins Coins.
@@ -128,6 +133,7 @@ function placeSinglePlatformCoin(world, coins, platform, placement, config) {
 
 /**
  * Place platform coins batch.
+ * Used to support platform collision handling.
  * Spawns visual feedback effects.
  * @param {World} world World instance.
  * @param {number} coins Coins.
@@ -147,6 +153,7 @@ function placePlatformCoinsBatch(world, coins, config, count, maxXLimit) {
 
 /**
  * Place platform coins.
+ * Used to support platform collision handling.
  * Uses world, coins, config to perform the operation.
  * @param {World} world World instance.
  * @param {number} coins Coins.
@@ -161,7 +168,7 @@ function placePlatformCoins(world, coins, config) {
 
 /**
  * Returns random coin position.
- * Updates the world state.
+ * Used to provide random coin position for camera-relative placement.
  * Introduces randomness into the outcome.
  * @param {World} world World instance.
  * @param {Object} config Configuration options.
@@ -178,6 +185,7 @@ function getRandomCoinPosition(world, config, xMaxLimit) {
 
 /**
  * Place random coin batch.
+ * Used to support collectable handling.
  * Uses world, coins, config, count, xMaxLimit, placementAttempts to perform the operation.
  * @param {World} world World instance.
  * @param {number} coins Coins.
@@ -200,6 +208,7 @@ function placeRandomCoinBatch(world, coins, config, count, xMaxLimit, placementA
 
 /**
  * Place random coins.
+ * Used to support world state updates.
  * Uses world, coins, config to perform the operation.
  * @param {World} world World instance.
  * @param {number} coins Coins.
@@ -216,6 +225,7 @@ function placeRandomCoins(world, coins, config) {
 
 /**
  * Builds coin arc config.
+ * Used to assemble required data for collectable handling.
  * Uses maxArcs to compute the result.
  * @param {number} maxArcs Max arcs.
  * @returns {Object} Coin arc config.
@@ -229,7 +239,7 @@ function buildCoinArcConfig(maxArcs) {
 
 /**
  * Returns sorted platforms.
- * Updates the world state.
+ * Used to provide sorted platforms for world state updates.
  * @param {World} world World instance.
  * @returns {*} Sorted platforms.
  */
@@ -239,6 +249,7 @@ function getSortedPlatforms(world) {
 
 /**
  * Returns arc params.
+ * Used to provide arc params for world state updates.
  * Uses currentPlatform, nextPlatform, config to compute the result.
  * @param {Platform} currentPlatform Current platform.
  * @param {Platform} nextPlatform Next platform.
@@ -257,6 +268,7 @@ function getArcParams(currentPlatform, nextPlatform, config) {
 
 /**
  * Returns arc coin world position.
+ * Used to provide arc coin world position for camera-relative placement.
  * Uses coinIndex, coinsInArc, currentPlatform, nextPlatform, gap, config to compute the
  * result.
  * @param {number} coinIndex Coin index.
@@ -277,7 +289,7 @@ function getArcCoinWorldPosition(coinIndex, coinsInArc, currentPlatform, nextPla
 
 /**
  * Try add arc coin.
- * Updates the world state.
+ * Used to support collectable handling.
  * @param {World} world World instance.
  * @param {*} arcs Arcs.
  * @param {number} worldX World X.
@@ -293,6 +305,7 @@ function tryAddArcCoin(world, arcs, worldX, worldY, config) {
 
 /**
  * Place arc coins.
+ * Used to support world state updates.
  * Uses world, arcs, currentPlatform, nextPlatform, config to perform the operation.
  * @param {World} world World instance.
  * @param {*} arcs Arcs.
@@ -315,6 +328,7 @@ function placeArcCoins(world, arcs, currentPlatform, nextPlatform, config) {
 
 /**
  * Place coin arcs.
+ * Used to support collectable handling.
  * Uses world, platforms, arcs, config to perform the operation.
  * @param {World} world World instance.
  * @param {*} platforms Platforms.
@@ -333,6 +347,7 @@ function placeCoinArcs(world, platforms, arcs, config) {
 
 /**
  * Generate coins mixed. If omitted, default values are used.
+ * Used to support world state updates.
  * Uses world, totalCount, ratioAbovePlatforms to perform the operation.
  * @param {World} world World instance.
  * @param {number} [totalCount] Total count.
@@ -353,6 +368,7 @@ export function generateCoinsMixed(
 
 /**
  * Generate coin arcs. If omitted, default values are used.
+ * Used to support collectable handling.
  * Uses world, maxArcs to perform the operation.
  * @param {World} world World instance.
  * @param {number} [maxArcs] Max arcs.

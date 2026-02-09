@@ -2,14 +2,13 @@ import { playWhenReady } from "../audioUtils.js";
 
 /**
  * Plays landing.
- * Updates the instance state.
  */
 export function playLanding() {
   const cachedLandingBase = this.getLandingBase();
   const audio = this.cloneLandingAudio(cachedLandingBase);
   /**
    * Sets landing offset.
-   * Updates the instance state.
+   * Used to support audio playback.
    * @returns {*} Result value.
    */
   const setLandingOffset = () => this.applyLandingOffset(audio);
@@ -19,7 +18,7 @@ export function playLanding() {
 
 /**
  * Returns landing base.
- * Updates the instance state.
+ * Used to provide landing base for audio playback.
  * @returns {*} Landing base.
  */
 export function getLandingBase() {
@@ -32,7 +31,7 @@ export function getLandingBase() {
 
 /**
  * Clone landing audio.
- * Updates the instance state.
+ * Used to support audio playback.
  * @param {*} cachedLandingBase Cached landing base.
  * @returns {*} Result value.
  */
@@ -46,7 +45,7 @@ export function cloneLandingAudio(cachedLandingBase) {
 
 /**
  * Applies landing offset.
- * Updates the instance state.
+ * Used to apply audio settings.
  * @param {HTMLAudioElement} audio Audio element.
  */
 export function applyLandingOffset(audio) {

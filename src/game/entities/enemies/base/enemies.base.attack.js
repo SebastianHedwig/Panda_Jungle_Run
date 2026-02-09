@@ -1,6 +1,6 @@
 /**
  * Can start enemy attack.
- * Updates the player state.
+ * Used to decide combat outcomes.
  * @param {Player} playerInfo Player info.
  * @param {Player} player Player instance.
  * @returns {boolean} Whether start enemy attack.
@@ -11,7 +11,7 @@ export function canStartEnemyAttack(playerInfo, player) {
 
 /**
  * Try start melee attack.
- * Updates the enemy state.
+ * Used to support combat effects.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Player} playerInfo Player info.
  * @param {Player} player Player instance.
@@ -29,7 +29,7 @@ export function tryStartMeleeAttack(enemy, playerInfo, player) {
 
 /**
  * Is player in range.
- * Updates the enemy state.
+ * Used to decide combat outcomes.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} deltaX Delta X.
  * @param {number} absoluteDeltaY Absolute delta Y.

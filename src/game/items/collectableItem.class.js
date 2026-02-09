@@ -33,7 +33,7 @@ const ASSET_MAP = {
 export class CollectableItem {
   /**
    * Creates a new instance. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to set up required data for collectable handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {string} [type] Type.
@@ -55,7 +55,6 @@ export class CollectableItem {
 
   /**
    * Applies dimensions.
-   * Updates the instance state.
    */
   applyDimensions() {
     this.width = ITEM_SIZE;
@@ -64,7 +63,6 @@ export class CollectableItem {
 
   /**
    * Initializes hitbox.
-   * Updates the instance state.
    */
   initHitbox() {
     this.hitboxShrinkXFactor = 0.2;
@@ -73,7 +71,6 @@ export class CollectableItem {
 
   /**
    * Initializes pickup state.
-   * Updates the instance state.
    */
   initPickupState() {
     this.collected = false;
@@ -82,7 +79,6 @@ export class CollectableItem {
 
   /**
    * Initializes pickup fx.
-   * Updates the instance state.
    */
   initPickupFx() {
     this.scaleFactor = 1;
@@ -93,7 +89,6 @@ export class CollectableItem {
   /**
    * Initializes physics.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    */
   initPhysics() {
     this.dropPhysics = false;
@@ -106,7 +101,6 @@ export class CollectableItem {
   /**
    * Initializes animation.
    * Advances animation state and sprites.
-   * Updates the instance state.
    */
   initAnimation() {
     this.images = [];
@@ -117,7 +111,6 @@ export class CollectableItem {
 
   /**
    * Loads assets.
-   * Updates the instance state.
    */
   loadAssets() {
     const list = this.getAssetList();
@@ -129,7 +122,7 @@ export class CollectableItem {
 
   /**
    * Returns asset list.
-   * Updates the instance state.
+   * Used to provide asset list for collectable handling.
    * @returns {*} Asset list.
    */
   getAssetList() {
@@ -138,7 +131,7 @@ export class CollectableItem {
 
   /**
    * Returns frame duration.
-   * Updates the instance state.
+   * Used to provide frame duration for timed actions.
    * @returns {*} Frame duration.
    */
   getFrameDuration() {
@@ -147,7 +140,7 @@ export class CollectableItem {
 
   /**
    * Updates.
-   * Updates the instance state.
+   * Used to advance state during the update loop for collectable handling.
    * @param {number} dt Delta time in seconds.
    */
   update(dt) {
@@ -159,7 +152,7 @@ export class CollectableItem {
 
   /**
    * Updates drop physics.
-   * Updates the instance state.
+   * Used to advance state during the update loop for physics updates.
    * @param {number} dt Delta time in seconds.
    */
   updateDropPhysics(dt) {
@@ -168,7 +161,7 @@ export class CollectableItem {
 
   /**
    * Updates pickup delay.
-   * Updates the instance state.
+   * Used to advance state during the update loop for timed actions.
    * @param {number} dt Delta time in seconds.
    */
   updatePickupDelay(dt) {
@@ -179,8 +172,8 @@ export class CollectableItem {
 
   /**
    * Updates idle animation.
+   * Used to advance state during the update loop for animation timing.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {number} dt Delta time in seconds.
    */
   updateIdleAnimation(dt) {
@@ -193,8 +186,8 @@ export class CollectableItem {
 
   /**
    * Advances frame time.
+   * Used to support animation timing.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {number} dt Delta time in seconds.
    */
   advanceFrameTime(dt) {
@@ -203,7 +196,6 @@ export class CollectableItem {
 
   /**
    * Advances frame index.
-   * Updates the instance state.
    */
   advanceFrameIndex() {
     this.currentImage = (this.currentImage + 1) % this.images.length;
@@ -211,7 +203,7 @@ export class CollectableItem {
 
   /**
    * Updates pickup animation.
-   * Updates the instance state.
+   * Used to advance state during the update loop for animation timing.
    * @param {number} dt Delta time in seconds.
    */
   updatePickupAnimation(dt) {
@@ -224,8 +216,8 @@ export class CollectableItem {
 
   /**
    * Starts drop. If omitted, default values are used.
+   * Used to support collectable handling.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    * @param {number} [velocityX] Velocity X.
    * @param {number} [velocityY] Velocity Y.
    */
@@ -237,8 +229,8 @@ export class CollectableItem {
 
   /**
    * Applies drop physics.
+   * Used to keep state consistent before the next step for physics updates.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    * @param {number} dt Delta time in seconds.
    */
   applyDropPhysics(dt) {
@@ -251,8 +243,8 @@ export class CollectableItem {
 
   /**
    * Applies gravity.
+   * Used to keep state consistent before the next step for physics updates.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    * @param {number} dt Delta time in seconds.
    */
   applyGravity(dt) {
@@ -261,8 +253,8 @@ export class CollectableItem {
 
   /**
    * Applies velocity.
+   * Used to keep state consistent before the next step for physics updates.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    * @param {number} dt Delta time in seconds.
    */
   applyVelocity(dt) {
@@ -272,8 +264,8 @@ export class CollectableItem {
 
   /**
    * Returns drop collision info.
+   * Used to provide drop collision info for collision and hit testing.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    * @param {number} dt Delta time in seconds.
    * @returns {Object} Drop collision info.
    */
@@ -287,6 +279,7 @@ export class CollectableItem {
 
   /**
    * Handles platform collision.
+   * Used to centralize a specific behavior for collision and hit testing.
    * Applies physics updates like gravity and velocity.
    * Performs hitbox or collision checks.
    * @param {World} world World instance.
@@ -312,8 +305,8 @@ export class CollectableItem {
 
   /**
    * Handles ground collision.
+   * Used to centralize a specific behavior for collision and hit testing.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    * @param {*} ground Ground.
    * @param {number} currentBottom Current bottom.
    */

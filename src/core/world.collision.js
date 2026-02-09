@@ -1,7 +1,7 @@
 /**
  * Applies platform collisions.
+ * Used to keep state consistent before the next step for collision and hit testing.
  * Performs hitbox or collision checks.
- * Updates the instance state.
  * @param {Player} player Player instance.
  */
 export function applyPlatformCollisions(player) {
@@ -17,6 +17,7 @@ export function applyPlatformCollisions(player) {
 
 /**
  * Should skip collision.
+ * Used to decide collision outcomes.
  * Performs hitbox or collision checks.
  * @param {Player} player Player instance.
  * @returns {boolean} Whether skip collision.
@@ -27,6 +28,7 @@ export function shouldSkipCollision(player) {
 
 /**
  * Returns collision config.
+ * Used to provide collision config for collision and hit testing.
  * @returns {Object} Collision config.
  */
 export function getCollisionConfig() {
@@ -41,8 +43,8 @@ export function getCollisionConfig() {
 
 /**
  * Returns player collision metrics.
+ * Used to provide player collision metrics for collision and hit testing.
  * Applies physics updates like gravity and velocity.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @returns {Object} Player collision metrics.
  */
@@ -60,7 +62,7 @@ export function getPlayerCollisionMetrics(player) {
 
 /**
  * Resets player ground state.
- * Updates the player state.
+ * Used to support collision and hit testing.
  * @param {Player} player Player instance.
  */
 export function resetPlayerGroundState(player) {
@@ -70,8 +72,8 @@ export function resetPlayerGroundState(player) {
 
 /**
  * Returns collision state.
+ * Used to provide collision state for collision and hit testing.
  * Performs hitbox or collision checks.
- * Updates the instance state.
  * @param {Player} player Player instance.
  * @returns {Object} Collision state.
  */
@@ -84,6 +86,7 @@ export function getCollisionState(player) {
 
 /**
  * Returns platform overlap state.
+ * Used to provide platform overlap state for collision and hit testing.
  * Performs hitbox or collision checks.
  * @param {Platform} platform Platform.
  * @param {*} collisionState Collision state.
@@ -101,8 +104,8 @@ export function getPlatformOverlapState(platform, collisionState) {
 
 /**
  * Applies landing collision.
+ * Used to keep state consistent before the next step for collision and hit testing.
  * Performs hitbox or collision checks.
- * Updates the instance state.
  * @param {Platform} platform Platform.
  * @param {Player} player Player instance.
  * @param {*} collisionState Collision state.
@@ -119,6 +122,7 @@ export function applyLandingCollision(platform, player, collisionState, overlaps
 
 /**
  * Applies landing from above.
+ * Used to keep state consistent before the next step for collision and hit testing.
  * Applies physics updates like gravity and velocity.
  * Performs hitbox or collision checks.
  * @param {Player} player Player instance.
@@ -141,6 +145,7 @@ export function applyLandingFromAbove(player, platform, collisionState) {
 
 /**
  * Applies stay grounded.
+ * Used to keep state consistent before the next step for collision and hit testing.
  * Applies physics updates like gravity and velocity.
  * Performs hitbox or collision checks.
  * @param {Player} player Player instance.
@@ -162,6 +167,7 @@ export function applyStayGrounded(player, platform, collisionState) {
 
 /**
  * Applies head bump.
+ * Used to keep state consistent before the next step for collision and hit testing.
  * Applies physics updates like gravity and velocity.
  * Performs hitbox or collision checks.
  * @param {Player} player Player instance.
@@ -184,6 +190,7 @@ export function applyHeadBump(player, platform, collisionState, overlaps) {
 
 /**
  * Applies side wall collision.
+ * Used to keep state consistent before the next step for collision and hit testing.
  * Applies physics updates like gravity and velocity.
  * Performs hitbox or collision checks.
  * @param {Platform} platform Platform.
@@ -205,8 +212,8 @@ export function applySideWallCollision(platform, player, collisionState, overlap
 
 /**
  * Applies post collision effects.
+ * Used to keep state consistent before the next step for collision and hit testing.
  * Performs hitbox or collision checks.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {*} collisionState Collision state.
  */
@@ -220,7 +227,7 @@ export function applyPostCollisionEffects(player, collisionState) {
 
 /**
  * Applies horizontal limits.
- * Updates the player state.
+ * Used to keep state consistent before the next step for collision and hit testing.
  * @param {Player} player Player instance.
  */
 export function applyHorizontalLimits(player) {
@@ -230,7 +237,7 @@ export function applyHorizontalLimits(player) {
 
 /**
  * Stops slide if blocked.
- * Updates the player state.
+ * Used to support collision and hit testing.
  * @param {Player} player Player instance.
  * @param {number} previousX Previous X.
  * @param {*} slideBlockMovementThreshold Slide block movement threshold.

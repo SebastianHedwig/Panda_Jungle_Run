@@ -1,5 +1,6 @@
 /**
  * Is inside bounds.
+ * Used to decide UI hit testing outcomes.
  * Uses x, y, bounds to perform the operation.
  * @param {number} x X.
  * @param {number} y Y.
@@ -12,7 +13,7 @@ export function isInsideBounds(x, y, bounds) {
 
 /**
  * Is pointer inside bounds.
- * Updates the instance state.
+ * Used to decide UI hit testing outcomes.
  * @param {*} bounds Bounds.
  * @returns {boolean} Whether pointer inside bounds.
  */
@@ -23,7 +24,7 @@ export function isPointerInsideBounds(bounds) {
 
 /**
  * Exit controls overlay.
- * Updates the instance state.
+ * Used to support UI interaction handling.
  * @param {ControlsOverlay | ControlsOverlayMobile} activeOverlay Active overlay.
  * @returns {*} Result value.
  */
@@ -36,7 +37,7 @@ export function exitControlsOverlay(activeOverlay) {
 
 /**
  * Handles controls click.
- * Updates the instance state.
+ * Used to centralize a specific behavior for UI interaction handling.
  * @param {number} x X.
  * @param {number} y Y.
  * @returns {*} Result value.
@@ -53,7 +54,7 @@ export function handleControlsClick(x, y) {
 
 /**
  * Returns item hit index.
- * Updates the instance state.
+ * Used to provide item hit index for UI interaction handling.
  * @param {number} x X.
  * @param {number} y Y.
  * @returns {*} Item hit index.
@@ -64,7 +65,7 @@ export function getItemHitIndex(x, y) {
 
 /**
  * Open controls.
- * Updates the instance state.
+ * Used to support UI interaction handling.
  * @returns {*} Result value.
  */
 export function openControls() {
@@ -77,7 +78,7 @@ export function openControls() {
 
 /**
  * Quit game.
- * Updates the instance state.
+ * Used to support UI interaction handling.
  * @returns {*} Result value.
  */
 export function quitGame() {
@@ -89,7 +90,7 @@ export function quitGame() {
 
 /**
  * Handles menu item hit.
- * Updates the instance state.
+ * Used to centralize a specific behavior for UI interaction handling.
  * @param {number} hitIndex Hit index.
  * @returns {*} Result value.
  */
@@ -101,7 +102,7 @@ export function handleMenuItemHit(hitIndex) {
 
 /**
  * Handles settings overlay click.
- * Updates the instance state.
+ * Used to centralize a specific behavior for UI interaction handling.
  * @param {number} x X.
  * @param {number} y Y.
  * @returns {*} Result value.

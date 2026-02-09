@@ -7,7 +7,7 @@ const bulletAudio = new BulletAudio();
 export class Bullet {
   /**
    * Creates a new instance.
-   * Updates the instance state.
+   * Used to set up required data for collectable handling.
    * @param {number} startX Start X.
    * @param {number} startY Start Y.
    * @param {*} direction Direction.
@@ -22,8 +22,8 @@ export class Bullet {
 
   /**
    * Initializes position.
+   * Used to set default state before use for camera-relative placement.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    * @param {number} startX Start X.
    * @param {number} startY Start Y.
    * @param {*} direction Direction.
@@ -36,7 +36,6 @@ export class Bullet {
 
   /**
    * Initializes dimensions.
-   * Updates the instance state.
    */
   initDimensions() {
     this.width = 32;
@@ -46,7 +45,7 @@ export class Bullet {
 
   /**
    * Initializes state.
-   * Updates the instance state.
+   * Used to set default state before use for collectable handling.
    * @param {*} direction Direction.
    * @param {World} world World instance.
    */
@@ -58,7 +57,6 @@ export class Bullet {
 
   /**
    * Initializes image.
-   * Updates the instance state.
    */
   initImage() {
     this.image = new Image();
@@ -67,7 +65,7 @@ export class Bullet {
 
   /**
    * Returns bounds.
-   * Updates the instance state.
+   * Used to provide bounds for collision and hit testing.
    * @returns {Object} Bounds.
    */
   getBounds() {
@@ -80,7 +78,7 @@ export class Bullet {
 
   /**
    * Updates. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support collectable handling.
    * Spawns visual feedback effects.
    * @param {number} dt Delta time in seconds.
    * @param {*} [enemies] Enemies.
@@ -96,8 +94,8 @@ export class Bullet {
 
   /**
    * Advances position.
+   * Used to support camera-relative placement.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    * @param {number} dt Delta time in seconds.
    */
   advancePosition(dt) {
@@ -106,7 +104,7 @@ export class Bullet {
 
   /**
    * Returns should play impact sound.
-   * Updates the instance state.
+   * Used to provide should play impact sound for audio playback.
    * @returns {*} Should play impact sound.
    */
   getShouldPlayImpactSound() {
@@ -115,7 +113,7 @@ export class Bullet {
 
   /**
    * Handles platform collision.
-   * Updates the world state.
+   * Used to centralize a specific behavior for collision and hit testing.
    * @param {*} bounds Bounds.
    * @param {boolean} shouldPlayImpactSound Whether play impact sound.
    * @returns {*} Result value.
@@ -132,6 +130,7 @@ export class Bullet {
 
   /**
    * Did hit platform.
+   * Used to support combat effects.
    * Uses bounds, platform to perform the operation.
    * @param {*} bounds Bounds.
    * @param {Platform} platform Platform.
@@ -144,7 +143,7 @@ export class Bullet {
 
   /**
    * On platform hit.
-   * Updates the instance state.
+   * Used to support combat effects.
    * Spawns visual feedback effects.
    * @param {*} bounds Bounds.
    * @param {boolean} shouldPlayImpactSound Whether play impact sound.
@@ -157,6 +156,7 @@ export class Bullet {
 
   /**
    * Plays impact if allowed.
+   * Used to support collectable handling.
    * Triggers audio playback or updates audio state.
    * @param {boolean} shouldPlayImpactSound Whether play impact sound.
    */
@@ -166,7 +166,7 @@ export class Bullet {
 
   /**
    * Spawns platform explosion.
-   * Updates the world state.
+   * Used to support platform collision handling.
    * Spawns visual feedback effects.
    * @param {*} bounds Bounds.
    */
@@ -176,7 +176,7 @@ export class Bullet {
 
   /**
    * Should despawn.
-   * Updates the world state.
+   * Used to decide control flow.
    * Spawns visual feedback effects.
    * @returns {boolean} Whether despawn.
    */
@@ -187,7 +187,7 @@ export class Bullet {
 
   /**
    * Handles enemy collisions.
-   * Updates the instance state.
+   * Used to centralize a specific behavior for collectable handling.
    * @param {*} enemies Enemies.
    * @param {boolean} shouldPlayImpactSound Whether play impact sound.
    */
@@ -197,7 +197,7 @@ export class Bullet {
 
   /**
    * Try hit enemy.
-   * Updates the world state.
+   * Used to support combat effects.
    * Spawns visual feedback effects.
    * @param {EnemyBase} enemy Enemy instance.
    * @param {boolean} shouldPlayImpactSound Whether play impact sound.
@@ -213,7 +213,7 @@ export class Bullet {
 
   /**
    * Applies enemy damage.
-   * Updates the enemy state.
+   * Used to keep state consistent before the next step for combat effects.
    * @param {EnemyBase} enemy Enemy instance.
    */
   applyEnemyDamage(enemy) {
@@ -222,7 +222,7 @@ export class Bullet {
 
   /**
    * Maybe spawn hit effect.
-   * Updates the instance state.
+   * Used to support combat effects.
    * Spawns visual feedback effects.
    * @param {EnemyBase} enemy Enemy instance.
    */
@@ -233,7 +233,7 @@ export class Bullet {
 
   /**
    * Is hit effect allowed.
-   * Updates the enemy state.
+   * Used to decide combat outcomes.
    * Spawns visual feedback effects.
    * @param {EnemyBase} enemy Enemy instance.
    * @returns {boolean} Whether hit effect allowed.
@@ -244,7 +244,7 @@ export class Bullet {
 
   /**
    * Spawns hit effect for enemy.
-   * Updates the world state.
+   * Used to support combat effects.
    * Spawns visual feedback effects.
    * @param {EnemyBase} enemy Enemy instance.
    */
@@ -255,7 +255,7 @@ export class Bullet {
 
   /**
    * Collides with.
-   * Updates the instance state.
+   * Used to support collectable handling.
    * @param {*} target Target.
    * @returns {*} Result value.
    */
@@ -272,8 +272,8 @@ export class Bullet {
 
   /**
    * Renders.
+   * Used to render visuals.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
    */
@@ -287,7 +287,7 @@ export class Bullet {
 
   /**
    * Returns screen position.
-   * Updates the instance state.
+   * Used to provide screen position for camera-relative placement.
    * @param {Camera} camera Camera instance.
    * @returns {Object} Screen position.
    */
@@ -299,7 +299,7 @@ export class Bullet {
 
   /**
    * Returns scaled width.
-   * Updates the instance state.
+   * Used to provide scaled width for rendering.
    * @returns {*} Scaled width.
    */
   getScaledWidth() {
@@ -308,7 +308,7 @@ export class Bullet {
 
   /**
    * Returns scaled height.
-   * Updates the instance state.
+   * Used to provide scaled height for rendering.
    * @returns {*} Scaled height.
    */
   getScaledHeight() {
@@ -317,8 +317,8 @@ export class Bullet {
 
   /**
    * Draws flipped.
+   * Used to render flipped.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {number} screenX Screen X.
    * @param {number} screenY Screen Y.
@@ -332,8 +332,8 @@ export class Bullet {
 
   /**
    * Draws normal.
+   * Used to render normal.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {number} screenX Screen X.
    * @param {number} screenY Screen Y.
@@ -346,7 +346,7 @@ export class Bullet {
 
   /**
    * Is beyond canvas margin. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to decide control flow.
    * @param {*} [margin] Margin.
    * @returns {boolean} Whether beyond canvas margin.
    */
@@ -360,7 +360,7 @@ export class Bullet {
 
   /**
    * Returns screen bounds.
-   * Updates the instance state.
+   * Used to provide screen bounds for collision and hit testing.
    * @param {*} bounds Bounds.
    * @returns {Object} Screen bounds.
    */
@@ -375,6 +375,7 @@ export class Bullet {
 
   /**
    * Is outside canvas.
+   * Used to decide control flow.
    * Uses screenX, screenY, bounds, canvas, margin to perform the operation.
    * @param {number} screenX Screen X.
    * @param {number} screenY Screen Y.

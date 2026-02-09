@@ -29,7 +29,6 @@ const COIN_VERTICAL_OFFSET_RATIO = 0.12;
 export class GameWonOverlay extends GameOverlayBase {
   /**
    * Creates a new instance.
-   * Updates the instance state.
    */
   constructor() {
     super();
@@ -40,7 +39,7 @@ export class GameWonOverlay extends GameOverlayBase {
 
   /**
    * Sets coins. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support UI interaction handling.
    * @param {number} [amount] Amount.
    */
   setCoins(amount = 0) {
@@ -49,7 +48,7 @@ export class GameWonOverlay extends GameOverlayBase {
 
   /**
    * Sets coin image.
-   * Updates the instance state.
+   * Used to support UI interaction handling.
    * @param {HTMLImageElement} img Img.
    */
   setCoinImage(img) {
@@ -58,7 +57,7 @@ export class GameWonOverlay extends GameOverlayBase {
 
   /**
    * Renders.
-   * Updates the instance state.
+   * Used to render visuals.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLCanvasElement} canvas Target canvas.
    */
@@ -74,7 +73,7 @@ export class GameWonOverlay extends GameOverlayBase {
 
   /**
    * Draws win title.
-   * Updates the instance state.
+   * Used to render win title.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLCanvasElement} canvas Target canvas.
    * @param {number} frameState Frame state.
@@ -86,6 +85,7 @@ export class GameWonOverlay extends GameOverlayBase {
 
   /**
    * Returns win title options.
+   * Used to provide win title options for UI interaction handling.
    * @returns {Object} Win title options.
    */
   getWinTitleOptions() {
@@ -101,6 +101,7 @@ export class GameWonOverlay extends GameOverlayBase {
 
   /**
    * Returns score Y.
+   * Used to provide score Y for UI interaction handling.
    * Uses options, canvas to compute the result.
    * @param {Object} options Configuration options.
    * @param {number} [options.titleY] Title Y.
@@ -113,8 +114,8 @@ export class GameWonOverlay extends GameOverlayBase {
 
   /**
    * Draws highscore.
+   * Used to render highscore.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLCanvasElement} canvas Target canvas.
    * @param {number} y Y.
@@ -138,6 +139,7 @@ export class GameWonOverlay extends GameOverlayBase {
 
   /**
    * Returns score font size.
+   * Used to provide score font size for rendering.
    * Uses canvas to compute the result.
    * @param {HTMLCanvasElement} canvas Target canvas.
    * @returns {*} Score font size.
@@ -148,7 +150,7 @@ export class GameWonOverlay extends GameOverlayBase {
 
   /**
    * Returns score text.
-   * Updates the instance state.
+   * Used to provide score text for rendering.
    * @returns {Object} Score text.
    */
   getScoreText() {
@@ -157,6 +159,7 @@ export class GameWonOverlay extends GameOverlayBase {
 
   /**
    * Applies score text style.
+   * Used to keep UI visuals consistent.
    * Renders to the canvas context.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {number} fontSize Font size.
@@ -176,6 +179,7 @@ export class GameWonOverlay extends GameOverlayBase {
 
   /**
    * Returns score layout.
+   * Used to provide score layout for UI interaction handling.
    * Uses ctx, canvas, options, fontSize to compute the result.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLCanvasElement} canvas Target canvas.
@@ -197,6 +201,7 @@ export class GameWonOverlay extends GameOverlayBase {
 
   /**
    * Draws score text.
+   * Used to render score text.
    * Renders to the canvas context.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {string} text Text.
@@ -210,8 +215,8 @@ export class GameWonOverlay extends GameOverlayBase {
 
   /**
    * Draws score coin.
+   * Used to render score coin.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {number} valueX Value X.
    * @param {*} layout Layout.

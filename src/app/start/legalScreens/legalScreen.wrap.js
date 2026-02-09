@@ -2,6 +2,7 @@ const EMPTY_LINE_RATIO = 0.6;
 
 /**
  * Creates line entry.
+ * Used to set up required data for camera-relative placement.
  * Uses text, height to compute the result.
  * @param {string} text Text.
  * @param {number} height Height.
@@ -11,6 +12,7 @@ const createLineEntry = (text, height) => ({ text, height });
 
 /**
  * Adds empty line.
+ * Used to support camera-relative placement.
  * Uses wrappedLines, lineHeight to perform the operation.
  * @param {*} wrappedLines Wrapped lines.
  * @param {number} lineHeight Line height.
@@ -21,6 +23,7 @@ const addEmptyLine = (wrappedLines, lineHeight) =>
 
 /**
  * Append line.
+ * Used to support camera-relative placement.
  * Uses wrappedLines, currentLine, lineHeight to perform the operation.
  * @param {*} wrappedLines Wrapped lines.
  * @param {*} currentLine Current line.
@@ -32,6 +35,7 @@ const appendLine = (wrappedLines, currentLine, lineHeight) =>
 
 /**
  * Returns test line.
+ * Used to provide test line for camera-relative placement.
  * Uses currentLine, word to compute the result.
  * @param {*} currentLine Current line.
  * @param {*} word Word.
@@ -41,6 +45,7 @@ const getTestLine = (currentLine, word) => (currentLine ? `${currentLine} ${word
 
 /**
  * Should wrap line.
+ * Used to decide camera placement.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} innerWidth Inner width.
@@ -51,6 +56,7 @@ const shouldWrapLine = (ctx, innerWidth, testLine) => ctx.measureText(testLine).
 
 /**
  * Wrap words into lines.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -75,6 +81,7 @@ const wrapWordsIntoLines = ({ ctx, innerWidth, lineHeight, words, wrappedLines }
 
 /**
  * Wrap paragraph text.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.

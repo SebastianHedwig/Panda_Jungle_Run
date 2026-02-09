@@ -2,7 +2,7 @@ import { FACING_LEFT, FACING_RIGHT } from "../../../../config/config.js";
 
 /**
  * Returns adjacent platform search.
- * Updates the enemy state.
+ * Used to provide adjacent platform search for platform collision handling.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Platform} currentPlatform Current platform.
  * @param {*} moveDirection Move direction.
@@ -23,6 +23,7 @@ export function getAdjacentPlatformSearch(enemy, currentPlatform, moveDirection,
 
 /**
  * Is adjacent platform.
+ * Used to decide platform interactions.
  * Uses platform, currentPlatform, searchContext to perform the operation.
  * @param {Platform} platform Platform.
  * @param {Platform} currentPlatform Current platform.
@@ -41,7 +42,7 @@ export function isAdjacentPlatform(platform, currentPlatform, searchContext) {
 
 /**
  * Try land on platform.
- * Updates the enemy state.
+ * Used to support platform collision handling.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} previousBottom Previous bottom.
  * @param {number} currentBottom Current bottom.
@@ -60,6 +61,7 @@ export function tryLandOnPlatform(enemy, previousBottom, currentBottom) {
 
 /**
  * Is platform landing.
+ * Used to decide platform interactions.
  * Applies physics updates like gravity and velocity.
  * Performs hitbox or collision checks.
  * @param {EnemyBase} enemy Enemy instance.
@@ -75,8 +77,8 @@ function isPlatformLanding(enemy, platform, previousBottom, currentBottom) {
 
 /**
  * Applies platform landing.
+ * Used to keep state consistent before the next step for platform collision handling.
  * Applies physics updates like gravity and velocity.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Platform} platform Platform.
  */
@@ -90,8 +92,8 @@ function applyPlatformLanding(enemy, platform) {
 
 /**
  * Handles fall below canvas.
+ * Used to centralize a specific behavior for physics updates.
  * Applies physics updates like gravity and velocity.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} currentBottom Current bottom.
  */
@@ -107,7 +109,7 @@ export function handleFallBelowCanvas(enemy, currentBottom) {
 
 /**
  * Builds edge context.
- * Updates the enemy state.
+ * Used to assemble required data for platform collision handling.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {*} moveDirection Move direction.
  * @param {number} dt Delta time in seconds.
@@ -129,7 +131,7 @@ export function buildEdgeContext(enemy, moveDirection, dt, platform, onLowestPla
 
 /**
  * Is beyond platform edge.
- * Updates the enemy state.
+ * Used to decide platform interactions.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Platform} platform Platform.
  * @param {number} footX Foot X.
@@ -141,7 +143,7 @@ function isBeyondPlatformEdge(enemy, platform, footX) {
 
 /**
  * Is returning inside.
- * Updates the enemy state.
+ * Used to decide platform interactions.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Platform} platform Platform.
  * @param {number} currentFootX Current foot X.
@@ -157,6 +159,7 @@ function isReturningInside(enemy, platform, currentFootX, moveDirection) {
 
 /**
  * Should turn around.
+ * Used to decide platform interactions.
  * Uses edgeContext to perform the operation.
  * @param {*} edgeContext Edge context.
  * @returns {boolean} Whether turn around.
@@ -167,7 +170,7 @@ export function shouldTurnAround(edgeContext) {
 
 /**
  * Applies edge turn.
- * Updates the enemy state.
+ * Used to keep state consistent before the next step for platform collision handling.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {*} edgeContext Edge context.
  * @param {*} fromChasing From chasing.
@@ -184,7 +187,7 @@ export function applyEdgeTurn(enemy, edgeContext, fromChasing) {
 
 /**
  * Applies chase cooldown.
- * Updates the enemy state.
+ * Used to keep state consistent before the next step for timed actions.
  * @param {EnemyBase} enemy Enemy instance.
  */
 function applyChaseCooldown(enemy) {

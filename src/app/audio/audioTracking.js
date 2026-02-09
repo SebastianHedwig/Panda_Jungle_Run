@@ -1,5 +1,6 @@
 /**
  * Separator.
+ * Used to support audio playback.
  * Uses url to perform the operation.
  * @param {string} url URL to process.
  * @returns {*} Result value.
@@ -8,6 +9,7 @@ const separator = (url) => (url.includes("?") ? "&" : "?");
 
 /**
  * Removes cache bust from the URL.
+ * Used to support audio playback.
  * Uses url to perform the operation.
  * @param {string} url URL to process.
  * @returns {*} Result value.
@@ -17,6 +19,7 @@ const removeCacheBust = (url) =>
 
 /**
  * Creates cache bust url.
+ * Used to set up required data for audio playback.
  * Uses url to compute the result.
  * @param {string} url URL to process.
  * @returns {string} Cache bust url.
@@ -25,6 +28,7 @@ const createCacheBustUrl = (url) => `${url}${separator(url)}cb=${Date.now()}`;
 
 /**
  * Returns a URL with a `cb=<timestamp>` query param to defeat stale caches
+ * Used to provide a URL with a `cb=<timestamp>` query param to defeat stale caches for audio playback.
  * (preventing cache-related load errors like `net::ERR_CACHE_OPERATION_NOT_SUPPORTED`).
  * If `force` is false, an existing `cb` stays untouched; if true, it is replaced.
  * @param {string} url Original audio URL.
@@ -42,6 +46,7 @@ const createCacheBustUrl = (url) => `${url}${separator(url)}cb=${Date.now()}`;
 
 /**
  * Creates cache bust error handler.
+ * Used to set up required data for audio playback.
  * Uses audio to compute the result.
  * @param {HTMLAudioElement} audio Audio element.
  * @returns {*} Cache bust error handler.
@@ -60,6 +65,7 @@ const createCacheBustErrorHandler = (audio) => {
 
 /**
  * Adds a one-time retry for an Audio element: on the first load error it appends
+ * Used to support audio playback.
  * a timestamp cache-buster to the src and reloads, to sidestep stale/blocked caches
  * (z. B. `net::ERR_CACHE_OPERATION_NOT_SUPPORTED`).
  * @param {HTMLAudioElement} audio Audio element to monitor for load errors.
@@ -72,6 +78,7 @@ const attachCacheBustOnError = (audio) => {
 
 /**
  * Creates audio registry.
+ * Used to set up required data for audio playback.
  * Uses initiallyMuted to compute the result.
  * @param {boolean} initiallyMuted Initially muted.
  * @returns {*} Audio registry.
@@ -84,6 +91,7 @@ const createAudioRegistry = (initiallyMuted) => {
 
 /**
  * Returns audio constructor info.
+ * Used to provide audio constructor info for audio playback.
  * Triggers audio playback or updates audio state.
  * @returns {Object} Audio constructor info.
  */
@@ -95,6 +103,7 @@ const getAudioConstructorInfo = () => {
 
 /**
  * Creates tracked audio factory.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {Function} [options.OriginalAudio] Original audio constructor.
@@ -105,6 +114,7 @@ const getAudioConstructorInfo = () => {
 const createTrackedAudioFactory = ({ OriginalAudio, audioRegistry, addCacheBust, attachCacheBustOnError }) => {
   /**
    * Creates tracked audio.
+   * Used to set up required data for audio playback.
    * Triggers audio playback or updates audio state.
    * @param {...*} args Args.
    * @returns {*} Tracked audio.
@@ -124,6 +134,7 @@ const createTrackedAudioFactory = ({ OriginalAudio, audioRegistry, addCacheBust,
 
 /**
  * Installs clone node override.
+ * Used to support audio playback.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {Function} [options.OriginalAudio] Original audio constructor.
@@ -146,6 +157,7 @@ const installCloneNodeOverride = ({ OriginalAudio, originalCloneNode, audioRegis
 
 /**
  * Installs audio overrides.
+ * Used to support audio playback.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {Function} [options.OriginalAudio] Original audio constructor.
@@ -160,6 +172,7 @@ const installAudioOverrides = ({ OriginalAudio, originalCloneNode, createTracked
 
 /**
  * Creates set all audio muted.
+ * Used to set up required data for audio playback.
  * Triggers audio playback or updates audio state.
  * @param {*} audioRegistry Audio registry.
  * @returns {*} Set all audio muted.
@@ -175,6 +188,7 @@ const createSetAllAudioMuted = (audioRegistry) => {
 
 /**
  * Creates audio tracking api.
+ * Used to set up required data for audio playback.
  * Uses setAllAudioMuted to compute the result.
  * @param {boolean} setAllAudioMuted Set all audio muted.
  * @returns {*} Audio tracking api.
@@ -183,6 +197,7 @@ const createAudioTrackingApi = (setAllAudioMuted) => ({
   setAllAudioMuted,
   /**
    * Sets muted.
+   * Used to support audio playback.
    * Uses muted to perform the operation.
    * @param {boolean} muted Muted.
    */
@@ -192,6 +207,7 @@ const createAudioTrackingApi = (setAllAudioMuted) => ({
   },
   /**
    * Returns muted.
+   * Used to provide muted for audio playback.
    * @returns {*} Muted.
    */
   getMuted() {
@@ -201,6 +217,7 @@ const createAudioTrackingApi = (setAllAudioMuted) => ({
 
 /**
  * Installs audio tracking. If omitted, default values are used.
+ * Used to support audio playback.
  * Uses options to perform the operation.
  * @param {Object} [options] Configuration options.
  * @param {boolean} [options.initiallyMuted] Initially muted.

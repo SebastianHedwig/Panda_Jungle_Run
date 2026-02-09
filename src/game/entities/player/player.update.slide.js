@@ -3,8 +3,8 @@ import { checkSlideHits } from "./player.update.slideHits.js";
 
 /**
  * Handles slide flow.
+ * Used to centralize a specific behavior for physics updates.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @param {Input} input Input handler.
@@ -24,6 +24,7 @@ export function handleSlideFlow(player, dt, input, playerAudio) {
 
 /**
  * Returns slide keys down.
+ * Used to provide slide keys down for physics updates.
  * Reads input state to decide actions.
  * @param {Input} input Input handler.
  * @returns {*} Slide keys down.
@@ -34,8 +35,8 @@ function getSlideKeysDown(input) {
 
 /**
  * Should start slide.
+ * Used to decide physics transitions.
  * Reads input state to decide actions.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {*} slideKeysDown Slide keys down.
  * @param {Input} input Input handler.
@@ -53,7 +54,7 @@ function shouldStartSlide(player, slideKeysDown, input) {
 
 /**
  * Starts slide from input.
- * Updates the player state.
+ * Used to support UI interaction handling.
  * @param {Player} player Player instance.
  */
 function startSlideFromInput(player) {
@@ -64,7 +65,7 @@ function startSlideFromInput(player) {
 
 /**
  * Updates slide ready.
- * Updates the player state.
+ * Used to advance state during the update loop for physics updates.
  * @param {Player} player Player instance.
  * @param {*} slideKeysDown Slide keys down.
  */
@@ -74,8 +75,8 @@ function updateSlideReady(player, slideKeysDown) {
 
 /**
  * Updates sliding state.
+ * Used to advance state during the update loop for physics updates.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @param {Player} playerAudio Player audio.
@@ -93,7 +94,7 @@ function updateSlidingState(player, dt, playerAudio) {
 
 /**
  * Updates slide position.
- * Updates the player state.
+ * Used to advance state during the update loop for camera-relative placement.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
@@ -111,7 +112,7 @@ function updateSlidePosition(player, dt) {
 
 /**
  * Updates slide invulnerability.
- * Updates the player state.
+ * Used to advance state during the update loop for physics updates.
  * @param {Player} player Player instance.
  */
 function updateSlideInvulnerability(player) {
@@ -121,7 +122,7 @@ function updateSlideInvulnerability(player) {
 
 /**
  * End slide.
- * Updates the player state.
+ * Used to support physics updates.
  * @param {Player} player Player instance.
  */
 function endSlide(player) {
@@ -131,6 +132,7 @@ function endSlide(player) {
 
 /**
  * Applies slide animation.
+ * Used to apply animation transforms.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
  * @param {Player} player Player instance.

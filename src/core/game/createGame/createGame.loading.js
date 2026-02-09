@@ -1,5 +1,6 @@
 /**
  * Updates loading time.
+ * Used to advance state during the update loop for timed actions.
  * Uses timeStamp to perform the operation.
  * @param {number} timeStamp Time stamp.
  */
@@ -18,6 +19,7 @@ export function drawLoadingBackdrop() {
 
 /**
  * Returns loading spinner state.
+ * Used to provide loading spinner state for gameplay flow.
  * @returns {Object} Loading spinner state.
  */
 export function getLoadingSpinnerState() {
@@ -30,6 +32,7 @@ export function getLoadingSpinnerState() {
 
 /**
  * Draws loading spinner.
+ * Used to render loading spinner.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {boolean} [options.canvasCenterX] Canvas center X.
@@ -47,6 +50,7 @@ export function drawLoadingSpinner({ canvasCenterX, canvasCenterY, radius, spinn
 
 /**
  * Draws loading text.
+ * Used to render loading text.
  * Renders to the canvas context.
  * @param {boolean} canvasCenterX Canvas center X.
  * @param {boolean} canvasCenterY Canvas center Y.
@@ -61,6 +65,7 @@ export function drawLoadingText(canvasCenterX, canvasCenterY) {
 
 /**
  * Renders loading.
+ * Used to render loading.
  * Uses timeStamp to perform the operation.
  * @param {number} timeStamp Time stamp.
  */

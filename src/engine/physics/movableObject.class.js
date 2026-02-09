@@ -3,8 +3,8 @@ import { APEX_BOOST, APEX_THRESHOLD, BASE_SPEED, GRAVITY, GRAVITY_DOWN, GRAVITY_
 export class MovableObject {
   /**
    * Creates a new instance.
+   * Used to set up required data for physics updates.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {number} width Width.
@@ -34,7 +34,7 @@ export class MovableObject {
 
   /**
    * Move left.
-   * Updates the instance state.
+   * Used to support physics updates.
    * @param {number} dt Delta time in seconds.
    */
   moveLeft(dt) {
@@ -44,7 +44,7 @@ export class MovableObject {
 
   /**
    * Move right.
-   * Updates the instance state.
+   * Used to support physics updates.
    * @param {number} dt Delta time in seconds.
    */
   moveRight(dt) {
@@ -54,8 +54,8 @@ export class MovableObject {
 
   /**
    * Applies gravity.
+   * Used to keep state consistent before the next step for physics updates.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    * @param {number} dt Delta time in seconds.
    */
   applyGravity(dt) {
@@ -66,7 +66,6 @@ export class MovableObject {
   /**
    * Jump.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    */
   jump() {
     this.velocityY = -this.jumpForce;
@@ -75,8 +74,8 @@ export class MovableObject {
 
   /**
    * Applies apex gravity.
+   * Used to keep state consistent before the next step for physics updates.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    * @param {number} dt Delta time in seconds.
    */
   applyApexGravity(dt) {

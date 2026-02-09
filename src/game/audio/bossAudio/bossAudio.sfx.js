@@ -3,7 +3,6 @@ import { getRandomSource } from "./bossAudio.helpers.js";
 
 /**
  * Plays whimper.
- * Updates the instance state.
  */
 export function playWhimper() {
   const src = getRandomSource(this.whimperSrcs);
@@ -16,7 +15,7 @@ export function playWhimper() {
 
 /**
  * Returns cached whimper audio.
- * Updates the instance state.
+ * Used to provide cached whimper audio for audio playback.
  * @param {string} src Source URL.
  * @returns {*} Cached whimper audio.
  */
@@ -31,7 +30,6 @@ export function getCachedWhimperAudio(src) {
 
 /**
  * Plays attack 2.
- * Updates the instance state.
  */
 export function playAttack2() {
   if (!this.attack2Src) return;
@@ -43,7 +41,6 @@ export function playAttack2() {
 
 /**
  * Plays attack 1.
- * Updates the instance state.
  */
 export function playAttack1() {
   if (!this.whooshSrc) return;
@@ -56,7 +53,6 @@ export function playAttack1() {
 
 /**
  * Plays hit.
- * Updates the instance state.
  */
 export function playHit() {
   if (!this.hitSrc) return;
@@ -69,7 +65,7 @@ export function playHit() {
 
 /**
  * Returns hit volume.
- * Updates the instance state.
+ * Used to provide hit volume for audio playback.
  * @returns {*} Hit volume.
  */
 export function getHitVolume() {
@@ -78,7 +74,7 @@ export function getHitVolume() {
 
 /**
  * Ensure hit audio.
- * Updates the instance state.
+ * Used to support audio playback.
  * @param {*} vol Vol.
  * @returns {*} Result value.
  */

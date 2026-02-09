@@ -22,7 +22,7 @@ import {
 export class World {
   /**
    * Creates a new instance.
-   * Updates the instance state.
+   * Used to set up required data for world state updates.
    * @param {HTMLCanvasElement} canvas Target canvas.
    */
   constructor(canvas) {
@@ -34,7 +34,6 @@ export class World {
 
   /**
    * Sets up world bounds.
-   * Updates the instance state.
    */
   setupWorldBounds() {
     this.width = WORLD_WIDTH;
@@ -45,7 +44,6 @@ export class World {
 
   /**
    * Sets up level objects.
-   * Updates the instance state.
    */
   setupLevelObjects() {
     this.platforms = [];
@@ -58,7 +56,6 @@ export class World {
 
   /**
    * Sets up projectiles.
-   * Updates the instance state.
    */
   setupProjectiles() {
     this.bullets = [];
@@ -67,7 +64,7 @@ export class World {
 
   /**
    * Adds platforms.
-   * Updates the instance state.
+   * Used to support world state updates.
    * @param {*} platforms Platforms.
    */
   addPlatforms(platforms) {
@@ -79,7 +76,7 @@ export class World {
 
   /**
    * Adds collectables.
-   * Updates the instance state.
+   * Used to support world state updates.
    * @param {*} items Items.
    */
   addCollectables(items) {
@@ -88,7 +85,7 @@ export class World {
 
   /**
    * Adds enemies.
-   * Updates the instance state.
+   * Used to support world state updates.
    * @param {*} enemies Enemies.
    */
   addEnemies(enemies) {
@@ -97,7 +94,7 @@ export class World {
 
   /**
    * Coin position is valid. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support camera-relative placement.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {number} [width] Width.
@@ -114,8 +111,8 @@ export class World {
 
   /**
    * Has platform overlap.
+   * Used to decide collision outcomes.
    * Performs hitbox or collision checks.
-   * Updates the instance state.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {number} width Width.
@@ -138,6 +135,7 @@ export class World {
 
   /**
    * Is too close to coins.
+   * Used to decide control flow.
    * Uses x, y, width, height, existingCoins, minSpacing to perform the operation.
    * @param {number} x X.
    * @param {number} y Y.
@@ -165,7 +163,7 @@ export class World {
 
   /**
    * Adds popup.
-   * Updates the instance state.
+   * Used to support world state updates.
    * @param {*} popup Popup.
    */
   addPopup(popup) {
@@ -174,7 +172,7 @@ export class World {
 
   /**
    * Sets hit effect frames.
-   * Updates the instance state.
+   * Used to support combat effects.
    * Spawns visual feedback effects.
    * @param {*} frames Frames.
    */
@@ -184,7 +182,7 @@ export class World {
 
   /**
    * Spawns bullet.
-   * Updates the instance state.
+   * Used to support world state updates.
    * Spawns visual feedback effects.
    * @param {number} x X.
    * @param {number} y Y.
@@ -196,7 +194,7 @@ export class World {
 
   /**
    * Spawns explosion.
-   * Updates the instance state.
+   * Used to support world state updates.
    * Spawns visual feedback effects.
    * @param {number} x X.
    * @param {number} y Y.
@@ -207,7 +205,7 @@ export class World {
 
   /**
    * Spawns hit effect. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support combat effects.
    * Spawns visual feedback effects.
    * @param {number} x X.
    * @param {number} y Y.
@@ -224,7 +222,7 @@ export class World {
 
   /**
    * Updates projectiles. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to advance state during the update loop for world state updates.
    * @param {number} dt Delta time in seconds.
    * @param {*} [enemies] Enemies.
    * @returns {*} Result value.
@@ -243,7 +241,7 @@ export class World {
 
   /**
    * Updates hit effects.
-   * Updates the instance state.
+   * Used to advance state during the update loop for combat effects.
    * Spawns visual feedback effects.
    * @param {number} dt Delta time in seconds.
    * @returns {*} Result value.
@@ -257,7 +255,7 @@ export class World {
 
   /**
    * Renders projectiles.
-   * Updates the instance state.
+   * Used to render projectiles.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
    */
@@ -268,7 +266,7 @@ export class World {
 
   /**
    * Renders hit effects.
-   * Updates the instance state.
+   * Used to render hit effects.
    * Spawns visual feedback effects.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
@@ -279,7 +277,7 @@ export class World {
 
   /**
    * Updates enemies.
-   * Updates the enemy state.
+   * Used to advance state during the update loop for world state updates.
    * @param {number} dt Delta time in seconds.
    * @param {Player} player Player instance.
    * @returns {*} Result value.
@@ -293,7 +291,7 @@ export class World {
 
   /**
    * Renders enemies.
-   * Updates the enemy state.
+   * Used to render enemies.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
    */

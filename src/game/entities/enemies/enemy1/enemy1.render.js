@@ -3,6 +3,7 @@ import { FACING_LEFT } from "../../../../config/config.js";
 
 /**
  * Renders.
+ * Used to render visuals.
  * Renders to the canvas context.
  * Advances animation state and sprites.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
@@ -21,7 +22,7 @@ export function render(ctx, camera) {
 
 /**
  * Should skip enemy render.
- * Updates the enemy state.
+ * Used to decide control flow.
  * @param {EnemyBase} enemy Enemy instance.
  * @returns {boolean} Whether skip enemy render.
  */
@@ -36,6 +37,7 @@ function shouldSkipEnemyRender(enemy) {
 
 /**
  * Applies enemy facing transform.
+ * Used to apply visual styling before rendering.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {boolean} isMirroredFacing Whether mirrored facing.
@@ -46,8 +48,8 @@ function applyEnemyFacingTransform(ctx, isMirroredFacing) {
 
 /**
  * Returns enemy sprite draw position.
+ * Used to provide enemy sprite draw position for camera-relative placement.
  * Advances animation state and sprites.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Camera} camera Camera instance.
  * @param {boolean} isMirroredFacing Whether mirrored facing.
@@ -63,6 +65,7 @@ function getEnemySpriteDrawPosition(enemy, camera, isMirroredFacing) {
 
 /**
  * Draws enemy hitbox.
+ * Used to render enemy hitbox.
  * Renders to the canvas context.
  * Performs hitbox or collision checks.
  * @param {EnemyBase} enemy Enemy instance.

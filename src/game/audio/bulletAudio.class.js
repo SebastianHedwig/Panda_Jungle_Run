@@ -5,6 +5,7 @@ import { createAudioElement, playWhenReady } from "./audioUtils.js";
 export class BulletAudio {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for audio playback.
    * Uses options to perform the operation.
    * @param {Object} [options] Configuration options.
    * @param {string} [options.impactSrc] Impact src.
@@ -33,7 +34,7 @@ export class BulletAudio {
 
   /**
    * Creates audio.
-   * Updates the instance state.
+   * Used to set up required data for audio playback.
    * @param {string} src Source URL.
    * @returns {*} Audio.
    */
@@ -43,7 +44,7 @@ export class BulletAudio {
 
   /**
    * Ensure impact pool.
-   * Updates the instance state.
+   * Used to support audio playback.
    * @returns {*} Result value.
    */
   ensureImpactPool() {
@@ -58,7 +59,7 @@ export class BulletAudio {
 
   /**
    * Next impact audio.
-   * Updates the instance state.
+   * Used to support audio playback.
    * @returns {*} Result value.
    */
   nextImpactAudio() { // Round-Robin selection from impactPool
@@ -73,20 +74,19 @@ export class BulletAudio {
 
   /**
    * Plays impact.
-   * Updates the instance state.
    */
   playImpact() {
     const audio = this.nextImpactAudio();
     const fadeConfig = this.getImpactFadeConfig();
     /**
      * Stops and reset impact.
-     * Updates the instance state.
+     * Used to support audio playback.
      * @returns {*} Result value.
      */
     const stopAndResetImpact = () => this.stopAndResetImpactAudio(audio);
     /**
      * Starts impact.
-     * Updates the instance state.
+     * Used to support audio playback.
      * @returns {*} Result value.
      */
     const startImpact = () => this.scheduleImpactTimers(audio, stopAndResetImpact, fadeConfig);
@@ -95,8 +95,8 @@ export class BulletAudio {
 
   /**
    * Stops and reset impact audio.
+   * Used to support audio playback.
    * Triggers audio playback or updates audio state.
-   * Updates the instance state.
    * @param {HTMLAudioElement} audio Audio element.
    */
   stopAndResetImpactAudio(audio) {
@@ -107,7 +107,7 @@ export class BulletAudio {
 
   /**
    * Returns impact fade config.
-   * Updates the instance state.
+   * Used to provide impact fade config for audio playback.
    * @returns {Object} Impact fade config.
    */
   getImpactFadeConfig() {
@@ -119,8 +119,8 @@ export class BulletAudio {
 
   /**
    * Schedules impact timers.
+   * Used to support audio playback.
    * Schedules timed actions.
-   * Updates the instance state.
    * @param {HTMLAudioElement} audio Audio element.
    * @param {*} stopAndResetImpact Stop and reset impact.
    * @param {*} fadeConfig Fade config.
@@ -129,7 +129,6 @@ export class BulletAudio {
     let fadeIntervalId = null;
     /**
      * Starts fade.
-     * Updates the instance state.
      */
     const startFade = () => {
       fadeIntervalId = this.startFadeOut(audio, fadeConfig.fadeOutDurationMs);
@@ -143,6 +142,7 @@ export class BulletAudio {
 
   /**
    * Starts fade out.
+   * Used to support audio playback.
    * Schedules timed actions.
    * Clears pending timers.
    * @param {HTMLAudioElement} audio Audio element.
@@ -164,6 +164,7 @@ export class BulletAudio {
 
   /**
    * Finish impact.
+   * Used to support audio playback.
    * Clears pending timers.
    * @param {string} fadeIntervalId Fade interval element id.
    * @param {Function} stopAndResetImpact Stop and reset impact.
@@ -175,7 +176,7 @@ export class BulletAudio {
 
   /**
    * Returns warmup audios.
-   * Updates the instance state.
+   * Used to provide warmup audios for audio playback.
    * @returns {*} Warmup audios.
    */
   getWarmupAudios() {

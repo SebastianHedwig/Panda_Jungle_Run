@@ -24,7 +24,6 @@ export function clearCanvas() {
 
 /**
  * Renders platforms.
- * Updates the world state.
  */
 export function renderPlatforms() {
   this.world.platforms.forEach((platform) => platform.render(this.ctx, this.camera));
@@ -32,7 +31,6 @@ export function renderPlatforms() {
 
 /**
  * Renders collectables.
- * Updates the world state.
  */
 export function renderCollectables() {
   this.world.collectables.forEach((collectable) => collectable.draw(this.ctx, this.camera));
@@ -40,7 +38,6 @@ export function renderCollectables() {
 
 /**
  * Renders hud popups.
- * Updates the world state.
  * Spawns visual feedback effects.
  */
 export function renderHudPopups() {
@@ -49,7 +46,6 @@ export function renderHudPopups() {
 
 /**
  * Renders world.
- * Updates the player state.
  * Spawns visual feedback effects.
  */
 export function renderWorld() {
@@ -88,6 +84,7 @@ export function renderGameOverOverlay() {
 
 /**
  * Renders end game overlay.
+ * Used to render end game overlay.
  * @returns {*} Result value.
  */
 export function renderEndGameOverlay() {

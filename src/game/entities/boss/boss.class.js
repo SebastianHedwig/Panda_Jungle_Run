@@ -26,8 +26,8 @@ const DEBUG_BOSS_HITBOX = DEBUG_MODE;
 export class Boss extends EnemyBase {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for world state updates.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} sprites Sprites.
@@ -47,6 +47,7 @@ export class Boss extends EnemyBase {
 
   /**
    * Initializes sprite frames.
+   * Used to set default state before use for rendering.
    * Advances animation state and sprites.
    * Applies physics updates like gravity and velocity.
    * @param {*} sprites Sprites.
@@ -65,7 +66,6 @@ export class Boss extends EnemyBase {
   /**
    * Initializes animation state.
    * Advances animation state and sprites.
-   * Updates the instance state.
    */
   initializeAnimationState() {
     this.currentAnimation = this.idleFrames;
@@ -77,7 +77,6 @@ export class Boss extends EnemyBase {
 
   /**
    * Initializes base stats.
-   * Updates the instance state.
    */
   initializeBaseStats() {
     this.speed = BOSS_SPEED;
@@ -94,7 +93,6 @@ export class Boss extends EnemyBase {
 
   /**
    * Initializes combat state.
-   * Updates the instance state.
    */
   initializeCombatState() {
     this.isAttacking = false;
@@ -104,7 +102,6 @@ export class Boss extends EnemyBase {
 
   /**
    * Initializes range settings.
-   * Updates the instance state.
    */
   initializeRangeSettings() {
     this.attackRange = 100;
@@ -119,7 +116,6 @@ export class Boss extends EnemyBase {
 
   /**
    * Initializes attack settings.
-   * Updates the instance state.
    */
   initializeAttackSettings() {
     this.attack1Damage = BOSS_ATTACK1_DAMAGE;
@@ -154,7 +150,6 @@ export class Boss extends EnemyBase {
 
   /**
    * Initializes attack configurations.
-   * Updates the instance state.
    */
   initializeAttackConfigurations() {
     this.attacks = createBossAttacks(this);
@@ -162,8 +157,8 @@ export class Boss extends EnemyBase {
 
   /**
    * Sets animation.
+   * Used to support animation timing.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {*} frames Frames.
    */
   setAnimation(frames) {
@@ -176,8 +171,8 @@ export class Boss extends EnemyBase {
 
   /**
    * Animate.
+   * Used to support animation timing.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {number} dt Delta time in seconds.
    */
   animate(dt) {
@@ -193,7 +188,7 @@ export class Boss extends EnemyBase {
 
   /**
    * Starts configured attack. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support combat effects.
    * @param {*} dx Dx.
    * @param {*} frames Frames.
    * @param {number} damage Damage.
@@ -210,7 +205,7 @@ export class Boss extends EnemyBase {
 
   /**
    * Initiate attack.
-   * Updates the instance state.
+   * Used to support combat effects.
    * @param {...*} args Args.
    * @returns {*} Result value.
    */
@@ -220,7 +215,6 @@ export class Boss extends EnemyBase {
 
   /**
    * Patrol.
-   * Updates the instance state.
    */
   patrol() {
     const minX = this.movementMinX;
@@ -232,7 +226,7 @@ export class Boss extends EnemyBase {
 
   /**
    * Adjust for edges.
-   * Updates the instance state.
+   * Used to support world state updates.
    * @param {*} moveDirection Move direction.
    * @param {number} dt Delta time in seconds.
    * @param {Platform} platform Platform.
@@ -249,7 +243,7 @@ export class Boss extends EnemyBase {
 
   /**
    * Try start attack.
-   * Updates the instance state.
+   * Used to support combat effects.
    * @param {Player} playerInfo Player info.
    * @param {Player} player Player instance.
    * @returns {*} Result value.
@@ -268,6 +262,7 @@ export class Boss extends EnemyBase {
 
   /**
    * Pick boss attack.
+   * Used to support combat effects.
    * Introduces randomness into the outcome.
    * @returns {*} Result value.
    */
@@ -278,7 +273,7 @@ export class Boss extends EnemyBase {
 
   /**
    * Returns available attacks.
-   * Updates the instance state.
+   * Used to provide available attacks for world state updates.
    * @param {number} absoluteDeltaX Absolute delta X.
    * @returns {Object} Available attacks.
    */
@@ -299,7 +294,7 @@ export class Boss extends EnemyBase {
 
   /**
    * Run attack.
-   * Updates the instance state.
+   * Used to support combat effects.
    * @param {string} attackId Attack element id.
    * @param {number} deltaX Delta X.
    * @param {Player} player Player instance.
@@ -317,6 +312,7 @@ export class Boss extends EnemyBase {
 
   /**
    * Updates.
+   * Used to advance state during the update loop for world state updates.
    * Uses dt, player to perform the operation.
    * @param {number} dt Delta time in seconds.
    * @param {Player} player Player instance.
@@ -327,7 +323,7 @@ export class Boss extends EnemyBase {
 
   /**
    * Updates run state.
-   * Updates the instance state.
+   * Used to advance state during the update loop for world state updates.
    * @returns {*} Result value.
    */
   updateRunState() {
@@ -339,7 +335,7 @@ export class Boss extends EnemyBase {
 
   /**
    * Try deal attack damage. If omitted, default values are used.
-   * Updates the player state.
+   * Used to support combat effects.
    * @param {Player} player Player instance.
    * @param {*} [popupDelay] Popup delay.
    * @returns {*} Result value.
@@ -356,6 +352,7 @@ export class Boss extends EnemyBase {
 
   /**
    * Take damage. If omitted, default values are used.
+   * Used to support combat effects.
    * Uses amount, hitContext to perform the operation.
    * @param {number} [amount] Amount.
    * @param {*} [hitContext] Hit context.
@@ -368,8 +365,8 @@ export class Boss extends EnemyBase {
 
   /**
    * Returns hitbox.
+   * Used to provide hitbox for collision and hit testing.
    * Performs hitbox or collision checks.
-   * Updates the instance state.
    * @returns {Object} Hitbox.
    */
   getHitbox() {
@@ -388,6 +385,7 @@ export class Boss extends EnemyBase {
 
   /**
    * Renders.
+   * Used to render visuals.
    * Uses ctx, camera to perform the operation.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.

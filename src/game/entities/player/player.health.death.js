@@ -1,7 +1,7 @@
 /**
  * Starts death.
+ * Used to support combat effects.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {Player} playerAudio Player audio.
  */
@@ -16,7 +16,7 @@ export function startDeath(player, playerAudio) {
 
 /**
  * Marks player dead.
- * Updates the player state.
+ * Used to support combat effects.
  * @param {Player} player Player instance.
  */
 function markPlayerDead(player) {
@@ -25,7 +25,7 @@ function markPlayerDead(player) {
 
 /**
  * Notify death handler.
- * Updates the player state.
+ * Used to support combat effects.
  * @param {Player} player Player instance.
  */
 function notifyDeathHandler(player) {
@@ -36,8 +36,8 @@ function notifyDeathHandler(player) {
 
 /**
  * Stops death audio.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  */
 function stopDeathAudio(player) {
@@ -47,8 +47,8 @@ function stopDeathAudio(player) {
 
 /**
  * Plays death sound once.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {Player} playerAudio Player audio.
  */
@@ -61,8 +61,8 @@ function playDeathSoundOnce(player, playerAudio) {
 
 /**
  * Resets death state.
+ * Used to support combat effects.
  * Performs hitbox or collision checks.
- * Updates the player state.
  * @param {Player} player Player instance.
  */
 function resetDeathState(player) {
@@ -76,7 +76,7 @@ function resetDeathState(player) {
 
 /**
  * Resets death combat.
- * Updates the player state.
+ * Used to support combat effects.
  * @param {Player} player Player instance.
  */
 function resetDeathCombat(player) {
@@ -87,8 +87,8 @@ function resetDeathCombat(player) {
 
 /**
  * Resets death physics.
+ * Used to support combat effects.
  * Applies physics updates like gravity and velocity.
- * Updates the player state.
  * @param {Player} player Player instance.
  */
 function resetDeathPhysics(player) {
@@ -99,8 +99,8 @@ function resetDeathPhysics(player) {
 
 /**
  * Sets death animation.
+ * Used to support animation timing.
  * Advances animation state and sprites.
- * Updates the player state.
  * @param {Player} player Player instance.
  */
 function setDeathAnimation(player) {

@@ -14,7 +14,7 @@ const GUN_BULLETS_GRANT = 5;
 
 /**
  * Is colliding.
- * Updates the player state.
+ * Used to decide control flow.
  * @param {Player} player Player instance.
  * @returns {boolean} Whether colliding.
  */
@@ -44,7 +44,7 @@ export function isColliding(player) {
 
 /**
  * Collect.
- * Updates the instance state.
+ * Used to support collectable handling.
  * @param {Player} player Player instance.
  */
 export function collect(player) {
@@ -59,7 +59,6 @@ export function collect(player) {
 
 /**
  * Starts pickup animation.
- * Updates the instance state.
  */
 export function startPickupAnimation() {
   this.collected = true;
@@ -68,7 +67,7 @@ export function startPickupAnimation() {
 
 /**
  * Handles collect by type.
- * Updates the instance state.
+ * Used to centralize a specific behavior for collectable handling.
  * @param {Player} player Player instance.
  * @param {number} itemX Item X.
  * @param {number} itemY Item Y.
@@ -81,8 +80,8 @@ export function handleCollectByType(player, itemX, itemY) {
 
 /**
  * Collect coin.
+ * Used to support collectable handling.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {number} itemX Item X.
  * @param {number} itemY Item Y.
@@ -95,8 +94,8 @@ export function collectCoin(player, itemX, itemY) {
 
 /**
  * Collect heart.
+ * Used to support collectable handling.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {number} itemX Item X.
  * @param {number} itemY Item Y.
@@ -109,8 +108,8 @@ export function collectHeart(player, itemX, itemY) {
 
 /**
  * Collect gun.
+ * Used to support collectable handling.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {number} itemX Item X.
  * @param {number} itemY Item Y.
@@ -123,7 +122,6 @@ export function collectGun(player, itemX, itemY) {
 
 /**
  * Resets pickup fx.
- * Updates the instance state.
  */
 export function resetPickupFx() {
   this.scaleFactor = 1;

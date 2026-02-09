@@ -107,6 +107,7 @@ const FULL_CIRCLE_RADIANS = Math.PI * 2;
 
 /**
  * Creates game. If omitted, default values are used.
+ * Used to set up required data for gameplay flow.
  * Uses options to compute the result.
  * @param {Object} [options] Configuration options.
  * @param {string} [options.canvasId] Canvas element id.
@@ -233,6 +234,7 @@ export function createGame({ canvasId = "game" } = {}) {
 
 /**
  * Binds methods.
+ * Used to support gameplay flow.
  * Uses state to perform the operation.
  * @param {Object} state State.
  */

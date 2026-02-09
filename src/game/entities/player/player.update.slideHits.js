@@ -2,8 +2,8 @@ import { PLAYER_SLIDE_DAMAGE } from "../../../config/config.js";
 
 /**
  * Checks slide hits.
+ * Used to decide physics transitions.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {Player} playerAudio Player audio.
  */
@@ -21,7 +21,7 @@ export function checkSlideHits(player, playerAudio) {
 
 /**
  * Should check slide enemy.
- * Updates the player state.
+ * Used to decide physics transitions.
  * @param {Player} player Player instance.
  * @param {EnemyBase} enemy Enemy instance.
  * @returns {boolean} Whether check slide enemy.
@@ -32,7 +32,7 @@ function shouldCheckSlideEnemy(player, enemy) {
 
 /**
  * Returns enemy hitbox.
- * Updates the enemy state.
+ * Used to provide enemy hitbox for collision and hit testing.
  * @param {EnemyBase} enemy Enemy instance.
  * @returns {*} Enemy hitbox.
  */
@@ -42,6 +42,7 @@ function getEnemyHitbox(enemy) {
 
 /**
  * Is hitbox overlapping.
+ * Used to decide collision outcomes.
  * Performs hitbox or collision checks.
  * @param {*} hitboxA Hitbox A.
  * @param {*} hitboxB Hitbox B.
@@ -58,8 +59,8 @@ function isHitboxOverlapping(hitboxA, hitboxB) {
 
 /**
  * Applies slide hit.
+ * Used to keep state consistent before the next step for combat effects.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Player} playerAudio Player audio.
@@ -74,7 +75,7 @@ function applySlideHit(player, enemy, playerAudio) {
 
 /**
  * Spawns slide hit effect.
- * Updates the player state.
+ * Used to support combat effects.
  * Spawns visual feedback effects.
  * @param {Player} player Player instance.
  * @param {EnemyBase} enemy Enemy instance.

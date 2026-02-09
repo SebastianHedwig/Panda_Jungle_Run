@@ -2,6 +2,7 @@ import { PLAYER_ATTACK_DAMAGE, FACING_RIGHT } from "../../../config/config.js";
 
 /**
  * Starts attack.
+ * Used to support combat effects.
  * Triggers audio playback or updates audio state.
  * @param {Player} player Player instance.
  * @param {Player} playerAudio Player audio.
@@ -16,7 +17,7 @@ export function startAttack(player, playerAudio) {
 
 /**
  * Can start attack.
- * Updates the player state.
+ * Used to decide combat outcomes.
  * @param {Player} player Player instance.
  * @returns {boolean} Whether start attack.
  */
@@ -33,8 +34,8 @@ function canStartAttack(player) {
 
 /**
  * Prepares attack state.
+ * Used to support combat effects.
  * Advances animation state and sprites.
- * Updates the player state.
  * @param {Player} player Player instance.
  */
 function prepareAttackState(player) {
@@ -47,8 +48,8 @@ function prepareAttackState(player) {
 
 /**
  * Updates attack.
+ * Used to advance state during the update loop for combat effects.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @param {Player} playerAudio Player audio.
@@ -62,7 +63,7 @@ export function updateAttack(player, dt, playerAudio) {
 
 /**
  * Should check attack hit.
- * Updates the player state.
+ * Used to decide combat outcomes.
  * @param {Player} player Player instance.
  * @returns {boolean} Whether check attack hit.
  */
@@ -72,8 +73,8 @@ function shouldCheckAttackHit(player) {
 
 /**
  * Try attack hit.
+ * Used to support combat effects.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {Player} playerAudio Player audio.
  */
@@ -90,7 +91,7 @@ function tryAttackHit(player, playerAudio) {
 
 /**
  * Is enemy in attack range.
- * Updates the player state.
+ * Used to decide combat outcomes.
  * @param {Player} player Player instance.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} playerCenterX Player center X.
@@ -111,8 +112,8 @@ function isEnemyInAttackRange(player, enemy, playerCenterX, playerCenterY) {
 
 /**
  * Applies attack hit.
+ * Used to keep state consistent before the next step for combat effects.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Player} playerAudio Player audio.
@@ -126,7 +127,7 @@ function applyAttackHit(player, enemy, playerAudio) {
 
 /**
  * Spawns enemy hit effect.
- * Updates the player state.
+ * Used to support combat effects.
  * Spawns visual feedback effects.
  * @param {Player} player Player instance.
  * @param {EnemyBase} enemy Enemy instance.
@@ -142,6 +143,7 @@ function spawnEnemyHitEffect(player, enemy) {
 
 /**
  * Starts shoot.
+ * Used to support combat effects.
  * Triggers audio playback or updates audio state.
  * @param {Player} player Player instance.
  * @param {Player} playerAudio Player audio.
@@ -156,7 +158,7 @@ export function startShoot(player, playerAudio) {
 
 /**
  * Can start shoot.
- * Updates the player state.
+ * Used to decide combat outcomes.
  * @param {Player} player Player instance.
  * @returns {boolean} Whether start shoot.
  */
@@ -173,8 +175,8 @@ function canStartShoot(player) {
 
 /**
  * Prepares shoot state.
+ * Used to support combat effects.
  * Advances animation state and sprites.
- * Updates the player state.
  * @param {Player} player Player instance.
  */
 function prepareShootState(player) {
@@ -190,7 +192,7 @@ function prepareShootState(player) {
 
 /**
  * Updates shoot.
- * Updates the player state.
+ * Used to advance state during the update loop for combat effects.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -203,7 +205,7 @@ export function updateShoot(player, dt) {
 
 /**
  * Handles shot firing.
- * Updates the player state.
+ * Used to centralize a specific behavior for combat effects.
  * Spawns visual feedback effects.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
@@ -220,7 +222,7 @@ function handleShotFiring(player, dt) {
 
 /**
  * Spawns player bullet.
- * Updates the player state.
+ * Used to support combat effects.
  * Spawns visual feedback effects.
  * @param {Player} player Player instance.
  */
@@ -234,7 +236,7 @@ function spawnPlayerBullet(player) {
 
 /**
  * Consume bullet ammo.
- * Updates the player state.
+ * Used to support combat effects.
  * @param {Player} player Player instance.
  */
 function consumeBulletAmmo(player) {

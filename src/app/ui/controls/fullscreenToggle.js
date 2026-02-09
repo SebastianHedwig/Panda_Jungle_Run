@@ -5,6 +5,7 @@ import {
 
 /**
  * Returns fullscreen elements.
+ * Used to provide fullscreen elements for gameplay flow.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {string} [options.containerId] Container element id.
@@ -23,6 +24,7 @@ const getFullscreenElements = ({ containerId, toggleId, iconId, labelId }) => {
 
 /**
  * Returns fullscreen ui text.
+ * Used to provide fullscreen ui text for rendering.
  * Uses isFullscreen to compute the result.
  * @param {boolean} isFullscreen Whether fullscreen.
  * @returns {*} Fullscreen ui text.
@@ -35,6 +37,7 @@ const getFullscreenUiText = (isFullscreen) => ({
 
 /**
  * Applies fullscreen ui.
+ * Used to keep state consistent before the next step for gameplay flow.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLImageElement} [options.icon] Icon.
@@ -52,6 +55,7 @@ const applyFullscreenUi = ({ icon, label, gameContainer, isFullscreen }) => {
 
 /**
  * Creates ui updater.
+ * Used to set up required data for gameplay flow.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {HTMLImageElement} [options.icon] Icon.
@@ -64,6 +68,7 @@ const createUiUpdater = ({ icon, label, gameContainer }) => (isFullscreen) =>
 
 /**
  * Creates enter fullscreen.
+ * Used to set up required data for gameplay flow.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {HTMLElement} [options.gameContainer] Game container.
@@ -78,6 +83,7 @@ const createEnterFullscreen = ({ gameContainer, updateUi }) => () => {
 
 /**
  * Creates exit fullscreen.
+ * Used to set up required data for gameplay flow.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.updateUi] Update ui.
@@ -93,6 +99,7 @@ const createExitFullscreen = ({ updateUi }) => () => {
 
 /**
  * Creates fullscreen controllers.
+ * Used to set up required data for gameplay flow.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {HTMLImageElement} [options.icon] Icon.
@@ -108,6 +115,7 @@ const createFullscreenControllers = ({ icon, label, gameContainer }) => {
 
 /**
  * Binds toggle click.
+ * Used to support UI interaction handling.
  * Manages fullscreen state for the game container.
  * @param {Object} options Configuration options.
  * @param {HTMLElement} [options.toggle] Toggle.
@@ -128,6 +136,7 @@ const bindToggleClick = ({ toggle, gameContainer, enterFullscreen, exitFullscree
 
 /**
  * Binds fullscreen change.
+ * Used to support gameplay flow.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLElement} [options.gameContainer] Game container.
@@ -142,6 +151,7 @@ const bindFullscreenChange = ({ gameContainer, updateUi }) => {
 
 /**
  * Sets up fullscreen toggle. If omitted, default values are used.
+ * Used to support gameplay flow.
  * Uses options to perform the operation.
  * @param {Object} [options] Configuration options.
  * @param {string} [options.containerId] Container element id.
@@ -167,6 +177,7 @@ export function setupFullscreenToggle({
 
 /**
  * Returns auto fullscreen elements.
+ * Used to provide auto fullscreen elements for gameplay flow.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {string} [options.containerId] Container element id.
@@ -180,6 +191,7 @@ const getAutoFullscreenElements = ({ containerId, toggleContainerSelector }) => 
 
 /**
  * Returns auto fullscreen state.
+ * Used to provide auto fullscreen state for gameplay flow.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {boolean} [options.enabled] Enabled.
@@ -192,6 +204,7 @@ const getAutoFullscreenState = ({ enabled, maxWidth, maxHeight }) =>
 
 /**
  * Applies auto fullscreen state.
+ * Used to keep state consistent before the next step for gameplay flow.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLElement} [options.container] Container.
@@ -208,6 +221,7 @@ const applyAutoFullscreenState = ({ container, toggleContainer, shouldFill }) =>
 
 /**
  * Applies auto fullscreen. If omitted, default values are used.
+ * Used to keep state consistent before the next step for gameplay flow.
  * Uses options to perform the operation.
  * @param {Object} [options] Configuration options.
  * @param {string} [options.containerId] Container element id.
@@ -228,6 +242,7 @@ export function applyAutoFullscreen({
 
 /**
  * Updates auto fullscreen state.
+ * Used to advance state during the update loop for gameplay flow.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {string} [options.containerId] Container element id.

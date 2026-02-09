@@ -2,6 +2,7 @@ import { MUSIC_VOLUME } from "../../config/config.js";
 
 /**
  * Applies audio settings.
+ * Used to apply audio settings.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLAudioElement} [options.audio] Audio element.
@@ -15,6 +16,7 @@ const applyAudioSettings = ({ audio, volume, getGlobalMuted }) => {
 
 /**
  * Handles play success.
+ * Used to centralize a specific behavior for audio playback.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLAudioElement} [options.audio] Audio element.
@@ -30,6 +32,7 @@ const handlePlaySuccess = ({ audio, volume, getGlobalMuted, clearUnlockHandlers 
 
 /**
  * Handles play failure.
+ * Used to centralize a specific behavior for audio playback.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLAudioElement} [options.audio] Audio element.
@@ -45,6 +48,7 @@ const handlePlayFailure = ({ audio, volume, getGlobalMuted, bindUnlock }) => {
 
 /**
  * Safely plays audio.
+ * Used to support audio playback.
  * Uses audio to perform the operation.
  * @param {HTMLAudioElement} audio Audio element.
  */
@@ -56,6 +60,7 @@ const safePlayAudio = (audio) => {
 
 /**
  * Creates try play.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.getAudio] Get audio.
@@ -77,6 +82,7 @@ const createTryPlay = ({ getAudio, volume, getGlobalMuted, clearUnlockHandlers, 
 
 /**
  * Ensure audio initialized.
+ * Used to support audio playback.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLAudioElement} [options.audio] Audio element.
@@ -95,6 +101,7 @@ const ensureAudioInitialized = ({ audio, src, getGlobalMuted }) => {
 
 /**
  * Starts playback when ready.
+ * Used to support audio playback.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLAudioElement} [options.audio] Audio element.
@@ -120,6 +127,7 @@ const startPlaybackWhenReady = ({ audio, tryPlay }) => {
 
 /**
  * Adds unlock listeners.
+ * Used to support audio playback.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.startPlayback] Start playback.
@@ -143,6 +151,7 @@ const addUnlockListeners = ({ startPlayback }) => {
 
 /**
  * Creates clear unlock handlers.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.getUnlockHandlers] Get unlock handlers.
@@ -159,6 +168,7 @@ const createClearUnlockHandlers = ({ getUnlockHandlers, setUnlockHandlers }) => 
 
 /**
  * Creates bind unlock.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.getUnlockHandlers] Get unlock handlers.
@@ -175,6 +185,7 @@ const createBindUnlock = ({ getUnlockHandlers, setUnlockHandlers }) => {
 
 /**
  * Creates start.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {string} [options.src] Source URL.
@@ -196,6 +207,7 @@ const createStart = ({ src, getAudio, setAudio, getGlobalMuted, tryPlay, bindUnl
 
 /**
  * Creates stop.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.getAudio] Get audio.
@@ -213,6 +225,7 @@ const createStop = ({ getAudio, clearUnlockHandlers }) => {
 
 /**
  * Creates web audio api.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {string} [options.src] Source URL.
@@ -234,6 +247,7 @@ const createWebAudioApi = ({ src, volume, getGlobalMuted, getAudio, setAudio, ge
 
 /**
  * Creates web audio unlock. If omitted, default values are used.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} [options] Configuration options.
  * @param {string} [options.src] Source URL.
@@ -244,6 +258,7 @@ export function createWebAudioUnlock({ src, volume = MUSIC_VOLUME }) {
   let unlockHandlers = [];
   /**
    * Returns global muted.
+   * Used to provide global muted for audio playback.
    * @returns {*} Global muted.
    */
   const getGlobalMuted = () => window?.__isMuted === true;

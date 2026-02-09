@@ -9,7 +9,7 @@ const RANDOM_RANGE_SHIFT = 1;
 export class Camera {
   /**
    * Creates a new instance. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to set up required data for camera-relative placement.
    * @param {HTMLCanvasElement} canvas Target canvas.
    * @param {number} worldWidth World width.
    * @param {number} [worldHeight] World height.
@@ -38,7 +38,7 @@ export class Camera {
 
   /**
    * Returns screen position.
-   * Updates the instance state.
+   * Used to provide screen position for camera-relative placement.
    * @param {*} target Target.
    * @returns {Object} Screen position.
    */
@@ -48,7 +48,7 @@ export class Camera {
 
   /**
    * Updates horizontal follow.
-   * Updates the instance state.
+   * Used to advance state during the update loop for camera-relative placement.
    * @param {number} playerScreenX Player screen X.
    * @param {*} smoothing Smoothing.
    */
@@ -64,7 +64,7 @@ export class Camera {
 
   /**
    * Updates vertical follow.
-   * Updates the instance state.
+   * Used to advance state during the update loop for camera-relative placement.
    * @param {number} playerScreenY Player screen Y.
    * @param {*} smoothing Smoothing.
    */
@@ -80,7 +80,6 @@ export class Camera {
 
   /**
    * Clamp horizontal.
-   * Updates the instance state.
    */
   clampHorizontal() {
     if (this.x < 0) this.x = 0;
@@ -91,7 +90,6 @@ export class Camera {
 
   /**
    * Clamp vertical.
-   * Updates the instance state.
    */
   clampVertical() {
     if (this.y < 0) this.y = 0;
@@ -102,7 +100,7 @@ export class Camera {
 
   /**
    * Follow. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support camera-relative placement.
    * @param {*} target Target.
    * @param {*} [smoothing] Smoothing.
    * @param {number} dt Delta time in seconds.
@@ -118,7 +116,7 @@ export class Camera {
 
   /**
    * Shake. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support camera-relative placement.
    * @param {number} [duration] Duration in seconds.
    * @param {*} [magnitude] Magnitude.
    */
@@ -130,7 +128,7 @@ export class Camera {
 
   /**
    * Updates shake.
-   * Updates the instance state.
+   * Used to advance state during the update loop for camera-relative placement.
    * @param {number} dt Delta time in seconds.
    */
   updateShake(dt) {
@@ -142,7 +140,6 @@ export class Camera {
 
   /**
    * Clears shake offsets.
-   * Updates the instance state.
    */
   clearShakeOffsets() {
     if (!this.shakeOffsetX && !this.shakeOffsetY) return;
@@ -154,7 +151,7 @@ export class Camera {
 
   /**
    * Returns shake progress ratio.
-   * Updates the instance state.
+   * Used to provide shake progress ratio for camera-relative placement.
    * @returns {*} Shake progress ratio.
    */
   getShakeProgressRatio() {
@@ -163,7 +160,7 @@ export class Camera {
 
   /**
    * Returns shake amplitude.
-   * Updates the instance state.
+   * Used to provide shake amplitude for camera-relative placement.
    * @returns {*} Shake amplitude.
    */
   getShakeAmplitude() {
@@ -172,6 +169,7 @@ export class Camera {
 
   /**
    * Returns random shake value.
+   * Used to provide random shake value for camera-relative placement.
    * Introduces randomness into the outcome.
    * @returns {*} Random shake value.
    */
@@ -181,7 +179,6 @@ export class Camera {
 
   /**
    * Applies shake offsets.
-   * Updates the instance state.
    */
   applyShakeOffsets() {
     const currentShakeAmplitude = this.getShakeAmplitude();

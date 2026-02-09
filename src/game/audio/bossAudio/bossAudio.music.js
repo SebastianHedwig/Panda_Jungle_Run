@@ -3,7 +3,6 @@ import { msPerSecond } from "./bossAudio.class.js";
 
 /**
  * Plays.
- * Updates the instance state.
  */
 export function play() {
   this.stopAndCleanupBossAudio();
@@ -15,7 +14,6 @@ export function play() {
 
 /**
  * Starts gong.
- * Updates the instance state.
  */
 export function startGong() {
   this.gongAudio = this.createAudio(this.gongSrc, false, this.volume);
@@ -26,7 +24,6 @@ export function startGong() {
 /**
  * Schedules fade to music.
  * Schedules timed actions.
- * Updates the instance state.
  */
 export function scheduleFadeToMusic() {
   const fadeStartMs = this.getFadeStartMs();
@@ -35,7 +32,7 @@ export function scheduleFadeToMusic() {
 
 /**
  * Returns fade start ms.
- * Updates the instance state.
+ * Used to provide fade start ms for timed actions.
  * @returns {*} Fade start ms.
  */
 export function getFadeStartMs() {
@@ -45,7 +42,6 @@ export function getFadeStartMs() {
 /**
  * Schedules gong stop.
  * Schedules timed actions.
- * Updates the instance state.
  */
 export function scheduleGongStop() {
   this.gongStopTimer = setTimeout(
@@ -57,7 +53,6 @@ export function scheduleGongStop() {
 /**
  * Stops gong audio.
  * Triggers audio playback or updates audio state.
- * Updates the instance state.
  */
 export function stopGongAudio() {
   if (!this.gongAudio) return;
@@ -67,7 +62,6 @@ export function stopGongAudio() {
 
 /**
  * Starts fade to music.
- * Updates the instance state.
  */
 export function startFadeToMusic() {
   if (this.musicAudio) return;
@@ -77,7 +71,7 @@ export function startFadeToMusic() {
 
 /**
  * Creates and start music audio.
- * Updates the instance state.
+ * Used to set up required data for audio playback.
  * @returns {*} And start music audio.
  */
 export function createAndStartMusicAudio() {
@@ -94,8 +88,8 @@ export function createAndStartMusicAudio() {
 
 /**
  * Begin music fade in.
+ * Used to support audio playback.
  * Schedules timed actions.
- * Updates the instance state.
  * @param {*} music Music.
  */
 export function beginMusicFadeIn(music) {
@@ -112,7 +106,7 @@ export function beginMusicFadeIn(music) {
 
 /**
  * Returns fade duration ms.
- * Updates the instance state.
+ * Used to provide fade duration ms for timed actions.
  * @returns {*} Fade duration ms.
  */
 export function getFadeDurationMs() {
@@ -121,14 +115,14 @@ export function getFadeDurationMs() {
 
 /**
  * Attaches music loop watcher.
+ * Used to support audio playback.
  * Binds timeupdate event listeners.
- * Updates the instance state.
  * @param {HTMLElement} audioElement Audio element.
  */
 export function attachMusicLoopWatcher(audioElement) {
   /**
    * Handler.
-   * Updates the instance state.
+   * Used to support audio playback.
    * @returns {*} Result value.
    */
   const handler = () => this.handleMusicLoopTimeUpdate(audioElement);
@@ -138,8 +132,8 @@ export function attachMusicLoopWatcher(audioElement) {
 
 /**
  * Handles music loop time update.
+ * Used to centralize a specific behavior for audio playback.
  * Performs hitbox or collision checks.
- * Updates the instance state.
  * @param {HTMLElement} audioElement Audio element.
  */
 export function handleMusicLoopTimeUpdate(audioElement) {
@@ -152,7 +146,7 @@ export function handleMusicLoopTimeUpdate(audioElement) {
 
 /**
  * Returns music loop cutoff.
- * Updates the instance state.
+ * Used to provide music loop cutoff for audio playback.
  * @param {number} duration Duration in seconds.
  * @returns {*} Music loop cutoff.
  */
@@ -162,7 +156,7 @@ export function getMusicLoopCutoff(duration) {
 
 /**
  * Returns music overlap start.
- * Updates the instance state.
+ * Used to provide music overlap start for collision and hit testing.
  * @param {*} cutoff Cutoff.
  * @returns {*} Music overlap start.
  */
@@ -172,8 +166,8 @@ export function getMusicOverlapStart(cutoff) {
 
 /**
  * Try start next loop.
+ * Used to support audio playback.
  * Performs hitbox or collision checks.
- * Updates the instance state.
  * @param {HTMLElement} audioElement Audio element.
  * @param {*} overlapStart Overlap start.
  */
@@ -185,8 +179,8 @@ export function tryStartNextLoop(audioElement, overlapStart) {
 
 /**
  * Should start next loop.
+ * Used to decide control flow.
  * Performs hitbox or collision checks.
- * Updates the instance state.
  * @param {HTMLElement} audioElement Audio element.
  * @param {*} overlapStart Overlap start.
  * @returns {boolean} Whether start next loop.
@@ -201,7 +195,7 @@ export function shouldStartNextLoop(audioElement, overlapStart) {
 
 /**
  * Try complete loop.
- * Updates the instance state.
+ * Used to support audio playback.
  * @param {HTMLElement} audioElement Audio element.
  * @param {*} cutoff Cutoff.
  */
@@ -213,7 +207,7 @@ export function tryCompleteLoop(audioElement, cutoff) {
 
 /**
  * Should complete loop.
- * Updates the instance state.
+ * Used to decide control flow.
  * @param {HTMLElement} audioElement Audio element.
  * @param {*} cutoff Cutoff.
  * @returns {boolean} Whether complete loop.
@@ -228,7 +222,7 @@ export function shouldCompleteLoop(audioElement, cutoff) {
 
 /**
  * Detach loop watcher.
- * Updates the instance state.
+ * Used to support audio playback.
  * @param {HTMLElement} audioElement Audio element.
  */
 export function detachLoopWatcher(audioElement) {
@@ -241,7 +235,7 @@ export function detachLoopWatcher(audioElement) {
 
 /**
  * Starts next music loop.
- * Updates the instance state.
+ * Used to support audio playback.
  * @param {*} current Current.
  */
 export function startNextMusicLoop(current) {
@@ -258,8 +252,8 @@ export function startNextMusicLoop(current) {
 
 /**
  * Begin music crossfade.
+ * Used to support audio playback.
  * Schedules timed actions.
- * Updates the instance state.
  * @param {*} current Current.
  * @param {*} next Next.
  */
@@ -278,7 +272,7 @@ export function beginMusicCrossfade(current, next) {
 
 /**
  * Applies crossfade volumes.
- * Updates the instance state.
+ * Used to apply audio settings.
  * @param {*} current Current.
  * @param {*} next Next.
  * @param {number} fadeProgress Fade progress.
@@ -291,7 +285,6 @@ export function applyCrossfadeVolumes(current, next, fadeProgress) {
 /**
  * Clears fade interval.
  * Clears pending timers.
- * Updates the instance state.
  */
 export function clearFadeInterval() {
   if (this.fadeInterval) {
@@ -302,7 +295,6 @@ export function clearFadeInterval() {
 
 /**
  * Clears music tracks.
- * Updates the instance state.
  */
 export function clearMusicTracks() {
   this.stopNextMusicAudio();
@@ -311,7 +303,7 @@ export function clearMusicTracks() {
 
 /**
  * Complete music switch.
- * Updates the instance state.
+ * Used to support audio playback.
  * @param {*} prev Prev.
  */
 export function completeMusicSwitch(prev) {
@@ -322,8 +314,8 @@ export function completeMusicSwitch(prev) {
 
 /**
  * Stops looped audio instance.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
- * Updates the instance state.
  * @param {HTMLElement} audioElement Audio element.
  * @returns {*} Result value.
  */
@@ -337,8 +329,8 @@ export function stopLoopedAudioInstance(audioElement) {
 
 /**
  * Stops previous music audio.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
- * Updates the instance state.
  * @param {*} prev Prev.
  */
 export function stopPreviousMusicAudio(prev) {
@@ -350,7 +342,6 @@ export function stopPreviousMusicAudio(prev) {
 
 /**
  * Swap to next music audio.
- * Updates the instance state.
  */
 export function swapToNextMusicAudio() {
   if (!this.nextMusicAudio) return;

@@ -2,8 +2,8 @@ const dizzyFrameDurationMultiplier = 2;
 
 /**
  * Applies dizzy. If omitted, default values are used.
+ * Used to keep state consistent before the next step for combat effects.
  * Advances animation state and sprites.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {number} [dizzyDuration] Dizzy duration.
  */
@@ -20,7 +20,7 @@ export function applyDizzy(player, dizzyDuration = 0) {
 
 /**
  * Starts hurt. If omitted, default values are used.
- * Updates the player state.
+ * Used to support combat effects.
  * @param {Player} player Player instance.
  * @param {*} [useDizzy] Use dizzy.
  * @returns {*} Result value.
@@ -34,7 +34,7 @@ export function startHurt(player, useDizzy = true) {
 
 /**
  * Applies no dizzy hurt.
- * Updates the player state.
+ * Used to keep state consistent before the next step for combat effects.
  * @param {Player} player Player instance.
  */
 function applyNoDizzyHurt(player) {
@@ -44,7 +44,7 @@ function applyNoDizzyHurt(player) {
 
 /**
  * Begin hurt phases.
- * Updates the player state.
+ * Used to support combat effects.
  * @param {Player} player Player instance.
  */
 function beginHurtPhases(player) {
@@ -59,8 +59,8 @@ function beginHurtPhases(player) {
 
 /**
  * Returns hurt durations.
+ * Used to provide hurt durations for combat effects.
  * Advances animation state and sprites.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @returns {Object} Hurt durations.
  */
@@ -74,7 +74,7 @@ function getHurtDurations(player) {
 
 /**
  * Resets combat on hurt.
- * Updates the player state.
+ * Used to support combat effects.
  * @param {Player} player Player instance.
  */
 function resetCombatOnHurt(player) {
@@ -84,8 +84,8 @@ function resetCombatOnHurt(player) {
 
 /**
  * Sets hurt animation.
+ * Used to support animation timing.
  * Advances animation state and sprites.
- * Updates the player state.
  * @param {Player} player Player instance.
  */
 function setHurtAnimation(player) {
@@ -95,7 +95,7 @@ function setHurtAnimation(player) {
 
 /**
  * Updates hurt.
- * Updates the player state.
+ * Used to advance state during the update loop for combat effects.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
@@ -110,7 +110,7 @@ export function updateHurt(player, dt) {
 
 /**
  * Should enter dizzy.
- * Updates the player state.
+ * Used to decide combat outcomes.
  * @param {Player} player Player instance.
  * @returns {boolean} Whether enter dizzy.
  */
@@ -120,8 +120,8 @@ function shouldEnterDizzy(player) {
 
 /**
  * Starts dizzy phase.
+ * Used to support combat effects.
  * Advances animation state and sprites.
- * Updates the player state.
  * @param {Player} player Player instance.
  */
 function startDizzyPhase(player) {
@@ -133,8 +133,8 @@ function startDizzyPhase(player) {
 
 /**
  * Returns dizzy phase duration.
+ * Used to provide dizzy phase duration for timed actions.
  * Advances animation state and sprites.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @returns {*} Dizzy phase duration.
  */
@@ -149,7 +149,7 @@ function getDizzyPhaseDuration(player) {
 
 /**
  * End hurt.
- * Updates the player state.
+ * Used to support combat effects.
  * @param {Player} player Player instance.
  */
 function endHurt(player) {

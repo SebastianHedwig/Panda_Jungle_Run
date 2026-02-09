@@ -82,6 +82,7 @@ export const msPerSecond = 1000;
 export class BossAudio {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for audio playback.
    * Uses options to perform the operation.
    * @param {Object} [options] Configuration options.
    */
@@ -92,7 +93,7 @@ export class BossAudio {
 
   /**
    * Creates audio. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to set up required data for audio playback.
    * @param {string} src Source URL.
    * @param {boolean} [loop] Loop.
    * @param {number} [volume] Volume.
@@ -104,7 +105,7 @@ export class BossAudio {
 
   /**
    * Creates sfx audio.
-   * Updates the instance state.
+   * Used to set up required data for audio playback.
    * @param {string} src Source URL.
    * @returns {*} Sfx audio.
    */
@@ -114,7 +115,7 @@ export class BossAudio {
 
   /**
    * Creates music audio. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to set up required data for audio playback.
    * @param {number} [volume] Volume.
    * @returns {*} Music audio.
    */

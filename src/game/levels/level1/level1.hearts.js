@@ -3,6 +3,7 @@ import { WORLD_WIDTH } from "../../../config/config.js";
 
 /**
  * Returns heart spawn positions.
+ * Used to provide heart spawn positions for collectable handling.
  * Introduces randomness into the outcome.
  * @returns {Object} Heart spawn positions.
  */
@@ -19,7 +20,7 @@ function getHeartSpawnPositions() {
 
 /**
  * Find heart platform.
- * Updates the world state.
+ * Used to support platform collision handling.
  * @param {World} world World instance.
  * @param {number} worldX World X.
  * @returns {*} Result value.
@@ -30,7 +31,7 @@ function findHeartPlatform(world, worldX) {
 
 /**
  * Is inside platform.
- * Updates the world state.
+ * Used to decide platform interactions.
  * @param {World} world World instance.
  * @param {number} heartWorldX Heart world X.
  * @param {number} heartWorldY Heart world Y.
@@ -49,7 +50,7 @@ function isInsidePlatform(world, heartWorldX, heartWorldY) {
 
 /**
  * Place hearts. If omitted, default values are used.
- * Updates the world state.
+ * Used to support world state updates.
  * @param {World} world World instance.
  * @param {number} [count] Count.
  */

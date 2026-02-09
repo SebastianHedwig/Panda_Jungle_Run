@@ -9,6 +9,7 @@ import { GameWonOverlay } from "../../../app/ui/overlay/game/gameWonOverlay.clas
 
 /**
  * Returns background assets.
+ * Used to provide background assets for world state updates.
  * Uses assets to compute the result.
  * @param {*} assets Assets.
  * @returns {Object} Background assets.
@@ -20,6 +21,7 @@ export function getBackgroundAssets(assets) {
 
 /**
  * Adds parallax layers.
+ * Used to support world state updates.
  * Uses parallaxImages to perform the operation.
  * @param {*} parallaxImages Parallax images.
  */
@@ -31,6 +33,7 @@ export function addParallaxLayers(parallaxImages) {
 
 /**
  * Sets up background assets.
+ * Used to support world state updates.
  * Spawns visual feedback effects.
  * @param {*} assets Assets.
  */
@@ -42,7 +45,7 @@ export function setupBackgroundAssets(assets) {
 
 /**
  * Sets up world platforms.
- * Updates the world state.
+ * Used to support world state updates.
  * @param {*} assets Assets.
  */
 export function setupWorldPlatforms(assets) {
@@ -53,6 +56,7 @@ export function setupWorldPlatforms(assets) {
 
 /**
  * Returns collectables.
+ * Used to provide collectables for world state updates.
  * @returns {Array<any>} Collectables.
  */
 export function getCollectables() {
@@ -65,7 +69,6 @@ export function getCollectables() {
 
 /**
  * Adds collectables.
- * Updates the world state.
  */
 export function addCollectables() {
   const collectables = this.getCollectables();
@@ -82,6 +85,7 @@ export function placePickups() {
 
 /**
  * Place enemies.
+ * Used to support world state updates.
  * Uses assets to perform the operation.
  * @param {*} assets Assets.
  */
@@ -99,7 +103,7 @@ export function placeEnemies(assets) {
 
 /**
  * Returns spawn position.
- * Updates the world state.
+ * Used to provide spawn position for camera-relative placement.
  * Spawns visual feedback effects.
  * @returns {Object} Spawn position.
  */
@@ -112,6 +116,7 @@ export function getSpawnPosition() {
 
 /**
  * Returns player frames.
+ * Used to provide player frames for world state updates.
  * Applies physics updates like gravity and velocity.
  * @param {*} assets Assets.
  * @returns {Array<any>} Player frames.
@@ -133,6 +138,7 @@ export function getPlayerFrames(assets) {
 
 /**
  * Creates player instance.
+ * Used to set up required data for world state updates.
  * Spawns visual feedback effects.
  * @param {*} assets Assets.
  * @param {number} spawnX Spawn X.
@@ -155,7 +161,7 @@ export function handlePlayerDeath() {
 
 /**
  * Sets up player.
- * Updates the player state.
+ * Used to support world state updates.
  * Spawns visual feedback effects.
  * @param {*} assets Assets.
  */
@@ -170,6 +176,7 @@ export function setupPlayer(assets) {
 
 /**
  * Sets up boss director.
+ * Used to support world state updates.
  * Triggers audio playback or updates audio state.
  * @param {*} assets Assets.
  */
@@ -184,6 +191,7 @@ export function setupBossDirector(assets) {
 
 /**
  * Sets up hud.
+ * Used to support UI interaction handling.
  * Uses assets to perform the operation.
  * @param {*} assets Assets.
  */
@@ -193,6 +201,7 @@ export function setupHud(assets) {
 
 /**
  * Sets up menu.
+ * Used to support UI interaction handling.
  * Uses assets to perform the operation.
  * @param {*} assets Assets.
  */
@@ -206,6 +215,7 @@ export function setupMenu(assets) {
 
 /**
  * Sets up overlays.
+ * Used to support world state updates.
  * Uses assets to perform the operation.
  * @param {*} assets Assets.
  */
@@ -227,6 +237,7 @@ export function startGameplayLoop() {
 
 /**
  * Starts.
+ * Used to support world state updates.
  * Uses assets to perform the operation.
  * @param {*} assets Assets.
  */

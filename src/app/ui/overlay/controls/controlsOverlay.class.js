@@ -27,6 +27,7 @@ const BACK_BUTTON_SHADOW = { color: "rgba(0, 0, 0, 0.45)", blur: 10, offsetX: 0,
 export class ControlsOverlay {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for UI interaction handling.
    * Uses options to perform the operation.
    * @param {Object} [options] Configuration options.
    * @param {HTMLElement} [options.showBackButton] Show back button.
@@ -44,6 +45,7 @@ export class ControlsOverlay {
 
   /**
    * Sets assets.
+   * Used to support UI interaction handling.
    * Uses options to perform the operation.
    * @param {Object} options Configuration options.
    * @param {HTMLImageElement} [options.bgImage] Bg image.
@@ -55,7 +57,7 @@ export class ControlsOverlay {
 
   /**
    * Sets pointer.
-   * Updates the instance state.
+   * Used to support UI interaction handling.
    * @param {number} x X.
    * @param {number} y Y.
    */
@@ -66,7 +68,6 @@ export class ControlsOverlay {
 
   /**
    * Clears pointer.
-   * Updates the instance state.
    */
   clearPointer() {
     this.pointer = null;
@@ -77,7 +78,7 @@ export class ControlsOverlay {
 
   /**
    * Handles close button click.
-   * Updates the instance state.
+   * Used to centralize a specific behavior for UI interaction handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @returns {*} Result value.
@@ -88,7 +89,7 @@ export class ControlsOverlay {
 
   /**
    * Handles back click.
-   * Updates the instance state.
+   * Used to centralize a specific behavior for UI interaction handling.
    * @param {number} x X.
    * @param {number} y Y.
    * @returns {*} Result value.
@@ -102,7 +103,7 @@ export class ControlsOverlay {
 
   /**
    * Is hovering.
-   * Updates the instance state.
+   * Used to decide UI hit testing outcomes.
    * @returns {boolean} Whether hovering.
    */
   isHovering() {
@@ -111,8 +112,8 @@ export class ControlsOverlay {
 
   /**
    * Starts render.
+   * Used to support UI interaction handling.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLCanvasElement} canvas Target canvas.
    * @returns {*} Result value.
@@ -133,6 +134,7 @@ export class ControlsOverlay {
 
   /**
    * Returns title Y.
+   * Used to provide title Y for UI interaction handling.
    * Uses options to compute the result.
    * @param {Object} options Configuration options.
    * @param {number} [options.y] Y.
@@ -144,6 +146,7 @@ export class ControlsOverlay {
 
   /**
    * Returns list layout.
+   * Used to provide list layout for UI interaction handling.
    * Uses canvas, titleY to compute the result.
    * @param {HTMLCanvasElement} canvas Target canvas.
    * @param {number} titleY Title Y.
@@ -161,8 +164,8 @@ export class ControlsOverlay {
 
   /**
    * Draws title.
+   * Used to render title.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLCanvasElement} canvas Target canvas.
    * @param {number} titleY Title Y.
@@ -175,7 +178,7 @@ export class ControlsOverlay {
 
   /**
    * Draws controls list.
-   * Updates the instance state.
+   * Used to render controls list.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLCanvasElement} canvas Target canvas.
    * @param {*} layout Layout.
@@ -189,6 +192,7 @@ export class ControlsOverlay {
 
   /**
    * Draws control row.
+   * Used to render control row.
    * Uses ctx, item, index, options to perform the operation.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {*} item Item.
@@ -212,7 +216,7 @@ export class ControlsOverlay {
 
   /**
    * Draws back button if needed.
-   * Updates the instance state.
+   * Used to render back button if needed.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLElement} panelRect Panel rect.
    */
@@ -224,8 +228,8 @@ export class ControlsOverlay {
 
   /**
    * Renders.
+   * Used to render visuals.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLCanvasElement} canvas Target canvas.
    */
@@ -242,6 +246,7 @@ export class ControlsOverlay {
 
   /**
    * Returns back button options.
+   * Used to provide back button options for UI interaction handling.
    * @returns {Object} Back button options.
    */
   getBackButtonOptions() {
@@ -256,6 +261,7 @@ export class ControlsOverlay {
 
   /**
    * Returns back button args.
+   * Used to provide back button args for UI interaction handling.
    * Uses ctx, options to compute the result.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Object} options Configuration options.
@@ -278,6 +284,7 @@ export class ControlsOverlay {
 
   /**
    * Updates back button state.
+   * Used to advance state during the update loop for UI interaction handling.
    * Uses options to perform the operation.
    * @param {Object} options Configuration options.
    * @param {*} [options.bounds] Bounds.
@@ -290,7 +297,7 @@ export class ControlsOverlay {
 
   /**
    * Draws back button.
-   * Updates the instance state.
+   * Used to render back button.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLElement} panelRect Panel rect.
    */

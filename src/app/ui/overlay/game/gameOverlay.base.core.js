@@ -2,7 +2,6 @@ import { EASE_OUT_EXPONENT } from "./gameOverlay.base.constants.js";
 
 /**
  * Resets.
- * Updates the instance state.
  */
 export function reset() {
   this.animStart = null;
@@ -13,7 +12,7 @@ export function reset() {
 
 /**
  * Sets pointer.
- * Updates the instance state.
+ * Used to support UI interaction handling.
  * @param {number} x X.
  * @param {number} y Y.
  */
@@ -23,7 +22,6 @@ export function setPointer(x, y) {
 
 /**
  * Clears pointer.
- * Updates the instance state.
  */
 export function clearPointer() {
   this.pointer = null;
@@ -33,7 +31,7 @@ export function clearPointer() {
 
 /**
  * Is hovering.
- * Updates the instance state.
+ * Used to decide UI hit testing outcomes.
  * @returns {boolean} Whether hovering.
  */
 export function isHovering() {
@@ -42,7 +40,7 @@ export function isHovering() {
 
 /**
  * Handles game overlay button click.
- * Updates the instance state.
+ * Used to centralize a specific behavior for UI interaction handling.
  * @param {number} x X.
  * @param {number} y Y.
  * @returns {*} Result value.
@@ -56,7 +54,7 @@ export function handleGameOverlayButtonClick(x, y) {
 
 /**
  * Returns animation state.
- * Updates the instance state.
+ * Used to provide animation state for UI interaction handling.
  * @returns {Object} Animation state.
  */
 export function getAnimationState() {
@@ -71,6 +69,7 @@ export function getAnimationState() {
 
 /**
  * Returns canvas center.
+ * Used to provide canvas center for rendering.
  * Uses canvas to compute the result.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @returns {Object} Canvas center.
@@ -81,6 +80,7 @@ export function getCanvasCenter(canvas) {
 
 /**
  * Draws backdrop.
+ * Used to render backdrop.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
@@ -94,7 +94,7 @@ export function drawBackdrop(ctx, canvas, bgAlpha) {
 
 /**
  * Starts frame.
- * Updates the instance state.
+ * Used to support UI interaction handling.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @returns {Object} Result value.
@@ -108,6 +108,7 @@ export function startFrame(ctx, canvas) {
 
 /**
  * Finish frame.
+ * Used to support UI interaction handling.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  */

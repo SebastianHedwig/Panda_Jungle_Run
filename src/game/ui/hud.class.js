@@ -59,6 +59,7 @@ import {
 export class Hud {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for UI interaction handling.
    * Uses options to perform the operation.
    * @param {Object} [options] Configuration options.
    * @param {HTMLImageElement} [options.coinImage] Coin image.
@@ -76,7 +77,7 @@ export class Hud {
 
   /**
    * Renders.
-   * Updates the instance state.
+   * Used to render visuals.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {HTMLCanvasElement} canvas Target canvas.
    * @param {Camera} camera Camera instance.
@@ -93,6 +94,7 @@ export class Hud {
 
   /**
    * Draws hud text value.
+   * Used to render hud text value.
    * Renders to the canvas context.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {string} text Text.

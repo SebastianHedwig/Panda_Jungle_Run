@@ -1,7 +1,7 @@
 /**
  * Sets animation.
+ * Used to support animation timing.
  * Advances animation state and sprites.
- * Updates the instance state.
  * @param {*} frames Frames.
  */
 export function setAnimation(frames) {
@@ -15,8 +15,8 @@ export function setAnimation(frames) {
 
 /**
  * Animate.
+ * Used to support animation timing.
  * Advances animation state and sprites.
- * Updates the instance state.
  * @param {number} dt Delta time in seconds.
  */
 export function animate(dt) {

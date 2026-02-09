@@ -2,6 +2,7 @@ import { SOUND_MUTE_STORAGE_KEY } from "../../../config/config.js";
 
 /**
  * Returns sound elements.
+ * Used to provide sound elements for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {string} [options.toggleId] Toggle element id.
@@ -18,6 +19,7 @@ const getSoundElements = ({ toggleId, iconId, labelId }) => {
 
 /**
  * Returns sound ui state.
+ * Used to provide sound ui state for audio playback.
  * Uses muted to compute the result.
  * @param {boolean} muted Muted.
  * @returns {*} Sound ui state.
@@ -30,6 +32,7 @@ const getSoundUiState = (muted) => ({
 
 /**
  * Applies sound ui state.
+ * Used to apply audio settings.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLImageElement} [options.icon] Icon.
@@ -47,6 +50,7 @@ const applySoundUiState = ({ icon, label, muted }) => {
 
 /**
  * Returns hover state.
+ * Used to provide hover state for UI interaction handling.
  * Uses audioTracking to compute the result.
  * @param {*} audioTracking Audio tracking.
  * @returns {*} Hover state.
@@ -58,6 +62,7 @@ const getHoverState = (audioTracking) => ({
 
 /**
  * Applies hover state.
+ * Used to keep UI visuals consistent.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLImageElement} [options.icon] Icon.
@@ -71,6 +76,7 @@ const applyHoverState = ({ icon, audioTracking }) => {
 
 /**
  * Restore icon state.
+ * Used to support audio playback.
  * Uses icon to perform the operation.
  * @param {HTMLImageElement} icon Icon.
  */
@@ -81,6 +87,7 @@ const restoreIconState = (icon) => {
 
 /**
  * Persists muted state.
+ * Used to support audio playback.
  * Uses muted to perform the operation.
  * @param {boolean} muted Muted.
  */
@@ -94,6 +101,7 @@ const persistMutedState = (muted) => {
 
 /**
  * Binds hover handlers.
+ * Used to support UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLElement} [options.toggle] Toggle.
@@ -107,6 +115,7 @@ const bindHoverHandlers = ({ toggle, icon, audioTracking }) => {
 
 /**
  * Binds space block.
+ * Used to support audio playback.
  * Binds keydown, keyup event listeners.
  * @param {HTMLElement} toggle Toggle.
  * @param {HTMLElement} blockSpaceToggle Block space toggle.
@@ -118,6 +127,7 @@ const bindSpaceBlock = (toggle, blockSpaceToggle) => {
 
 /**
  * Binds sound toggle click.
+ * Used to support UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLElement} [options.toggle] Toggle.
@@ -133,6 +143,7 @@ const bindSoundToggleClick = ({ toggle, audioTracking, setMuted }) => {
 
 /**
  * Creates muted setter.
+ * Used to set up required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.audioTracking] Audio tracking.
@@ -148,6 +159,7 @@ const createMutedSetter = ({ audioTracking, icon, label }) => (muted) => {
 
 /**
  * Creates block space toggle.
+ * Used to set up required data for audio playback.
  * @returns {*} Block space toggle.
  */
 const createBlockSpaceToggle = () => (event) => {
@@ -159,6 +171,7 @@ const createBlockSpaceToggle = () => (event) => {
 
 /**
  * Binds sound toggle listeners.
+ * Used to support audio playback.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLElement} [options.toggle] Toggle.
@@ -175,6 +188,7 @@ const bindSoundToggleListeners = ({ toggle, audioTracking, icon, setMuted, block
 
 /**
  * Sets up sound toggle. If omitted, default values are used.
+ * Used to support audio playback.
  * Uses options to perform the operation.
  * @param {Object} [options] Configuration options.
  * @param {*} [options.audioTracking] Audio tracking.

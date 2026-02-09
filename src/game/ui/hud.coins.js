@@ -1,6 +1,6 @@
 /**
  * Draws coins.
- * Updates the instance state.
+ * Used to render coins.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {Player} player Player instance.
@@ -15,7 +15,7 @@ export function drawCoins(ctx, canvas, player) {
 
 /**
  * Is coin image ready.
- * Updates the instance state.
+ * Used to decide UI hit testing outcomes.
  * @returns {boolean} Whether coin image ready.
  */
 export function isCoinImageReady() {
@@ -24,6 +24,7 @@ export function isCoinImageReady() {
 
 /**
  * Returns coin hud settings.
+ * Used to provide coin hud settings for UI interaction handling.
  * @returns {Object} Coin hud settings.
  */
 export function getCoinHudSettings() {
@@ -42,6 +43,7 @@ export function getCoinHudSettings() {
 
 /**
  * Returns coin position.
+ * Used to provide coin position for camera-relative placement.
  * Uses canvas, coinSettings to compute the result.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {*} coinSettings Coin settings.
@@ -55,8 +57,8 @@ export function getCoinPosition(canvas, coinSettings) {
 
 /**
  * Draws coin image.
+ * Used to render coin image.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} x X.
  * @param {number} y Y.
@@ -68,8 +70,8 @@ export function drawCoinImage(ctx, x, y, coinSettings) {
 
 /**
  * Draws coin value.
+ * Used to render coin value.
  * Renders to the canvas context.
- * Updates the player state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} x X.
  * @param {number} y Y.
@@ -89,6 +91,7 @@ export function drawCoinValue(ctx, x, y, coinSettings, player) {
 
 /**
  * Applies coin text transform.
+ * Used to keep UI visuals consistent.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} x X.
@@ -103,6 +106,7 @@ export function applyCoinTextTransform(ctx, x, y, coinSettings, scale) {
 
 /**
  * Applies coin text style.
+ * Used to keep UI visuals consistent.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} coinSettings Coin settings.

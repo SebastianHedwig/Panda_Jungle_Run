@@ -2,6 +2,7 @@ import { FACING_LEFT, FACING_RIGHT } from "../../../config/config.js";
 
 /**
  * Handles movement and jump.
+ * Used to centralize a specific behavior for physics updates.
  * Triggers audio playback or updates audio state.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
@@ -19,6 +20,7 @@ export function handleMovementAndJump(player, dt, input, playerAudio) {
 
 /**
  * Returns direction state.
+ * Used to provide direction state for physics updates.
  * Reads input state to decide actions.
  * @param {Input} input Input handler.
  * @returns {Object} Direction state.
@@ -32,7 +34,7 @@ function getDirectionState(input) {
 
 /**
  * Applies directional movement.
- * Updates the player state.
+ * Used to keep state consistent before the next step for physics updates.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @param {*} directionState Direction state.
@@ -54,8 +56,8 @@ function applyDirectionalMovement(player, dt, directionState) {
 
 /**
  * Applies running speed.
+ * Used to keep state consistent before the next step for physics updates.
  * Reads input state to decide actions.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {*} moving Moving.
  * @param {Input} input Input handler.
@@ -72,6 +74,7 @@ function applyRunningSpeed(player, moving, input) {
 
 /**
  * Applies movement animation.
+ * Used to apply animation transforms.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
  * @param {Player} player Player instance.
@@ -87,6 +90,7 @@ function applyMovementAnimation(player, moving, running) {
 
 /**
  * Handles advanced jump.
+ * Used to centralize a specific behavior for physics updates.
  * Triggers audio playback or updates audio state.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
@@ -103,6 +107,7 @@ function handleAdvancedJump(player, dt, input, playerAudio) {
 
 /**
  * Updates jump input.
+ * Used to advance state during the update loop for UI interaction handling.
  * Reads input state to decide actions.
  * Applies physics updates like gravity and velocity.
  * @param {Player} player Player instance.
@@ -117,7 +122,7 @@ function updateJumpInput(player, input) {
 
 /**
  * Updates coyote timer.
- * Updates the player state.
+ * Used to advance state during the update loop for timed actions.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -128,6 +133,7 @@ function updateCoyoteTimer(player, dt) {
 
 /**
  * Try consume jump buffer.
+ * Used to support physics updates.
  * Triggers audio playback or updates audio state.
  * Applies physics updates like gravity and velocity.
  * @param {Player} player Player instance.
@@ -142,8 +148,8 @@ function tryConsumeJumpBuffer(player, playerAudio) {
 
 /**
  * Applies jump cut.
+ * Used to keep state consistent before the next step for physics updates.
  * Applies physics updates like gravity and velocity.
- * Updates the player state.
  * @param {Player} player Player instance.
  */
 function applyJumpCut(player) {
@@ -152,8 +158,8 @@ function applyJumpCut(player) {
 
 /**
  * Decay jump buffer.
+ * Used to support physics updates.
  * Applies physics updates like gravity and velocity.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -163,6 +169,7 @@ function decayJumpBuffer(player, dt) {
 
 /**
  * Finalize movement.
+ * Used to support physics updates.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
  * @param {Player} player Player instance.

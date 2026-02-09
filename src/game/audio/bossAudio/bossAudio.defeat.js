@@ -2,7 +2,7 @@ import { playWhenReady } from "../audioUtils.js";
 
 /**
  * Plays defeat.
- * Updates the instance state.
+ * Used to support audio playback.
  * @returns {*} Result value.
  */
 export function playDefeat() {
@@ -18,7 +18,7 @@ export function playDefeat() {
 
 /**
  * Finish defeat without fade.
- * Updates the instance state.
+ * Used to support audio playback.
  * @param {*} defeat Defeat.
  * @returns {*} Result value.
  */
@@ -29,7 +29,7 @@ export function finishDefeatWithoutFade(defeat) {
 
 /**
  * Creates defeat audio.
- * Updates the instance state.
+ * Used to set up required data for audio playback.
  * @returns {*} Defeat audio.
  */
 export function createDefeatAudio() {
@@ -40,7 +40,7 @@ export function createDefeatAudio() {
 
 /**
  * Creates howl end audio.
- * Updates the instance state.
+ * Used to set up required data for audio playback.
  * @returns {*} Howl end audio.
  */
 export function createHowlEndAudio() {
@@ -53,6 +53,7 @@ export function createHowlEndAudio() {
 
 /**
  * Plays defeat audio.
+ * Used to support audio playback.
  * Uses defeat, howl to perform the operation.
  * @param {*} defeat Defeat.
  * @param {*} howl Howl.
@@ -64,7 +65,7 @@ export function playDefeatAudio(defeat, howl) {
 
 /**
  * Returns fading tracks.
- * Updates the instance state.
+ * Used to provide fading tracks for audio playback.
  * @returns {Array<any>} Fading tracks.
  */
 export function getFadingTracks() {
@@ -73,8 +74,8 @@ export function getFadingTracks() {
 
 /**
  * Starts defeat fade.
+ * Used to support audio playback.
  * Schedules timed actions.
- * Updates the instance state.
  * @param {*} defeat Defeat.
  * @param {*} fadingTracks Fading tracks.
  */
@@ -92,7 +93,7 @@ export function startDefeatFade(defeat, fadingTracks) {
 
 /**
  * Applies defeat fade volumes.
- * Updates the instance state.
+ * Used to apply audio settings.
  * @param {*} defeat Defeat.
  * @param {*} fadingTracks Fading tracks.
  * @param {number} fadeProgress Fade progress.
@@ -107,8 +108,8 @@ export function applyDefeatFadeVolumes(defeat, fadingTracks, fadeProgress) {
 
 /**
  * Finish defeat fade.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
- * Updates the instance state.
  * @param {*} fadingTracks Fading tracks.
  */
 export function finishDefeatFade(fadingTracks) {
@@ -123,8 +124,8 @@ export function finishDefeatFade(fadingTracks) {
 
 /**
  * Clears gong after defeat.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
- * Updates the instance state.
  * @param {*} fadingTracks Fading tracks.
  */
 export function clearGongAfterDefeat(fadingTracks) {

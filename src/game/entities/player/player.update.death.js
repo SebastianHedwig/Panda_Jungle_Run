@@ -1,6 +1,6 @@
 /**
  * Handles death flow.
- * Updates the player state.
+ * Used to centralize a specific behavior for combat effects.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
@@ -15,6 +15,7 @@ export function handleDeathFlow(player, dt) {
 
 /**
  * Updates death movement.
+ * Used to advance state during the update loop for combat effects.
  * Advances animation state and sprites.
  * Applies physics updates like gravity and velocity.
  * @param {Player} player Player instance.
@@ -30,8 +31,8 @@ function updateDeathMovement(player, dt) {
 
 /**
  * Updates death frames.
+ * Used to advance state during the update loop for combat effects.
  * Advances animation state and sprites.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -45,8 +46,8 @@ function updateDeathFrames(player, dt) {
 
 /**
  * Advances death frame.
+ * Used to support animation timing.
  * Advances animation state and sprites.
- * Updates the player state.
  * @param {Player} player Player instance.
  */
 function advanceDeathFrame(player) {

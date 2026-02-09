@@ -10,7 +10,7 @@ export const DEBUG_ENEMY_HITBOX = DEBUG_MODE;
 export class EnemyBase extends MovableObject {
   /**
    * Creates a new instance. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to set up required data for gameplay flow.
    * Initializes movement defaults, combat helpers.
    * @param {number} x X.
    * @param {number} y Y.
@@ -27,6 +27,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Initializes movement defaults.
+   * Used to set default state before use for physics updates.
    * Spawns visual feedback effects.
    * @param {number} x X.
    * @param {number} y Y.
@@ -43,7 +44,6 @@ export class EnemyBase extends MovableObject {
   /**
    * Initializes combat helpers.
    * Performs hitbox or collision checks.
-   * Updates the instance state.
    */
   initializeCombatHelpers() {
     this.hasHitDuringAttack = false;
@@ -56,6 +56,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Take damage. If omitted, default values are used.
+   * Used to support combat effects.
    * Uses amount, hitContext to perform the operation.
    * @param {number} [amount] Amount.
    * @param {*} [hitContext] Hit context.
@@ -71,8 +72,8 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Returns hitbox.
+   * Used to provide hitbox for collision and hit testing.
    * Performs hitbox or collision checks.
-   * Updates the instance state.
    * @returns {Object} Hitbox.
    */
   getHitbox() {
@@ -86,6 +87,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Renders hitbox.
+   * Used to render hitbox.
    * Renders to the canvas context.
    * Performs hitbox or collision checks.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
@@ -100,6 +102,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Returns player delta.
+   * Used to provide player delta for world state updates.
    * Uses player to compute the result.
    * @param {Player} player Player instance.
    * @returns {*} Player delta.
@@ -113,7 +116,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Should chase player. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to decide control flow.
    * @param {Player} playerInfo Player info.
    * @param {boolean} [wasChasing] Whether chasing.
    * @returns {boolean} Whether chase player.
@@ -128,7 +131,6 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Patrol.
-   * Updates the instance state.
    * Spawns visual feedback effects.
    */
   patrol() {
@@ -141,7 +143,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Is on lowest platform.
-   * Updates the world state.
+   * Used to decide platform interactions.
    * @returns {boolean} Whether on lowest platform.
    */
   isOnLowestPlatform() {
@@ -157,7 +159,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Returns platform underfoot.
-   * Updates the world state.
+   * Used to provide platform underfoot for platform collision handling.
    * @returns {*} Platform underfoot.
    */
   getPlatformUnderfoot() {
@@ -177,7 +179,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Find platform below at.
-   * Updates the world state.
+   * Used to support platform collision handling.
    * @param {number} footX Foot X.
    * @param {number} currentTop Current top.
    * @returns {*} Result value.
@@ -198,7 +200,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Has adjacent platform.
-   * Updates the world state.
+   * Used to decide platform interactions.
    * @param {Platform} currentPlatform Current platform.
    * @param {*} moveDirection Move direction.
    * @param {number} footX Foot X.
@@ -214,7 +216,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Handles platform landing.
-   * Updates the instance state.
+   * Used to centralize a specific behavior for platform collision handling.
    * @param {number} previousBottom Previous bottom.
    * @param {number} currentBottom Current bottom.
    */
@@ -226,8 +228,8 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Applies attack physics.
+   * Used to keep state consistent before the next step for combat effects.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    * @param {number} dt Delta time in seconds.
    */
   applyAttackPhysics(dt) {
@@ -239,6 +241,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Adjust for edges.
+   * Used to support gameplay flow.
    * Uses moveDirection, dt, platform, onLowestPlatform, fromChasing to perform the operation.
    * @param {*} moveDirection Move direction.
    * @param {number} dt Delta time in seconds.
@@ -255,6 +258,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Try start attack.
+   * Used to support combat effects.
    * Uses playerInfo, player to perform the operation.
    * @param {Player} playerInfo Player info.
    * @param {Player} player Player instance.
@@ -267,6 +271,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Starts melee attack. If omitted, default values are used.
+   * Used to support combat effects.
    * Advances animation state and sprites.
    * Applies physics updates like gravity and velocity.
    * @param {number} deltaX Delta X.
@@ -291,7 +296,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Drop collectables. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support gameplay flow.
    * @param {string} itemType Item type.
    * @param {number} [count] Count.
    */
@@ -304,7 +309,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Drop coins. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support gameplay flow.
    * @param {number} [count] Count.
    */
   dropCoins(count = 0) {
@@ -313,7 +318,7 @@ export class EnemyBase extends MovableObject {
 
   /**
    * Collides with.
-   * Updates the instance state.
+   * Used to support gameplay flow.
    * @param {*} target Target.
    * @returns {*} Result value.
    */
@@ -331,6 +336,7 @@ export class EnemyBase extends MovableObject {
 
 /**
  * Returns actor center.
+ * Used to provide actor center for rendering.
  * Uses actor to compute the result.
  * @param {*} actor Actor.
  * @returns {Object} Actor center.
@@ -343,7 +349,7 @@ function getActorCenter(actor) {
 
 /**
  * Builds player delta.
- * Updates the player state.
+ * Used to assemble required data for world state updates.
  * @param {Player} player Player instance.
  * @param {EnemyBase} enemyCenter Enemy center.
  * @param {Player} playerCenter Player center.

@@ -18,6 +18,7 @@ const ROTATE_OVERLAY_MARKUP = /*HTML*/ `
 export class ViewportManagement {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for camera-relative placement.
    * Uses options to perform the operation.
    * @param {Object} [options] Configuration options.
    * @param {string} [options.containerId] Container element id.
@@ -38,8 +39,8 @@ export class ViewportManagement {
 
   /**
    * Sets container.
+   * Used to support camera-relative placement.
    * Resolves DOM elements from the document.
-   * Updates the instance state.
    * @param {string} containerId Container element id.
    */
   setContainer(containerId) {
@@ -48,7 +49,7 @@ export class ViewportManagement {
 
   /**
    * Sets pause handlers.
-   * Updates the instance state.
+   * Used to support camera-relative placement.
    * @param {boolean} setPaused Set paused.
    * @param {boolean} getPaused Get paused.
    */
@@ -59,7 +60,6 @@ export class ViewportManagement {
 
   /**
    * Resets viewport state.
-   * Updates the instance state.
    */
   resetViewportState() {
     this.pausedByViewport = false;
@@ -68,7 +68,6 @@ export class ViewportManagement {
 
   /**
    * Sets up media queries.
-   * Updates the instance state.
    */
   setupMediaQueries() {
     this.mediaQueries = [PORTRAIT_QUERY, ASPECT_RATIO_QUERY].map((query) => window.matchMedia(query));
@@ -76,7 +75,6 @@ export class ViewportManagement {
 
   /**
    * Binds handlers.
-   * Updates the instance state.
    */
   bindHandlers() {
     this.handleViewportChange = this.handleViewportChange.bind(this);
@@ -85,7 +83,6 @@ export class ViewportManagement {
   /**
    * Adds viewport listeners.
    * Binds change, orientationchange, resize event listeners.
-   * Updates the instance state.
    */
   addViewportListeners() {
     this.mediaQueries.forEach((mq) => mq.addEventListener("change", this.handleViewportChange));
@@ -95,7 +92,7 @@ export class ViewportManagement {
 
   /**
    * Ensure overlay.
-   * Updates the instance state.
+   * Used to support UI interaction handling.
    * @param {string} overlayId Overlay element id.
    * @returns {*} Result value.
    */
@@ -109,6 +106,7 @@ export class ViewportManagement {
 
   /**
    * Returns existing overlay.
+   * Used to provide existing overlay for UI interaction handling.
    * Resolves DOM elements from the document.
    * @param {string} overlayId Overlay element id.
    * @returns {*} Existing overlay.
@@ -119,6 +117,7 @@ export class ViewportManagement {
 
   /**
    * Creates overlay element.
+   * Used to set up required data for UI interaction handling.
    * Uses overlayId to compute the result.
    * @param {string} overlayId Overlay element id.
    * @returns {*} Overlay element.
@@ -133,6 +132,7 @@ export class ViewportManagement {
 
   /**
    * Append overlay.
+   * Used to support UI interaction handling.
    * Uses overlay to perform the operation.
    * @param {HTMLElement} overlay Overlay.
    */
@@ -142,7 +142,6 @@ export class ViewportManagement {
 
   /**
    * Handles viewport change.
-   * Updates the instance state.
    */
   handleViewportChange() {
     const shouldLock = this.mediaQueries.some((mq) => mq.matches);
@@ -152,8 +151,8 @@ export class ViewportManagement {
 
   /**
    * Toggles overlay.
+   * Used to support UI interaction handling.
    * Updates CSS classes to reflect the current state.
-   * Updates the instance state.
    * @param {boolean} shouldShow Whether show.
    */
   toggleOverlay(shouldShow) {
@@ -164,7 +163,7 @@ export class ViewportManagement {
 
   /**
    * Toggles gameplay.
-   * Updates the instance state.
+   * Used to support camera-relative placement.
    * @param {boolean} shouldLock Whether lock.
    */
   toggleGameplay(shouldLock) {
@@ -182,7 +181,6 @@ export class ViewportManagement {
 
   /**
    * Lock gameplay.
-   * Updates the instance state.
    */
   lockGameplay() {
     this.locked = true;
@@ -194,7 +192,6 @@ export class ViewportManagement {
 
   /**
    * Unlock gameplay.
-   * Updates the instance state.
    */
   unlockGameplay() {
     this.locked = false;

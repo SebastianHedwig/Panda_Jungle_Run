@@ -5,6 +5,7 @@ import { loadFrames } from "../../../../core/game/assets/assetLoader.js";
 
 /**
  * Loads enemy 3 sprites.
+ * Used to support world state updates.
  * @returns {Object} Result value.
  */
 export function loadEnemy3Sprites() {
@@ -22,8 +23,8 @@ export function loadEnemy3Sprites() {
 export class Enemy3 extends Enemy2 {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for world state updates.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} sprites Sprites.
@@ -36,8 +37,8 @@ export class Enemy3 extends Enemy2 {
 
   /**
    * Initializes enemy 3 state.
+   * Used to set default state before use for world state updates.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {*} sprites Sprites.
    */
   initializeEnemy3State(sprites) {
@@ -52,8 +53,8 @@ export class Enemy3 extends Enemy2 {
 
   /**
    * Initializes enemy 3 frames.
+   * Used to set default state before use for world state updates.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {*} sprites Sprites.
    */
   initializeEnemy3Frames(sprites) {
@@ -66,7 +67,6 @@ export class Enemy3 extends Enemy2 {
 
   /**
    * Initializes enemy 3 damage.
-   * Updates the instance state.
    */
   initializeEnemy3Damage() {
     this.attack1Damage = ENEMY3_ATTACK1_DAMAGE;
@@ -78,7 +78,6 @@ export class Enemy3 extends Enemy2 {
 
   /**
    * Initializes enemy 3 movement.
-   * Updates the instance state.
    */
   initializeEnemy3Movement() {
     this.speed = ENEMY3_SPEED;
@@ -87,7 +86,7 @@ export class Enemy3 extends Enemy2 {
 
   /**
    * Updates.
-   * Updates the instance state.
+   * Used to advance state during the update loop for world state updates.
    * @param {number} dt Delta time in seconds.
    * @param {Player} player Player instance.
    */
@@ -105,7 +104,7 @@ export class Enemy3 extends Enemy2 {
 
   /**
    * Try start attack.
-   * Updates the instance state.
+   * Used to support combat effects.
    * @param {Player} playerInfo Player info.
    * @param {Player} player Player instance.
    * @returns {*} Result value.
@@ -117,7 +116,7 @@ export class Enemy3 extends Enemy2 {
 
   /**
    * Can start slide attack.
-   * Updates the player state.
+   * Used to decide combat outcomes.
    * @param {Player} playerInfo Player info.
    * @param {Player} player Player instance.
    * @returns {boolean} Whether start slide attack.
@@ -135,7 +134,7 @@ export class Enemy3 extends Enemy2 {
 
   /**
    * Starts slide attack.
-   * Updates the instance state.
+   * Used to support combat effects.
    * @param {Player} playerInfo Player info.
    * @param {Player} player Player instance.
    * @returns {*} Result value.
@@ -150,6 +149,7 @@ export class Enemy3 extends Enemy2 {
 
   /**
    * Take damage. If omitted, default values are used.
+   * Used to support combat effects.
    * Uses amount, hitContext to perform the operation.
    * @param {number} [amount] Amount.
    * @param {*} [hitContext] Hit context.
@@ -166,7 +166,7 @@ export class Enemy3 extends Enemy2 {
 
   /**
    * Drop gun. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support collectable handling.
    * @param {number} [count] Count.
    */
   dropGun(count = ENEMY3_GUN_DROP_COUNT) {
@@ -176,6 +176,7 @@ export class Enemy3 extends Enemy2 {
 
 /**
  * Builds enemy 3 sprite set.
+ * Used to assemble required data for rendering.
  * Advances animation state and sprites.
  * @param {*} sprites Sprites.
  * @returns {Object} Enemy 3 sprite set.

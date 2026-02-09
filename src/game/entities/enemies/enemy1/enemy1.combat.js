@@ -2,7 +2,7 @@ import { FACING_RIGHT, PLAYER_HURT_IMMUNITY_TIME } from "../../../../config/conf
 
 /**
  * Try deal attack damage. If omitted, default values are used.
- * Updates the player state.
+ * Used to support combat effects.
  * @param {Player} player Player instance.
  * @param {*} [popupDelay] Popup delay.
  * @returns {*} Result value.
@@ -19,8 +19,8 @@ export function tryDealAttackDamage(player, popupDelay = 0) {
 
 /**
  * Handles attack state.
+ * Used to centralize a specific behavior for combat effects.
  * Advances animation state and sprites.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
  * @param {Player} player Player instance.
@@ -40,7 +40,7 @@ export function handleAttackState(enemy, dt, player) {
 
 /**
  * Updates attack timer.
- * Updates the enemy state.
+ * Used to advance state during the update loop for timed actions.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -50,8 +50,8 @@ function updateAttackTimer(enemy, dt) {
 
 /**
  * Updates attack movement.
+ * Used to advance state during the update loop for combat effects.
  * Advances animation state and sprites.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} dt Delta time in seconds.
  */
@@ -68,7 +68,7 @@ function updateAttackMovement(enemy, dt) {
 
 /**
  * Should stop attack at edge.
- * Updates the enemy state.
+ * Used to decide combat outcomes.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {number} nextX Next X.
  * @returns {boolean} Whether stop attack at edge.
@@ -82,8 +82,8 @@ function shouldStopAttackAtEdge(enemy, nextX) {
 
 /**
  * End sliding attack.
+ * Used to support combat effects.
  * Advances animation state and sprites.
- * Updates the enemy state.
  * @param {EnemyBase} enemy Enemy instance.
  */
 function endSlidingAttack(enemy) {
@@ -96,7 +96,7 @@ function endSlidingAttack(enemy) {
 
 /**
  * Finish attack if needed.
- * Updates the enemy state.
+ * Used to support combat effects.
  * @param {EnemyBase} enemy Enemy instance.
  */
 function finishAttackIfNeeded(enemy) {
@@ -109,7 +109,7 @@ function finishAttackIfNeeded(enemy) {
 
 /**
  * Try start attack if in range.
- * Updates the enemy state.
+ * Used to support combat effects.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Player} playerInfo Player info.
  * @param {Player} player Player instance.
@@ -121,7 +121,7 @@ export function tryStartAttackIfInRange(enemy, playerInfo, player) {
 
 /**
  * Handles player collision.
- * Updates the player state.
+ * Used to centralize a specific behavior for collision and hit testing.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Player} player Player instance.
  */
@@ -139,7 +139,7 @@ export function handlePlayerCollision(enemy, player) {
 
 /**
  * Applies player invulnerability.
- * Updates the player state.
+ * Used to keep state consistent before the next step for combat effects.
  * @param {Player} player Player instance.
  */
 function applyPlayerInvulnerability(player) {
@@ -150,7 +150,7 @@ function applyPlayerInvulnerability(player) {
 
 /**
  * Can deal attack damage.
- * Updates the player state.
+ * Used to decide combat outcomes.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Player} player Player instance.
  * @returns {boolean} Whether deal attack damage.
@@ -161,7 +161,7 @@ function canDealAttackDamage(enemy, player) {
 
 /**
  * Returns attack context.
- * Updates the player state.
+ * Used to provide attack context for combat effects.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Player} player Player instance.
  * @returns {Object} Attack context.
@@ -179,7 +179,7 @@ function getAttackContext(enemy, player) {
 
 /**
  * Is attack contact valid.
- * Updates the player state.
+ * Used to decide combat outcomes.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {*} attackContext Attack context.
  * @param {Player} player Player instance.
@@ -194,7 +194,7 @@ function isAttackContactValid(enemy, attackContext, player) {
 
 /**
  * Applies attack damage to player.
- * Updates the player state.
+ * Used to keep state consistent before the next step for combat effects.
  * @param {EnemyBase} enemy Enemy instance.
  * @param {Player} player Player instance.
  * @param {*} popupDelay Popup delay.

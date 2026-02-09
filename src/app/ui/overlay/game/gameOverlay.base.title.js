@@ -29,6 +29,7 @@ import {
 
 /**
  * Returns title options.
+ * Used to provide title options for UI interaction handling.
  * Uses opts to compute the result.
  * @param {*} opts Opts.
  * @returns {Object} Title options.
@@ -47,6 +48,7 @@ export function getTitleOptions(opts) {
 
 /**
  * Measure title width.
+ * Used to support UI interaction handling.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {string} title Title.
@@ -60,7 +62,7 @@ export function measureTitleWidth(ctx, title, size) {
 
 /**
  * Returns title font size.
- * Updates the instance state.
+ * Used to provide title font size for rendering.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {string} title Title.
@@ -79,6 +81,7 @@ export function getTitleFontSize(ctx, canvas, title, titleOptions) {
 
 /**
  * Returns title position.
+ * Used to provide title position for camera-relative placement.
  * Uses canvas, yOffsetRatio to compute the result.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {number} yOffsetRatio Y offset ratio.
@@ -93,6 +96,7 @@ export function getTitlePosition(canvas, yOffsetRatio) {
 
 /**
  * Applies title font.
+ * Used to keep UI visuals consistent.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} drawFontSize Draw font size.
@@ -105,6 +109,7 @@ export function applyTitleFont(ctx, drawFontSize) {
 
 /**
  * Returns title gradient.
+ * Used to provide title gradient for rendering.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} titleY Title Y.
@@ -119,6 +124,7 @@ export function getTitleGradient(ctx, titleY, drawFontSize) {
 
 /**
  * Stroke title.
+ * Used to render title.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {string} title Title.
@@ -139,6 +145,7 @@ export function strokeTitle(ctx, title, canvasCenterX, titleY, drawFontSize, eas
 
 /**
  * Fill title.
+ * Used to render title.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {string} title Title.
@@ -156,7 +163,7 @@ export function fillTitle(ctx, title, canvasCenterX, titleY, gradient, easeOut) 
 
 /**
  * Draws title.
- * Updates the instance state.
+ * Used to render title.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {string} title Title.
@@ -179,6 +186,7 @@ export function drawTitle(ctx, canvas, title, opts, easeOut, scale) {
 
 /**
  * Draws subtitle. If omitted, default values are used.
+ * Used to render subtitle. If omitted, default values are used.
  * Uses ctx, canvas, text, y, easeOut, options to perform the operation.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
@@ -200,6 +208,7 @@ export function drawSubtitle(ctx, canvas, text, y, easeOut, { fontSizeCap = SUBT
 
 /**
  * Returns subtitle font size.
+ * Used to provide subtitle font size for rendering.
  * Uses canvas, options to compute the result.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {Object} options Configuration options.
@@ -212,6 +221,7 @@ export function getSubtitleFontSize(canvas, { fontSizeCap, fontSizeRatio }) {
 
 /**
  * Applies subtitle font.
+ * Used to keep UI visuals consistent.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} fontSize Font size.
@@ -224,6 +234,7 @@ export function applySubtitleFont(ctx, fontSize) {
 
 /**
  * Applies subtitle style.
+ * Used to keep UI visuals consistent.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} fontSize Font size.
@@ -241,6 +252,7 @@ export function applySubtitleStyle(ctx, fontSize, easeOut) {
 
 /**
  * Draws subtitle text.
+ * Used to render subtitle text.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {string} text Text.

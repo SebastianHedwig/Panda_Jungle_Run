@@ -6,7 +6,7 @@ const CLOUD_PARALLAX_MAX = 0.12;
 export class Cloud {
   /**
    * Creates a new instance.
-   * Updates the instance state.
+   * Used to set up required data for gameplay flow.
    * Introduces randomness into the outcome.
    * @param {HTMLImageElement} image Image.
    * @param {number} x X.
@@ -24,7 +24,7 @@ export class Cloud {
 
   /**
    * Updates.
-   * Updates the instance state.
+   * Used to advance state during the update loop for gameplay flow.
    * @param {number} dt Delta time in seconds.
    * @param {number} cameraX Camera X.
    */
@@ -35,8 +35,8 @@ export class Cloud {
 
   /**
    * Renders.
+   * Used to render visuals.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
    */
@@ -49,7 +49,7 @@ export class Cloud {
 
   /**
    * Width.
-   * Updates the instance state.
+   * Used to support gameplay flow.
    * @returns {*} Result value.
    */
   get width() {

@@ -3,6 +3,7 @@ import { wrapParagraphText } from "./legalScreen.wrap.js";
 
 /**
  * Renders legal screen.
+ * Used to render legal screen.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -27,6 +28,7 @@ const renderLegalScreen = ({ ctx, canvas, scroll, onLineRender, title, wrapParag
 export class LegalScreenBase {
   /**
    * Creates a new instance.
+   * Used to set up required data for camera-relative placement.
    * Uses options to perform the operation.
    * @param {Object} options Configuration options.
    * @param {string} [options.title] Title.
@@ -39,6 +41,7 @@ export class LegalScreenBase {
 
   /**
    * Wrap paragraphs.
+   * Used to support camera-relative placement.
    * Uses options to perform the operation.
    * @param {Object} options Configuration options.
    * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -55,6 +58,7 @@ export class LegalScreenBase {
 
   /**
    * Renders. If omitted, default values are used.
+   * Used to support camera-relative placement.
    * Uses options to perform the operation.
    * @param {Object} [options] Configuration options.
    * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.

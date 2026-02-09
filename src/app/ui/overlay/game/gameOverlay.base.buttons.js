@@ -33,7 +33,7 @@ import {
 
 /**
  * Draws buttons.
- * Updates the instance state.
+ * Used to render buttons.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {number} baseY Base Y.
@@ -55,6 +55,7 @@ export function drawButtons(ctx, canvas, baseY, scale, easeOut) {
 
 /**
  * Returns button layout.
+ * Used to provide button layout for UI interaction handling.
  * Uses canvas, baseY to compute the result.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {number} baseY Base Y.
@@ -72,6 +73,7 @@ export function getButtonLayout(canvas, baseY) {
 
 /**
  * Returns buttons.
+ * Used to provide buttons for UI interaction handling.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {number} [options.baseBtnWidth] Base btn width.
@@ -87,6 +89,7 @@ export function getButtons({ baseBtnWidth, btnGap, startX }) {
 
 /**
  * Returns button base bounds.
+ * Used to provide button base bounds for UI hit testing.
  * Uses btn, options to compute the result.
  * @param {*} btn Btn.
  * @param {Object} options Configuration options.
@@ -106,7 +109,7 @@ export function getButtonBaseBounds(btn, { baseBtnWidth, baseBtnHeight, buttonsY
 
 /**
  * Is pointer inside button.
- * Updates the instance state.
+ * Used to decide UI hit testing outcomes.
  * @param {*} bounds Bounds.
  * @returns {boolean} Whether pointer inside button.
  */
@@ -122,6 +125,7 @@ export function isPointerInsideButton(bounds) {
 
 /**
  * Returns scaled bounds.
+ * Used to provide scaled bounds for UI hit testing.
  * Uses bounds, btnScale to compute the result.
  * @param {*} bounds Bounds.
  * @param {number} btnScale Btn scale.
@@ -137,7 +141,7 @@ export function getScaledBounds(bounds, btnScale) {
 
 /**
  * Draws button.
- * Updates the instance state.
+ * Used to render button.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} btn Btn.
  * @param {*} layout Layout.
@@ -157,6 +161,7 @@ export function drawButton(ctx, btn, layout, scale, easeOut) {
 
 /**
  * Returns button gradient.
+ * Used to provide button gradient for rendering.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} bounds Bounds.
@@ -170,6 +175,7 @@ export function getButtonGradient(ctx, bounds) {
 
 /**
  * Applies button shadow.
+ * Used to keep UI visuals consistent.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} easeOut Ease out.
@@ -184,6 +190,7 @@ export function applyButtonShadow(ctx, easeOut) {
 
 /**
  * Fill button.
+ * Used to render button.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} btnGradardient Btn gradardient.
@@ -195,6 +202,7 @@ export function fillButton(ctx, btnGradardient) {
 
 /**
  * Stroke button.
+ * Used to render button.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} bounds Bounds.
@@ -207,8 +215,8 @@ export function strokeButton(ctx, bounds) {
 
 /**
  * Draws button shape.
+ * Used to render button shape.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} bounds Bounds.
  * @param {*} easeOut Ease out.
@@ -225,6 +233,7 @@ export function drawButtonShape(ctx, bounds, easeOut) {
 
 /**
  * Returns label size.
+ * Used to provide label size for rendering.
  * Uses bounds to compute the result.
  * @param {*} bounds Bounds.
  * @returns {*} Label size.
@@ -238,6 +247,7 @@ export function getLabelSize(bounds) {
 
 /**
  * Returns label center Y.
+ * Used to provide label center Y for rendering.
  * Uses bounds to compute the result.
  * @param {*} bounds Bounds.
  * @returns {*} Label center Y.
@@ -249,6 +259,7 @@ export function getLabelCenterY(bounds) {
 
 /**
  * Applies label style.
+ * Used to keep UI visuals consistent.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} labelSize Label size.
@@ -269,8 +280,8 @@ export function applyLabelStyle(ctx, labelSize, easeOut) {
 
 /**
  * Draws button label.
+ * Used to render button label.
  * Renders to the canvas context.
- * Updates the instance state.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {string} label Label.
  * @param {*} bounds Bounds.
@@ -288,6 +299,7 @@ export function drawButtonLabel(ctx, label, bounds, easeOut) {
 
 /**
  * Draws rounded rect.
+ * Used to render rounded rect.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {number} x X.

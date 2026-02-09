@@ -12,6 +12,7 @@ import {
 
 /**
  * Builds boss audio sources. If omitted, default values are used.
+ * Used to assemble required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} [options] Configuration options.
  * @param {string} [options.gongSrc] Gong src.
@@ -39,6 +40,7 @@ export function buildBossAudioSources({
 
 /**
  * Builds boss audio volumes. If omitted, default values are used.
+ * Used to assemble required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} [options] Configuration options.
  * @param {number} [options.volume] Volume.
@@ -50,6 +52,7 @@ export function buildBossAudioVolumes({ volume = MUSIC_VOLUME, sfxVolume = SFX_V
 
 /**
  * Builds boss audio timing. If omitted, default values are used.
+ * Used to assemble required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} [options] Configuration options.
  * @param {*} [options.musicLoopCut] Music loop cut.
@@ -69,6 +72,7 @@ export function buildBossAudioTiming({
 
 /**
  * Builds boss audio config. If omitted, default values are used.
+ * Used to assemble required data for audio playback.
  * Uses options to compute the result.
  * @param {Object} [options] Configuration options.
  */
@@ -82,6 +86,7 @@ export function buildBossAudioConfig(options = {}) {
 
 /**
  * Builds boss audio reference state.
+ * Used to assemble required data for audio playback.
  * @returns {Object} Boss audio reference state.
  */
 export function buildBossAudioReferenceState() {
@@ -99,6 +104,7 @@ export function buildBossAudioReferenceState() {
 
 /**
  * Builds boss audio runtime state.
+ * Used to assemble required data for audio playback.
  * @returns {Object} Boss audio runtime state.
  */
 export function buildBossAudioRuntimeState() {
@@ -116,6 +122,7 @@ export function buildBossAudioRuntimeState() {
 
 /**
  * Builds boss audio state.
+ * Used to assemble required data for audio playback.
  * @returns {Object} Boss audio state.
  */
 export function buildBossAudioState() {

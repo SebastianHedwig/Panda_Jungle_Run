@@ -1,5 +1,6 @@
 /**
  * Toggles pause.
+ * Used to support gameplay flow.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {boolean} [options.getPaused] Get paused.
@@ -10,6 +11,7 @@ const togglePause = ({ getPaused, setPaused }) => setPaused?.(!getPaused?.());
 
 /**
  * Binds toggle click.
+ * Used to support UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLElement} [options.toggle] Toggle.
@@ -27,6 +29,7 @@ const bindToggleClick = ({ toggle, hasButton, getPaused, setPaused }) => {
 
 /**
  * Binds escape key.
+ * Used to support gameplay flow.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {boolean} [options.getPaused] Get paused.
@@ -42,6 +45,7 @@ const bindEscapeKey = ({ getPaused, setPaused }) => {
 
 /**
  * Toggles pause state. If omitted, default values are used.
+ * Used to support gameplay flow.
  * Uses options to perform the operation.
  * @param {Object} [options] Configuration options.
  * @param {string} [options.toggleId] Toggle element id.

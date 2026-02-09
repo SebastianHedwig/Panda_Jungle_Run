@@ -12,8 +12,8 @@ export { loadEnemy1Sprites };
 export class Enemy1 extends EnemyBase {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for world state updates.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} sprites Sprites.
@@ -32,6 +32,7 @@ export class Enemy1 extends EnemyBase {
 
   /**
    * Take damage. If omitted, default values are used.
+   * Used to support combat effects.
    * Uses amount, hitContext to perform the operation.
    * @param {number} [amount] Amount.
    * @param {*} [hitContext] Hit context.

@@ -7,6 +7,7 @@ import { handleMovementAndJump } from "./player.update.movement.js";
 
 /**
  * Updates player.
+ * Used to advance state during the update loop for world state updates.
  * Triggers audio playback or updates audio state.
  * @param {Player} player Player instance.
  * @param {number} dt Delta time in seconds.
@@ -25,8 +26,8 @@ export function updatePlayer(player, dt, input, playerAudio) {
 
 /**
  * Prepares update frame.
+ * Used to support animation timing.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {Player} playerAudio Player audio.
  */
@@ -39,8 +40,8 @@ function prepareUpdateFrame(player, playerAudio) {
 
 /**
  * Plays death sound once.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
- * Updates the player state.
  * @param {Player} player Player instance.
  * @param {Player} playerAudio Player audio.
  */

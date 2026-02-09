@@ -6,8 +6,8 @@ const msPerSecond = 1000;
 export class GameAudio {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for audio playback.
    * Performs hitbox or collision checks.
-   * Updates the instance state.
    * @param {string} [src] Source URL.
    */
   constructor(src = "./assets/music/wildlife-jungle-background-game-music.mp3") {
@@ -31,8 +31,8 @@ export class GameAudio {
 
   /**
    * Creates audio element.
+   * Used to set up required data for audio playback.
    * Triggers audio playback or updates audio state.
-   * Updates the instance state.
    * @returns {*} Audio element.
    */
   createAudioElement() {
@@ -46,7 +46,7 @@ export class GameAudio {
 
   /**
    * Initializes.
-   * Updates the instance state.
+   * Used to set default state before use for audio playback.
    * @returns {*} Result value.
    */
   init() {
@@ -59,15 +59,15 @@ export class GameAudio {
 
   /**
    * Creates ready promise.
+   * Used to set up required data for audio playback.
    * Schedules timed actions.
-   * Updates the instance state.
    * @returns {*} Ready promise.
    */
   createReadyPromise() {
     return new Promise((resolve) => {
       /**
        * Finish.
-       * Updates the instance state.
+       * Used to support audio playback.
        * @returns {*} Result value.
        */
       const finish = () => this.finishReady(resolve);
@@ -80,7 +80,7 @@ export class GameAudio {
 
   /**
    * Finish ready.
-   * Updates the instance state.
+   * Used to support audio playback.
    * @param {Function} resolve Resolve.
    */
   finishReady(resolve) {
@@ -91,8 +91,8 @@ export class GameAudio {
 
   /**
    * Attaches init listeners.
+   * Used to support audio playback.
    * Binds canplaythrough, error, loadeddata, loadedmetadata event listeners.
-   * Updates the instance state.
    * @param {Function} resolve Resolve.
    * @param {*} finish Finish.
    */
@@ -106,7 +106,6 @@ export class GameAudio {
   /**
    * Handles loaded metadata.
    * Performs hitbox or collision checks.
-   * Updates the instance state.
    */
   handleLoadedMetadata() {
     const duration = this.audio.duration || 0;
@@ -117,14 +116,14 @@ export class GameAudio {
 
   /**
    * Attaches loop watcher.
+   * Used to support audio playback.
    * Binds timeupdate event listeners.
-   * Updates the instance state.
    * @param {HTMLElement} audioElement Audio element.
    */
   attachLoopWatcher(audioElement) {
     /**
      * On time update.
-     * Updates the instance state.
+     * Used to support audio playback.
      * @returns {*} Result value.
      */
     const onTimeUpdate = () => this.handleTimeUpdate(audioElement);
@@ -134,7 +133,7 @@ export class GameAudio {
 
   /**
    * Handles time update.
-   * Updates the instance state.
+   * Used to centralize a specific behavior for audio playback.
    * @param {HTMLElement} audioElement Audio element.
    */
   handleTimeUpdate(audioElement) {
@@ -145,8 +144,8 @@ export class GameAudio {
 
   /**
    * Should prepare next loop.
+   * Used to decide control flow.
    * Performs hitbox or collision checks.
-   * Updates the instance state.
    * @param {HTMLElement} audioElement Audio element.
    * @returns {boolean} Whether prepare next loop.
    */
@@ -156,7 +155,7 @@ export class GameAudio {
 
   /**
    * Should complete loop.
-   * Updates the instance state.
+   * Used to decide control flow.
    * @param {HTMLElement} audioElement Audio element.
    * @returns {boolean} Whether complete loop.
    */
@@ -166,7 +165,6 @@ export class GameAudio {
 
   /**
    * Audio loop preparation.
-   * Updates the instance state.
    */
   audioLoopPreparation() {
     if (this.nextAudio || !this.audio) return;
@@ -182,8 +180,8 @@ export class GameAudio {
 
   /**
    * Begin crossfade.
+   * Used to support audio playback.
    * Schedules timed actions.
-   * Updates the instance state.
    * @param {*} current Current.
    * @param {*} next Next.
    */
@@ -202,8 +200,8 @@ export class GameAudio {
 
   /**
    * Returns crossfade timing.
+   * Used to provide crossfade timing for audio playback.
    * Performs hitbox or collision checks.
-   * Updates the instance state.
    * @returns {Object} Crossfade timing.
    */
   getCrossfadeTiming() {
@@ -212,7 +210,7 @@ export class GameAudio {
 
   /**
    * Updates crossfade volumes.
-   * Updates the instance state.
+   * Used to advance state during the update loop for audio playback.
    * @param {*} current Current.
    * @param {*} next Next.
    * @param {number} fadeProgress Fade progress.
@@ -225,7 +223,6 @@ export class GameAudio {
   /**
    * Clears crossfade.
    * Clears pending timers.
-   * Updates the instance state.
    */
   clearCrossfade() {
     if (this.crossfadeTimer) {
@@ -236,7 +233,6 @@ export class GameAudio {
 
   /**
    * Complete loop.
-   * Updates the instance state.
    */
   completeLoop() {
     this.clearCrossfade();
@@ -249,7 +245,7 @@ export class GameAudio {
 
   /**
    * Detach loop listener.
-   * Updates the instance state.
+   * Used to support audio playback.
    * @param {HTMLElement} audioElement Audio element.
    */
   detachLoopListener(audioElement) {
@@ -263,7 +259,6 @@ export class GameAudio {
 
   /**
    * Swap to next audio.
-   * Updates the instance state.
    */
   swapToNextAudio() {
     if (this.nextAudio) {
@@ -276,8 +271,8 @@ export class GameAudio {
 
   /**
    * Resets outgoing audio.
+   * Used to support audio playback.
    * Triggers audio playback or updates audio state.
-   * Updates the instance state.
    * @param {*} outgoingAudio Outgoing audio.
    */
   resetOutgoingAudio(outgoingAudio) {
@@ -290,7 +285,6 @@ export class GameAudio {
   /**
    * Resumes audio if needed.
    * Triggers audio playback or updates audio state.
-   * Updates the instance state.
    */
   resumeAudioIfNeeded() {
     if (!this.audio) return;
@@ -300,8 +294,8 @@ export class GameAudio {
 
   /**
    * Plays audio.
+   * Used to support audio playback.
    * Triggers audio playback or updates audio state.
-   * Updates the instance state.
    * @returns {*} Result value.
    */
   async playAudio() {
@@ -312,7 +306,6 @@ export class GameAudio {
 
   /**
    * Ensure volume.
-   * Updates the instance state.
    */
   ensureVolume() {
     if (this.crossfadeTimer) return;
@@ -327,7 +320,6 @@ export class GameAudio {
   /**
    * Binds playback unlock.
    * Binds keydown, pointerdown, touchstart event listeners.
-   * Updates the instance state.
    */
   bindPlaybackUnlock() {
     if (this.unlockHandler) return;
@@ -346,7 +338,6 @@ export class GameAudio {
 
   /**
    * Stops crossfade and cleanup.
-   * Updates the instance state.
    */
   stopCrossfadeAndCleanup() {
     this.clearCrossfade();
@@ -357,8 +348,8 @@ export class GameAudio {
 
   /**
    * Stops and reset audio element.
+   * Used to support audio playback.
    * Triggers audio playback or updates audio state.
-   * Updates the instance state.
    * @param {HTMLElement} audioElement Audio element.
    */
   stopAndResetAudioElement(audioElement) {

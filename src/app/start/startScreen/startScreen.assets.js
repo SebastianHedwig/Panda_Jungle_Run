@@ -2,6 +2,7 @@ import { loadFont, loadStartImage } from "./startScreen.utils.js";
 
 /**
  * Loads start assets.
+ * Used to support camera-relative placement.
  * @returns {*} Result value.
  */
 export const loadStartAssets = () =>
@@ -14,6 +15,7 @@ export const loadStartAssets = () =>
 
 /**
  * Applies loaded assets.
+ * Used to keep state consistent before the next step for camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.bg] Bg.
@@ -28,6 +30,7 @@ export const applyLoadedAssets = ({ bg, ui, menuBg, startScreenState }) => {
 
 /**
  * Loads and render start assets.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.startScreenState] Start screen state.

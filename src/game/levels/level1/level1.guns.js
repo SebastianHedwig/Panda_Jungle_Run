@@ -3,7 +3,7 @@ import { WORLD_WIDTH } from "../../../config/config.js";
 
 /**
  * Returns heart centers.
- * Updates the world state.
+ * Used to provide heart centers for collectable handling.
  * @param {World} world World instance.
  * @returns {*} Heart centers.
  */
@@ -15,6 +15,7 @@ function getHeartCenters(world) {
 
 /**
  * Is far from hearts.
+ * Used to decide control flow.
  * Uses heartCenters, worldX, worldY, minHeartDistance to perform the operation.
  * @param {*} heartCenters Heart centers.
  * @param {number} worldX World X.
@@ -28,6 +29,7 @@ function isFarFromHearts(heartCenters, worldX, worldY, minHeartDistance) {
 
 /**
  * Returns gun targets.
+ * Used to provide gun targets for collectable handling.
  * Uses count to compute the result.
  * @param {number} count Count.
  * @returns {*} Gun targets.
@@ -39,7 +41,7 @@ function getGunTargets(count) {
 
 /**
  * Find platform under target.
- * Updates the world state.
+ * Used to support platform collision handling.
  * @param {World} world World instance.
  * @param {number} targetX Target X.
  * @returns {*} Result value.
@@ -50,6 +52,7 @@ function findPlatformUnderTarget(world, targetX) {
 
 /**
  * Returns gun base placement.
+ * Used to provide gun base placement for collectable handling.
  * Uses platformUnderTarget, targetX to compute the result.
  * @param {Platform} platformUnderTarget Platform under target.
  * @param {number} targetX Target X.
@@ -66,6 +69,7 @@ function getGunBasePlacement(platformUnderTarget, targetX) {
 
 /**
  * Try place gun with offsets.
+ * Used to support collectable handling.
  * Uses guns, placementOffsets, basePlacement, farFromHearts to perform the operation.
  * @param {*} guns Guns.
  * @param {*} placementOffsets Placement offsets.
@@ -89,6 +93,7 @@ function tryPlaceGunWithOffsets(guns, placementOffsets, basePlacement, farFromHe
 
 /**
  * Place gun at target.
+ * Used to support collectable handling.
  * Uses world, guns, targetX, farFromHearts to perform the operation.
  * @param {World} world World instance.
  * @param {*} guns Guns.
@@ -106,7 +111,7 @@ function placeGunAtTarget(world, guns, targetX, farFromHearts) {
 
 /**
  * Place guns. If omitted, default values are used.
- * Updates the world state.
+ * Used to support world state updates.
  * @param {World} world World instance.
  * @param {number} [count] Count.
  */
@@ -116,6 +121,7 @@ export function placeGuns(world, count = 4) {
   const heartCenters = getHeartCenters(world);
   /**
    * Far from hearts.
+   * Used to support world state updates.
    * Uses worldX, worldY to perform the operation.
    * @param {number} worldX World X.
    * @param {number} worldY World Y.

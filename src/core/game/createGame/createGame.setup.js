@@ -30,7 +30,6 @@ export function setupCoreSystems() {
 
 /**
  * Sets up audio.
- * Updates the world state.
  */
 export function setupAudio() {
   this.audio = window.__preloadedGameAudio ?? new GameAudio();
@@ -40,6 +39,7 @@ export function setupAudio() {
 
 /**
  * Returns music ready promise.
+ * Used to provide music ready promise for audio playback.
  * @returns {*} Music ready promise.
  */
 export function getMusicReadyPromise() {
@@ -55,6 +55,7 @@ export function startLoadingRender() {
 
 /**
  * Returns assets ready.
+ * Used to provide assets ready for gameplay flow.
  * Uses assets to compute the result.
  * @param {*} assets Assets.
  * @returns {*} Assets ready.
@@ -65,6 +66,7 @@ export function getAssetsReady(assets) {
 
 /**
  * Starts when ready.
+ * Used to support gameplay flow.
  * Uses assets, assetsReady, musicReadyPromise to perform the operation.
  * @param {*} assets Assets.
  * @param {boolean} assetsReady Assets ready.

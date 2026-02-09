@@ -31,8 +31,8 @@ const msPerSecond = 1000;
 export class Player extends MovableObject {
   /**
    * Creates a new instance.
+   * Used to set up required data for world state updates.
    * Applies physics updates like gravity and velocity.
-   * Updates the instance state.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} idleFrames Idle frames.
@@ -63,7 +63,7 @@ export class Player extends MovableObject {
 
   /**
    * Heart states.
-   * Updates the instance state.
+   * Used to support collectable handling.
    * @returns {*} Result value.
    */
   get heartStates() {
@@ -80,7 +80,7 @@ export class Player extends MovableObject {
 
   /**
    * Returns popup position. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to provide popup position. If omitted, default values are used for camera-relative placement.
    * @param {number} [offset] Offset.
    * @returns {Object} Popup position.
    */
@@ -92,6 +92,7 @@ export class Player extends MovableObject {
 
   /**
    * Take damage. If omitted, default values are used.
+   * Used to support combat effects.
    * Uses damageAmount, options to perform the operation.
    * @param {number} [damageAmount] Damage amount.
    * @param {Object} [options] Configuration options.
@@ -105,7 +106,7 @@ export class Player extends MovableObject {
 
   /**
    * Applies damage amount.
-   * Updates the instance state.
+   * Used to keep state consistent before the next step for combat effects.
    * @param {number} damageAmount Damage amount.
    */
   applyDamageAmount(damageAmount) {
@@ -115,7 +116,7 @@ export class Player extends MovableObject {
 
   /**
    * Queues damage popup.
-   * Updates the instance state.
+   * Used to support combat effects.
    * @param {number} damageAmount Damage amount.
    * @param {Object} options Configuration options.
    */
@@ -123,7 +124,7 @@ export class Player extends MovableObject {
     const popupDelaySeconds = options?.popupDelay ?? 0;
     /**
      * Show damage popup.
-     * Updates the instance state.
+     * Used to support combat effects.
      * @returns {*} Result value.
      */
     const showDamagePopup = () => this.addDamagePopup(damageAmount);
@@ -132,6 +133,7 @@ export class Player extends MovableObject {
 
   /**
    * Schedules popup.
+   * Used to support world state updates.
    * Schedules timed actions.
    * @param {Function} popupAction Popup action.
    * @param {*} popupDelaySeconds Popup delay seconds.
@@ -143,7 +145,7 @@ export class Player extends MovableObject {
 
   /**
    * Adds damage popup.
-   * Updates the world state.
+   * Used to support combat effects.
    * Spawns visual feedback effects.
    * @param {number} damageAmount Damage amount.
    */
@@ -158,8 +160,8 @@ export class Player extends MovableObject {
 
   /**
    * Handles damage outcome.
+   * Used to centralize a specific behavior for combat effects.
    * Triggers audio playback or updates audio state.
-   * Updates the instance state.
    * @param {Object} options Configuration options.
    */
   handleDamageOutcome(options) {
@@ -172,7 +174,7 @@ export class Player extends MovableObject {
 
   /**
    * Heal. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support world state updates.
    * @param {number} [healAmount] Heal amount.
    */
   heal(healAmount = 1) {
@@ -184,7 +186,7 @@ export class Player extends MovableObject {
 
   /**
    * Applies heal amount.
-   * Updates the instance state.
+   * Used to keep state consistent before the next step for world state updates.
    * @param {number} healAmount Heal amount.
    * @returns {*} Result value.
    */
@@ -199,7 +201,7 @@ export class Player extends MovableObject {
 
   /**
    * Adds heal popup.
-   * Updates the world state.
+   * Used to support world state updates.
    * Spawns visual feedback effects.
    * @param {*} gained Gained.
    */
@@ -213,7 +215,7 @@ export class Player extends MovableObject {
 
   /**
    * Adds coins.
-   * Updates the instance state.
+   * Used to support world state updates.
    * @param {number} coinAmount Coin amount.
    */
   addCoins(coinAmount) {
@@ -223,7 +225,7 @@ export class Player extends MovableObject {
 
   /**
    * Adds bullets. If omitted, default values are used.
-   * Updates the instance state.
+   * Used to support world state updates.
    * @param {number} [bulletAmount] Bullet amount.
    */
   addBullets(bulletAmount = 0) {
@@ -233,7 +235,6 @@ export class Player extends MovableObject {
 
   /**
    * Marks safe position.
-   * Updates the instance state.
    */
   markSafePosition() {
     this.lastSafePosX = this.x;
@@ -242,6 +243,7 @@ export class Player extends MovableObject {
 
   /**
    * Applies dizzy. If omitted, default values are used.
+   * Used to keep state consistent before the next step for world state updates.
    * Uses dizzyDuration to perform the operation.
    * @param {number} [dizzyDuration] Dizzy duration.
    */
@@ -251,6 +253,7 @@ export class Player extends MovableObject {
 
   /**
    * Starts hurt. If omitted, default values are used.
+   * Used to support combat effects.
    * Uses useDizzy to perform the operation.
    * @param {*} [useDizzy] Use dizzy.
    */
@@ -268,6 +271,7 @@ export class Player extends MovableObject {
 
   /**
    * Handles death landing.
+   * Used to centralize a specific behavior for combat effects.
    * Uses previousBottom, currentBottom to perform the operation.
    * @param {number} previousBottom Previous bottom.
    * @param {number} currentBottom Current bottom.
@@ -302,8 +306,8 @@ export class Player extends MovableObject {
 
   /**
    * Starts attack.
+   * Used to support combat effects.
    * Triggers audio playback or updates audio state.
-   * Updates the instance state.
    * @returns {*} Result value.
    */
   startAttack() {
@@ -314,6 +318,7 @@ export class Player extends MovableObject {
 
   /**
    * Updates attack.
+   * Used to advance state during the update loop for combat effects.
    * Triggers audio playback or updates audio state.
    * @param {number} dt Delta time in seconds.
    */
@@ -323,6 +328,7 @@ export class Player extends MovableObject {
 
   /**
    * Updates hurt.
+   * Used to advance state during the update loop for combat effects.
    * Uses dt to perform the operation.
    * @param {number} dt Delta time in seconds.
    */
@@ -332,6 +338,7 @@ export class Player extends MovableObject {
 
   /**
    * Starts shoot.
+   * Used to support world state updates.
    * Triggers audio playback or updates audio state.
    * @returns {*} Result value.
    */
@@ -341,6 +348,7 @@ export class Player extends MovableObject {
 
   /**
    * Updates shoot.
+   * Used to advance state during the update loop for world state updates.
    * Uses dt to perform the operation.
    * @param {number} dt Delta time in seconds.
    */
@@ -350,6 +358,7 @@ export class Player extends MovableObject {
 
   /**
    * Handles fall off world.
+   * Used to centralize a specific behavior for physics updates.
    * Uses grounded, bottom, canvasHeight to perform the operation.
    * @param {*} grounded Grounded.
    * @param {number} bottom Bottom.
@@ -361,6 +370,7 @@ export class Player extends MovableObject {
 
   /**
    * Updates.
+   * Used to advance state during the update loop for world state updates.
    * Triggers audio playback or updates audio state.
    * @param {number} dt Delta time in seconds.
    * @param {Input} input Input handler.
@@ -371,6 +381,7 @@ export class Player extends MovableObject {
 
   /**
    * Renders.
+   * Used to render visuals.
    * Uses ctx, camera to perform the operation.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
@@ -381,7 +392,7 @@ export class Player extends MovableObject {
 
   /**
    * Returns hitbox.
-   * Updates the instance state.
+   * Used to provide hitbox for collision and hit testing.
    * @returns {Object} Hitbox.
    */
   getHitbox() {

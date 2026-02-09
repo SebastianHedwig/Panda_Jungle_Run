@@ -6,6 +6,7 @@ import { applyButtonShadow, applyLabelStyle, drawButton, drawButtonLabel, drawBu
 export class GameOverlayBase {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for UI interaction handling.
    * Uses options to perform the operation.
    * @param {Object} [options] Configuration options.
    * @param {number} [options.animDuration] Anim duration.

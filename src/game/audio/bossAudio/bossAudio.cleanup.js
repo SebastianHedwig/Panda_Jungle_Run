@@ -2,7 +2,6 @@ import { clearTimeoutIfNeeded, stopAndResetAudio } from "./bossAudio.helpers.js"
 
 /**
  * Stops and cleanup boss audio.
- * Updates the instance state.
  */
 export function stopAndCleanupBossAudio() {
   this.isPlaying = false;
@@ -21,7 +20,6 @@ export function stopAndCleanupBossAudio() {
 /**
  * Clears boss timers.
  * Clears pending timers.
- * Updates the instance state.
  */
 export function clearBossTimers() {
   this.fadeStartTimer = clearTimeoutIfNeeded(this.fadeStartTimer);
@@ -31,7 +29,6 @@ export function clearBossTimers() {
 
 /**
  * Stops gong audio and clear.
- * Updates the instance state.
  */
 export function stopGongAudioAndClear() {
   this.gongAudio = stopAndResetAudio(this.gongAudio);
@@ -39,7 +36,6 @@ export function stopGongAudioAndClear() {
 
 /**
  * Stops next music audio.
- * Updates the instance state.
  */
 export function stopNextMusicAudio() {
   this.nextMusicAudio = this.stopLoopedAudioInstance(this.nextMusicAudio);
@@ -47,7 +43,6 @@ export function stopNextMusicAudio() {
 
 /**
  * Stops music audio.
- * Updates the instance state.
  */
 export function stopMusicAudio() {
   this.musicAudio = this.stopLoopedAudioInstance(this.musicAudio);
@@ -55,7 +50,6 @@ export function stopMusicAudio() {
 
 /**
  * Stops defeat audio.
- * Updates the instance state.
  */
 export function stopDefeatAudio() {
   this.defeatAudio = stopAndResetAudio(this.defeatAudio);
@@ -63,7 +57,6 @@ export function stopDefeatAudio() {
 
 /**
  * Stops attack 2 audio.
- * Updates the instance state.
  */
 export function stopAttack2Audio() {
   this.attack2Audio = stopAndResetAudio(this.attack2Audio);
@@ -71,7 +64,6 @@ export function stopAttack2Audio() {
 
 /**
  * Stops whoosh audio.
- * Updates the instance state.
  */
 export function stopWhooshAudio() {
   this.whooshAudio = stopAndResetAudio(this.whooshAudio);
@@ -79,7 +71,6 @@ export function stopWhooshAudio() {
 
 /**
  * Stops hit audio.
- * Updates the instance state.
  */
 export function stopHitAudio() {
   this.hitAudio = stopAndResetAudio(this.hitAudio);
@@ -87,7 +78,6 @@ export function stopHitAudio() {
 
 /**
  * Stops howl end audio.
- * Updates the instance state.
  */
 export function stopHowlEndAudio() {
   this.howlEndAudio = stopAndResetAudio(this.howlEndAudio);
@@ -113,7 +103,6 @@ export function bindUnlock() {
 
 /**
  * Unbind unlock.
- * Updates the instance state.
  */
 export function unbindUnlock() {
   if (!this.unlockHandler) return;

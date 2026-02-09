@@ -5,6 +5,7 @@ import { WORLD_WIDTH } from "../../../config/config.js";
 
 /**
  * Returns total requested.
+ * Used to provide total requested for world state updates.
  * Uses enemy1Count, enemy2Count, enemy3Count to compute the result.
  * @param {number} enemy1Count Enemy 1 count.
  * @param {number} enemy2Count Enemy 2 count.
@@ -17,7 +18,7 @@ function getTotalRequested(enemy1Count, enemy2Count, enemy3Count) {
 
 /**
  * Returns enemy platforms.
- * Updates the world state.
+ * Used to provide enemy platforms for world state updates.
  * @param {World} world World instance.
  * @returns {*} Enemy platforms.
  */
@@ -34,6 +35,7 @@ function getEnemyPlatforms(world) {
 
 /**
  * Shuffle list.
+ * Used to support world state updates.
  * Introduces randomness into the outcome.
  * @param {*} list List.
  */
@@ -46,6 +48,7 @@ function shuffleList(list) {
 
 /**
  * Builds enemy mix.
+ * Used to assemble required data for world state updates.
  * Uses enemy1Count, enemy2Count, enemy3Count to compute the result.
  * @param {number} enemy1Count Enemy 1 count.
  * @param {number} enemy2Count Enemy 2 count.
@@ -62,6 +65,7 @@ function buildEnemyMix(enemy1Count, enemy2Count, enemy3Count) {
 
 /**
  * Returns enemy position.
+ * Used to provide enemy position for camera-relative placement.
  * Uses platform to compute the result.
  * @param {Platform} platform Platform.
  * @returns {Object} Enemy position.
@@ -75,6 +79,7 @@ function getEnemyPosition(platform) {
 
 /**
  * Push enemy by type.
+ * Used to support world state updates.
  * Uses enemies, enemyType, enemyX, enemyY, world, enemy1Sprites, enemy2Sprites, enemy3Sprites
  * to perform the operation.
  * @param {*} enemies Enemies.
@@ -94,6 +99,7 @@ function pushEnemyByType(enemies, enemyType, enemyX, enemyY, world, enemy1Sprite
 
 /**
  * Place enemy mix.
+ * Used to support world state updates.
  * Uses world, platforms, enemyMix, enemy1Sprites, enemy2Sprites, enemy3Sprites to perform the
  * operation.
  * @param {World} world World instance.
@@ -118,7 +124,7 @@ function placeEnemyMix(world, platforms, enemyMix, enemy1Sprites, enemy2Sprites,
 
 /**
  * Place enemies mixed. If omitted, default values are used.
- * Updates the world state.
+ * Used to support world state updates.
  * @param {World} world World instance.
  * @param {EnemyBase} enemy1Sprites Enemy 1 sprites.
  * @param {EnemyBase} enemy2Sprites Enemy 2 sprites.

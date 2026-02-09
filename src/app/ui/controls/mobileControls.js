@@ -5,6 +5,7 @@ const FAST_FORWARD_INACTIVE_SRC =
 
 /**
  * Emit key event.
+ * Used to support gameplay flow.
  * Uses type, key to perform the operation.
  * @param {string} type Type.
  * @param {string} key Key.
@@ -14,6 +15,7 @@ const emitKeyEvent = (type, key) =>
   window.dispatchEvent(new KeyboardEvent(type, { key, bubbles: true }));
 /**
  * Emit key down.
+ * Used to support gameplay flow.
  * Uses key to perform the operation.
  * @param {string} key Key.
  * @returns {*} Result value.
@@ -21,6 +23,7 @@ const emitKeyEvent = (type, key) =>
 const emitKeyDown = (key) => emitKeyEvent("keydown", key);
 /**
  * Emit key up.
+ * Used to support gameplay flow.
  * Uses key to perform the operation.
  * @param {string} key Key.
  * @returns {*} Result value.
@@ -29,6 +32,7 @@ const emitKeyUp = (key) => emitKeyEvent("keyup", key);
 
 /**
  * Prevent context menu.
+ * Used to support UI interaction handling.
  * Binds contextmenu event listeners.
  * @param {*} buttons Buttons.
  */
@@ -40,6 +44,7 @@ const preventContextMenu = (buttons) => {
 
 /**
  * Returns pointer id.
+ * Used to provide pointer id for UI interaction handling.
  * Uses event to compute the result.
  * @param {Event} event Event object.
  * @returns {*} Pointer id.
@@ -48,6 +53,7 @@ const getPointerId = (event) => event?.pointerId;
 
 /**
  * Track pointer press.
+ * Used to support UI interaction handling.
  * Uses activePointers, pointerId to perform the operation.
  * @param {*} activePointers Active pointers.
  * @param {string} pointerId Pointer element id.
@@ -62,6 +68,7 @@ const trackPointerPress = (activePointers, pointerId) => {
 
 /**
  * Track pointer release.
+ * Used to support UI interaction handling.
  * Uses activePointers, pointerId to perform the operation.
  * @param {*} activePointers Active pointers.
  * @param {string} pointerId Pointer element id.
@@ -76,6 +83,7 @@ const trackPointerRelease = (activePointers, pointerId) => {
 
 /**
  * Creates press handler.
+ * Used to set up required data for gameplay flow.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.activePointers] Active pointers.
@@ -91,6 +99,7 @@ const createPressHandler = ({ activePointers, key }) => (event) => {
 
 /**
  * Creates release handler.
+ * Used to set up required data for gameplay flow.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.activePointers] Active pointers.
@@ -105,6 +114,7 @@ const createReleaseHandler = ({ activePointers, key }) => (event) => {
 
 /**
  * Creates cancel handler.
+ * Used to set up required data for gameplay flow.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.activePointers] Active pointers.
@@ -119,6 +129,7 @@ const createCancelHandler = ({ activePointers, key }) => () => {
 
 /**
  * Binds pointer listeners.
+ * Used to support UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLElement} [options.button] Button.
@@ -138,6 +149,7 @@ const bindPointerListeners = ({ button, press, release, cancelAll }) => {
 
 /**
  * Binds hold.
+ * Used to support gameplay flow.
  * Uses button, key to perform the operation.
  * @param {HTMLElement} button Button.
  * @param {string} key Key.
@@ -153,6 +165,7 @@ function bindHold(button, key) {
 
 /**
  * Find button by control.
+ * Used to support UI interaction handling.
  * Uses control to perform the operation.
  * @param {*} control Control.
  * @returns {*} Result value.
@@ -162,6 +175,7 @@ const findButtonByControl = (control) =>
 
 /**
  * Returns move buttons.
+ * Used to provide move buttons for gameplay flow.
  * @returns {*} Move buttons.
  */
 const getMoveButtons = () => ({
@@ -171,6 +185,7 @@ const getMoveButtons = () => ({
 
 /**
  * Returns action buttons.
+ * Used to provide action buttons for gameplay flow.
  * @returns {*} Action buttons.
  */
 const getActionButtons = () => ({
@@ -181,12 +196,14 @@ const getActionButtons = () => ({
 
 /**
  * Returns fast forward button.
+ * Used to provide fast forward button for UI interaction handling.
  * @returns {*} Fast forward button.
  */
 const getFastForwardButton = () => findButtonByControl("fast-forward");
 
 /**
  * Returns mobile buttons.
+ * Used to provide mobile buttons for gameplay flow.
  * Resolves DOM elements from the document.
  * @returns {Object} Mobile buttons.
  */
@@ -200,6 +217,7 @@ const getMobileButtons = () => {
 
 /**
  * Binds movement controls.
+ * Used to support physics updates.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {number} [options.btnLeft] Btn left.
@@ -212,6 +230,7 @@ const bindMovementControls = ({ btnLeft, btnRight }) => {
 
 /**
  * Binds action controls.
+ * Used to support gameplay flow.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.btnJump] Btn jump.
@@ -226,6 +245,7 @@ const bindActionControls = ({ btnJump, btnAttack, btnSlide }) => {
 
 /**
  * Creates slide enabled.
+ * Used to set up required data for physics updates.
  * Uses btnSlide to compute the result.
  * @param {*} btnSlide Btn slide.
  * @returns {*} Slide enabled.
@@ -237,6 +257,7 @@ const createSlideEnabled = (btnSlide) => (enabled) => {
 
 /**
  * Returns fast forward assets.
+ * Used to provide fast forward assets for gameplay flow.
  * Resolves DOM elements from the document.
  * @param {*} fastForwardBtn Fast forward btn.
  * @returns {Object} Fast forward assets.
@@ -250,6 +271,7 @@ const getFastForwardAssets = (fastForwardBtn) => {
 
 /**
  * Updates fast forward icon.
+ * Used to advance state during the update loop for gameplay flow.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {HTMLImageElement} [options.icon] Icon.
@@ -264,6 +286,7 @@ const updateFastForwardIcon = ({ icon, isActive, srcActive, srcInactive }) => {
 
 /**
  * Applies run mode.
+ * Used to keep state consistent before the next step for gameplay flow.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {boolean} [options.isActive] Whether active.
@@ -282,6 +305,7 @@ const applyRunMode = ({ isActive, updateIcon, updateSlideEnabled }) => {
 
 /**
  * Creates run mode controller.
+ * Used to set up required data for gameplay flow.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {HTMLImageElement} [options.icon] Icon.
@@ -293,11 +317,13 @@ const createRunModeController = ({ icon, srcActive, srcInactive, updateSlideEnab
   let isActive = false;
   /**
    * Updates icon.
+   * Used to advance state during the update loop for gameplay flow.
    * @returns {*} Result value.
    */
   const updateIcon = () => updateFastForwardIcon({ icon, isActive, srcActive, srcInactive });
   /**
    * Sets run mode.
+   * Used to support gameplay flow.
    * Uses active to perform the operation.
    * @param {boolean} active Active.
    */
@@ -307,6 +333,7 @@ const createRunModeController = ({ icon, srcActive, srcInactive, updateSlideEnab
   };
   /**
    * Toggles run mode.
+   * Used to support gameplay flow.
    * @returns {*} Result value.
    */
   const toggleRunMode = () => setRunMode(!isActive);
@@ -315,6 +342,7 @@ const createRunModeController = ({ icon, srcActive, srcInactive, updateSlideEnab
 
 /**
  * Binds fast forward click.
+ * Used to support UI interaction handling.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.fastForwardBtn] Fast forward btn.
@@ -329,6 +357,7 @@ const bindFastForwardClick = ({ fastForwardBtn, toggleRunMode }) => {
 
 /**
  * Sets up fast forward.
+ * Used to support gameplay flow.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.fastForwardBtn] Fast forward btn.

@@ -1,5 +1,6 @@
 /**
  * Loads image.
+ * Used to support rendering.
  * Uses src to perform the operation.
  * @param {string} src Source URL.
  * @returns {*} Result value.
@@ -12,6 +13,7 @@ export function loadImage(src) {
 
 /**
  * Loads frames. If omitted, default values are used.
+ * Used to support gameplay flow.
  * Uses path, prefix, count, options to perform the operation.
  * @param {string} path Path.
  * @param {*} prefix Prefix.
@@ -27,6 +29,7 @@ export function loadFrames(path, prefix, count, { pad = 3 } = {}) {
 
 /**
  * Is image valid.
+ * Used to decide control flow.
  * Uses img to perform the operation.
  * @param {HTMLImageElement} img Img.
  * @returns {boolean} Whether image valid.
@@ -37,6 +40,7 @@ function isImageValid(img) {
 
 /**
  * Handles image error.
+ * Used to centralize a specific behavior for rendering.
  * Uses img, finish to perform the operation.
  * @param {HTMLImageElement} img Img.
  * @param {Function} finish Finish.
@@ -48,6 +52,7 @@ function handleImageError(img, finish) {
 
 /**
  * Wait for image.
+ * Used to support rendering.
  * Uses img to perform the operation.
  * @param {HTMLImageElement} img Img.
  * @returns {*} Result value.
@@ -56,6 +61,7 @@ export function waitForImage(img) {
   return new Promise((resolve) => {
     /**
      * Finish.
+     * Used to support gameplay flow.
      * Uses ok to perform the operation.
      * @param {*} ok Ok.
      * @returns {*} Result value.

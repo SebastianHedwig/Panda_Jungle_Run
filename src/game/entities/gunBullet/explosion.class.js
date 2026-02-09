@@ -3,7 +3,7 @@ const EXPLOSION_BASE_SIZE = 64;
 export class Explosion {
   /**
    * Creates a new instance.
-   * Updates the instance state.
+   * Used to set up required data for collectable handling.
    * @param {number} centerX Center X.
    * @param {number} centerY Center Y.
    */
@@ -15,7 +15,7 @@ export class Explosion {
 
   /**
    * Initializes position.
-   * Updates the instance state.
+   * Used to set default state before use for camera-relative placement.
    * @param {number} centerX Center X.
    * @param {number} centerY Center Y.
    */
@@ -27,7 +27,6 @@ export class Explosion {
   /**
    * Initializes animation state.
    * Advances animation state and sprites.
-   * Updates the instance state.
    */
   initAnimationState() {
     this.frames = [];
@@ -40,7 +39,6 @@ export class Explosion {
 
   /**
    * Loads frames.
-   * Updates the instance state.
    */
   loadFrames() {
     for (let frameIndex = 1; frameIndex <= 7; frameIndex++) {
@@ -52,8 +50,8 @@ export class Explosion {
 
   /**
    * Updates.
+   * Used to advance state during the update loop for collectable handling.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {number} dt Delta time in seconds.
    */
   update(dt) {
@@ -72,7 +70,7 @@ export class Explosion {
 
   /**
    * Renders.
-   * Updates the instance state.
+   * Used to render visuals.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
    */
@@ -85,8 +83,8 @@ export class Explosion {
 
   /**
    * Returns current frame.
+   * Used to provide current frame for animation timing.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @returns {*} Current frame.
    */
   getCurrentFrame() {
@@ -95,8 +93,8 @@ export class Explosion {
 
   /**
    * Draws explosion.
+   * Used to render explosion.
    * Renders to the canvas context.
-   * Updates the instance state.
    * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
    * @param {Camera} camera Camera instance.
    * @param {HTMLImageElement} img Img.
@@ -114,7 +112,7 @@ export class Explosion {
 
   /**
    * Returns explosion size.
-   * Updates the instance state.
+   * Used to provide explosion size for rendering.
    * @returns {Object} Explosion size.
    */
   getExplosionSize() {

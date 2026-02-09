@@ -1,5 +1,6 @@
 /**
  * Clone or restart. If omitted, default values are used.
+ * Used to support audio playback.
  * Uses cachedBaseAudioInstance, options to perform the operation.
  * @param {*} cachedBaseAudioInstance Cached base audio instance.
  * @param {Object} [options] Configuration options.
@@ -21,6 +22,7 @@ export function cloneOrRestart(cachedBaseAudioInstance, { volume } = {}) {
 
 /**
  * Creates audio element. If omitted, default values are used.
+ * Used to set up required data for audio playback.
  * Uses src, options to compute the result.
  * @param {string} src Source URL.
  * @param {Object} [options] Configuration options.
@@ -45,6 +47,7 @@ export function createAudioElement(
 
 /**
  * Adds metadata listener if needed.
+ * Used to support audio playback.
  * Binds loadedmetadata event listeners.
  * @param {HTMLAudioElement} audio Audio element.
  * @param {Function} onMetadata On metadata.
@@ -56,6 +59,7 @@ function addMetadataListenerIfNeeded(audio, onMetadata) {
 
 /**
  * Creates start audio handler.
+ * Used to set up required data for audio playback.
  * Triggers audio playback or updates audio state.
  * @param {HTMLAudioElement} audio Audio element.
  * @param {*} beforePlay Before play.
@@ -70,6 +74,7 @@ function createStartAudioHandler(audio, beforePlay) {
 
 /**
  * Starts audio when ready.
+ * Used to support audio playback.
  * Binds canplaythrough, loadeddata event listeners.
  * @param {HTMLAudioElement} audio Audio element.
  * @param {Function} startAudio Start audio.
@@ -86,6 +91,7 @@ function startAudioWhenReady(audio, startAudio) {
 
 /**
  * Plays when ready. If omitted, default values are used.
+ * Used to support audio playback.
  * Uses audio, options to perform the operation.
  * @param {HTMLAudioElement} audio Audio element.
  * @param {Object} [options] Configuration options.

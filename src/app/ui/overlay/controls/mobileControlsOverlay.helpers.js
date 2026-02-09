@@ -1,5 +1,6 @@
 /**
  * Returns row center Y.
+ * Used to provide row center Y for rendering.
  * Uses options, index to compute the result.
  * @param {Object} options Configuration options.
  * @param {number} [options.listStartY] List start Y.
@@ -12,6 +13,7 @@ export function getRowCenterY({ listStartY, lineHeight }, index) {
 
 /**
  * Draws control value.
+ * Used to render control value.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @param {*} value Value.
@@ -25,7 +27,7 @@ export function drawControlValue(ctx, value, valueX, rowCenterY) {
 
 /**
  * Returns icon.
- * Updates the instance state.
+ * Used to provide icon for UI interaction handling.
  * @param {string} src Source URL.
  * @returns {*} Icon.
  */

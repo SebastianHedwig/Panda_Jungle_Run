@@ -11,6 +11,7 @@ export function initGame() {
 
 /**
  * Sets paused.
+ * Used to support gameplay flow.
  * Uses paused to perform the operation.
  * @param {boolean} paused Paused.
  */
@@ -20,6 +21,7 @@ export function setPaused(paused) {
 
 /**
  * Returns paused.
+ * Used to provide paused for gameplay flow.
  * @returns {*} Paused.
  */
 export function getPaused() {

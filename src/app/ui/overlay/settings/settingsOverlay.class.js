@@ -32,6 +32,7 @@ import {
 export class SettingsOverlay {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for UI interaction handling.
    * Uses options to perform the operation.
    * @param {Object} [options] Configuration options.
    * @param {HTMLImageElement} [options.backgroundImage] Background image.
@@ -51,8 +52,8 @@ export class SettingsOverlay {
 
   /**
    * Returns active controls overlay.
+   * Used to provide active controls overlay for UI interaction handling.
    * Resolves DOM elements from the document.
-   * Updates the instance state.
    * @returns {*} Active controls overlay.
    */
   getActiveControlsOverlay() {
@@ -63,6 +64,7 @@ export class SettingsOverlay {
 
   /**
    * Sets assets.
+   * Used to support UI interaction handling.
    * Uses options to perform the operation.
    * @param {Object} options Configuration options.
    * @param {HTMLImageElement} [options.bgImage] Bg image.
@@ -76,7 +78,7 @@ export class SettingsOverlay {
 
   /**
    * Sets pointer.
-   * Updates the instance state.
+   * Used to support UI interaction handling.
    * @param {number} x X.
    * @param {number} y Y.
    */
@@ -91,7 +93,6 @@ export class SettingsOverlay {
 
   /**
    * Clears pointer.
-   * Updates the instance state.
    */
   clearPointer() {
     this.pointer = null;

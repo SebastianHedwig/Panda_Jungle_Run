@@ -23,6 +23,7 @@ import {
 
 /**
  * Prepares start screen canvas.
+ * Used to support camera-relative placement.
  * Renders to the canvas context.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
@@ -37,6 +38,7 @@ export const prepareStartScreenCanvas = (canvas, ctx) => {
 
 /**
  * Draws background image.
+ * Used to render background image.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -50,6 +52,7 @@ export const drawBackgroundImage = ({ ctx, canvas, bg }) => {
   const bgDrawX = (canvas.width - drawW) / 2;
   /**
    * Bg draw Y.
+   * Used to support camera-relative placement.
    * Uses canvas.height - drawH to perform the operation.
    * @param {boolean} canvas.height - drawH Canvas height draw H.
    */
@@ -59,6 +62,7 @@ export const drawBackgroundImage = ({ ctx, canvas, bg }) => {
 
 /**
  * Applies title styles.
+ * Used to keep state consistent before the next step for camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -79,6 +83,7 @@ export const applyTitleStyles = ({ ctx, canvas }) => {
 
 /**
  * Draws start title.
+ * Used to render start title.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -95,6 +100,7 @@ export const drawStartTitle = ({ ctx, canvas, canvasCenterX }) => {
 
 /**
  * Returns start button dimensions.
+ * Used to provide start button dimensions for UI interaction handling.
  * Uses canvas to compute the result.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @returns {Object} Start button dimensions.
@@ -103,6 +109,7 @@ export const getStartButtonDimensions = (canvas) => {
   const buttonWidth = Math.min(canvas.width * START_BUTTON_WIDTH_RATIO, START_BUTTON_MAX_WIDTH);
   /**
    * Button height.
+   * Used to support UI interaction handling.
    * Uses START_BUTTON_SPRITE.h / START_BUTTON_SPRITE.w to perform the operation.
    * @param {HTMLImageElement} START_BUTTON_SPRITE.h / START_BUTTON_SPRITE.w START BUTTON SPRITE h START BUTTON SPRITE w.
    * @returns {Object} Result value.
@@ -113,6 +120,7 @@ export const getStartButtonDimensions = (canvas) => {
 
 /**
  * Returns start button base center.
+ * Used to provide start button base center for rendering.
  * Uses canvas, buttonWidth, buttonHeight to compute the result.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @param {number} buttonWidth Button width.
@@ -127,6 +135,7 @@ export const getStartButtonBaseCenter = (canvas, buttonWidth, buttonHeight) => {
 
 /**
  * Returns scaled button rect.
+ * Used to provide scaled button rect for UI interaction handling.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {number} [options.baseCenterX] Base center X.
@@ -145,6 +154,7 @@ export const getScaledButtonRect = ({ baseCenterX, baseCenterY, buttonWidth, but
 
 /**
  * Applies button shadow.
+ * Used to keep UI visuals consistent.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  */
@@ -157,6 +167,7 @@ export const applyButtonShadow = (ctx) => {
 
 /**
  * Draws button sprite image.
+ * Used to render button sprite image.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -183,6 +194,7 @@ export const drawButtonSpriteImage = ({ ctx, ui, startButtonSprite, buttonDrawX,
 
 /**
  * Draws start button sprite.
+ * Used to render start button sprite.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -202,6 +214,7 @@ export const drawStartButtonSprite = ({ ctx, ui, startButtonSprite, buttonDrawX,
 
 /**
  * Creates start button bounds.
+ * Used to set up required data for UI interaction handling.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {number} [options.buttonDrawX] Button draw X.
@@ -219,6 +232,7 @@ export const createStartButtonBounds = ({ buttonDrawX, buttonDrawY, buttonWidthS
 
 /**
  * Draws start button.
+ * Used to render start button.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -238,6 +252,7 @@ export const drawStartButton = ({ ctx, canvas, ui, startScreenState }) => {
 
 /**
  * Draws settings overlay.
+ * Used to render settings overlay.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -255,6 +270,7 @@ export const drawSettingsOverlay = ({ ctx, canvas, startScreenState, getActiveCo
 
 /**
  * Draws legal start screen.
+ * Used to render legal start screen.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.startScreenState] Start screen state.
@@ -267,6 +283,7 @@ export const drawLegalStartScreen = ({ startScreenState, drawLegalPage }) => {
 
 /**
  * Creates draw start screen.
+ * Used to set up required data for camera-relative placement.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.

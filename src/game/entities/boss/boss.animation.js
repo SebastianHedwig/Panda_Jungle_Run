@@ -2,6 +2,7 @@ import { loadFrames } from "../../../core/game/assets/assetLoader.js";
 
 /**
  * Loads boss sprites.
+ * Used to support animation timing.
  * Applies physics updates like gravity and velocity.
  * @returns {Object} Result value.
  */

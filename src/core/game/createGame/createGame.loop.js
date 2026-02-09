@@ -1,5 +1,6 @@
 /**
  * Loop high res.
+ * Used to support gameplay flow.
  * Uses timeStamp to perform the operation.
  * @param {number} timeStamp Time stamp.
  */
@@ -28,6 +29,7 @@ export function setGameWonState() {
 
 /**
  * Handles boss update.
+ * Used to centralize a specific behavior for world state updates.
  * Uses dt to perform the operation.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
@@ -43,7 +45,7 @@ export function handleBossUpdate(dt) {
 
 /**
  * Updates player and camera.
- * Updates the player state.
+ * Used to advance state during the update loop for camera-relative placement.
  * @param {number} dt Delta time in seconds.
  */
 export function updatePlayerAndCamera(dt) {
@@ -55,7 +57,7 @@ export function updatePlayerAndCamera(dt) {
 
 /**
  * Updates collectable entities.
- * Updates the world state.
+ * Used to advance state during the update loop for collectable handling.
  * @param {number} dt Delta time in seconds.
  */
 export function updateCollectableEntities(dt) {
@@ -64,7 +66,7 @@ export function updateCollectableEntities(dt) {
 
 /**
  * Updates enemies and projectiles.
- * Updates the world state.
+ * Used to advance state during the update loop for gameplay flow.
  * @param {number} dt Delta time in seconds.
  */
 export function updateEnemiesAndProjectiles(dt) {
@@ -74,7 +76,7 @@ export function updateEnemiesAndProjectiles(dt) {
 
 /**
  * Updates world entities.
- * Updates the player state.
+ * Used to advance state during the update loop for world state updates.
  * Spawns visual feedback effects.
  * @param {number} dt Delta time in seconds.
  */
@@ -88,7 +90,7 @@ export function updateWorldEntities(dt) {
 
 /**
  * Updates hud popups.
- * Updates the world state.
+ * Used to advance state during the update loop for UI interaction handling.
  * Spawns visual feedback effects.
  * @param {number} dt Delta time in seconds.
  * @returns {*} Result value.
@@ -102,6 +104,7 @@ export function updateHudPopups(dt) {
 
 /**
  * Updates.
+ * Used to advance state during the update loop for gameplay flow.
  * Spawns visual feedback effects.
  * @param {number} dt Delta time in seconds.
  */
@@ -116,7 +119,7 @@ export function update(dt) {
 
 /**
  * Checks collectables.
- * Updates the world state.
+ * Used to decide control flow.
  * @returns {*} Result value.
  */
 export function checkCollectables() {

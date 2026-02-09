@@ -2,6 +2,7 @@ import { BASE_SPEED, PLAYER_MAX_HEARTS, PLAYER_SLIDE_DAMAGE, FACING_RIGHT } from
 
 /**
  * Initializes animation sets.
+ * Used to set default state before use for animation timing.
  * Uses frames to perform the operation.
  * @param {*} frames Frames.
  */
@@ -12,7 +13,6 @@ export function initializeAnimationSets(frames) {
 /**
  * Initializes animation state.
  * Advances animation state and sprites.
- * Updates the instance state.
  */
 export function initializeAnimationState() {
   this.currentAnimation = this.idleFrames;
@@ -24,7 +24,6 @@ export function initializeAnimationState() {
 
 /**
  * Initializes movement.
- * Updates the instance state.
  */
 export function initializeMovement() {
   this.defaultSpeed = BASE_SPEED;
@@ -33,7 +32,6 @@ export function initializeMovement() {
 
 /**
  * Initializes slide.
- * Updates the instance state.
  */
 export function initializeSlide() {
   Object.assign(this, {
@@ -68,7 +66,7 @@ export function initializeShoot() {
 
 /**
  * Initializes hurt death.
- * Updates the instance state.
+ * Used to set default state before use for combat effects.
  * Initializes hurt state, death state.
  * @param {number} x X.
  * @param {number} y Y.
@@ -91,6 +89,7 @@ export function initializeHurtState() {
 
 /**
  * Initializes death state.
+ * Used to set default state before use for combat effects.
  * Performs hitbox or collision checks.
  * @param {number} x X.
  * @param {number} y Y.
@@ -115,7 +114,6 @@ export function initializeAdvancedJump() {
 
 /**
  * Initializes facing.
- * Updates the instance state.
  */
 export function initializeFacing() {
   this.facing = FACING_RIGHT;
@@ -123,7 +121,6 @@ export function initializeFacing() {
 
 /**
  * Initializes heart system.
- * Updates the instance state.
  */
 export function initializeHeartSystem() {
   this.maxHearts = PLAYER_MAX_HEARTS;
@@ -134,7 +131,6 @@ export function initializeHeartSystem() {
 
 /**
  * Initializes coins.
- * Updates the instance state.
  */
 export function initializeCoins() {
   this.coins = 0;

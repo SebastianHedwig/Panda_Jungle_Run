@@ -21,6 +21,7 @@ const CLOSE_HEIGHT_MULTIPLIER = 1.2;
 
 /**
  * Creates panel metrics.
+ * Used to set up required data for camera-relative placement.
  * Uses canvas to compute the result.
  * @param {HTMLCanvasElement} canvas Target canvas.
  * @returns {Object} Panel metrics.
@@ -37,6 +38,7 @@ export const createPanelMetrics = (canvas) => {
 
 /**
  * Draws panel.
+ * Used to render panel.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -60,6 +62,7 @@ const drawPanel = ({ ctx, panelX, panelY, panelWidth, panelHeight }) => {
 
 /**
  * Returns font metrics.
+ * Used to provide font metrics for rendering.
  * @returns {Object} Font metrics.
  */
 export const getFontMetrics = () => {
@@ -71,6 +74,7 @@ export const getFontMetrics = () => {
 
 /**
  * Draws title text.
+ * Used to render title text.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -92,6 +96,7 @@ const drawTitleText = ({ ctx, title, panelX, panelY, panelPadding, titleFontSize
 
 /**
  * Applies body font.
+ * Used to keep state consistent before the next step for camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -105,6 +110,7 @@ const applyBodyFont = ({ ctx, bodyFontSize }) => {
 
 /**
  * Returns scroll metrics.
+ * Used to provide scroll metrics for camera-relative placement.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.wrapped] Wrapped.
@@ -125,6 +131,7 @@ export const getScrollMetrics = ({ wrapped, panelY, panelHeight, panelPadding, t
 
 /**
  * Returns close text bounds.
+ * Used to provide close text bounds for rendering.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -146,6 +153,7 @@ export const getCloseTextBounds = ({ ctx, panelX, panelY, panelWidth, panelPaddi
 
 /**
  * Begin content clip.
+ * Used to support camera-relative placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -169,6 +177,7 @@ const beginContentClip = ({ ctx, panelX, panelPadding, textStartY, innerWidth, i
 
 /**
  * End content clip.
+ * Used to support camera-relative placement.
  * Renders to the canvas context.
  * @param {CanvasRenderingContext2D} ctx Canvas rendering context.
  * @returns {*} Result value.
@@ -177,6 +186,7 @@ const endContentClip = (ctx) => ctx.restore();
 
 /**
  * Is line visible.
+ * Used to decide camera placement.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {number} [options.currentY] Current Y.
@@ -191,6 +201,7 @@ const isLineVisible = ({ currentY, panelY, panelPadding, lineHeight, panelHeight
 
 /**
  * Returns line position.
+ * Used to provide line position for camera-relative placement.
  * Uses panelX, panelPadding, currentY to compute the result.
  * @param {number} panelX Panel X.
  * @param {number} panelPadding Panel padding.
@@ -201,6 +212,7 @@ const getLinePosition = (panelX, panelPadding, currentY) => ({ x: panelX + panel
 
 /**
  * Renders line entry.
+ * Used to render line entry.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -225,6 +237,7 @@ const renderLineEntry = ({ ctx, lineEntry, lineHeight, position, bodyFontSize, o
 
 /**
  * Updates link bounds.
+ * Used to advance state during the update loop for collision and hit testing.
  * Uses linkBounds, nextBounds to perform the operation.
  * @param {*} linkBounds Link bounds.
  * @param {*} nextBounds Next bounds.
@@ -234,6 +247,7 @@ const updateLinkBounds = (linkBounds, nextBounds) => (linkBounds || !nextBounds 
 
 /**
  * Renders wrapped line.
+ * Used to render wrapped line.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -258,6 +272,7 @@ const renderWrappedLine = ({ ctx, lineEntry, lineHeight, bodyFontSize, onLineRen
 
 /**
  * Renders wrapped lines.
+ * Used to render wrapped lines.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -284,6 +299,7 @@ const renderWrappedLines = ({ ctx, wrapped, panelX, panelY, panelPadding, panelH
 
 /**
  * Renders content.
+ * Used to render content.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -309,6 +325,7 @@ export const renderContent = ({ ctx, wrapped, panelX, panelY, panelPadding, pane
 
 /**
  * Draws legal layout.
+ * Used to render legal layout.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.

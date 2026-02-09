@@ -5,6 +5,7 @@ import { loadFrames } from "../../../../core/game/assets/assetLoader.js";
 
 /**
  * Loads enemy 2 sprites.
+ * Used to support world state updates.
  * @returns {Object} Result value.
  */
 export function loadEnemy2Sprites() {
@@ -21,8 +22,8 @@ export function loadEnemy2Sprites() {
 export class Enemy2 extends Enemy1 {
   /**
    * Creates a new instance. If omitted, default values are used.
+   * Used to set up required data for world state updates.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {number} x X.
    * @param {number} y Y.
    * @param {*} sprites Sprites.
@@ -35,8 +36,8 @@ export class Enemy2 extends Enemy1 {
 
   /**
    * Initializes enemy 2 state.
+   * Used to set default state before use for world state updates.
    * Advances animation state and sprites.
-   * Updates the instance state.
    * @param {*} sprites Sprites.
    */
   initializeEnemy2State(sprites) {
@@ -53,7 +54,7 @@ export class Enemy2 extends Enemy1 {
 
   /**
    * Try start attack.
-   * Updates the player state.
+   * Used to support combat effects.
    * Introduces randomness into the outcome.
    * @param {Player} playerInfo Player info.
    * @param {Player} player Player instance.
@@ -76,6 +77,7 @@ export class Enemy2 extends Enemy1 {
 
   /**
    * Take damage. If omitted, default values are used.
+   * Used to support combat effects.
    * Uses amount, hitContext to perform the operation.
    * @param {number} [amount] Amount.
    * @param {*} [hitContext] Hit context.
@@ -92,6 +94,7 @@ export class Enemy2 extends Enemy1 {
 
 /**
  * Builds enemy 2 sprite set.
+ * Used to assemble required data for rendering.
  * Advances animation state and sprites.
  * @param {*} sprites Sprites.
  * @returns {Object} Enemy 2 sprite set.

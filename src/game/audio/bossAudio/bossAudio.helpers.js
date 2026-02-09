@@ -1,5 +1,6 @@
 /**
  * Returns random source.
+ * Used to provide random source for audio playback.
  * Introduces randomness into the outcome.
  * @param {*} sourceList Source list.
  * @returns {*} Random source.
@@ -12,6 +13,7 @@ export function getRandomSource(sourceList) {
 
 /**
  * Stops and reset audio.
+ * Used to support audio playback.
  * Triggers audio playback or updates audio state.
  * @param {HTMLElement} audioElement Audio element.
  * @returns {*} Result value.
@@ -25,6 +27,7 @@ export function stopAndResetAudio(audioElement) {
 
 /**
  * Clears timeout if needed.
+ * Used to support audio playback.
  * Clears pending timers.
  * @param {string} timerId Timer element id.
  * @returns {*} Result value.

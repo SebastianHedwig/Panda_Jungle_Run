@@ -1,6 +1,6 @@
 /**
  * Returns punch audio.
- * Updates the instance state.
+ * Used to provide punch audio for audio playback.
  * @param {string} src Source URL.
  * @returns {*} Punch audio.
  */
@@ -15,7 +15,7 @@ export function getPunchAudio(src) {
 
 /**
  * Returns ouch audio.
- * Updates the instance state.
+ * Used to provide ouch audio for audio playback.
  * @param {string} src Source URL.
  * @returns {*} Ouch audio.
  */
@@ -31,7 +31,6 @@ export function getOuchAudio(src) {
 /**
  * Plays punch.
  * Performs hitbox or collision checks.
- * Updates the instance state.
  */
 export function playPunch() {
   if (!this.punchSrcs?.length) return;
@@ -49,7 +48,6 @@ export function playPunch() {
 
 /**
  * Plays hit.
- * Updates the instance state.
  */
 export function playHit() {
   if (!this.hitSrc) return;
@@ -58,7 +56,6 @@ export function playHit() {
 
 /**
  * Plays shoot.
- * Updates the instance state.
  */
 export function playShoot() {
   this.playOneShot({ propertyName: "shootAudio", src: this.shootSrc });
@@ -66,7 +63,6 @@ export function playShoot() {
 
 /**
  * Plays ouch.
- * Updates the instance state.
  * Introduces randomness into the outcome.
  */
 export function playOuch() {
@@ -81,7 +77,6 @@ export function playOuch() {
 /**
  * Plays jump.
  * Applies physics updates like gravity and velocity.
- * Updates the instance state.
  */
 export function playJump() {
   this.playOneShot({ propertyName: "jumpAudio", src: this.jumpSrc });
@@ -89,7 +84,6 @@ export function playJump() {
 
 /**
  * Plays slide.
- * Updates the instance state.
  * Introduces randomness into the outcome.
  */
 export function playSlide() {
@@ -103,7 +97,6 @@ export function playSlide() {
 
 /**
  * Plays dead.
- * Updates the instance state.
  */
 export function playDead() {
   this.playOneShot({

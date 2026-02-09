@@ -32,6 +32,7 @@ const impressumScreenBase = new LegalScreenBase({
 
 /**
  * Returns impressum link parts.
+ * Used to provide impressum link parts for camera-relative placement.
  * Uses lineEntry, linkText to compute the result.
  * @param {*} lineEntry Line entry.
  * @param {string} linkText Link text.
@@ -45,6 +46,7 @@ const getImpressumLinkParts = (lineEntry, linkText) => {
 
 /**
  * Measure impressum link.
+ * Used to support camera-relative placement.
  * Uses renderCtx, before, linkText to perform the operation.
  * @param {*} renderCtx Render ctx.
  * @param {*} before Before.
@@ -59,6 +61,7 @@ const measureImpressumLink = (renderCtx, before, linkText) => {
 
 /**
  * Draws impressum link.
+ * Used to render impressum link.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {*} [options.renderCtx] Render ctx.
@@ -83,6 +86,7 @@ const drawImpressumLink = ({ renderCtx, position, fonts, before, after, beforeWi
 
 /**
  * Creates impressum link bounds.
+ * Used to set up required data for collision and hit testing.
  * Uses options to compute the result.
  * @param {Object} options Configuration options.
  * @param {*} [options.position] Position.
@@ -100,6 +104,7 @@ const createImpressumLinkBounds = ({ position, beforeWidth, linkWidth, lineHeigh
 
 /**
  * Renders impressum link.
+ * Used to render impressum link.
  * Uses options to perform the operation.
  * @param {Object} options Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
@@ -120,6 +125,7 @@ const renderImpressumLink = ({ ctx: renderCtx, lineEntry, lineHeight, position, 
 
 /**
  * Renders impressum screen. If omitted, default values are used.
+ * Used to render impressum screen. If omitted, default values are used.
  * Uses options to perform the operation.
  * @param {Object} [options] Configuration options.
  * @param {CanvasRenderingContext2D} [options.ctx] Canvas rendering context.
