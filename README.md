@@ -15,6 +15,7 @@ A 2D side‑scrolling platformer in the browser (Canvas), built entirely in vani
 - [Project Size](#project-size)
 - [Git Workflow](#git-workflow)
 - [Credits / Assets](#credits-assets)
+- [Licenses](#licenses)
 - [Copyright](#copyright)
 
 <a id="features"></a>
@@ -148,6 +149,15 @@ git pull
 - [Flaticon](https://www.flaticon.com/)
 - [Pixabay](https://pixabay.com/de/)
 - [Developer Akademie](https://developerakademie.com/)
+
+<a id="licenses"></a>
+**Licenses**<br>
+License PDFs for purchased assets:
+- `licenses/77105051-panda-run-platformer-game-kit-license.pdf`
+- `licenses/77105052-panda-2d-game-character-sprites-86-license.pdf`
+- `licenses/77105053-panda-warrior-2-game-character-sprites-221-license.pdf`
+- `licenses/77131765-wolves-2d-game-character-sprites-288-license.pdf`
+- `licenses/77131842-game-enemies-character-sprites-142-license.pdf`
 
 
 <a id="copyright"></a>
