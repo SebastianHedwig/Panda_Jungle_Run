@@ -76,8 +76,9 @@ A 2D side‑scrolling platformer in the browser (Canvas), built in vanilla JS wi
 git clone https://github.com/SebastianHedwig/Panda_Jungle_Run.git
 cd Panda_Jungle_Run
 ```
-2. Open directly:
+2. Open directly:<br>
 Open `index.html` in your browser.
+
 3. Or run a local development server:
 ```bash
 # Using Python
