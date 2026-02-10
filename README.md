@@ -12,7 +12,7 @@ A 2D side‑scrolling platformer in the browser (Canvas), built entirely in vani
 - [Installation](#installation)
 - [Documentation](#documentation)
 - [Project Structure](#project-structure)
-- [Projektgröße](#project-size)
+- [Project Size](#project-size)
 - [Git Workflow](#git-workflow)
 - [Credits / Assets](#credits-assets)
 - [Copyright](#copyright)
@@ -114,7 +114,7 @@ npx serve
 
 
 <a id="project-size"></a>
-**Project-Size (status: 09/02/2026)**
+**Project Size (status: 09/02/2026)**
 - Folder: 128
 - Files: 784
 - Total number of codelines: 11.148 Lines<br>
