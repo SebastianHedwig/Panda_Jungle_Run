@@ -1,6 +1,7 @@
 # Panda Jungle Run
 
-A 2D side‑scrolling platformer in the browser (Canvas), built entirely in vanilla JS.
+A 2D side‑scrolling platformer in the browser (Canvas), built in vanilla JS with a small custom engine.
+
 
 **Contents**
 - [Features](#features)
@@ -9,6 +10,7 @@ A 2D side‑scrolling platformer in the browser (Canvas), built entirely in vani
 - [Controls (Desktop)](#controls-desktop)
 - [Controls (Mobile)](#controls-mobile)
 - [Sound Settings](#sound-settings)
+- [Requirements](#requirements)
 - [Installation](#installation)
 - [Documentation](#documentation)
 - [Project Structure](#project-structure)
@@ -18,8 +20,8 @@ A 2D side‑scrolling platformer in the browser (Canvas), built entirely in vani
 - [Licenses](#licenses)
 - [Copyright](#copyright)
 
-<a id="features"></a>
-**Features**
+
+## Features
 - Side‑scrolling platformer with Canvas rendering
 - Sprint + slide move (with its own animation)
 - Player attack / shoot actions
@@ -29,26 +31,22 @@ A 2D side‑scrolling platformer in the browser (Canvas), built entirely in vani
 - Start screen + settings overlay (incl. controls overview)
 - Custom mini‑engine (vanilla JS), no external game frameworks
 - Responsive design (desktop + mobile)
-- Desktop and mobile controls
 - Sound mute is stored in `localStorage`
 
 
-<a id="gameplay-highlights"></a>
-**Gameplay Highlights**
+## Gameplay Highlights
 - Focus on fluid movement: run, jump, slide as the core loop
 - Short combat encounters that reward movement
 - Clear screen flow: start menu → game → HUD interaction
 
 
-<a id="inspiration"></a>
-**Inspiration**
+## Inspiration
 - Inspired by classic 2D side‑scrolling platformers
 - Mix of fast run‑and‑slide sections and short combat phases
 - Arcade‑like: quick entry, direct controls, instant feedback
 
 
-<a id="controls-desktop"></a>
-**Controls (Desktop)**
+## Controls (Desktop)
 - Move: `A / D` or arrow keys
 - Sprint: hold `Shift`
 - Jump: `Space`
@@ -57,28 +55,29 @@ A 2D side‑scrolling platformer in the browser (Canvas), built entirely in vani
 - Pause / Menu: `Escape` or HUD button
 
 
-<a id="controls-mobile"></a>
-**Controls (Mobile)**
+## Controls (Mobile)
 - On‑screen buttons (left/right, sprint, jump, attack, slide)
 
 
-<a id="sound-settings"></a>
-**Sound Settings**
+## Sound Settings
 - Default mute: `src/config/config.js` → `INITIAL_MUTE_STATE_GAMESTART`
 - Persistence: `localStorage` key `SoundMute`
 
 
-<a id="installation"></a>
-**Installation**
+## Requirements
+- Any modern browser
+- Optional: Node.js + npm for `npm run docs` or `npx serve`
+- Optional: Python 3 for `python -m http.server`
+
+
+## Installation
 1. Clone the repository:
 ```bash
 git clone https://github.com/SebastianHedwig/Panda_Jungle_Run.git
 cd Panda_Jungle_Run
 ```
 2. Open directly:
-```bash
-index.html
-```
+Open `index.html` in your browser.
 3. Or run a local development server:
 ```bash
 # Using Python
@@ -91,8 +90,7 @@ npx serve
 4. Navigate to `http://localhost:8000` (or your server’s address).
 
 
-<a id="documentation"></a>
-**Documentation**
+## Documentation
 - The project is documented with JSDoc (HTML output).
 - Prerequisite: Node.js + npm installed.
 - Install deps once: `npm install`
@@ -101,8 +99,7 @@ npx serve
 - Theme: `docdash-orange` (configured in `jsdoc.json`)
 
 
-<a id="project-structure"></a>
-**Project Structure**
+## Project Structure
 - `index.html` — entry point + canvas/HUD
 - `initGame.js` — game bootstrap (entry point) incl. audio setup, UI toggles, start screen
 - `src/` — core game logic
@@ -112,47 +109,55 @@ npx serve
 - `src/app/` — UI, overlays, start screen, controls, audio tracking
 - `assets/` — spritesheets, SFX, icons
 - `styles/` and `style.css` — UI and layout styles
+- `docs/` — generated JSDoc output
+- `licenses/` — asset purchase/license PDFs
+- `jsdoc.json` — JSDoc configuration
+- `package.json` and `package-lock.json` — tooling config
+- `node_modules/` — local dependencies (generated)
 
 
-<a id="project-size"></a>
-**Project Size (status: 09/02/2026)**
-- Folder: 128
-- Files: 784
-- Total number of codelines: 11.148 Lines<br>
-(folder, files & codelines - Project only)
+## Project Size (as of: 2026-02-10)
+- Folders: 130
+- Files: 788
+- Code lines: 22582
+- Excludes: `node_modules/`, `docs/`, `.idea/`, `package-lock.json`
+- Code line types: `.js`, `.json`, `.html`, `.css`, `.md`
 
-<a id="git-workflow"></a>
-**Git Workflow (Push / Pull / Branch)**
+
+## Git Workflow (Push / Pull / Branch)
 1. Create a branch:
 ```bash
 git checkout -b feature/my-change
 ```
+
 2. Make changes and commit:
 ```bash
 git add .
 git commit -m "Describe your change"
 ```
+
 3. Push your branch:
 ```bash
 git push -u origin feature/my-change
 ```
+
 4. Pull latest changes (main):
 ```bash
 git checkout main
 git pull
 ```
 
-<a id="credits-assets"></a>
-**Credits / Assets**
+
+## Credits / Assets
 - [Graphicriver](https://graphicriver.net/)
 - [Icons8](https://icons8.de/icons)
 - [Flaticon](https://www.flaticon.com/)
 - [Pixabay](https://pixabay.com/de/)
 - [Developer Akademie](https://developerakademie.com/)
 
-<a id="licenses"></a>
-**Licenses**<br>
-License PDFs for purchased assets:
+
+## Licenses
+License PDFs for purchased assets are stored in `licenses/`.
 - `licenses/77105051-panda-run-platformer-game-kit-license.pdf`
 - `licenses/77105052-panda-2d-game-character-sprites-86-license.pdf`
 - `licenses/77105053-panda-warrior-2-game-character-sprites-221-license.pdf`
@@ -160,6 +165,5 @@ License PDFs for purchased assets:
 - `licenses/77131842-game-enemies-character-sprites-142-license.pdf`
 
 
-<a id="copyright"></a>
-**Copyright**
+## Copyright
 - © 2026 Sebastian Hedwig. All rights reserved.
