@@ -5,9 +5,8 @@ import { ControlsOverlayMobile } from "../../ui/overlay/controls/mobileControlsO
 import { AUTOSTART_KEY, SETTINGS_ICON_DEFAULT_SRC, SETTINGS_ICON_CONTROLLER_SRC } from "./startScreen.js";
 import { markNextStartScreenActionConsumed } from "./startScreen.utils.js";
 
-// Temporary: disable autostart + menu music on start screen.
-const START_SCREEN_AUTOSTART_ENABLED = false;
-const START_SCREEN_MENU_MUSIC_ENABLED = false;
+const START_SCREEN_AUTOSTART_ENABLED = true;
+const START_SCREEN_MENU_MUSIC_ENABLED = true;
 
 /**
  * Returns canvas and context.
