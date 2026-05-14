@@ -18,16 +18,16 @@ const FALLBACK_GROUND = 1000;
 
 const ASSET_MAP = {
   coin: [
-    "assets/img/Coin/Coin_0000000.png",
-    "assets/img/Coin/Coin_0000001.png",
-    "assets/img/Coin/Coin_0000002.png",
-    "assets/img/Coin/Coin_0000003.png",
+    "assets/img/coin/coin_0000000.png",
+    "assets/img/coin/coin_0000001.png",
+    "assets/img/coin/coin_0000002.png",
+    "assets/img/coin/coin_0000003.png",
   ],
   heart: Array.from(
     { length: 49 },
-    (_, i) => `assets/img/PowerUps/heart/frame-${String(i + 1).padStart(2, "0")}.gif`
+    (_, i) => `assets/img/powerUps/heart/frame-${String(i + 1).padStart(2, "0")}.gif`
   ),
-  gun: ["assets/img/Character/Spriter_files/gun.png"],
+  gun: ["assets/img/character/spriter_files/gun.png"],
 };
 
 export class CollectableItem {

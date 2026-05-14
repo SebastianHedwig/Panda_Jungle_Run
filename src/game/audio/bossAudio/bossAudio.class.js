@@ -70,13 +70,13 @@ export const BOSS_GONG = "./assets/music/boss-gong.mp3";
 export const BOSS_MUSIC = "./assets/music/boss-music.mp3";
 export const BOSS_DEFEAT = "./assets/music/boss-defeat.mp3";
 export const BOSS_WHIMPER = [
-  "./assets/sfx/boss/Boss-whimper1.mp3",
-  "./assets/sfx/boss/Boss-whimper2.mp3",
+  "./assets/sfx/boss/boss-whimper1.mp3",
+  "./assets/sfx/boss/boss-whimper2.mp3",
 ];
-export const BOSS_HOWL_END = "./assets/sfx/boss/Boss-howl-end.mp3";
-export const BOSS_ATTACK2 = "./assets/sfx/boss/Boss-attack2.mp3";
-export const BOSS_WHOOSH = "./assets/sfx/boss/Boss-whoosh.mp3";
-export const BOSS_HIT = "./assets/sfx/boss/Boss-hit.mp3";
+export const BOSS_HOWL_END = "./assets/sfx/boss/boss-howl-end.mp3";
+export const BOSS_ATTACK2 = "./assets/sfx/boss/boss-attack2.mp3";
+export const BOSS_WHOOSH = "./assets/sfx/boss/boss-whoosh.mp3";
+export const BOSS_HIT = "./assets/sfx/boss/boss-hit.mp3";
 export const msPerSecond = 1000;
 
 export class BossAudio {

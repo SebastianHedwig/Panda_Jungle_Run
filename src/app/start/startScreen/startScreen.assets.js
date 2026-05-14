@@ -7,9 +7,9 @@ import { loadFont, loadStartImage } from "./startScreen.utils.js";
  */
 export const loadStartAssets = () =>
   Promise.all([
-    loadStartImage("./assets/img/canvas-start-game_BG.jpg"),
-    loadStartImage("./assets/img/Gui/Game-UI.png"),
-    loadStartImage("./assets/img/menu_BG.png"),
+    loadStartImage("./assets/img/canvas-start-game_bg.jpg"),
+    loadStartImage("./assets/img/gui/game-ui.png"),
+    loadStartImage("./assets/img/menu_bg.png"),
     loadFont("ComixLoud", "4rem"),
   ]);
 

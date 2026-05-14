@@ -60,7 +60,7 @@ export class Bullet {
    */
   initImage() {
     this.image = new Image();
-    this.image.src = "assets/img/Bullets/Bullet-1.png";
+    this.image.src = "assets/img/bullets/bullet-1.png";
   }
 
   /**

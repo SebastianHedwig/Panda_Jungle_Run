@@ -43,7 +43,7 @@ export class Explosion {
   loadFrames() {
     for (let frameIndex = 1; frameIndex <= 7; frameIndex++) {
       const img = new Image();
-      img.src = `assets/img/Explosions/EXPLOSIONS${frameIndex}.png`;
+      img.src = `assets/img/explosions/explosions${frameIndex}.png`;
       this.frames.push(img);
     }
   }

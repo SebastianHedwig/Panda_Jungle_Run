@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: "ComixLoud";
-  src: url("./assets/fonts/Comix_Loud.ttf") format("truetype");
+  src: url("./assets/fonts/comix_loud.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -15,7 +15,7 @@ body {
   justify-content: center;
   align-items: center;
   position: relative;
-  background-image: url(./assets/img/body-main_BG.jpg);
+  background-image: url(./assets/img/body-main_bg.jpg);
   background-size: cover;
   margin: 0;
   width: 100%;

@@ -6,12 +6,12 @@ import { loadFrames } from "../../../../core/game/assets/assetLoader.js";
  * @returns {Object} Result value.
  */
 export function loadEnemy1Sprites() {
-  const base = "assets/img/Enemies/Enemy_Sprites/Character-1/";
+  const base = "assets/img/enemies/enemy_sprites/character-1/";
   return {
-    idle: loadFrames(`${base}idle/`, "Idle_", 12),
+    idle: loadFrames(`${base}idle/`, "idle_", 12),
     walk: loadFrames(`${base}walk/`, "walk_", 10),
-    attack: loadFrames(`${base}attack-2/`, "Attack-2_", 8),
-    die: loadFrames(`${base}die/`, "Die_", 12),
+    attack: loadFrames(`${base}attack-2/`, "attack-2_", 8),
+    die: loadFrames(`${base}die/`, "die_", 12),
   };
 }
 

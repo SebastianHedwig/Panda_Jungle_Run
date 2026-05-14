@@ -6,17 +6,17 @@ import { loadBossSprites } from "../../../game/entities/boss/boss.class.js";
 
 const PLAYER_FRAME_KEYS = ["idle", "walk", "run", "jump", "slide", "attack", "shoot", "dizzy", "hurt", "die", "hitStars"];
 const PLAYER_FRAME_CONFIG = [
-  ["idle", "./assets/img/Character/Character_Sprites/idle/", "Idle_", 10],
-  ["walk", "./assets/img/Character/Character_Sprites/walk/", "walk_", 10],
-  ["run", "./assets/img/Character/Character_Sprites/run/", "Run_", 8],
-  ["jump", "./assets/img/Character/Character_Sprites/jump/", "Jump_", 5],
-  ["slide", "./assets/img/Character/Character_Sprites/slide/", "Sliding_", 4],
-  ["attack", "./assets/img/Character/Character_Sprites/throw/", "Throw_Attack_", 5],
-  ["shoot", "./assets/img/Character/Character_Sprites/shoot/", "Shoot_", 6],
-  ["dizzy", "./assets/img/Character/Character_Sprites/dizzy/", "Dizzy_", 3],
-  ["hurt", "./assets/img/Character/Character_Sprites/hurt/", "hurt_", 2],
-  ["die", "./assets/img/Character/Character_Sprites/die/", "Die_", 10],
-  ["hitStars", "./assets/img/Character/Spriter_files/", "Star_", 3],
+  ["idle", "./assets/img/character/character_sprites/idle/", "idle_", 10],
+  ["walk", "./assets/img/character/character_sprites/walk/", "walk_", 10],
+  ["run", "./assets/img/character/character_sprites/run/", "run_", 8],
+  ["jump", "./assets/img/character/character_sprites/jump/", "jump_", 5],
+  ["slide", "./assets/img/character/character_sprites/slide/", "sliding_", 4],
+  ["attack", "./assets/img/character/character_sprites/throw/", "throw_attack_", 5],
+  ["shoot", "./assets/img/character/character_sprites/shoot/", "shoot_", 6],
+  ["dizzy", "./assets/img/character/character_sprites/dizzy/", "dizzy_", 3],
+  ["hurt", "./assets/img/character/character_sprites/hurt/", "hurt_", 2],
+  ["die", "./assets/img/character/character_sprites/die/", "die_", 10],
+  ["hitStars", "./assets/img/character/spriter_files/", "star_", 3],
 ];
 const ENEMY1_KEYS = ["idle", "walk", "attack", "die"];
 const ENEMY2_KEYS = ["idle", "run", "attack1", "attack2", "die"];
@@ -30,12 +30,12 @@ const BOSS_KEYS = ["idle", "walk", "run", "attack1", "attack2", "hurt", "die", "
  */
 function createBackgroundImages() {
   return [
-    loadImage("./assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-1.png"),
-    loadImage("./assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-2.png"),
-    loadImage("./assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-3.png"),
-    loadImage("./assets/img/Game_BG_Image_Layers/BG/Game-Background-Layer-4.png"),
-    loadImage("./assets/img/Game_BG_Image_Layers/clouds/clouds-1.png"),
-    loadImage("./assets/img/Game_BG_Image_Layers/clouds/clouds-2.png"),
+    loadImage("./assets/img/game_bg_image_layers/bg/game-background-layer-1.png"),
+    loadImage("./assets/img/game_bg_image_layers/bg/game-background-layer-2.png"),
+    loadImage("./assets/img/game_bg_image_layers/bg/game-background-layer-3.png"),
+    loadImage("./assets/img/game_bg_image_layers/bg/game-background-layer-4.png"),
+    loadImage("./assets/img/game_bg_image_layers/clouds/clouds-1.png"),
+    loadImage("./assets/img/game_bg_image_layers/clouds/clouds-2.png"),
   ];
 }
 
@@ -46,15 +46,15 @@ function createBackgroundImages() {
  */
 function createPlatformSprites() {
   return {
-    startLong: loadImage("./assets/img/Platforms/platform-start-long.png"),
-    middleLong: loadImage("./assets/img/Platforms/platform-middle-long.png"),
-    endLong: loadImage("./assets/img/Platforms/platform-end-long.png"),
-    startShort: loadImage("./assets/img/Platforms/platform-start-short.png"),
-    middleShort: loadImage("./assets/img/Platforms/platform-middle-short.png"),
-    endShort: loadImage("./assets/img/Platforms/platform-end-short.png"),
-    small: loadImage("./assets/img/Platforms/platform-small.png"),
-    middleHigh: loadImage("./assets/img/Platforms/platform-middle-high.png"),
-    filler: loadImage("./assets/img/Platforms/platform-filler.png"),
+    startLong: loadImage("./assets/img/platforms/platform-start-long.png"),
+    middleLong: loadImage("./assets/img/platforms/platform-middle-long.png"),
+    endLong: loadImage("./assets/img/platforms/platform-end-long.png"),
+    startShort: loadImage("./assets/img/platforms/platform-start-short.png"),
+    middleShort: loadImage("./assets/img/platforms/platform-middle-short.png"),
+    endShort: loadImage("./assets/img/platforms/platform-end-short.png"),
+    small: loadImage("./assets/img/platforms/platform-small.png"),
+    middleHigh: loadImage("./assets/img/platforms/platform-middle-high.png"),
+    filler: loadImage("./assets/img/platforms/platform-filler.png"),
   };
 }
 
@@ -98,10 +98,10 @@ function createBossSprites() {
  */
 function createHudImages() {
   return {
-    hudCoinImg: loadImage("./assets/img/Coin/Coin_0000000.png"),
-    hudGunImg: loadImage("./assets/img/Character/Spriter_files/gun.png"),
-    menuBgImg: loadImage("./assets/img/menu_BG.png"),
-    menuUiImg: loadImage("./assets/img/Gui/Game-UI.png"),
+    hudCoinImg: loadImage("./assets/img/coin/coin_0000000.png"),
+    hudGunImg: loadImage("./assets/img/character/spriter_files/gun.png"),
+    menuBgImg: loadImage("./assets/img/menu_bg.png"),
+    menuUiImg: loadImage("./assets/img/gui/game-ui.png"),
   };
 }
 

@@ -9,14 +9,14 @@ import { loadFrames } from "../../../../core/game/assets/assetLoader.js";
  * @returns {Object} Result value.
  */
 export function loadEnemy3Sprites() {
-  const base = "assets/img/Enemies/Enemy_Sprites/Character-3/";
+  const base = "assets/img/enemies/enemy_sprites/character-3/";
   return {
-    idle: loadFrames(`${base}idle/`, "Idle_", 12),
-    run: loadFrames(`${base}run/`, "Run_", 8),
-    attack1: loadFrames(`${base}attack-1/`, "Attack-1_", 8),
-    attack2: loadFrames(`${base}attack-2/`, "Attack-2_", 8),
-    slide: loadFrames(`${base}slide/`, "Slide_", 4),
-    die: loadFrames(`${base}die/`, "Die_", 12),
+    idle: loadFrames(`${base}idle/`, "idle_", 12),
+    run: loadFrames(`${base}run/`, "run_", 8),
+    attack1: loadFrames(`${base}attack-1/`, "attack-1_", 8),
+    attack2: loadFrames(`${base}attack-2/`, "attack-2_", 8),
+    slide: loadFrames(`${base}slide/`, "slide_", 4),
+    die: loadFrames(`${base}die/`, "die_", 12),
   };
 }
 
